@@ -4,3 +4,6 @@
 # Python
 venv
 *.pyc
+
+# Django
+db.sqlite3
