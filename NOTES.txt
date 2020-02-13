@@ -1,0 +1,6 @@
+Some useful commands:
+
+    python manage.py makemigrations surveys
+    python manage.py sqlmigrate surveys 0001
+    python manage.py check
+    python manage.py migrate
