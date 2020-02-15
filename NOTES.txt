@@ -4,3 +4,6 @@ Some useful commands:
     python manage.py sqlmigrate surveys 0001
     python manage.py check
     python manage.py migrate
+
+    python manage.py shell
+

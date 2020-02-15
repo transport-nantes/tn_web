@@ -14,6 +14,9 @@ class Survey(models.Model):
     # More information about the survey.  For humans.
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 class SurveyQuestion(models.Model):
     """Represent a set of questions (a survey).
 
@@ -30,6 +33,10 @@ class SurveyQuestion(models.Model):
     sort_index = models.IntegerField()
     question_title = models.CharField(max_length=200)
     question_text = models.TextField()
+
+    def __str__(self):
+        return '{qn}: {qt}'.format(qn=self.question_number,
+                                   qt=self.question_title)
 
 class SurveyResponder(models.Model):
     """Represent someone or something that might respond to a survey.
@@ -71,6 +78,11 @@ class SurveyResponder(models.Model):
     # The facebook username, after the "/" in the page URL.
     facebook = models.CharField(max_length=100)
 
+    def __str__(self):
+        return '{com}: {liste}/{tete}'.format(com=self.commune,
+                                              liste=self.liste,
+                                              tete=self.tete_de_liste)
+
 class SurveyResponse(models.Model):
     """Represent candidate/party responses to survey questions.
     """
@@ -79,3 +91,8 @@ class SurveyResponse(models.Model):
     survey_responder_id = models.ForeignKey(SurveyResponder, on_delete=models.CASCADE)
 
     survey_question_response = models.TextField()
+
+    def __str__(self):
+        return '{id}/{qid}/{rid}'.format(id=self.survey_id,
+                                         qid=self.survey_question_id,
+                                         rid=self.survey_responder_id)
