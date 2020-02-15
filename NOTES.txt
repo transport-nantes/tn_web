@@ -7,3 +7,4 @@ Some useful commands:
 
     python manage.py shell
 
+    python manage.py createsuperuser
