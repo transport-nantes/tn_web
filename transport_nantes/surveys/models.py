@@ -23,7 +23,7 @@ class SurveyQuestion(models.Model):
     This does not represent anyone's responses.
 
     """
-    survey_id = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     # Question numbers are strings because we might have "3a" and
     # "3b", for example.
     question_number = models.CharField(max_length=10)
@@ -38,7 +38,21 @@ class SurveyQuestion(models.Model):
         return '{qn}: {qt}'.format(qn=self.question_number,
                                    qt=self.question_title)
 
+class SurveyCommune(models.Model):
+    """Represent the commune.
+
+    This is a separate model solely that we can refer to communes by
+    number (and thus fix spelling errors without invalidating URLs if
+    such should happen.
+    """
+    # Our surveys typically involve political entities.
+    commune = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.commune
+
 class SurveyResponder(models.Model):
+
     """Represent someone or something that might respond to a survey.
 
     We use this for tracking people and parties who might respond to
@@ -50,14 +64,15 @@ class SurveyResponder(models.Model):
     # party/list and for one survey.  If they wish to respond to
     # another survey, they'll need to be revalidated (and to have a
     # new entry in this table)..
-    survey_id = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
 
     # In a self-service context, we'll use validated to indicate that
     # we've confirmed that the person is authorised to reply for the
     # list.
     validated = models.BooleanField()
-    # Our surveys typically involve political entities.
-    commune = models.CharField(max_length=100)
+    commune = models.ForeignKey(SurveyCommune, on_delete=models.CASCADE)
+
+    # Our surveys typically concern political lists.
     liste = models.CharField(max_length=100)
     # The list head is a person.  We use this name to personalise information.
     tete_de_liste = models.CharField(max_length=100)
@@ -68,15 +83,15 @@ class SurveyResponder(models.Model):
     # self-service, the intent is that email_person is the mail that
     # will be asked to verify that a contribution or change is
     # legimiate (i.e., used for login/authentication).
-    email_liste = models.CharField(max_length=100)
-    email_person = models.CharField(max_length=100)
+    email_liste = models.CharField(max_length=100, blank=True)
+    email_person = models.CharField(max_length=100, blank=True)
 
-    url = models.URLField(max_length=200)
+    url = models.URLField(max_length=200, blank=True)
     # The twitter fields are the part after the "@".
-    twitter_liste = models.CharField(max_length=100)
-    twitter_candidat = models.CharField(max_length=100)
+    twitter_liste = models.CharField(max_length=100, blank=True)
+    twitter_candidat = models.CharField(max_length=100, blank=True)
     # The facebook username, after the "/" in the page URL.
-    facebook = models.CharField(max_length=100)
+    facebook = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return '{com}: {liste}/{tete}'.format(com=self.commune,
@@ -86,13 +101,13 @@ class SurveyResponder(models.Model):
 class SurveyResponse(models.Model):
     """Represent candidate/party responses to survey questions.
     """
-    survey_id = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    survey_question_id = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE)
-    survey_responder_id = models.ForeignKey(SurveyResponder, on_delete=models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    survey_question = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE)
+    survey_responder = models.ForeignKey(SurveyResponder, on_delete=models.CASCADE)
 
     survey_question_response = models.TextField()
 
     def __str__(self):
-        return '{id}/{qid}/{rid}'.format(id=self.survey_id,
-                                         qid=self.survey_question_id,
-                                         rid=self.survey_responder_id)
+        return '{id}/{qid}/{rid}'.format(id=self.survey,
+                                         qid=self.survey_question,
+                                         rid=self.survey_responder)
