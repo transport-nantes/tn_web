@@ -21,7 +21,7 @@ urlpatterns = [
     path('mentions_legales', views.MentionsLegalesView.as_view(), name='TC'),
 #    path('contact', views.contact, name='contact'),
 #    path('priv', views.privacy, name='privacy'),
-#    path('assos', views.assos, name='aligned_orgs'),
-#    path('sponsort', views.sponsor, name='sponsor'),
-#    path('volunteer', views.volunteer, name='volunteer'),
+    path('assos', views.AlignedOrgsView.as_view(), name='aligned_orgs'),
+    path('sponsor', views.SponsorView.as_view(), name='sponsor'),
+    path('benevolat', views.VolunteerView.as_view(), name='volunteer'),
 ]

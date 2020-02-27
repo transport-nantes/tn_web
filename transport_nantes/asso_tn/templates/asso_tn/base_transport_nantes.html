@@ -24,18 +24,18 @@
       <nav class="navbar navbar-expand-md bg-dark navbar-dark">
 	  <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-minimallogo_brown.png' %}" alt="Transport Nantes logo" width="30%"></a>
 	  <ul class="navbar-nav">
-	      <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
-	      <li class="nav-item"><a class="nav-link" href="#">Vélopolitain</a></li>
-	      <li class="nav-item"><a class="nav-link" href="#">Chronotrain</a></li>
-	      <li class="nav-item"><a class="nav-link" href="#">Municipales</a></li>
+	      <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Accueil</a></li>
+	      <li class="nav-item"><a class="nav-link" href="{% url 'velopolitain:index' %}">Vélopolitain</a></li>
+	      <li class="nav-item"><a class="nav-link" href="{% url 'grand_nantes:index' %}">Chronotrain</a></li>
+	      <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Municipales</a></li>
 	      <li class="nav-item dropdown">
 		  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
 		      Plus
 		  </a>
 		  <div class="dropdown-menu">
-		      <a class="dropdown-item" href="#">Sponsor</a>
-		      <a class="dropdown-item" href="#">Associations</a>
-		      <a class="dropdown-item" href="#">Bénévolat</a>
+		      <a class="dropdown-item" href="{% url 'legal:sponsor' %}">Sponsor</a>
+		      <a class="dropdown-item" href="{% url 'legal:aligned_orgs' %}">Associations</a>
+		      <a class="dropdown-item" href="{% url 'legal:volunteer' %}">Bénévolat</a>
 		  </div>
 	      </li>
 	  </ul>

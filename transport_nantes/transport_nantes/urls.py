@@ -19,8 +19,10 @@ from asso_tn.views import MainTransportNantes
 
 urlpatterns = [
     path('', MainTransportNantes.as_view(), name='index'),
-    path('tn', include('asso_tn.urls')),
     path('admin/', admin.site.urls),
+    path('gn/', include('grand_nantes.urls')),
     path('j/', include('legal.urls')),
     path('surveys/', include('surveys.urls')),
+    path('tn/', include('asso_tn.urls')),
+    path('v/', include('velopolitain.urls')),
 ]

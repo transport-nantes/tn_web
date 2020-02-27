@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'surveys.apps.SurveysConfig',
     'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',
+    'grand_nantes.apps.GrandNantesConfig',
+    'velopolitain.apps.VelopolitainConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

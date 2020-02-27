@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends 'asso_tn/base_transport_nantes.html' %}
+{% load static %}
 
 {% block app_content %}
 
@@ -35,16 +36,14 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/TN.png',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/TN.png' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
 	<p>
 	    <strong>Transport Nantes</strong> est un lobby citoyen qui
     construit une base de soutien pour un changement radical de notre
-    système de transport{# afin d'être plus efficace, plus équitable,
-	    moins cher, et plus écologique #}.
+    système de transport.
 	    <ul class="pagination">
 		<li><a href="http://www.transport-nantes.com/" target="_blank"><i class="icon-globe"></i></a></li>
 		<li><a href="https://twitter.com/TransportNantes" target="_blank"><i class="icon-twitter"></i></a></li>
@@ -60,8 +59,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/pav.jpg',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/pav.jpg' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -84,8 +82,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/mn.jpg',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/mn.jpg' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -109,8 +106,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	    <img src="{{ url_for('static', filename='aligned/pavvn.jpg',
-		      tag=tag, seed=seed) }}" style="width:80%">
+	    <img src="{% static 'legal/aligned_orgs/pavvn.jpg' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -130,12 +126,11 @@
     </div>
 </div>
 
-{#
+{% comment %}
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/trottoirs.png',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/trottoirs.png' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -152,13 +147,12 @@
 	</p>
     </div>
 </div>
-#}
+{% endcomment %}
 
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/fnaut.jpg',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/fnaut.jpg' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -181,10 +175,9 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	    {#
-	<img src="{{ url_for('static', filename='aligned/fnaut.jpg',
-		  tag=tag, seed=seed) }}" style="width:80%">
-	#}
+	    {% comment %}
+	    <img src="{% static 'legal/aligned_orgs/fnaut.jpg' %}" style="width:80%">
+	    {% endcomment %}
 	<div><i class="icon-question" style="font-size: 40px;"></i></div>
 	</p>
     </div>
@@ -218,8 +211,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/velopolitain.png',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/velopolitain.png' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -243,8 +235,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/velorution.jpg',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/velorution.jpg' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -266,8 +257,7 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	<img src="{{ url_for('static', filename='aligned/punc.png',
-		  tag=tag, seed=seed) }}" style="width:80%">
+	<img src="{% static 'legal/aligned_orgs/punc.png' %}" style="width:80%">
 	</p>
     </div>
     <div class="col-md-10 col-sm-9">
@@ -288,10 +278,9 @@
 <div class="row">
     <div class="col-md-2 col-sm-3">
 	<p>
-	    {#
-	    <img src="{{ url_for('static', filename='aligned/',
-		      tag=tag, seed=seed) }}" style="width:80%">
-	    #}
+	    {% comment %}
+	    <img src="{% static 'legal/aligned_orgs/' %}" style="width:80%">
+	    {% endcomment %}
 	    <div><i class="icon-question" style="font-size: 40px;"></i></div>
 	</p>
     </div>
