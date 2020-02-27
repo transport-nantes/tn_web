@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr"{% block html_attribs %}{% endblock html_attribs %}>
+{% block html %}
+  <head>
+    {% block head %}
+    <title>{% block title %}{{ title|default:"Transport Nantes" }}{% endblock title %}</title>
+    {% block metas %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% endblock metas %}
+
+    {% block styles %}
+    {# Bootstrap #}
+    {# Latest compiled and minified CSS #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    {# Font Awesome #}
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    {% endblock styles %}
+    {% endblock head %}
+  </head>
+  <body{% block body_attribs %}{% endblock body_attribs %}>
+    {% block body %}
+    {% block navbar %}
+      <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+	  <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-minimallogo_brown.png' %}" alt="Transport Nantes logo" width="30%"></a>
+	  <ul class="navbar-nav">
+	      <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
+	      <li class="nav-item"><a class="nav-link" href="#">Vélopolitain</a></li>
+	      <li class="nav-item"><a class="nav-link" href="#">Chronotrain</a></li>
+	      <li class="nav-item"><a class="nav-link" href="#">Municipales</a></li>
+	      <li class="nav-item dropdown">
+		  <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+		      Plus
+		  </a>
+		  <div class="dropdown-menu">
+		      <a class="dropdown-item" href="#">Sponsor</a>
+		      <a class="dropdown-item" href="#">Associations</a>
+		      <a class="dropdown-item" href="#">Bénévolat</a>
+		  </div>
+	      </li>
+	  </ul>
+      </nav>
+    {% endblock navbar %}
+    {% block content %}
+    <div class="container">
+        {% block app_content %}{% endblock %}
+    </div>
+    {% endblock content %}
+
+    {% block scripts %}
+    {# jQuery library #}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    {# Popper JS #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    {# Latest compiled JavaScript #}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
+    {% endblock scripts %}
+    {% endblock body %}
+  </body>
+{% endblock html %}
+</html>
