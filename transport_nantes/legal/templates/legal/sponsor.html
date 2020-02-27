@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+    {{ super() }}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-lg-12">
+	<h1>Devenez sponsor de Transport Nantes.</h1>
+	<p>
+	    Transport Nantes est l'une des rares associations à ne pas
+	    accepter de financement de la part des gouvernements ou
+	    administrations, municipales, départementale,
+	    régionale ou nationale.  C'est pourquoi nous dépendons
+	    entièrement des particuliers et des entreprises qui nous
+	    soutiennent.
+	</p>
+	<p><em>Transport Nantes est un lobby citoyen qui milite pour des
+	    politiques ambitieuses en faveur des transports doux ou actifs et plus
+	    efficaces pour chacun – tramway, bus, vélo, marche,
+	    personnes à mobilité réduite, trottinette
+	    : à vous de choisir.</em>
+	</p>
+
+	<h2>Quels objectifs <small>pour Transport Nantes</small> ?</h2>
+
+	<p>
+	<ul>
+	    <li><strong>Augmenter</strong> massivement <strong>l'offre
+	    de mobilité</strong> afin de proposer des alternatives à la
+	    voiture individuelle pour tout déplacement dans la région
+		nantaise.  <em>Nous insistons sur des actions achevables
+		lors d'un seul mandat.</em></li>
+	    <li>Rassembler un <strong>lobby citoyen</strong> : montrer à nos
+		élus l’importance que ces changements ont pour les électeurs
+		en vue des élections municipales de 2020 et, plus loin,
+		des élections départementales et régionales de 2021.</li>
+	</ul>
+	</p>
+
+	<h2>Pour qui ?</h2>
+
+	<p>
+	<ul>
+	    <li>Les <strong>cyclistes</strong> et
+	    <strong>piétons</strong> : pour de meilleurs aménagements,
+	    sécurisés et plus denses.</li>
+	    <li>Les utilisateurs des <strong>transports
+	    collectifs</strong> : pour une meilleure desserte et un
+	    maillage plus soutenu.</li>
+	    <li>Les <strong>automobilistes</strong> : pour moins de
+		bouchons dans une métropole qui n'oblige pas à chacun
+		de se déplacer en voiture.</li>
+	    <li>Les <strong>entreprises</strong> : moins d’arrêts de
+	    travail (infrastructure sécurisante) et image valorisante
+	    (actions pour mieux se déplacer, soutien de
+	    l'environnement).</li>
+	</ul>
+	</p>
+
+	<h2>Qu’est-ce qui est déjà fait ?</h2>
+
+	<p>
+	<ul>
+	    <li><strong>Vélopolitain</strong> : une pétition qui a
+	    accueilli plus de 1000 signatures pour un réseau express
+	    vélo.</li>
+	    <li><strong>Chronotrain</strong> : pour que tous les TER
+	    et cars de la région nantaise circulent au moins toutes
+	    les 15 minutes pendant toute la période de service.  Déjà
+	    testé auprès de 500 résidents de Chantenay, bientôt une
+		pétition.  <em>Nous mènerons la même campagne, à
+		quelques nuances près, aux régions des Pays de la
+		Loire et Bretagne en 2020-2021.</em></li>
+	    <li><strong>Questionnaire aux candidats</strong> aux
+	    élections municipales, avec engagement de médiatisation
+	    des retours et suivi des programmes.</li>
+	</ul>
+	</p>
+
+	<h2>Comment procéder ?</h2>
+
+	<p><strong>Sponsoriser Transport Nantes</strong>, c'est à la
+	fois un engagement à nous soutenir et recevoir des
+	retours de comm de notre part.
+
+	    <ul>
+		<li>Un <strong>engagement financier</strong> : à
+		    la mesure qui <a href="javascript://"
+				  data-trigger="focus"
+				  data-toggle="popover"
+				  html="true"
+				  placement="above"
+				  title="Nos suggestions ?"
+				  data-content="Le montant ne doit pas
+						vous empêcher de nous
+						sponsoriser.
+						Beaucoup d'entreprises
+		trouvent que de 5 € à 10 € par employé par ans leur
+		semblent raisonnable.  Mais s'il faut passer à seulement 1 ou 2
+		€ par employé par ans pour que ça passe, nous vous
+		saurons gré.">
+		    vous convient</a>.</li>
+		<li>Un <strong>engagement à communication</strong> :
+		auprès de vos employés, de vos clients et partenaires,
+		au public.</li>
+		<li>Un <strong>offre de suivi</strong> : une page web
+		dédié chez TN pour encourager vos employés, voire
+		clients, partenaires, et public, à exprimer eux-mêmes
+		leur soutien des objectifs de Transport Nantes.  Un
+		retour régulier sur l'engagement et la conversion de
+		ceux-ci.</li>
+		<li>Un <strong>offre de visibilité</strong> sur le
+		site web de Transport Nantes (logo, etc.).</li>
+	    </ul>
+
+	    Pour plus d’informations, contacter <a
+	href="mailto:sponsor@transport-nantes.com">sponsor@transport-nantes.com</a>
+	</p>
+
+
+
+	<p align="center">L'adhésion individuel est également possible
+    avec un simple <a
+    href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
+    class="btn btn-primary btn-sm" role="button" target="_blank">clique</a>.</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts1 %}
+<script>
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+    });
+</script>
+{% endblock %}

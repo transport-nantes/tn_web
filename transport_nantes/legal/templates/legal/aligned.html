@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<h1>Acteurs dans le sens des transports doux et actifs</h1>
+
+<div class="row">
+    <div class="col-lg-12">
+    <p>La région nantaise est dotée de plusieurs associations qui
+	travaillent pour améliorer nos déplacements.  La suggestion de
+	Transport Nantes : en choisir trois et faire à chacune des
+	trois un don.  (En choisir plusieurs élargit les possibilités d’être efficace.)
+	Même si votre don reste modeste,
+	vous aurez fait un pas vers l'amélioration des déplacements
+	doux et actifs dans notre région.
+    </p>
+
+    <p>
+	En outre, vous pouvez vous y impliquer directement par le
+	bénévolat.  Chacune de ces associations a un besoin chronique
+	de compétences.  Vous avez forcément une compétence qui peut
+	leur être utile.
+    </p>
+
+    <p>
+	Nous espérons bien entendu faire partie des trois associations
+	que vous choisirez.  Mais le plus important, c'est d'en choisir
+	trois et d'agir.
+    </p>
+    </div>
+</div>
+
+<h2>Associations</h2>
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/TN.png',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Transport Nantes</strong> est un lobby citoyen qui
+    construit une base de soutien pour un changement radical de notre
+    système de transport{# afin d'être plus efficace, plus équitable,
+	    moins cher, et plus écologique #}.
+	    <ul class="pagination">
+		<li><a href="http://www.transport-nantes.com/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/TransportNantes" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a
+    href="https://www.facebook.com/transport.nantes/" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li><a href="https://www.instagram.com/transportnantes/" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+	</p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/pav.jpg',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Place au Vélo.</strong> 
+	     promeut l’utilisation du vélo comme moyen de transport au
+	    quotidien.
+
+	    <ul class="pagination">
+		<li><a href="http://placeauvelo-nantes.fr/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/PAVelo_Nantes" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a href="https://www.facebook.com/placeauvelonantes" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+
+	</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/mn.jpg',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Métro de Nantes</strong> est un collectif de
+	    citoyens, d'élus et d'experts promouvant la création d'un
+	    métro à #Nantes connecté à des véloroutes efficaces au
+	    coeur d'un @reseau_tan repensé.
+
+	    <ul class="pagination">
+		<li><a href="http://metrodenantes.mystrikingly.com/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/NantesMetro" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a href="https://www.facebook.com/NantesMetro/" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+
+	</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	    <img src="{{ url_for('static', filename='aligned/pavvn.jpg',
+		      tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Place au Vélo Vignoble Nantais</strong> favorise
+    la pratique du vélo et par extension des transports doux sur le
+    pays du vignoble nantais.
+
+	    <ul class="pagination">
+		<li><a href="https://placeauvelovignoblenantais.fr/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/VeloVignoble44" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a href="https://www.facebook.com/placeauvelovignoblenantais/" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li><a href="https://www.instagram.com/placeauvelovignoblenantais/" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+
+	</p>
+    </div>
+</div>
+
+{#
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/trottoirs.png',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Trottoirs de Nantes</strong> est une association
+	    de piétons.
+	    
+	    <ul class="pagination">
+		<li class="disabled"><a href="" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/TrottoirN" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+	</p>
+    </div>
+</div>
+#}
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/fnaut.jpg',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>FNAUT Pays de la Loire</strong> est une
+	    association régionale des usagers des transports des Pays de la
+	    Loire.
+	    
+	    <ul class="pagination">
+		<li><a href="http://www.fnaut-paysdelaloire.org/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/Fnaut_PdL" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a href="https://www.facebook.com/FNAUT-Pays-de-la-Loire-168200216606651/" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+	</p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	    {#
+	<img src="{{ url_for('static', filename='aligned/fnaut.jpg',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	#}
+	<div><i class="icon-question" style="font-size: 40px;"></i></div>
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Association Nantaise Déplacement Environnement</strong> promeut
+	    les déplacements en transports collectifs.
+	    
+	    <ul class="pagination">
+		<li><a href="http://ande-nantes.fr/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+	</p>
+    </div>
+</div>
+
+
+<h2>Non-associations</h2>
+
+<div class="row">
+    <div class="col-lg-12">
+	<p>
+	    Vous ne pouvez pas faire un don directement à un projet qui
+	n'a pas d'entité juridique.  Toutefois, vous avez la possibilité de vous y
+	impliquer directement.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/velopolitain.png',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Vélopolitain</strong> n'est pas une association en
+	    soi mais un projet de Transport Nantes.  C'est un projet très
+	    fort : soutenez-le par votre adhésion à Transport Nantes et par
+	    votre signature sur sa pétition.
+
+	    <ul class="pagination">
+		<li><a href="https://www.velopolitain-nantes.fr/" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/velopolitain" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+
+	</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/velorution.jpg',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Vélorution</strong> est une balade mensuelle (et plus) sans
+	    entité juridique mais avec une orientation politique.
+
+	    <ul class="pagination">
+		<li class="disabled"><a href="" target="_blank"><i class="icon-globe"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li><a href="https://www.facebook.com/velorution.nantes/" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+	</p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	<img src="{{ url_for('static', filename='aligned/punc.png',
+		  tag=tag, seed=seed) }}" style="width:80%">
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Parti pour un Nantes Cyclable</strong> introduit le
+	vélo dans la sphère politique.
+
+	    <ul class="pagination">
+		<li class="disabled"><a href="" target="_blank"><i class="icon-globe"></i></a></li>
+		<li><a href="https://twitter.com/Nantes_Cyclable" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+	    </ul>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-2 col-sm-3">
+	<p>
+	    {#
+	    <img src="{{ url_for('static', filename='aligned/',
+		      tag=tag, seed=seed) }}" style="width:80%">
+	    #}
+	    <div><i class="icon-question" style="font-size: 40px;"></i></div>
+	</p>
+    </div>
+    <div class="col-md-10 col-sm-9">
+	<p>
+	    <strong>Collectif Transport</strong> est un collectif
+	    d'associations d'usagers et de syndicats d'entreprises de
+	    transports. Il échange régulièrement avec la région
+	    et la métropole sur les questions du transport et
+	    propose des évolutions et améliorations souhaitées par
+	    les usagers.  Il promeut le projet Étoile Ferroviaire.
+
+	    <ul class="pagination">
+		<li class="disabled"><a href="" target="_blank"><i class="icon-globe"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-twitter"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-facebook"></i></a></li>
+		<li class="disabled"><a href="" target="_blank"><i class="icon-instagram"></i></a></li>
+		{# email: collectif-transport.nantes@laposte.net #}
+	    </ul>
+	</p>
+    </div>
+</div>
+
+{% endblock %}
