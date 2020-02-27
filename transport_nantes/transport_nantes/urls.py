@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from asso_tn.views import MainTransportNantes
 
 urlpatterns = [
+    path('', MainTransportNantes.as_view(), name='index'),
+    path('tn', include('asso_tn.urls')),
     path('admin/', admin.site.urls),
+    path('j/', include('legal.urls')),
     path('surveys/', include('surveys.urls')),
 ]

@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'surveys.apps.SurveysConfig',
+    'legal.apps.LegalConfig',
+    'asso_tn.apps.AssoTnConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
