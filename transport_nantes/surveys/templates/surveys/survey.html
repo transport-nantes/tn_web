@@ -1,0 +1,125 @@
+{% extends 'asso_tn/base_transport_nantes.html' %}
+
+{% block app_content %}
+
+<div class="row">
+    <div class="col-lg-12">
+	{# ####  This should be db-driven!  It is assuming survey_id == 1.  #### #}
+	<h1>Parlons Mobilité</h1>
+    </div>
+</div>
+
+{# ================ Choose commune ================ #}
+<div class="btn-group btn-group-inline">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+	{% if this_commune is none %}
+	Choissisez une commune
+	{% else %}
+	{{ this_commune.commune }}
+	{% endif %}
+  <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+    {% for commune in communes %}
+	<li><a href="{% url 'surveys:choose_liste' survey_id commune.id %}">{{ commune.commune }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+{# ================ Choose liste ================ #}
+{% if listes|length > 0 %}
+<div class="btn-group btn-group-inline">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+	{% if this_liste is none %}
+	Choisissez une liste
+	{% else %}
+	{{ this_liste.liste }} (<i>{{ this_liste.tete_de_liste }}</i>)
+	{% endif %}
+  <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+    {% for liste in listes %}
+      <li><a href="{% url 'surveys:choose_question' survey_id commune_id liste.id %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a></li>
+    {% endfor %}
+  </ul>
+</div> 
+{% endif %}
+{# ================ Choose question ================ #}
+{% if questions|length > 0 %}
+<div class="btn-group btn-group-inline">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+	{% if this_question is none %}
+	Choisissez une question
+	{% else %}
+	{{ this_question.question_number }} <i>{{ this_question.question_title }}</i>
+	{% endif %}
+  <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+      {% for question in questions %}
+      <li><a href="{% url 'surveys:choose_response' survey_id commune_id responder_id question.id %}">{{ question.question_number }}<br><i>{{ question.question_title }}</i></a></li>
+      {% endfor %}
+  </ul>
+</div> 
+{% endif %}
+{# ================ Display question and response ================ #}
+{% if question_contents is not none and question_contents|length %}
+<div class="row">
+    <div class="col-lg-12 text-important">
+	<h2 class="bg-info">Question : {{ question_contents }}</h2>
+
+	<h3>La réponse de {{ responder|default:'' }} ({{ responder }}) :</h3>
+	{% if survey_response is not none %}
+	<div class="text-primary">
+	    {% for paragraph in survey_response %}
+	    <p>{{ paragraph }}</p>
+	    {% endfor %}
+	</div>
+	{% else %}
+	<p class="text-primary">La liste {{ liste }} n'a pas encore répondu à cette question.</p>
+	{% endif %}
+
+	<h3>La question</h3>
+	<div class="text-muted">{{ question_contents|safe }}</div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-12">
+	<hr>
+	<p class="text-muted">
+	   Pour signaler une omission ou une erreur, contactez-nous par <a href="https://twitter.com/TransportNantes" target="_blank">twitter</a> ou <a href="mailto:jevousaide@transport-nantes.com" target="_blank">mél</a>.
+	</p>
+	<p class="text-muted">
+	    Si vous êtes élu, candidat, membre d'une liste ou d'un
+	    parti politique, nous vous invitons à télécharger notre
+	    liste de dix questions et de nous envoyer vos
+	    réponses en cliquant
+	    <a href={% url 'surveys:choose_response' 1 2 3 4 %}>ici</a>.
+	</p>
+	<hr>
+
+	<div class="row">
+	    <div class="col-lg-12">
+		<p>
+		    Transport Nantes s'est fixé comme objectif de
+		    contacter l'ensemble des candidats dans la région
+		    nantaise dans le cadre des élections municipales
+		    de mars 2020. Transport Nantes souhaite mettre en
+		    avant les visions des différents candidats
+		    concernant leurs perspectives d’évolution au sujet
+		    de la mobilité dans la région nantaise.</p>
+	    </div>
+	</div>
+	<p><em>
+	    Transport Nantes est une association 1901 qui milite pour
+	    un système de transport équilibré dans la région nantaise
+	    et au delà.  Nous sommes soutenus à 100% par vous, nos
+	    concitoyens, et c’est votre voix qui nous permet de porter
+	    la nôtre. Faites un geste au niveau qui vous semble mieux
+	    : donnez nous la force d’agir pour vous !</em>
+	</p>
+
+	<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+
+    </div>
+</div>
+
+{% endblock %}

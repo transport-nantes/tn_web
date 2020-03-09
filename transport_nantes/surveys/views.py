@@ -1,21 +1,65 @@
+from django.views.generic.base import TemplateView
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from .models import Survey
+from .models import Survey, SurveyQuestion, SurveyCommune, SurveyResponder, SurveyResponse
 
-def index(request):
-    return HttpResponse("Hello, world!  I'm going to be a survey.  This page isn't valid.")
+class MainSurveyView(TemplateView):
+    template_name = 'surveys/index.html'
 
-def choose_commune(request, survey_id):
-    survey = get_object_or_404(Survey, pk=survey_id)
-    return render(request, 'surveys/index.html', {})
-#"This page is for selecting a commune.")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
-def choose_liste(request, survey_id, commune_id):
-    return HttpResponse("This page is for selecting a list.")
+class CommuneChooserSurveyView(TemplateView):
+    template_name = 'surveys/survey.html'
 
-def choose_question(request, survey_id, commune_id, liste_id):
-    return HttpResponse("This page is for selecting a question.")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        responders = SurveyResponder.objects.filter(
+            survey_id=kwargs['survey_id'])
+        context['communes'] = set([responder.commune for responder in responders])
+        context['listes'] = None;
+        context['questions'] = None;
+        return context
 
-def choose_response(request, survey_id, commune_id, liste_id, question_id):
-    return HttpResponse("This page is for displaying a response.")
+class ListeChooserSurveyView(CommuneChooserSurveyView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['this_commune'] = SurveyCommune.objects.filter(
+            id=kwargs['commune_id'])[0]
+        responders = SurveyResponder.objects.filter(
+            survey_id=kwargs['survey_id'], commune=kwargs['commune_id'])
+        context['listes'] = responders
+        return context
 
+class QuestionChooserSurveyView(ListeChooserSurveyView):
+    def get_context_data(self, **kwargs):
+        print(kwargs)
+        context = super().get_context_data(**kwargs)
+        context['this_liste'] = SurveyResponder.objects.filter(
+            survey_id=kwargs['survey_id'],
+            commune=kwargs['commune_id'],
+            id=kwargs['responder_id'])[0]
+        context['questions'] = SurveyQuestion.objects.filter(
+            survey=kwargs['survey_id'])
+#        context['this_question'] = SurveyQuestion.objects.filter(
+#            id=kwargs['question_id'])[0]
+#        print(context)
+        return context
+
+class ResponseDisplaySurveyView(QuestionChooserSurveyView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #### Make some responses, then make this work.
+        return context
+
+"""
+Steps:
+
+* The further pages should all use the same template.
+  * Their views should provide empty lists and empty strings for not-yet-chosen
+  * They should recover the survey name from the db.
+  * There should be a candidate link.
+
+* Then deploy to staging.
+"""
