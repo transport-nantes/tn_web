@@ -36,7 +36,7 @@
   <span class="caret"></span></button>
   <ul class="dropdown-menu">
     {% for liste in listes %}
-      <li><a href="{% url 'surveys:choose_question' survey_id commune_id liste.id %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a></li>
+      <li><a href="{% if this_question is none %}{% url 'surveys:choose_question' survey_id commune_id liste.id %}{% else %}{% url 'surveys:choose_response' survey_id commune_id liste.id this_question.id %}{% endif %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a></li>
     {% endfor %}
   </ul>
 </div> 

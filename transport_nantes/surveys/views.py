@@ -42,9 +42,10 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
             id=kwargs['responder_id'])[0]
         context['questions'] = SurveyQuestion.objects.filter(
             survey=kwargs['survey_id'])
-#        context['this_question'] = SurveyQuestion.objects.filter(
-#            id=kwargs['question_id'])[0]
-#        print(context)
+        if 'question_id' in kwargs:
+            context['this_question'] = SurveyQuestion.objects.filter(
+            id=kwargs['question_id'])[0]
+        print(context)
         return context
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
