@@ -58,4 +58,5 @@ class ResponseDisplaySurveyView(QuestionChooserSurveyView):
         context['this_response'] = this_response
         return context
 
-# There should be a candidate link.
+class QuestionnaireForSurveyView(TemplateView):
+    template_name = 'surveys/questionnaire.html'

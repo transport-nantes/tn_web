@@ -17,4 +17,7 @@ urlpatterns = [
     path('response/<int:survey_id>/<int:commune_id>/<int:responder_id>/<int:question_id>',
          views.ResponseDisplaySurveyView.as_view(),
          name='choose_response'),
+    path('questionnaire/<int:survey_id>',
+         views.QuestionnaireForSurveyView.as_view(),
+         name='questionnaire'),
 ]

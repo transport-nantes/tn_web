@@ -76,7 +76,7 @@
 	{% endif %}
 
 	<h3>La question</h3>
-	<div class="text-muted">{{ question_contents|safe }}</div>
+	<div class="text-muted">{{ this_question.question_text }}</div>
     </div>
 </div>
 {% endif %}
@@ -92,7 +92,7 @@
 	    parti politique, nous vous invitons à télécharger notre
 	    liste de dix questions et de nous envoyer vos
 	    réponses en cliquant
-	    <a href={% url 'surveys:choose_response' 1 2 3 4 %}>ici</a>.
+	    <a href={% url 'surveys:questionnaire' survey_id %}>ici</a>.
 	</p>
 	<hr>
 
