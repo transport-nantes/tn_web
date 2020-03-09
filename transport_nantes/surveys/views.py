@@ -34,7 +34,6 @@ class ListeChooserSurveyView(CommuneChooserSurveyView):
 
 class QuestionChooserSurveyView(ListeChooserSurveyView):
     def get_context_data(self, **kwargs):
-        print(kwargs)
         context = super().get_context_data(**kwargs)
         context['this_liste'] = SurveyResponder.objects.filter(
             survey_id=kwargs['survey_id'],
@@ -45,22 +44,18 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
         if 'question_id' in kwargs:
             context['this_question'] = SurveyQuestion.objects.filter(
             id=kwargs['question_id'])[0]
-        print(context)
         return context
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #### Make some responses, then make this work.
+        this_response = SurveyResponse.objects.filter(
+            survey=kwargs['survey_id'],
+            survey_question=kwargs['question_id'],
+            survey_responder=kwargs['responder_id'])[0]
+        this_response.response_paragraphs = \
+            this_response.survey_question_response.split('\n')
+        context['this_response'] = this_response
         return context
 
-"""
-Steps:
-
-* The further pages should all use the same template.
-  * Their views should provide empty lists and empty strings for not-yet-chosen
-  * They should recover the survey name from the db.
-  * There should be a candidate link.
-
-* Then deploy to staging.
-"""
+# There should be a candidate link.

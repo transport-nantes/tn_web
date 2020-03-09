@@ -59,20 +59,20 @@
 </div> 
 {% endif %}
 {# ================ Display question and response ================ #}
-{% if question_contents is not none and question_contents|length %}
+{% if this_response is not none %}
 <div class="row">
     <div class="col-lg-12 text-important">
-	<h2 class="bg-info">Question : {{ question_contents }}</h2>
+	<h2 class="bg-info">Question : {{ this_question.question_title }}</h2>
 
-	<h3>La réponse de {{ responder|default:'' }} ({{ responder }}) :</h3>
-	{% if survey_response is not none %}
+	<h3>La réponse de {{ this_liste.tete_de_liste|default:'' }} ({{ this_liste.liste|default:'' }}) :</h3>
+	{% if this_response is not none %}
 	<div class="text-primary">
-	    {% for paragraph in survey_response %}
+	    {% for paragraph in this_response.response_paragraphs %}
 	    <p>{{ paragraph }}</p>
 	    {% endfor %}
 	</div>
 	{% else %}
-	<p class="text-primary">La liste {{ liste }} n'a pas encore répondu à cette question.</p>
+	<p class="text-primary">La liste {{ liste }} n'a pas répondu à cette question.</p>
 	{% endif %}
 
 	<h3>La question</h3>
