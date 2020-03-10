@@ -49,12 +49,20 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        this_response = SurveyResponse.objects.filter(
+        this_response_as_list = SurveyResponse.objects.filter(
             survey=kwargs['survey_id'],
             survey_question=kwargs['question_id'],
-            survey_responder=kwargs['responder_id'])[0]
-        this_response.response_paragraphs = \
-            this_response.survey_question_response.split('\n')
+            survey_responder=kwargs['responder_id'])
+        if this_response_as_list:
+            this_response = this_response_as_list[0]
+            this_response.response_paragraphs = \
+                this_response.survey_question_response.split('\n')
+        else:
+            this_response = SurveyResponse()
+            this_response.survey_question = context['this_question']
+            this_response.survey_responder = context['this_liste']
+            this_response.response_paragraphs = ["La liste n'a pas répondu à cette question."]
+            # this_response.question_response = "La liste n'a pas répondu à cette question."
         context['this_response'] = this_response
         return context
 
