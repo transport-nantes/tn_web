@@ -11,6 +11,7 @@ pexpect==4.8.0
 pickleshare==0.7.5
 pkg-resources==0.0.0
 prompt-toolkit==3.0.3
+psycopg2==2.8.4
 ptyprocess==0.6.0
 Pygments==2.5.2
 pytz==2019.3
