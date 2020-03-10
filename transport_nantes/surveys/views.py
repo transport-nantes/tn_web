@@ -40,7 +40,7 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
             commune=kwargs['commune_id'],
             id=kwargs['responder_id'])[0]
         context['questions'] = SurveyQuestion.objects.filter(
-            survey=kwargs['survey_id'])
+            survey=kwargs['survey_id']).order_by('sort_index')
         if 'question_id' in kwargs:
             this_question = SurveyQuestion.objects.filter(
                 id=kwargs['question_id'])[0]
