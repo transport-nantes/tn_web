@@ -42,8 +42,11 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
         context['questions'] = SurveyQuestion.objects.filter(
             survey=kwargs['survey_id'])
         if 'question_id' in kwargs:
-            context['this_question'] = SurveyQuestion.objects.filter(
-            id=kwargs['question_id'])[0]
+            this_question = SurveyQuestion.objects.filter(
+                id=kwargs['question_id'])[0]
+            this_question.text_paragraphs = \
+                this_question.question_text.split('\n')
+            context['this_question'] = this_question
         return context
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):

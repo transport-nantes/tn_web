@@ -76,7 +76,11 @@
 	{% endif %}
 
 	<h3>La question</h3>
-	<div class="text-muted">{{ this_question.question_text }}</div>
+	<div class="text-muted">
+	    {% for paragraph in this_question.text_paragraphs %}
+	    <p>{{ paragraph }}</p>
+	    {% endfor %}
+	</div>
     </div>
 </div>
 {% endif %}
