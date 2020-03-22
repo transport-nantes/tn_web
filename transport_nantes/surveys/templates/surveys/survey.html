@@ -9,55 +9,61 @@
     </div>
 </div>
 
+<div class="row">
 {# ================ Choose commune ================ #}
-<div class="btn-group btn-group-inline">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+<div class="dropdown d-inline-block show">
+    <a class="btn btn-primary dropdown-toggle mr-1 mb-1" href="#" role="button" id="dropdownMenuLinkCommune"
+       data-toggle="dropdown" area-haspopup="true" area-expanded="false">
 	{% if this_commune is none %}
 	Choissisez une commune
 	{% else %}
 	{{ this_commune.commune }}
 	{% endif %}
-  <span class="caret"></span></button>
-    <ul class="dropdown-menu">
+    </a>
+    <div class="dropdown-menu" area-labelledby="dropdownMenuLinkCommune">
     {% for commune in communes %}
-	<li><a href="{% url 'surveys:choose_liste' survey_id commune.id %}">{{ commune.commune }}</a></li>
+	<a class="dropdown-item" href="{% url 'surveys:choose_liste' survey_id commune.id %}">{{ commune.commune }}</a>
     {% endfor %}
-    </ul>
+    </div>
 </div>
 {# ================ Choose liste ================ #}
 {% if listes|length > 0 %}
-<div class="btn-group btn-group-inline">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+<div class="dropdown d-inline-block show">
+    <a class="btn btn-primary dropdown-toggle mr-1 mb-1" href="#" role="button" id="dropdownMenuLinkListe"
+       data-toggle="dropdown" area-haspopup="true" area-expanded="false">
 	{% if this_liste is none %}
 	Choisissez une liste
 	{% else %}
 	{{ this_liste.liste }} (<i>{{ this_liste.tete_de_liste }}</i>)
 	{% endif %}
-  <span class="caret"></span></button>
-  <ul class="dropdown-menu">
+    </a>
+    <div class="dropdown-menu" area-labelledby="dropdownMenuLinkListe">
     {% for liste in listes %}
-      <li><a href="{% if this_question is none %}{% url 'surveys:choose_question' survey_id commune_id liste.id %}{% else %}{% url 'surveys:choose_response' survey_id commune_id liste.id this_question.id %}{% endif %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a></li>
+      <a class="dropdown-item" href="{% if this_question is none %}{% url 'surveys:choose_question' survey_id commune_id liste.id %}{% else %}{% url 'surveys:choose_response' survey_id commune_id liste.id this_question.id %}{% endif %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a>
     {% endfor %}
-  </ul>
+    </div>
 </div> 
 {% endif %}
 {# ================ Choose question ================ #}
 {% if questions|length > 0 %}
-<div class="btn-group btn-group-inline">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+<div class="dropdown d-inline-block show">
+    <a class="btn btn-primary dropdown-toggle mr-1 mb-1" href="#" role="button" id="dropdowMenuLinkQuestion"
+       data-toggle="dropdown" area-haspopup="true" area-expanded="false">
 	{% if this_question is none %}
 	Choisissez une question
 	{% else %}
 	{{ this_question.question_number }} <i>{{ this_question.question_title }}</i>
 	{% endif %}
-  <span class="caret"></span></button>
-  <ul class="dropdown-menu">
+    </a>
+  <div class="dropdown-menu" area-labelledby="dropdownMenuLinkQuestion">
       {% for question in questions %}
-      <li><a href="{% url 'surveys:choose_response' survey_id commune_id responder_id question.id %}">{{ question.question_number }}<br><i>{{ question.question_title }}</i></a></li>
+      <a class="dropdown-item" href="{% url 'surveys:choose_response' survey_id commune_id responder_id question.id %}">{{ question.question_number }}<br><i>{{ question.question_title }}</i></a>
       {% endfor %}
   </ul>
-</div> 
-{% endif %}
+  </div>
+  {% endif %}
+</div>
+
 {# ================ Display question and response ================ #}
 {% if this_response is not none %}
 <div class="row">
