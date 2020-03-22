@@ -39,7 +39,7 @@
     </a>
     <div class="dropdown-menu" area-labelledby="dropdownMenuLinkListe">
     {% for liste in listes %}
-      <a class="dropdown-item" href="{% if this_question is none %}{% url 'surveys:choose_question' survey_id commune_id liste.id %}{% else %}{% url 'surveys:choose_response' survey_id commune_id liste.id this_question.id %}{% endif %}">{{ liste.liste }}<br><i>{{ liste.tete_de_liste }}</i></a>
+      <a class="dropdown-item" href="{% if this_question is none %}{% url 'surveys:choose_question' survey_id commune_id liste.id %}{% else %}{% url 'surveys:choose_response' survey_id commune_id liste.id this_question.id %}{% endif %}">{{ liste.liste }} : <i>{{ liste.tete_de_liste }}</i></a>
     {% endfor %}
     </div>
 </div> 
@@ -57,7 +57,7 @@
     </a>
   <div class="dropdown-menu" area-labelledby="dropdownMenuLinkQuestion">
       {% for question in questions %}
-      <a class="dropdown-item" href="{% url 'surveys:choose_response' survey_id commune_id responder_id question.id %}">{{ question.question_number }}<br><i>{{ question.question_title }}</i></a>
+      <a class="dropdown-item" href="{% url 'surveys:choose_response' survey_id commune_id responder_id question.id %}">{{ question.question_number }} : <i>{{ question.question_title }}</i></a>
       {% endfor %}
   </ul>
   </div>
