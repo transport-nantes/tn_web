@@ -9,10 +9,10 @@ class MainVelopolitain(TemplateView):
         return context
 
 class BlogVelopolitain(TemplateView):
-    template_name = 'velopolitain/blog.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        self.template_name = 'velopolitain/{sl}.html'.format(sl=context['slug'])
         # Argument passed is the slug.  This should become a db lookup instead.
         # For the moment, all slugs lead to the laboratoire.
         return context
