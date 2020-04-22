@@ -1,0 +1,3 @@
+python manage.py runserver --settings=transport_nantes.settings_tn
+python manage.py runserver --settings=transport_nantes.settings_gn
+python manage.py runserver --settings=transport_nantes.settings_v

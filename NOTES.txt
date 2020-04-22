@@ -8,3 +8,9 @@ Some useful commands:
     python manage.py shell
 
     python manage.py createsuperuser
+
+To run django application with various settings files:
+
+    python manage.py runserver --settings=transport_nantes.settings_tn
+    python manage.py runserver --settings=transport_nantes.settings_gn
+    python manage.py runserver --settings=transport_nantes.settings_v
