@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'grand_nantes.apps.GrandNantesConfig',
     'velopolitain.apps.VelopolitainConfig',
     'communications.apps.CommunicationsConfig',
+    'authentication.apps.AuthenticationConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,6 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+PASSWORD_RESET_TIMEOUT_DAYS = 1
 
 LOGGING = {
     'version': 1,
@@ -155,6 +157,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
+# TODO: stay on same page if authorised to do so.
+LOGIN_REDIRECT_URL = 'index'
+#LOGOUT_REDIRECT_URL = 'index'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
