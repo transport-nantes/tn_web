@@ -11,20 +11,19 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.crypto import get_random_string
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.views import LoginView, LogoutView
 
 from authentication.forms import SignUpForm
 
-def signup(request):
+def login(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            print('1 ========================================')
             try:
                 user.refresh_from_db()
             except ObjectDoesNotExist:
                 print("doesn't exist")
-            print('2 ========================================')
 
             # There should be precisely one or zero existing user with the
             # given email, but since the django user model doesn't impose
@@ -78,4 +77,13 @@ def activate(request, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         return render(request, 'account_activation_invalid.html')
 
+class DeauthView(LogoutView):
+    """Log out the user.
 
+    Renders the home page (but not by its view function, just via the
+    template, which is odd.  If the current page doesn't require
+    login, we should probably stay put, but that's neither important
+    now nor do I know how to do it.
+
+    """
+    template_name = "asso_tn/index.html"
