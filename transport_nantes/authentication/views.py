@@ -26,6 +26,8 @@ def login(request):
                     send_activation(request, user)
                     return redirect('authentication:account_activation_sent', is_new=False)
             except ObjectDoesNotExist:
+                print('ObjectDoesNotExist')
+                pass            # I'm not sure this can ever happen.
 
             # There should be precisely one or zero existing user with the
             # given email, but since the django user model doesn't impose
