@@ -3,30 +3,19 @@
 This implements a registration and login system with the following
 properties:
 
-[TODO]
-1.  Account create requests email, an optional display name (which is
-the email address if not provided), and an optional password.  If not
-password is provided, the account is set to login by email token.
+[Done]
+1.  Create new accounts.
+2.  Login with emailed magic link.
+3.  Logout.
 
 [TODO]
-2.  Login.  If the user logs in by password, we request the password.
-If the user logs in by email token, we send a token, on receipt of
-which we flag the user as logged in.
-
-[TODO]
-3.  Forgotten password.  Just flags the user as using email token and
-sends a mail.
-
-[TODO]
-4.  Settings -> set password.  Set a password and set the user to
-login by password.
-
-[TODO]
-5.  Settings -> change email.  Propose a new email, confirm on receipt
-of new token.
-
-[TODO]
-6.  Logout.
+4.  Login by password as an option.  The code is in the template, but
+    we don't currently look at it.  If it's non-empty and matches, we
+    should use it and set the auth-by-email flag to False.
+5.  Settings.  Permit changing email address and password as well as
+    toggling auth_by_password.  Changing email or password should
+    pass through a validation token.  We'll need to encrypt the
+    password or else remember it.
 
 This is all based on
 https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
