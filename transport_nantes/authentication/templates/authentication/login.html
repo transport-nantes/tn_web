@@ -5,7 +5,7 @@
 <div container>
     <div class="row">
 	<div class="col-lg-12">
-	    <h1>Inscription</h1>
+	    <h1>Connexion</h1>
 
 	    <form method="post">
 		{% csrf_token %}
@@ -20,11 +20,13 @@
 		    {% endfor %}
 		</p>
 		<p class="text-important">C'est tout ce qu'il faut !
-		    Vous recevrez un mél pour valider votre inscription.
-		    À chaque fois que vous reconnectez, vous recevrez à nouveau un lien
-		    par mél : pas besoin de mot de passe !</p>
-		<button type="submit" class="btn btn-outline-primary">Inscription</button>
+		    Vous recevrez un mél pour valider votre connexion.
+		    Si vous n'avez pas déjà de compte, votre première connexion
+		    en créerait un.
+		</p>
+		<button type="submit" class="btn btn-outline-primary">Connexion</button>
 
+		{% if False %}
 		<p><hr></p>
 		<p>
 		    {{ form.password1.label }}<br>
@@ -49,6 +51,7 @@
 		<p>Avec un mot de passe, vous pouvez reconnecter sans
 		    besoin de mél.)</p>
 		<button type="submit" class="btn btn-outline-secondary">Inscription</button>
+		{% endif %}
 	    </form>
 	</div>
     </div>

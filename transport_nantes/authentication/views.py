@@ -22,8 +22,10 @@ def login(request):
             user = form.save(commit=False)
             try:
                 user.refresh_from_db()
+                if user.profile.authenticates_by_mail:
+                    send_activation(request, user)
+                    return redirect('authentication:account_activation_sent', is_new=False)
             except ObjectDoesNotExist:
-                print("doesn't exist")
 
             # There should be precisely one or zero existing user with the
             # given email, but since the django user model doesn't impose
@@ -32,30 +34,42 @@ def login(request):
             if len(existing_users) > 1:
                 return HttpResponseServerError(
                     "Data error: Multiple email addresses found")
-            print('3 ========================================')
+            if len(existing_users) == 1:
+                existing_user = existing_users[0]
+                if existing_user.profile.authenticates_by_mail:
+                    send_activation(request, existing_user)
+                    return redirect('authentication:account_activation_sent', is_new=False)
             user.email = form.cleaned_data['email']
             user.username = get_random_string(20)
             user.is_active = False
             user.save()
-            print('4 ========================================')
-
-            current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
-            message = render_to_string('authentication/account_activation_email.html', {
-                'user_id': user.pk,
-                'domain': current_site.domain,
-                'token': make_timed_token(user.pk, 20),
-            })
-            #### user.email_user(subject, message)
-            print(subject)
-            print(message)
-            return redirect(reverse('authentication:account_activation_sent'))
+            send_activation(request, user)
+            return redirect('authentication:account_activation_sent', is_new=True)
     else:
         form = SignUpForm()
-    return render(request, 'authentication/signup.html', {'form': form})
+    return render(request, 'authentication/login.html', {'form': form})
 
-def account_activation_sent(request):
-    return render(request, 'authentication/account_activation_sent.html')
+def send_activation(request, user):
+    """Send user an activation/login link.
+
+    The caller should then redirect to / render a template letting the
+    user know the mail is on its way, since the redirect is a GET.
+
+    """
+    current_site = get_current_site(request)
+    subject = 'Votre compte à {dom}'.format(dom=current_site.domain)
+    message = render_to_string('authentication/account_activation_email.html', {
+        'user_id': user.pk,
+        'domain': current_site.domain,
+        'token': make_timed_token(user.pk, 20),
+    })
+    #### user.email_user(subject, message)
+    print(subject)
+    print(message)
+
+def account_activation_sent(request, is_new):
+    is_new_bool = (is_new == True)
+    return render(request, 'authentication/account_activation_sent.html', {'is_new': is_new_bool})
 
 def activate(request, token):
     """Process an activation token.
