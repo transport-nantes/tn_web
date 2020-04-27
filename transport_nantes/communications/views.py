@@ -1,20 +1,16 @@
 from django.views.generic.base import TemplateView
 
-# Create your views here.
-class MainVelopolitain(TemplateView):
-    template_name = 'velopolitain/index.html'
+class MainCommunications(TemplateView):
+    template_name = 'communications/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
-class BlogVelopolitain(TemplateView):
-    """Should this perhaps move to communications/ ?
-    """
+class BlogCommunications(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.template_name = 'velopolitain/{sl}.html'.format(sl=context['slug'])
+        self.template_name = 'communications/{sl}.html'.format(sl=context['slug'])
         # Argument passed is the slug.  This should become a db lookup instead.
-        # For the moment, all slugs lead to the laboratoire.
         return context

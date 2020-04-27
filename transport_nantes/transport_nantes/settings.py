@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'asso_tn.apps.AssoTnConfig',
     'grand_nantes.apps.GrandNantesConfig',
     'velopolitain.apps.VelopolitainConfig',
+    'communications.apps.CommunicationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
