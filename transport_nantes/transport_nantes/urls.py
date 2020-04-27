@@ -27,4 +27,5 @@ urlpatterns = [
     path('surveys/', include('surveys.urls')),
     path('tn/', include('asso_tn.urls')),
     path('v/', include('velopolitain.urls')),
+    path('vo/', include('velopolitain_observatoire.urls')),
 ]
