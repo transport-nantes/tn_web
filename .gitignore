@@ -7,3 +7,6 @@ venv
 
 # Django
 db.sqlite3
+
+# Config
+aws_config
