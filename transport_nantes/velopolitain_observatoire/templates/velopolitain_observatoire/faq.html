@@ -1,0 +1,187 @@
+{% extends 'asso_tn/base_transport_nantes.html' %}
+{% load static %}
+
+{% block app_content %}
+<div container>
+    <div class="row">
+	<div class="col-lg-12">
+            <h1>L'Observatoire du Vélopolitain : FAQ</h1>
+
+	    <p>
+		<strong>Où est la page pour compter ?</strong>
+		<div class="text-muted">
+		    C'est
+		    <a href="{% url 'velopolitain_observatoire:count_app' %}">
+			ici</a>.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Puis-je compter où je veux ?</strong>
+		<div class="text-muted">
+		    <i>Oui,</i> il faut juste prendre un lieu "comptable".  Par
+		exemple, n'essayez pas sur un de nos axes énormes
+		comme la Cours des 50 Otages ou le boulevard Charles
+		de Gaulle : c'est quasiment impossible à repérer la
+		totalité des passants.  Et ceux qui passent sur les
+		marges sont souvent les piétons ou d'autres
+		    utilisateurs historiquement sous-comptés.  De la
+		même façon, évitez les gros rond-points.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Est-ce qu'il y a des limites de temps de
+		    comptage ?</strong>
+		<div class="text-muted">
+		    Non, mais soyez raisonnable.  Si vous ne comptez que
+		    pendant deux minutes, vous risquez d'avoir un
+		    échantillon peu représentatif de la flux qui passe.
+		    Nous recommandons au moins 10 minutes et même de
+		    15 à 20 minutes.  Mais ça dépendra de la circulation
+		    de l'endroit que vous choisissez.  Et du temps que
+		    vous avez disponible.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Dois-je compter au même endroit à chaque fois
+		    ?</strong>
+		<div class="text-muted">
+		Il y a certes un intérêt d'avoir des comptages qui se
+		répètent au même endroit.  Il y a également un intérêt
+		d'avoir des comptages dans des coins diverses.  Nous
+		vous laissons donc le choix : ce qui est important,
+		c'est de compter.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Dois-je compter souvent ?</strong>
+		<div class="text-muted">
+		    Le principe reste le même : c'est vous qui
+		décidez.  Certains prendront peut-être un grand
+		plaisir à choisir un nouvel endroit à compter chaque
+		jour.  D'autres vont compter une poignée de fois
+		seulement.  Nous vous remercieront dans les deux cas.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Ce projet durera pendant combien de temps
+		    ?</strong>
+		<div class="text-muted">
+		Notre objectif est d'avoir des données pendant toute
+		la période du mandat de nos équipes municipales entre
+		2020 et 2026, et ce à partir de printemps 2020.</div>
+	    </p>
+
+	    <p>
+		<strong>Je ne pense pas pouvoir tenir des années.
+		    Puis-je participer ?</strong>
+		<div class="text-muted">
+		    <i>Oui !</i>  Il y en aura d'autres qui ne peuvent pas
+		participer cette année qui se joindra à nous plus
+		tard.  Nous vous remercions chaleureusement de ce que
+		vous pouvez faire.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Je ne suis pas à Nantes.  Puis-je participer
+		    ?</strong>
+		<div class="text-muted">
+		    Absolument !  Transport Nantes, malgré notre nom
+		nantais, s'intéresse à tout le bassin de vie nantaise
+		: Nantes Métropole et bien au delà.</div>
+	    </p>
+
+	    <p>
+		<strong>Puis-je utiliser cet outil dans mon métropole
+		    (qui n'est pas nantais) ?</strong><div class="text-muted">
+		    <i>Oui,</i> sans problème.  (Si vous êtes nombreux dans
+		    d'autres régions, nous pourrions parler ensemble pour
+		    voir comment mieux vous servir.)
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Pourquoi dois-je avoir un compte ?</strong>
+		<div class="text-muted">
+		    Simplement pour les questions de
+		    responsabilisation.  Les services web qui permettent
+		    des utilisateurs anonymes voient plus d'abus.  Nous ne
+		    partagerons jamais votre identité.  Voir nos
+		    politique de confidentialité pour plus de précision.
+		</div>
+	    </p>
+
+	    <p>
+		<strong>Quel risque à ma vie privée ?</strong>
+		<div class="text-muted">
+		    Les comptages que vous contribuez seront
+		    visibles.  Par contre, votre identité ne le sera
+		    pas.  Si vous avez des soucis précis, n'hésitez pas à
+		    prendre contacte avec nous.
+		</div>
+	    </p>
+
+
+
+	</div>
+    </div>
+</div>
+{% endblock %}
+
+{% if False %}
+
+  FAQ
+
+
+La mode d'emploi :
+
+1.  Choisissez un endroit.  Devant chez vous, dans un coin qui vous plaît, peu importe, comme vous voulez.  Prenez un endroit que vous pouvez identifier.  Pour vous simplifier la vie, ne prenez pas un croisement de rues.  Si vous prenez un rond point, définissez juste l'endroit où vous comptez.
+2.  Choisissez un créneau qui vous convient.  C'est plus intéressant à choisir un créneau quand il y a des gens qui passent.
+3.  À peu près une fois par mois, vous allez à votre endroit avec un morceau de papier et un crayon.  Notez l'heure précise de début (à la minute près).  Puis vous comptez aussi longtemps que vous voulez.  Nous suggérons 15-20 minutes.  Puis vous notez l'heure précise (à la minute près) que vous terminez.
+4.  Vous nous envoyez les résultats.
+
+Pour comptez, nous souhaitons savoir le suivant :
+- combien de vélo qui passent (y compris scooters, monoroue, etc.)
+- combien de piétons qui passent (y compris chaises roulants, etc.)
+- combien de voiture qui passent
+- combien de bus/tram/car qui passent
+- combien de camion/fourgon/poids lourds qui passent
+
+Donc il suffit d'avoir cinq carrés sur votre papier.  Vous pouvez télécharger un modèle ici si vous voulez.
+
+
+FAQ :
+
+- qu'est-ce que je dois faire ?  Nous souhaitons connaître la part modale un peu partout dans la région nantaise sur tout le mandat de nos élus.  Dans un monde parfait, ce serait super que vous passiez 15-20 minutes une fois par mois.
+
+- où ?  Où c'est commode pour vous.  Devant chez vous.  Devant un banc qui vous plaît.  C'est vous qui décidez.
+
+- quand ?  Quand vous voulez
+
+- c'est tout ?  Oui.
+
+- si j'oublie ?  si je pars en vacances ?  Ce n'est pas grave.  La prochaine fois que vous pouvez le faire, allez-y.  Nous vous dirons merci.
+
+- vous pouvez me rappelez ?  Oui, nous pourrions vous envoyer un mél ou un SMS pour vous rappeler.  Avec même un lien pour simplifier votre réponse.
+
+
+
+
+Formulaire de réponse :
+
+- date de comptage
+- heure, minute de début
+- heure, minute de fin
+- nombre de vélos
+- nombre de piétons
+- nombre de voitures
+- nombre de TC
+- nombre de PL
+
+[Confirmer]
+{% endif %}

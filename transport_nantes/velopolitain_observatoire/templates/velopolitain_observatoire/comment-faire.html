@@ -7,55 +7,63 @@
 	<div class="col-lg-12">
             <h1>L'Observatoire du Vélopolitain</h1>
 
-	    <p>Comment faire en sorte que le Vélopolitain soit réalisé ?</p>
+	    <p>Comment faire en sorte que le Vélopolitain soit réaliser ?</p>
 
-	    <h2>C'est quoi ?</h2>
-
-	    <p>
-		Tous les jours nous voyons chacun des bouchons, des
-		voitures, des transports collectifs, des piétons, des
-		vélos.  Et pourtant ce qui est devant nos nez n'a pas
-		de vie officielle de jour à jour.  <strong>Aujourd'hui, ça
-		change.</strong></p>
+	    <h2>La mode d'emploi</h2>
 
 	    <p>
-		Le projet est simple : nous vous donnons un outil pour
-		compter ce que vous voyez.  Pour certain, ce sera un
-		matin par mois devant chez lui, avant d'aller au
-		boulot.  Pour d'autres, ce sera une activité avec les
-		enfants.  Pour bien d'autres, ce sera dix minutes en
-		entendant son bus au lieu de sortir facebook.</p>
+		C'est simple comme tout.</p>
 
 	    <p>
-		C'est chacun, où il veut, quand il veut.  <strong>Nous
-		espérons vous comptez parmi nous.</strong></p>
+		Tout d'abord, si ce n'est pas encore fait, vous créez
+		un compte.  C'est aussi simple que d'entrer votre
+		adresse mél et puis de cliquer un lien que nous vous
+		envoyons.</p>
+
+	    <p>
+		Puis, lorsque vous voulez compter les passants, vous
+		visitez le <a href="{% url 'velopolitain_observatoire:count_app' %}">compteur
+		de l'observatoire</a>.
+		Vous cliquez "j'y vais" et puis, à chaque fois que
+		vous voyez passer quelqu'un, vous touchez la touche
+		correspondante :
+		<ul>
+		    <li><strong>piéton</strong> pour tous les piétons
+			mais également les personnes en chaise
+			roulante.  Les enfants et les bébés compte
+			également.</li>
+		    <li><strong>vélo</strong> pour les vélos mais
+			également tout ce qui roule : trottinette,
+			monoroue, VAE.</li>
+		    <li><strong>voiture</strong>pour tout ce qui roule
+			avec moteur plus puissant qu'un VAE : les motos et les
+			camions (mais pas les bus).</li>
+		    <li><strong>TC</strong> pour les transport
+			collectifs (bus, tramway, train, navibus si jamais
+			vous comptez à côté d'une gare fluviale</li>
+		</ul>
+	    </p>
+
+	    <p>
+		Lorsque vous aurez terminé, vous touchez
+		"j'arrête".</p>
 
 
-	    <h2>C'est chez vous, dans votre quartier</h2>
+	    <h2>C'est tout ?</h2>
 	    
 	    <p>
-		Nous voudrions mesurer le flux réel de la circulation
-		chez vous.  C'est pourquoi nous avons besoin de vous.
+		Oui, c'est aussi simple que ça.
 		Seulement 15-20 minutes par mois suffirait.</p>
 
 	    
 	    <p>
-		Pourquoi ?  Parce que Nantes Métropole n'avance pas à
-		la vitesse que nous souhaitons sur ses projets
-		cyclables.  L'observatoire du Vélopolitain, c'est un
-		projet de transparence.</p>
+		Pour plus d'information, il y a un
+		<a href="{% url 'velopolitain_observatoire:blog' 'faq' %}">FAQ</a>.</p>
 
 	    <p>
 		Nous souhaitons éviter tout simplement que nos élus
 		puissent se cacher derrière une absence de chiffre --
 		de leur propre création.</p>
-
-	    <h2>Vous êtes prêt ?</h2>
-
-	    <p>
-		Allez, <a href="{% url 'velopolitain_observatoire:blog' 'comment-faire' %}">c'est
-		parti !</a>
-	    </p>
 
 	</div>
     </div>
