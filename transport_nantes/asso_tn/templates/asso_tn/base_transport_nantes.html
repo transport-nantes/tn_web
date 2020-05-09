@@ -61,6 +61,10 @@
     {% block navbar %}
       <nav class="navbar navbar-expand-md bg-dark navbar-dark">
 	  <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-minimallogo_brown.png' %}" alt="Transport Nantes logo" width="20%"></a>
+	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV DEV DEV DEV &nbsp; </span>
+	  {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST BETA TEST BETA &nbsp;</span>
+	  {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
+	  {% endif %}
 	  <ul class="navbar-nav">
 	      <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Accueil</a></li>
 	      <li class="nav-item"><a class="nav-link" href="{% url 'velopolitain:index' %}">Vélopolitain</a></li>
