@@ -8,7 +8,7 @@
 
 	    <p>Pour chaque véhicule ou personne qui passe, cliquez une
 	    fois le bouton correspondant.  En cas d'erreur, vous
-	    pouvez cliquez le "-".</p>
+	    pouvez cliquez le "<i class="fa fa-minus" aria-hidden="true"></i>".</p>
 	</div>
     </div>
 </div>
@@ -19,11 +19,11 @@
 	</div>
 	<div class="col-8">
 	    <p>
-		<button type="button" class="btn btn-primary btn-block">Piéton</button>
+		<button id="pedestrian_button" type="button" class="btn btn-primary btn-block">Piéton</button>
 	    </p>
 	</div>
 	<div class="col-1">
-	    <b>0</b>
+	    <b id="pedestrians"></b>
 	</div>
 	<div class="col-2">
 	    <button type="button" class="btn btn-outline-primary
@@ -38,11 +38,11 @@
 	</div>
 	<div class="col-8">
 	    <p>
-		<button type="button" class="btn btn-primary btn-block">Vélo</button>
+		<button id="bicycle_button" type="button" class="btn btn-primary btn-block">Vélo</button>
 	    </p>
 	</div>
 	<div class="col-1">
-	    <b>0</b>
+	    <b id="bicycles"></b>
 	</div>
 	<div class="col-2">
 	    <button type="button" class="btn btn-outline-primary
@@ -57,11 +57,11 @@
 	</div>
 	<div class="col-8">
 	    <p>
-		<button type="button" class="btn btn-primary btn-block">Voiture</button>
+		<button id="car_button" type="button" class="btn btn-primary btn-block">Voiture</button>
 	    </p>
 	</div>
 	<div class="col-1">
-	    <b>0</b>
+	    <b id="cars"></b>
 	</div>
 	<div class="col-2">
 	    <button type="button" class="btn btn-outline-primary
@@ -76,11 +76,11 @@
 	</div>
 	<div class="col-8">
 	    <p>
-		<button type="button" class="btn btn-primary btn-block">TC</button>
+		<button id="public_transport_button" type="button" class="btn btn-primary btn-block">TC</button>
 	    </p>
 	</div>
 	<div class="col-1">
-	    <b>0</b>
+	    <b id="public_transport"></b>
 	</div>
 	<div class="col-2">
 	    <button type="button" class="btn btn-outline-primary
@@ -91,3 +91,91 @@
     </div>
 </div>
 {% endblock %}
+
+{% block localscripts %}
+<script>
+{# This was all inspired by https://www.delidded.com/javascript-tutorial/ajax-xmlhttprequest/ #}
+
+function setupButtons() {
+    var pedestrian_button = document.getElementById('pedestrian_button');
+    var bicycle_button = document.getElementById('bicycle_button');
+    var car_button = document.getElementById('car_button');
+    var public_transport_button = document.getElementById('public_transport_button');
+
+    // Run our sendCounts function when someone clicks the button
+    pedestrian_button.addEventListener('click', sendCounts);
+    bicycle_button.addEventListener('click', sendCounts);
+    car_button.addEventListener('click', sendCounts);
+    public_transport_button.addEventListener('click', sendCounts);
+
+    var pedestrians_elt = document.getElementById("pedestrians");
+    pedestrians_elt.textContent = "0";
+
+    var bicycles_elt = document.getElementById("bicycles");
+    bicycles_elt.textContent = "0";
+
+    var cars_elt = document.getElementById("cars");
+    cars_elt.textContent = "0";
+
+    var public_transport_elt = document.getElementById("public_transport");
+    public_transport_elt.textContent = "0";
+}
+
+setupButtons();
+
+function sendCounts() {
+    var url = '/vo/receive_counts';
+    var data = 'pedestrians=' + pedestrians.textContent;
+
+    console.log(data);
+    var request = new XMLHttpRequest();
+    request.open('POST', url);
+
+    // Run our handleResponse function when the server responds
+    request.addEventListener('readystatechange', handleResponse);
+
+    /*
+      Add a new "Content-type" HTTP header.
+      This tells the server we're sending name=value pairs
+      (just like a normal form POST request would).
+    */
+    request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    request.send(data);
+}
+
+/*
+  This function gets called every time something changes with our AJAX
+  request.
+*/
+function handleResponse() {
+    // "this" refers to the object we called addEventListener on.
+    var request = this;
+    /*
+      Exit this function unless the AJAX request is complete, and the
+      server has responded.
+    */
+    if (request.readyState != 4)
+        return;
+    // If there wasn't an error, run our showResponse function
+    if (request.status == 200) {
+        var ajaxResponse = request.responseText;
+        console.log(ajaxResponse);
+    }
+}
+
+// Run our handleResponse function when the server responds.
+request.addEventListener('readystatechange', handleResponse);
+
+function showResponse(ajaxResponse) {
+    var responseContainer = document.getElementById('#responseContainer');
+
+    // Create a new span tag to hold the response
+    var span = document.createElement('span');
+    span.innerHTML = ajaxResponse;
+
+    // Add the new span to the end of responseContainer
+    responseContainer.appendChild(span);
+}
+
+</script>
+{% endblock localscripts %}
