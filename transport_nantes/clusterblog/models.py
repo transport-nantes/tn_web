@@ -56,7 +56,10 @@ class ClusterBlogEntry(models.Model):
         verbose_name_plural = "ClusterBlogEntries"
 
     def __str__(self):
-        return '{sl}/{tit}'.format(sl=self.slug, tit=self.title)
+        return '{cl} | {cat} | {sl} / {tit}'.format(
+            cl=self.cluster.blog_name,
+            cat=self.category.category,
+            sl=self.slug, tit=self.title)
 
     def random_entry(cluster, category):
         """Select a random entry associated with the given cluster and
