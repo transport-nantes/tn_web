@@ -1,5 +1,7 @@
 from django.views.generic.base import TemplateView
 from .models import ClusterBlog, ClusterBlogEntry, ClusterBlogCategory
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # Create your views here.
 
@@ -16,12 +18,7 @@ class MainClusterBlog(TemplateView):
 
 class CategoryClusterBlog(TemplateView):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        print('>> ', context)
-        blog = ClusterBlog.objects.get(id=context['cluster'])
-        self.template_name = blog.template_name
-        context['blog'] = blog
-        context['categories'] = ClusterBlogCategory.objects.all().filter(cluster=blog.pk)
-        context['entry'] = ClusterBlogEntry.random_entry(context['cluster'], context['category'])
-        return context
+    def get(self, request, *args, **kwargs):
+        blog = ClusterBlog.objects.get(id=kwargs['cluster'])
+        entry = ClusterBlogEntry.random_entry(kwargs['cluster'], kwargs['category'])
+        return HttpResponseRedirect(reverse('cluster_blog:deconfinement', args=[entry.slug]))
