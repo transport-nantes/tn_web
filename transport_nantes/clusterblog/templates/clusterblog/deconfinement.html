@@ -20,7 +20,7 @@
 
 	    <p class="text-info">Nous avons chacun un rôle à
 		jouer afin que nos déplacements lors du déconfinement
-		soit agréable.</p>
+		soit plus agréables.</p>
 	    
 	    <p class="text-muted">Je suis {% for category in categories %}
 		<a type="button" class="btn btn-outline-dark btn-sm"
@@ -29,7 +29,7 @@
 		{% endfor %}
 	    </p>
 
-	    <p class="text-info">Si j'étais {{ entry.category.category }}, je pourrais...
+	    <p class="text-info">Je suis {{ entry.category.category }}, je pourrais...
 	    </p>
 
 	    <h2>{{ entry.title }}</h2>
@@ -41,7 +41,6 @@
 	    <p><a type="button" class="btn btn-outline-dark btn-sm"
 		   href="{% url 'cluster_blog:deconfinement_role' blog.pk entry.category.pk %}">
 		Et puis ? &raquo;</a></p>
-		<a href="#" class="next">Next </a></p>
 	</div>
     </div>
 </div>
