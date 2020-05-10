@@ -73,6 +73,9 @@ class ClusterBlogEntry(models.Model):
         would be quite bad here, since we'd have more misses than hits.
 
         """
+        ## Temporarily don't filter by category.  We don't have enough data yet.
+        #entry = ClusterBlogEntry.objects.filter(
+        #    cluster=cluster, category=category, approved=True).order_by('?').first()
         entry = ClusterBlogEntry.objects.filter(
-            cluster=cluster, category=category).order_by('?').first()
+            cluster=cluster, approved=True).order_by('?').first()
         return entry

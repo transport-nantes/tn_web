@@ -21,7 +21,7 @@
 	    <p class="text-info">Nous avons chacun un rôle à
 		jouer afin que nos déplacements lors du déconfinement
 		soit plus agréables.</p>
-	    
+	    <!--
 	    <p class="text-muted">Je suis {% for category in categories %}
 		<a type="button" class="btn btn-outline-dark btn-sm"
 		   href="{% url 'cluster_blog:deconfinement_role' blog.pk category.pk %}">
@@ -31,7 +31,7 @@
 
 	    <p class="text-info">Je suis {{ entry.category.category }}, je pourrais...
 	    </p>
-
+	    -->
 	    <h2>{{ entry.title }}</h2>
 
 	    <p><img src="{% static entry.image_filename %}" style="max-width:90%;" ></p>
