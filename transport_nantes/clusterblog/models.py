@@ -56,7 +56,12 @@ class ClusterBlogEntry(models.Model):
         verbose_name_plural = "ClusterBlogEntries"
 
     def __str__(self):
-        return '{cl} | {cat} | {sl} / {tit}'.format(
+        if self.approved:
+            approved='+'
+        else:
+            approved='-'
+        return '{appr}{cl} | {cat} | {sl} / {tit}'.format(
+            appr=approved,
             cl=self.cluster.blog_name,
             cat=self.category.category,
             sl=self.slug, tit=self.title)
