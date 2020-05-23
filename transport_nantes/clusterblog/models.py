@@ -25,6 +25,11 @@ class ClusterBlogCategory(models.Model):
     """
     cluster = models.ForeignKey(ClusterBlog, on_delete=models.CASCADE)
     category = models.CharField(max_length=40, blank=False)
+    # Until we have several entries in a category, we assuredly don't
+    # want the next button to stick to the one category.  The user
+    # would just see it sticking to one category or oscilating between
+    # a couple.
+    random_entries_stick_to_category = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -66,7 +71,7 @@ class ClusterBlogEntry(models.Model):
             cat=self.category.category,
             sl=self.slug, tit=self.title)
 
-    def random_entry(cluster, category):
+    def random_entry(cluster_id, category_id):
         """Select a random entry associated with the given cluster and
         category.
 
@@ -78,9 +83,11 @@ class ClusterBlogEntry(models.Model):
         would be quite bad here, since we'd have more misses than hits.
 
         """
-        ## Temporarily don't filter by category.  We don't have enough data yet.
-        #entry = ClusterBlogEntry.objects.filter(
-        #    cluster=cluster, category=category, approved=True).order_by('?').first()
+        category = ClusterBlogCategory.objects.get(id=category_id)
+        if category.random_entries_stick_to_category:
+            entry = ClusterBlogEntry.objects.filter(
+                cluster=cluster_id, category=category_id, approved=True).order_by('?').first()
+            return entry
         entry = ClusterBlogEntry.objects.filter(
-            cluster=cluster, approved=True).order_by('?').first()
+            cluster=cluster_id, approved=True).order_by('?').first()
         return entry

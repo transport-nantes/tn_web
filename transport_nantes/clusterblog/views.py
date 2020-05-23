@@ -19,6 +19,8 @@ class MainClusterBlog(TemplateView):
 class CategoryClusterBlog(TemplateView):
 
     def get(self, request, *args, **kwargs):
-        blog = ClusterBlog.objects.get(id=kwargs['cluster'])
-        entry = ClusterBlogEntry.random_entry(kwargs['cluster'], kwargs['category'])
+        cluster_id = kwargs['cluster']
+        category_id = kwargs['category']
+        blog = ClusterBlog.objects.get(id=cluster_id)
+        entry = ClusterBlogEntry.random_entry(cluster_id, category_id)
         return HttpResponseRedirect(reverse('cluster_blog:deconfinement', args=[entry.slug]))
