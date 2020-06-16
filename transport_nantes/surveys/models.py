@@ -95,9 +95,10 @@ class SurveyResponder(models.Model):
     facebook = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return '{com}: {liste}/{tete}'.format(com=self.commune,
-                                              liste=self.liste,
-                                              tete=self.tete_de_liste)
+        return '[{sn}] {com}: {liste}/{tete}'.format(sn=self.survey.name,
+                                                   com=self.commune,
+                                                   liste=self.liste,
+                                                   tete=self.tete_de_liste)
 
 class SurveyResponse(models.Model):
     """Represent candidate/party responses to survey questions.
