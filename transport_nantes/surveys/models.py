@@ -35,8 +35,9 @@ class SurveyQuestion(models.Model):
     question_text = models.TextField()
 
     def __str__(self):
-        return '{qn}: {qt}'.format(qn=self.question_number,
-                                   qt=self.question_title)
+        return '[{sn}] {qn}: {qt}'.format(sn=self.survey.name,
+                                          qn=self.question_number,
+                                          qt=self.question_title)
 
 class SurveyCommune(models.Model):
     """Represent the commune.
