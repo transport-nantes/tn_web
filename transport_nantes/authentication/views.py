@@ -65,9 +65,7 @@ def send_activation(request, user):
         'domain': current_site.domain,
         'token': make_timed_token(user.pk, 20),
     })
-    #### user.email_user(subject, message)
-    print(subject)
-    print(message)
+    user.email_user(subject, message)
 
 def account_activation_sent(request, is_new):
     is_new_bool = (is_new == True)

@@ -102,7 +102,7 @@ EMAIL_BACKEND = 'django_amazon_ses.EmailBackend'
 AWS_ACCESS_KEY_ID = settings_local.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = settings_local.AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION = settings_local.AWS_DEFAULT_REGION
-
+DEFAULT_FROM_EMAIL = settings_local.DEFAULT_FROM_EMAIL
 
 LOGGING = {
     'version': 1,
