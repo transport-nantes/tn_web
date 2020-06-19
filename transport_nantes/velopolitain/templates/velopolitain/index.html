@@ -1,0 +1,98 @@
+{% extends 'asso_tn/base_transport_nantes.html' %}
+{% load static %}
+
+{% block app_content %}
+<div container>
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Le Vélopolitain</h1>
+
+	    <p>Le Vélopolitain, un projet de Transport Nantes qui vise
+	à un réseau cyclable qui mérite le nom et qui couvre la métropole
+	entière : </p>
+	</div>
+    </div>
+
+    <div class="row">
+	<div class="col-md-2 col-sm-3">
+	    <img src="{% static 'velopolitain/v1.png' %}" style="width:100%;" >
+	</div>
+	<div class="col-md-10 col-sm-9">
+	    <h3>#1 - une infrastructure continue</h3>
+	    <p>Des pistes cyclables continuent qui donnent aux cyclistes une
+		priorité continue, surtout aux carrefours et aux giratoires.
+	    </p>
+	</div>
+    </div>
+
+    <div class="row">
+	<div class="col-md-2 col-sm-3">
+	    <img class="img-responsive" src="{% static 'velopolitain/v2.png' %}" style="width:100%;">
+	</div>
+	<div class="col-md-10 col-sm-9">
+	    <h3>#2 - une infrastructure securisée</h3>
+	    <p>De l'infrastructure conçue pour chacun, de débutants
+		aux confirmés.  Des axes clairement signalés,
+		régulièrement entretenu, et physiquement séparés du
+		flux automobile, suffisamment large pour que deux cyclistes
+		peuvent se dépasser ou rouler ensemble.</p>
+	    </p>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-lg-12" style="height:5px;"></div>
+    </div>
+
+    <div class="row">
+	<div class="col-md-2 col-sm-3">
+	    <img class="img-responsive" src="{% static 'velopolitain/v3.png' %}" style="width:100%;">
+	</div>
+	<div class="col-md-10 col-sm-9">
+	    <h3>#3 - une infrastructure integrée dans un maillage global </h3>
+	    <p>Une chaîne n'est pas plus fort que son maillot le plus
+		faible.  Le Vélopolitain ne doit pas laisser les
+		cyclistes en insécurité aussitôt que ce n'est pas
+		commode pour Nantes Métropole.</p>
+	</div>
+    </div>
+
+    <div class="row">
+	<div class="col-md-2 col-sm-3">
+	    <img class="img-responsive" src="{% static 'velopolitain/v4.png' %}" style="width:100%;">
+	</div>
+	<div class="col-md-10 col-sm-9">
+	    <h3>#4 - une infrastructure lisible</h3>
+	    <p>Une signalisation qui rend claire où aller sans
+		supposer que les seuls cyclistes sont les habitués et
+		qui se signale clairement aux autres usagers de la
+		voie public.</p>
+	</div>
+    </div>
+
+    <!-- ######################################################################  -->
+
+    <div class="row">
+	<div class="col-lg-12">
+
+
+	    <h2>L'Observatoire du Vélopolitain</h2>
+
+	    <p>Dans les jours qui viennent, nous vous donnerons accès
+		à notre nouvel outil, l'observatoire du vélopolitain,
+		qui vous permettra de participer au recensement du
+		flux cyclable et de part modale dans la métropole.
+		Actuellement en mode test par un noyau de bénévoles
+		dédiés qui vérifient son bon fonctionnement, nous
+		l'ouvrirons aux testers dès la semaine prochaine.
+		Nous vous offrons une liste d'attente prochainement.</p>
+
+	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a> <a
+href="{% url 'velopolitain:lab' '2019-petition' %}"
+class="btn btn-primary btn-lg" role="button">Je signe la petition</a>
+	    </p>
+
+	</div>
+    </div>
+
+</div>
+{% endblock %}
