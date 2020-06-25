@@ -12,7 +12,7 @@ contextlib2==0.6.0
 decorator==4.4.1
 distlib==0.3.0
 distro==1.4.0
-Django==3.0.3
+Django==3.0.7
 django-amazon-ses==3.0.2
 docutils==0.15.2
 future==0.18.2
