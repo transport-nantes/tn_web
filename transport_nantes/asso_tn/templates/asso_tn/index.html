@@ -34,11 +34,12 @@
                     href="{% url 'legal:aligned_orgs' %}">associations nantaises</a>,
 		    nos réussites auraient été impossible.</p>
 
-		<a href="{% static 'main.velopolitain' %}">
+		<a href="{% url 'velopolitain:index' %}">
 		    <img src="{% static 'asso_tn/accueil/conv.jpg' %}" style="width:100%">
 		</a>
 
-		<p style="margin-top:1mm">C'est maintenant que le vrai boulot commence :
+		<p class="text-primary" style="margin-top:2mm">
+		    C'est maintenant que le vrai boulot commence :
 		    <ul>
 			<li>La <strong>suivie</strong> à Nantes et dans Nantes
 		    Métropole afin d'assurer que notre vision
