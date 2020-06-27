@@ -23,23 +23,23 @@
 			  font-size:smaller;">
 		    Lire les réponses des candidates à
 		    notre questionnaire : au <a href="{% url
-						    'surveys:choose_commune' 1 %}">
+						    'surveys:choose_commune' 1 %}" class="text-muted">
 		    premier tour</a> et au
-		    <a href="{% url 'surveys:choose_commune' 2 %}">
+		    <a href="{% url 'surveys:choose_commune' 2 %}" class="text-muted">
 			deuxième tour</a>.</p>
 
 		<p>Et nous vous remercions : sans vous, sans vos dons,
 		sans vos signatures sur notre pétition, sans les
 		    militants de Transport Nantes et d'autres <a
-                    href="{% url 'legal:aligned_orgs' %}">associations nantaises</a>,
+                    href="{% url 'legal:aligned_orgs' %}" class="text-muted">associations nantaises</a>,
 		    nos réussites auraient été impossible.</p>
 
 		<a href="{% url 'velopolitain:index' %}">
 		    <img src="{% static 'asso_tn/accueil/conv.jpg' %}" style="width:100%">
 		</a>
 
-		<p class="text-primary" style="margin-top:2mm">
-		    C'est maintenant que le vrai boulot commence :
+		<p style="margin-top:2mm"><strong>
+		    C'est maintenant que le vrai boulot commence :</strong>
 		    <ul>
 			<li>La <strong>suivie</strong> à Nantes et dans Nantes
 		    Métropole afin d'assurer que notre vision
