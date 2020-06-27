@@ -6,38 +6,60 @@
     <div class="jumbotron">
 	<div class="hero-text">
 	    <h1>Déplaçons-nous mieux</h1>
-	    <p>Déplaçons-nous mieux dans la région nantaise</p>
+	    <p>Déplaçons-nous mieux dans la région nantaise et au delà</p>
 	</div>
     </div>
 
     <div class="jumbotron">
 	<div class="row">
 	    <div class="col-lg-12">
-		<p><strong>Annonce aux cyclistes</strong> : les candidat-e-s parlent du vélo !</p>
+		<p><strong>Les municipales s'achèvent</strong> : grâce
+		    à Transport Nantes, toutes les candidates
+		    principales à Nantes (et parfois hors Nantes)
+		    se sont engagées à la construction <strong>du
+		    Vélopolitain</strong>.</p>
+
+		<p style="margin-left:5%; margin-right:5%;
+			  font-size:smaller;">
+		    Lire les réponses des candidates à
+		    notre questionnaire : au <a href="{% url
+						    'surveys:choose_commune' 1 %}">
+		    premier tour</a> et au
+		    <a href="{% url 'surveys:choose_commune' 2 %}">
+			deuxième tour</a>.</p>
+
+		<p>Et nous vous remercions : sans vous, sans vos dons,
+		sans vos signatures sur notre pétition, sans les
+		    militants de Transport Nantes et d'autres <a
+                    href="{% url 'legal:aligned_orgs' %}">associations nantaises</a>,
+		    nos réussites auraient été impossible.</p>
+
 		<a href="{% static 'main.velopolitain' %}">
 		    <img src="{% static 'asso_tn/accueil/conv.jpg' %}" style="width:100%">
 		</a>
 
-		<p class="text-important">  <small>Cyclistes !
-		    En prévision des élections municipales,
-		    il suffit de
-		    <strong>deux gestes simples</strong> pour mettre la
-		    pression et rendre la métropole vraiment cyclable pour tous :</small>
-		    <ul style="font-size: 140%;">
-			<li><large><strong>Signez</strong> la pétition « Vélopolitain ».</large></li>
-			<li>Adhérez, même par un petit don, et joignez votre voix à la nôtre.
-			    Même un
-			    petit montant nous permettra de dire que
-			    votre voix est là avec nous.  Combien cela vaut-il pour vous
-			    ?</li>
+		<p style="margin-top:1mm">C'est maintenant que le vrai boulot commence :
+		    <ul>
+			<li>La <strong>suivie</strong> à Nantes et dans Nantes
+		    Métropole afin d'assurer que notre vision
+		    ambitieuse ne soit pas abandonnée.</li>
+			<li>La <strong>préparation</strong> des élections
+			    départementales et régionales de printemps 2021.</li>
 		    </ul>
+		</p>
+		<p>Dans les semaines à venir nous vous communiquerons
+		    plus sur ces sujets.  En attendant, si ce n'est
+		    pas déjà le cas, déclarez votre soutien : adhérez,
+		    même par un petit don, et joignez votre voix à la nôtre.
+		    Même un
+		    petit montant nous permettra de dire que
+		    votre voix est là avec nous.  Combien cela vaut-il pour vous
+		    ?
 		</p>
 		<p>
 		    Ensemble nous sommes plus forts !
 		</p>
-		<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a> <a
-href="{% static 'velopolitain' %}"
-class="btn btn-primary btn-lg" role="button">Je signe la petition</a>
+		<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
 		</p>
 	    </div>
 	</div>
