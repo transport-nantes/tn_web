@@ -1,6 +1,12 @@
 {% extends 'asso_tn/base_transport_nantes.html' %}
 {% load static %}
 
+{% block og_title %}{{ observatoire.name }}{% endblock og_title %}
+{% block og_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock og_description %}
+{% block og_image_url %}{% url 'open_graph:100jours' day_offset %}{% endblock og_image_url %}
+
+{% block twitter_image %}{% endblock twitter_image %}
+
 {% block app_content %}
 <div container>
     <div class="row">
@@ -34,13 +40,16 @@
 	    </p>
 
 	    <p>
-		Nous les inviterons également à signaler leur progrès.
-		Toute autre personne est le également la bienvenue à
-		signaler les objectifs achevé (ou éventuellement
+		Nous les inviterons également à signaler, au fur et à
+		mesure pendant les 100 jours, leur progrès.
+		Toute autre personne est également la bienvenue à
+		signaler les objectifs achevés (ou, éventuellement,
 		abandonnés).  Nous ferons la même chose de notre part.
 		Soyons clairs : notre objectif, dans le mesure
 		possible, est de vanter et médiatiser les bons progrès
-		des maires.</p>
+		des maires.  Puis, au maires de nous alimenter de
+		bonnes nouvelles, parce que nous constaterons leur
+		absence si besoin.</p>
 
 	    <p>
 		Dès le jour 1, nous médiatiserons leur progrès jour
