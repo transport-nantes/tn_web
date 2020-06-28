@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'velopolitain.apps.VelopolitainConfig',
     'communications.apps.CommunicationsConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
+    'observatoire.apps.ObservatoireConfig',
     'clusterblog.apps.ClusterBlogConfig',
     'authentication.apps.AuthenticationConfig',
     'django.contrib.admin',
