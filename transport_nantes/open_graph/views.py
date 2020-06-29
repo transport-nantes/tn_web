@@ -44,15 +44,19 @@ def generate_questionnaire_image(request):
     image.save(response, image.format)
     return response
 
-def generate_100_days_image(request, day_offset, edile=''):
+def generate_100_days_image(request, nonce, day_offset, edile=''):
     """Create an image for the first 100 days project.
+
+    The nonce is present to prevent the image from being cached by
+    social media sites from one usage to to the next.  (The image will
+    still be cached for a given share, but not the next time it is
+    shared.)
 
     """
     if (day_offset < 0):
         J_days = 'J{d}'.format(d=day_offset)
     else:
         J_days = 'J+{d}'.format(d=day_offset)
-    #### This will only work in dev due to path name.
     image = Image.open('open_graph/base_images/100jours.png')
     draw = ImageDraw.Draw(image)
     #### This will only work in dev due to path name.
@@ -61,7 +65,6 @@ def generate_100_days_image(request, day_offset, edile=''):
     font_size_day = 150
     font_name = ImageFont.truetype(font_path, font_size_name)
     font_day = ImageFont.truetype(font_path, font_size_day)
-    #draw.text((290, 110), J_days, font=font_day, fill=tuple([int(.5 * x) for x in TN_logo_blue]))
     draw.text((290, 110), J_days, font=font_day, fill=TN_logo_red)
     draw.text((120, 120), edile, font=font_name, fill=TN_logo_blue)
     response = HttpResponse(content_type='image/png')
