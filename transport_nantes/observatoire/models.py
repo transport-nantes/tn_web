@@ -64,3 +64,22 @@ class ObservatoirePerson(models.Model):
     twitter = models.CharField(max_length=100, blank=True)
     # The facebook username, after the "/" in the page URL.
     facebook = models.CharField(max_length=100, blank=True)
+
+class ObservatoireObjective(models.Model):
+    """This represents one objective of one person.
+    """
+    person = models.ForeignKey(ObservatoirePerson, on_delete=models.CASCADE)
+    objective = models.CharField(max_length=200)
+    objective_descr = models.TextField()
+
+class ObservatoireProgress(models.Model):
+    """This represents progress on an objective.
+
+    Note that we maintain history, so there may be multiple records
+    for a single objective.  Only the most recent is considered
+    current.
+
+    """
+    objective = models.ForeignKey(ObservatoireObjective, on_delete=models.CASCADE)
+    entry_time = models.DateTimeField(auto_now=False, auto_now_add=True)
+    progress = models.TextField()
