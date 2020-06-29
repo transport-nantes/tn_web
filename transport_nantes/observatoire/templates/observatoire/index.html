@@ -1,9 +1,10 @@
 {% extends 'asso_tn/base_transport_nantes.html' %}
 {% load static %}
+{% load randomstring %}
 
 {% block og_title %}{{ observatoire.name }}{% endblock og_title %}
 {% block og_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock og_description %}
-{% block og_image_url %}{% url 'open_graph:100jours' day_offset %}{% endblock og_image_url %}
+{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset %}{% endblock og_image_url %}
 
 {% block twitter_image %}{% endblock twitter_image %}
 
@@ -64,7 +65,7 @@
 		Dès le jour 1, nous médiatiserons leurs progrès jour
 		par jour pendant 100 jours. La vie d'une ville ne
 		s’arrête pas le soir ou le week-end : un jour
-		ouvrable, c'est un jour ouvré, c'est un jour où les
+		ouvrable est un jour ouvré, c'est un jour où les
 		habitants continuent à vivre leurs vies. Bref, tous
 		les jours. Le 100ème jour sera donc le mardi 14
 		octobre 2020.</p>
