@@ -52,10 +52,12 @@
     <meta name="twitter:site" content="{% block twitter_site %}@TransportNantes{% endblock twitter_site %}" />
     <meta name="twitter:creator" content="{% block twitter_creator %}@TransportNantes{% endblock twitter_creator %}" />
     <meta name="twitter:image" content="https://{{ request.get_host }}{% block twitter_image %}/static/velopolitain/v1.png{% endblock twitter_image %}" />
+    <meta name="twitter:title" content="{% block twitter_title %}Pour un vrai choix dans vos déplacements{% endblock twitter_title %}" />
+    <meta name="twitter:description" content="{% block twitter_description %}Notre vision est simple : donner un choix de déplacement crédible à chacun, améliorer les déplacements de chacun, même ceux qui choisissent de ne pas changer. Pour agir, nous avons besoin de votre voix.{% endblock twitter_description %}" />
     {% comment %}
-    <meta name="twitter:title" content="{% block twitter_title %}{% endblock twitter_title %}" />
-    <meta name="twitter:description" content="{% block twitter_description %}{% endblock twitter_description %}" />
+    https://cards-dev.twitter.com/validator
     {% endcomment %}
+
     {% endblock head %}
   </head>
   <body{% block body_attribs %}{% endblock body_attribs %}>
