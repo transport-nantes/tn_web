@@ -4,9 +4,9 @@
 
 {% block og_title %}{{ observatoire.name }}{% endblock og_title %}
 {% block og_description %}Mode d'emploi de l'observatore des premiers 100 jours du nouveau mandat à Nantes Métropole.{% endblock og_description %}
-{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset %}{% endblock og_image_url %}
+{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset -1 %}{% endblock og_image_url %}
 
-{% block twitter_image %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset %}{% endblock twitter_image %}
+{% block twitter_image %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset -1 %}{% endblock twitter_image %}
 {% block twitter_title %}{{ observatoire.name }}{% endblock twitter_title %}
 {% block twitter_description %}Mode d'emploi de l'observatore des premiers 100 jours du nouveau mandat à Nantes Métropole.{% endblock twitter_description %}
 
