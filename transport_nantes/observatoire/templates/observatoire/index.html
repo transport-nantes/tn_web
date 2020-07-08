@@ -4,9 +4,9 @@
 
 {% block og_title %}{{ observatoire.name }}{% endblock og_title %}
 {% block og_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock og_description %}
-{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset %}{% endblock og_image_url %}
+{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset -1 %}{% endblock og_image_url %}
 
-{% block twitter_image %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset %}{% endblock twitter_image %}
+{% block twitter_image %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset -1 %}{% endblock twitter_image %}
 {% block twitter_title %}{{ observatoire.name }}{% endblock twitter_title %}
 {% block twitter_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock twitter_description %}
 
