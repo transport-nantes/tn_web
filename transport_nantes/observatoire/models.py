@@ -67,8 +67,8 @@ class ObservatoirePerson(models.Model):
 
     def __str__(self):
         validated = '+' if self.validated else '-'
-        return '{val}{name} ({entity})'.format(
-            val=validated, name=self.person_name, entity=self.entity)
+        return '{val}{id}/{name} ({entity})'.format(
+            val=validated, id=self.id, name=self.person_name, entity=self.entity)
 
 class ObservatoireObjective(models.Model):
     """This represents one objective of one person.

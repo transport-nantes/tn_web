@@ -1,6 +1,6 @@
 from django.views.generic.base import TemplateView
 # from django.shortcuts import render
-from .models import Observatoire, ObservatoirePerson
+from .models import Observatoire, ObservatoirePerson, ObservatoireObjective
 import datetime
 
 class MainObservatoire(TemplateView):
@@ -28,9 +28,17 @@ class ProgressObservatoire(TemplateView):
         context['day_offset'] = (datetime.date.today() - observatoire.start_date).days
         context['observatoire'] = observatoire
         if 'person_id' in kwargs:
-            context['person'] = ObservatoirePerson.objects.filter(
-                id=kwargs['person_id'])
-        persons = ObservatoirePerson.objects.filter(observatoire_id=kwargs['observatoire_id'])
+            context['edile'] = kwargs['person_id']
+            this_person = ObservatoirePerson.objects.filter(
+                id=kwargs['person_id'])[0]
+            context['this_person'] = this_person
+            context['objectives'] = ObservatoireObjective.objects.filter(
+                person=this_person)
+        else:
+            context['edile'] = ''
+        persons = ObservatoirePerson.objects.filter(
+            observatoire_id=kwargs['observatoire_id']).order_by('entity')
+        context['persons'] = persons
         print(context)
         print(type(context['day_offset']))
         return context

@@ -1,11 +1,15 @@
 {% extends 'asso_tn/base_transport_nantes.html' %}
 {% load static %}
+{% load randomstring %}
 
 {% block og_title %}{{ observatoire.name }}{% endblock og_title %}
-{% block og_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock og_description %}
-{% block og_image_url %}{% url 'open_graph:100jours' day_offset %}{% endblock og_image_url %}
+{% block og_description %}Suivre le progrès de {{ person.person_name }} et la ville de {{ person.entity_name }} en début de mandat !{% endblock og_description %}
+{% block og_image_url %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset person_id %}{% endblock og_image_url %}
 
-{% block twitter_image %}{% endblock twitter_image %}
+{% block twitter_image %}{% randomstring %}{% url 'open_graph:100jours' randomstring day_offset person_id %}{% endblock twitter_image %}
+{% block twitter_title %}{{ observatoire.name }} : {{ person.person_name }}{% endblock twitter_title %}
+{% block twitter_description %}Suivre le progrès de nos élus dans Nantes Métropole en début de mandat !{% endblock twitter_description %}
+
 
 {% block app_content %}
 <div container>
@@ -25,13 +29,19 @@
 		</a>
 		<div class="dropdown-menu" area-labelledby="dropdownMenuLinkCommune">
 		{% for person in persons %}
-		    <a class="dropdown-item" href="{% url 'observatoire:progress' observatoire_id person.id %}">{{ person.entity }} ({{ person.person_name }})  }}</a>
+		    <a class="dropdown-item" href="{% url 'observatoire:progress' observatoire_id person.id %}">{{ person.entity }} ({{ person.person_name }})</a>
 		{% endfor %}
 		</div>
 	    </div>
 
-	    <p>{{ person }}</p>
-	    <p>{{ this_person }}</p>
+	    {% if this_person %}
+	      {% if objectives %}
+	    <p>{{ this_person }} a des objectifs.</p>
+	      {% else %}
+	    <p class="text-primary">Nous sommes en attente des objectifs de <strong>{{ this_person.person_name }}</strong>,
+		ville de <strong>{{ this_person.entity }}</strong>.</p>
+	      {% endif %}
+	    {% endif %}
 
 	    <p><hr></p>
 
