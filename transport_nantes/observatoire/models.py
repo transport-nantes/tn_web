@@ -65,12 +65,21 @@ class ObservatoirePerson(models.Model):
     # The facebook username, after the "/" in the page URL.
     facebook = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        validated = '+' if self.validated else '-'
+        return '{val}{name} ({entity})'.format(
+            val=validated, name=self.person_name, entity=self.entity)
+
 class ObservatoireObjective(models.Model):
     """This represents one objective of one person.
     """
     person = models.ForeignKey(ObservatoirePerson, on_delete=models.CASCADE)
     objective = models.CharField(max_length=200)
     objective_descr = models.TextField()
+
+    def __str__(self):
+        return '{per}: {obj}'.format(
+            per=self.person, obj=self.objective[:20])
 
 class ObservatoireProgress(models.Model):
     """This represents progress on an objective.
@@ -83,3 +92,7 @@ class ObservatoireProgress(models.Model):
     objective = models.ForeignKey(ObservatoireObjective, on_delete=models.CASCADE)
     entry_time = models.DateTimeField(auto_now=False, auto_now_add=True)
     progress = models.TextField()
+
+    def __str__(self):
+        return '{per}: {prog}'.format(
+            per=self.objective.person, prog=self.progress[:20])
