@@ -61,7 +61,7 @@ def generate_100_days_image(request, nonce, day_offset, edile=None):
     image = Image.open('open_graph/base_images/100jours.png')
     draw = ImageDraw.Draw(image)
     #### This will only work in dev due to path name.
-    font_path = 'open_graph/base_images/Montserrat/MontserratAlternates-Bold.otf'
+    font_path = 'open_graph/base_images/Montserrat/Montserrat-Bold.otf'
     font_size_day = 150
     font_day = ImageFont.truetype(font_path, font_size_day)
     draw.text((290, 110), J_days, font=font_day, fill=TN_logo_red)
@@ -70,15 +70,15 @@ def generate_100_days_image(request, nonce, day_offset, edile=None):
                 id=edile)[0]
         def font_size(str_length):
             short_str_length = 17
-            short_font_size = 50
+            short_font_size = 60
             long_str_length = 55
-            long_font_size = 22
+            long_font_size = 38
             return (str_length - short_str_length) * long_font_size / \
                 (long_str_length - short_str_length)                  \
                 + (str_length-long_str_length) * short_font_size /    \
                 (short_str_length-long_str_length)
 
-        name_string = '{person} ({commune})'.format(
+        name_string = '{person}\n  ({commune})'.format(
             person=this_person.person_name, commune=this_person.entity)
         font_size_name = int(font_size(len(name_string)))
         font_name = ImageFont.truetype(font_path, font_size_name)
