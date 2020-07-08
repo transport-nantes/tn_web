@@ -65,7 +65,7 @@ def generate_100_days_image(request, nonce, day_offset, edile=None):
     font_size_day = 150
     font_day = ImageFont.truetype(font_path, font_size_day)
     draw.text((290, 110), J_days, font=font_day, fill=TN_logo_red)
-    if edile:
+    if edile >= 0:
         this_person = ObservatoirePerson.objects.filter(
                 id=edile)[0]
         def font_size(str_length):

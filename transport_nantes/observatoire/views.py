@@ -35,7 +35,7 @@ class ProgressObservatoire(TemplateView):
             context['objectives'] = ObservatoireObjective.objects.filter(
                 person=this_person)
         else:
-            context['edile'] = ''
+            context['edile'] = -1
         persons = ObservatoirePerson.objects.filter(
             observatoire_id=kwargs['observatoire_id']).order_by('entity')
         context['persons'] = persons

@@ -16,6 +16,5 @@ register_converter(NegativeIntConverter, 'negint')
 app_name = 'open_graph'
 urlpatterns = [
     path('pm', views.generate_questionnaire_image, name='parlons-mobilite'),
-    path('100j/<str:nonce>/<negint:day_offset>', views.generate_100_days_image, name='100jours'),
-    path('100j/<str:nonce>/<negint:day_offset>/<int:edile>', views.generate_100_days_image, name='100jours'),
+    path('100j/<str:nonce>/<negint:day_offset>/<negint:edile>', views.generate_100_days_image, name='100jours'),
 ]
