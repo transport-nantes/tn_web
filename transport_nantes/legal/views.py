@@ -29,3 +29,10 @@ class VolunteerView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+class JobsView(TemplateView):
+    template_name = 'legal/jobs.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

@@ -24,4 +24,5 @@ urlpatterns = [
     path('assos', views.AlignedOrgsView.as_view(), name='aligned_orgs'),
     path('sponsor', views.SponsorView.as_view(), name='sponsor'),
     path('benevolat', views.VolunteerView.as_view(), name='volunteer'),
+    path('jobs', views.JobsView.as_view(), name='jobs'),
 ]
