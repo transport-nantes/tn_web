@@ -40,3 +40,14 @@ body, html {
 .hero-description {
     font-size: 150%;
 }
+.hero-link {
+    background: #7f6966;
+    color: #5bc2e7;
+    font-weight: 700;
+}
+/*
+  Colours:
+    #7F6966;
+    #5BC2E7;
+    #FA4616;
+*/
