@@ -1,14 +1,21 @@
 {% extends 'asso_tn/base_transport_nantes.html' %}
 {% load static %}
 
-{% block app_content %}
+{% comment %}
+  I use content and not app_content to avoid a container and so go full-width.
+{% endcomment %}
+
+{% block content %}
+
+<div class="hero-image">
+  <div class="hero-text">
+    <h1>ヴェロポリタノ！</h1>
+    <p class="hero-description">Pour un réseau cyclable sécurisé, sur toute la métropole</p>
+
+  </div>
+</div>
+
 <div container>
-    <div class="jumbotron">
-	<div class="hero-text">
-	    <h1>Déplaçons-nous mieux</h1>
-	    <p>Déplaçons-nous mieux dans la région nantaise et au delà</p>
-	</div>
-    </div>
 
     <div class="jumbotron">
 	<div class="row">
@@ -94,4 +101,5 @@
     </div>
 
 </div>
+
 {% endblock %}
