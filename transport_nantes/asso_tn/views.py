@@ -14,8 +14,7 @@ class MainTransportNantes(TemplateView):
         return context
 
 class QuiSommesNousView(TemplateView):
-    # template_name = 'asso_tn/qui-sommes-nous.html'
-    template_name = 'asso_tn/x.html'
+    template_name = 'asso_tn/qui-sommes-nous.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
