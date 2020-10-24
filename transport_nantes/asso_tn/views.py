@@ -12,3 +12,11 @@ class MainTransportNantes(TemplateView):
         # print(get_current_site(context['view'].request))
         # print(Site.objects.get_current().domain == 'example.com')
         return context
+
+class QuiSommesNousView(TemplateView):
+    # template_name = 'asso_tn/qui-sommes-nous.html'
+    template_name = 'asso_tn/x.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
