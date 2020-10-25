@@ -93,10 +93,12 @@
 	      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Plus</a>
 	      <div class="dropdown-menu">
 		  <a class="dropdown-item" href="{% url 'asso_tn:qui-sommes-nous' %}">Qui sommes-nous ?</a>
+		  <a class="dropdown-item" href="{% url 'asso_tn:join' %}">Adhérer</a>
 		  <a class="dropdown-item" href="{% url 'legal:sponsor' %}">Sponsor</a>
 		  <a class="dropdown-item" href="{% url 'legal:aligned_orgs' %}">Associations</a>
 		  <a class="dropdown-item" href="{% url 'legal:volunteer' %}">Bénévolat</a>
 		  <a class="dropdown-item" href="{% url 'legal:jobs' %}">Jobs</a>
+		  <a class="dropdown-item" href="{% url 'asso_tn:contact' %}">Nous contacter</a>
 		  {% if user.is_authenticated %}
 		  <form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
 		  {% else %}{% if not is_production %}
