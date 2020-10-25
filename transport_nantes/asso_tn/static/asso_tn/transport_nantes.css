@@ -11,23 +11,6 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.hero-image {
-    /*
-      Use "linear-gradient" to add a darken background effect to the
-      image (photographer.jpg). This will make the text easier to read
-   */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-		      url("/static/velopolitain/tactical/provisoire-3.jpg");
-
-    /* Set a specific height */
-    height: 40%;
-
-    /* Position and center the image to scale nicely on all screens */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-}
 /* Place text in the middle of the image */
 .hero-text {
     text-align: center;
@@ -51,3 +34,8 @@ body, html {
     #5BC2E7;
     #FA4616;
 */
+
+container.inset {
+    margin-left: 30px;
+    margin-right: 30px;
+}

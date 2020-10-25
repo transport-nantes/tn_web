@@ -8,13 +8,25 @@ class MainTransportNantes(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['hero'] = True
+        context['hero_image'] = "/static/velopolitain/tactical/provisoire-3.jpg"
         # print(dir(context['view'].request))
         # print(get_current_site(context['view'].request))
         # print(Site.objects.get_current().domain == 'example.com')
         return context
 
 class AssoView(TemplateView):
+    hero_image_map = {'asso_tn/qui-sommes-nous.html':
+                      "/static/asso_tn/happy-folks-1000.jpg",
+                      'asso_tn/join.html':
+                      "/static/asso_tn/happy-folks-1000.jpg",
+                      'asso_tn/contact.html':
+                      "/static/asso_tn/happy-folks-1000.jpg",
+    }
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.template_name in self.hero_image_map:
+            context['hero'] = True
+            context['hero_image'] = self.hero_image_map[self.template_name]
         return context
-
