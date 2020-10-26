@@ -9,9 +9,9 @@
 
 <div class="hero-image">
   <div class="hero-text">
-    <h1>ヴェロポリタン！</h1>
-    <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:index' %}">Pour
-    un réseau cyclable sécurisé, sur toute la métropole</a></p>
+    {% comment %}<h1>Vélopolitain</h1>{% endcomment %}
+    <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:index' %}">
+    Nous voulons une mobilité plus sécurisée, plus fluide, plus vertueuse, pour toutes et tous</a></p>
     <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
   </div>
 </div>
@@ -23,49 +23,63 @@
     <div class="row">
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="static/velopolitain/tactical/provisoire-4.jpg">
+		<a href="">
 		    <img src="static/velopolitain/tactical/provisoire-4.jpg"
 			 alt="Lorem ipsum" style="width:100%">
 		    <div class="caption">
-			<p>Hello 1 !  Lorem ipsum dolor sit amet, consectetur
-			    adipiscing elit.</p>
+			<h2>Les rencontres visibles</h2>
+			<p>
+			    Nous distribuons des gilets réfléchissants !
+			    Rencontre 1 - Le 29/11-16 heures Pont Anne
+			    de Bretagne.
+			</p>
 		    </div>
 		</a>
 	    </div>
 	</div>
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="static/velopolitain/tactical/provisoire-1.jpg">
+		<a href="{% url 'velopolitain:index' %}">
 		    <img src="static/velopolitain/tactical/provisoire-1.jpg"
 		    alt="Vel fingilla" style="width:100%">
 		    <div class="caption">
-			<p>Hello 2 !  Vel fringilla est ullamcorper eget nulla
-			    facilisi.</p>
+			<h2>Le Vélopolitain</h2>
+			<p>
+			    Des axes cyclables tous les kilomètres.
+			    La sécurité de 7 à 77 ans sur les voies et les ronds-points.
+			    La liberté de rouler à son allure.
+			</p>
 		    </div>
 		</a>
 	    </div>
 	</div>
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="static/velopolitain/tactical/provisoire-6.jpg">
+		<a href="{% url 'grand_nantes:index' %}">
 		   <img src="static/velopolitain/tactical/provisoire-6.jpg"
 		   alt="Morbi enim" style="width:100%">
 		   <div class="caption">
-		       <p>Hello 3 !  Morbi enim nunc faucibus a. Tristique et
-			   egestas quis ipsum suspendisse ultrices.</p>
+			<h2>La grande mobilité</h2>
+			<p>
+			    Une fréquence d’au moins 15 mn pour tous
+			    les trams/bus/cars/TER dans tout
+			    l’Ouest
+			</p>
 		   </div>
 		</a>
 	    </div>
 	</div>
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="static/velopolitain/tactical/provisoire-5.jpg">
+		<a href="">
 		    <img src="static/velopolitain/tactical/provisoire-5.jpg"
 		   alt="Est velit egestas" style="width:100%">
 		    <div class="caption">
-			<p>Hello 4 !  Est velit egestas dui id ornare arcu
-			    odio. Consectetur lorem donec massa sapien faucibus et
-			    molestie ac feugiat.</p>
+		       <h2>Les ambassadeurs Mobilitains</h2>
+		       <p>
+			   Vous avez envie d’être un.e porte parole, de
+			   réfléchir et agir avec nous ?
+		       </p>
 		    </div>
 		</a>
 	    </div>
