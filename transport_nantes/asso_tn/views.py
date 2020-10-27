@@ -9,7 +9,7 @@ class MainTransportNantes(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
-        context['hero_image'] = "/static/velopolitain/tactical/provisoire-3.jpg"
+        context['hero_image'] = "/static/asso_tn/images-quentin-boulegon/pont-rousseau-1.jpg"
         # print(dir(context['view'].request))
         # print(get_current_site(context['view'].request))
         # print(Site.objects.get_current().domain == 'example.com')

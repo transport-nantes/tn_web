@@ -24,14 +24,13 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'velopolitain:lab' 'gilets' %}">
-		    <img src="static/velopolitain/tactical/provisoire-4.jpg"
-			 alt="Lorem ipsum" style="width:100%">
+		    <img src="/static/asso_tn/images-quentin-boulegon/gilets-1.jpg"
+			 alt="" style="width:100%">
 		    <div class="caption">
-			<h2 class="font-weight-light">Les rencontres visibles</h2>
+			<h2 class="font-weight-light"
+			    style="font-variant: small-caps;">Rencontres visibles</h2>
 			<p>
-			    Des gilets réfléchissants offerts le 29/10
-			    à Nantes
-			    {% comment %} Gilets réfléchissants gratuits {% endcomment %}
+			    Gilets réfléchissants gratuits
 			</p>
 		    </div>
 		</a>
@@ -40,10 +39,11 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'velopolitain:lab' 'intro' %}">
-		    <img src="static/velopolitain/tactical/provisoire-1.jpg"
+		    <img src="/static/asso_tn/images-quentin-boulegon/vélopolitain-2.jpg"
 		    alt="Vel fingilla" style="width:100%">
 		    <div class="caption">
-			<h2 class="font-weight-light">Le Vélopolitain</h2>
+			<h2 class="font-weight-light"
+			    style="font-variant: small-caps;">Vélopolitain</h2>
 			<p>
 			    Un vrai réseau cyclable dans votre métropole&nbsp;!
 			</p>
@@ -54,14 +54,13 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'grand_nantes:index' %}">
-		   <img src="static/velopolitain/tactical/provisoire-6.jpg"
+		   <img src="/static/asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg"
 		   alt="Morbi enim" style="width:100%">
 		   <div class="caption">
-		       <h2 class="font-weight-light">La grande mobilité</h2>
+		       <h2 class="font-weight-light"
+			   style="font-variant: small-caps;">Grande mobilité</h2>
 		       <p>
-			   Une fréquence d’au-moins 15 mn pour tous
-			   les trams/bus/cars/TER dans tout l’Ouest
-			   {% comment %} Plus de dessertes partout dans la région {% endcomment %}
+			   Plus de dessertes partout dans la région
 		       </p>
 		   </div>
 		</a>
@@ -70,10 +69,11 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'asso_tn:ambassadeur' %}">
-		    <img src="static/velopolitain/tactical/provisoire-5.jpg"
+		    <img src="/static/asso_tn/images-libres/pexels-andrea-piacquadio-3777952-500.jpg"
 		   alt="Est velit egestas" style="width:100%">
 		    <div class="caption">
-		       <h2 class="font-weight-light">Les ambassadeurs Mobilitains</h2>
+		       <h2 class="font-weight-light"
+			   style="font-variant: small-caps;">Ambassadeurs Mobilitains</h2>
 			<p>
 			    Vous avez envie d’être un.e porte parole,
 			    de réfléchir et agir avec nous ?
@@ -102,76 +102,48 @@
 
 		<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
 
-		<p align="center">
-		    <a href="{% url 'index' %}" class="btn
-		    btn-outline-primary btn-lg">Nous découvrir</a>
-<a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
+		<p>
+		    <a href="{% url 'index' %}"
+		       class="btn
+			      btn-outline-primary btn-lg">Nous
+			découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+		    {% comment %}
+		    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
+		       class="btn btn-primary btn-lg" role="button"
+		       target="_blank">J'adhère</a>
+		    {% endcomment %}
 		</p>
 	    </div>
-	</div>
-    </div>
-
-    <div class="row">
-	<div class="col-lg-12">
-	    <p>Notre vision est simple : donner un <strong>choix de déplacement crédible</strong> à
-		chacun, améliorer les déplacements de chacun, <strong>même ceux qui choisissent
-		de ne pas changer</strong>.  Pour agir, nous avons besoin de votre voix.</p>
-
-	    <p class="lead text-primary">Notre stratégie est également simple :
-		engager nos élus, leur montrer que nous sommes nombreux à vouloir
-		un système de déplacement efficace, pas cher, et écologique.
-	    </p>
-
-	    <p><strong>Nous avons le choix</strong> : continuer à créer plus
-		de capacité voiture ou commencer à offrir un vrai choix aux
-		habitants de notre région.  Et le choix est clair : aucune ville,
-		aucune région n'a jamais réduit ses bouchons en élargissant
-		les capacités.  Les régions qui encouragent et construisent
-		pour les cyclistes, pour la marche à pied, et pour les transports
-		collectifs, par contre, voient leur bouchons diminuer, voire
-		disparaître.  Sans obliger qui que ce soit à changer de mode de
-		déplacement.</p>
-
-	    {% comment %}
-	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
-	    {% endcomment %}
 	</div>
     </div>
 
 </div>
 <div container>
     <div class="Row">
-	<h1>Ensemble nous sommes la solution</h1>
+	<h1>Participez à l’aventure&nbsp;!</h1>
     </div>
     <div class="row">
-	<div class="col-sm-6">
-	    <div class="thumbnail">
-		<a href="">
-		    <img src="static/velopolitain/tactical/provisoire-4.jpg"
-			 alt="Lorem ipsum" style="width:100%">
-		    <div class="caption">
-			{% comment %}<h2>Les rencontres visibles</h2>{% endcomment %}
-			<p>
-			    Faire un don
-			</p>
-		    </div>
-		</a>
-	    </div>
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
+		<img src="static/velopolitain/tactical/provisoire-2.png"
+		     alt="foo" style="width:100%;">
+		<span class="image-overlay-text
+			     image-overlay-text-blue
+			     image-overlay-background-gray
+			     image-overlay-centered">Faire un don</span>
+	    </a>
 	</div>
-	<div class="col-sm-6">
-	    <div class="thumbnail">
-		<a href="{% url 'velopolitain:index' %}">
-		    <img src="static/velopolitain/tactical/provisoire-1.jpg"
-		    alt="Vel fingilla" style="width:100%">
-		    <div class="caption">
-			{% comment %}<h2>Le Vélopolitain</h2>{% endcomment %}
-			<p>
-			    Adhérer
-			</p>
-		    </div>
-		</a>
-	    </div>
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
+		<img src="static/velopolitain/tactical/provisoire-3.jpg"
+		     alt="foo" style="width:100%;">
+		<div class="image-overlay-text
+			    image-overlay-text-blue
+			    image-overlay-background-gray
+			    image-overlay-centered">Faire un don</div>
+	    </a>
 	</div>
     </div>
 </div>
+
 {% endblock %}

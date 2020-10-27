@@ -39,3 +39,67 @@ container.inset {
     margin-left: 30px;
     margin-right: 30px;
 }
+
+/*
+  For placing images over text, other than hero images.
+*/
+ /* Container holding the image and the text */
+.image-overlay-container {
+  position: relative;
+  text-align: center;
+}
+.image-overlay-text {
+    font-weight: bold;
+    font-size: 200%;
+}
+.image-overlay-text-white {
+  color: white;
+}
+.image-overlay-text-gray {
+  color: #7F6966;
+}
+.image-overlay-text-blue {
+  color: #5BC2E7;
+}
+.image-overlay-text-red {
+  color: #FA4616;
+}
+.image-overlay-background-white {
+    background: #FFFFFF;
+}
+.image-overlay-background-gray {
+    background: #7F6966;
+}
+.image-overlay-background-blue {
+    background: #5BC2E7;
+}
+.image-overlay-background-red {
+    background: #FA4616;
+}
+
+.image-overlay-bottom-left {
+  position: absolute;
+  bottom: 8px;
+  left: 16px;
+}
+.image-overlay-top-left {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+}
+.image-overlay-top-right {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+}
+.image-overlay-bottom-right {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+}
+.image-overlay-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} 
