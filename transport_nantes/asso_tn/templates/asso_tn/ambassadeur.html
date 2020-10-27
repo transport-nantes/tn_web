@@ -1,0 +1,57 @@
+{% extends 'asso_tn/base_transport_nantes.html' %}
+{% load static %}
+
+{% block content %}
+<div class="hero-image">
+  <div class="hero-text">
+    <h1>Ambassadeurs Mobilitain</h1>
+    {% comment %}<p class="hero-description"></p>{% endcomment %}
+  </div>
+</div>
+
+<div container>
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Devenir ambassadeur Mobilitain c’est quoi ?</h1>
+
+	    <p>
+		C’est prendre la parole, réfléchir avec nous, faire
+		avancer les projets pour votre commune.  Bref, c’est
+		devenir un acteur de la mobilité et c’est aussi passer
+		des super moments avec toute la communauté des
+		Mobilitains&nbsp;!</p>
+
+	    <p>
+		<strong>Alors concrètement ?</strong> Vous choisissez
+		le projet que vous avez envie de faire vivre et
+		rencontrons-nous vite !</p>
+
+	    <p>
+		J’ai à coeur d’aider au développement du Vélopolitain
+		dans ma commune, de faire grandir les usagers des pistes
+		cyclables et d'inciter à plus de pratique du vélo : d’en
+		parler, de repérer et faire repérer les choses à faire
+		évoluer, de proposer des échanges, d’animer une communauté
+		de ma commune = <a href="{% url 'asso_tn:contact' %}">Je
+		veux être ambassadeur Vélopolitain</a>.
+	    </p>
+
+	    <p>
+		Je souhaite agir et donner envie à d’autres que moi
+		d’agir pour un réseau de transports en commun beaucoup
+		plus important avec la grande Moblité : d’en parler,
+		de repérer et faire repérer les choses à faire
+		évoluer, de proposer des échanges, d’animer une
+		communauté de ma commune = <a href="{% url 'asso_tn:contact' %}">Je
+		veux être ambassadeur de la Grande Mobilité</a>.
+	    </p>
+
+
+	    {% comment %}
+	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+	    {% endcomment %}
+	</div>
+    </div>
+
+</div>
+{% endblock %}

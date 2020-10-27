@@ -17,11 +17,13 @@ class MainTransportNantes(TemplateView):
 
 class AssoView(TemplateView):
     hero_image_map = {'asso_tn/qui-sommes-nous.html':
-                      "/static/asso_tn/happy-folks-1000.jpg",
+                      "/static/asso_tn/happy-folks-1000.jpg", # 
                       'asso_tn/join.html':
-                      "/static/asso_tn/happy-folks-1000.jpg",
+                      "/static/asso_tn/happy-folks-1000.jpg", # 
                       'asso_tn/contact.html':
-                      "/static/asso_tn/happy-folks-1000.jpg",
+                      "/static/asso_tn/happy-folks-1000.jpg", #
+                      'asso_tn/ambassadeur.html':
+                      "/static/asso_tn/happy-folks-1000.jpg", #
     }
 
     def get_context_data(self, **kwargs):

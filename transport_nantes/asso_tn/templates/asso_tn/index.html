@@ -10,8 +10,8 @@
 <div class="hero-image">
   <div class="hero-text">
     {% comment %}<h1>Vélopolitain</h1>{% endcomment %}
-    <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:index' %}">
-    Une mobilité sûr, vertueuse, et agréable</a></p>
+    <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:lab' 'intro' %}">
+    Pour une mobilité sûr, vertueuse, et agréable</a></p>
     <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
   </div>
 </div>
@@ -23,13 +23,15 @@
     <div class="row">
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="">
+		<a href="{% url 'velopolitain:lab' 'gilets' %}">
 		    <img src="static/velopolitain/tactical/provisoire-4.jpg"
 			 alt="Lorem ipsum" style="width:100%">
 		    <div class="caption">
-			{% comment %}<h2>Les rencontres visibles</h2>{% endcomment %}
+			<h2 class="font-weight-light">Les rencontres visibles</h2>
 			<p>
-			    Gilets réfléchissants gratuits
+			    Des gilets réfléchissants offerts le 29/10
+			    à Nantes
+			    {% comment %} Gilets réfléchissants gratuits {% endcomment %}
 			</p>
 		    </div>
 		</a>
@@ -41,10 +43,9 @@
 		    <img src="static/velopolitain/tactical/provisoire-1.jpg"
 		    alt="Vel fingilla" style="width:100%">
 		    <div class="caption">
-			{% comment %}<h2>Le Vélopolitain</h2>{% endcomment %}
+			<h2 class="font-weight-light">Le Vélopolitain</h2>
 			<p>
-			    Améliorer les pistes cyclabes dans toute
-			    la métropole
+			    Un vrai réseau cyclable dans votre métropole&nbsp;!
 			</p>
 		    </div>
 		</a>
@@ -56,24 +57,28 @@
 		   <img src="static/velopolitain/tactical/provisoire-6.jpg"
 		   alt="Morbi enim" style="width:100%">
 		   <div class="caption">
-		       {% comment %}<h2>La grande mobilité</h2>{% endcomment %}
+		       <h2 class="font-weight-light">La grande mobilité</h2>
 		       <p>
-			   Plus de dessertes partout dans la région
-			</p>
+			   Une fréquence d’au-moins 15 mn pour tous
+			   les trams/bus/cars/TER dans tout l’Ouest
+			   {% comment %} Plus de dessertes partout dans la région {% endcomment %}
+		       </p>
 		   </div>
 		</a>
 	    </div>
 	</div>
 	<div class="col-md-3">
 	    <div class="thumbnail">
-		<a href="">
+		<a href="{% url 'asso_tn:ambassadeur' %}">
 		    <img src="static/velopolitain/tactical/provisoire-5.jpg"
 		   alt="Est velit egestas" style="width:100%">
 		    <div class="caption">
-		       {% comment %}<h2>Les ambassadeurs Mobilitains</h2>{% endcomment %}
-		       <p>
-			   Soutenez-nous dans votre commune
-		       </p>
+		       <h2 class="font-weight-light">Les ambassadeurs Mobilitains</h2>
+			<p>
+			    Vous avez envie d’être un.e porte parole,
+			    de réfléchir et agir avec nous ?
+			    {% comment %} Soutenez-nous dans votre commune {% endcomment %}
+			</p>
 		    </div>
 		</a>
 	    </div>
@@ -83,7 +88,7 @@
     <div class="jumbotron">
 	<div class="row">
 	    <div class="col-lg-12">
-		<h1>Mieux nous connaître</h1>
+		<h1>L'association des Mobilitains</h1>
 
 		<p>Nous agissons pour une mobilité plus fluide, plus
 		sécurisée, plus vertueuse dans la l’Ouest pour les
