@@ -12,12 +12,19 @@
 {% block twitter_title %}Le Vélopolitain{% endblock twitter_title %}
 {% block twitter_description %}La crise sanitaire nous offre en même temps une opportunité : un moment calme pour mettre en oeuvre le début d'un système de transport plus équitable.  Prenons ensemble ce moment pour commencer le Vélopolitain de Nantes Métropole.{% endblock twitter_description %}
 
-{% block app_content %}
-<div container>
+{% block content %}
+
+<div class="hero-image">
+  <div class="hero-text">
+    <h1>Le Vélopolitain</h1>
+    {% comment %}<p class="hero-description"></p>{% endcomment %}
+    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
+  </div>
+</div>
+
+<div class="container pt-5">
     <div class="row">
 	<div class="col-lg-12">
-	    <p><i>image : pont AdB</i></p>
-	    <h1>Le Vélopolitain</h1>
 
 	    <p class="font-weight-light text-secondary">
 		Il doit poursuivre son développement pour que beaucoup
@@ -29,21 +36,14 @@
 
 	    <p>
 		Le Vélopolitain doit grandir en continuant de se développer.
-	    </p>
-	    <p>
-		3 grands principes encadrent ce développement&nbsp;:
-	    </p>
-	    <p>
-		Des axes cyclables tous les kilomètres.
-	    </p>
-	    <p>
-		La sécurité de 7 à 77 ans sur les voies et les ronds-points.
-	    </p>
-	    <p>
-		La liberté de rouler à son allure.
-	    </p>
 
-	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+		<ul>
+		    <li>3 grands principes encadrent ce développement&nbsp;:</li>
+		    <li>Des axes cyclables tous les kilomètres.</li>
+		    <li>La sécurité de 7 à 77 ans sur les voies et les ronds-points.</li>
+		    <li>La liberté de rouler à son allure.</li>
+		</ul>
+	    </p>
 
 	    <h2>Ses débuts à Nantes Métropole</h2>
 
@@ -60,22 +60,13 @@
 	    <h2 class="font-weight-light">Devenez ambassadeur Mobilitain pour le Vélopolitain</h2>
 
 	    <p>
-		<strong>(Pour moi, ça doit être un lien vers la page d'ambassadeurs. -Jeff)</strong>
-	    </p>
-	    <p>
 		Cette évolution doit se faire de façon collective et
 		nous avons besoin de représentants qui puisse
 		réfléchir et agir avec nous afin que nous soyons plus
-		forts pour avoir un impact auprès des élus.</p>
-</div>
-    </div>
-</div>
-
-<div container>
-    <div class="row">
-	<div class="col-lg-12">
-	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+		forts pour avoir un impact auprès des élus.  <a href="{% url 'asso_tn:ambassadeur' %}">Je veux être ambassadeur du Vélopolitain&nbsp;!</a>
+	    </p>
 	</div>
     </div>
 </div>
+
 {% endblock %}

@@ -11,7 +11,10 @@ class MainVelopolitain(TemplateView):
 class BlogVelopolitain(TemplateView):
     """Should this perhaps move to communications/ ?
     """
-    hero_image_map = {'gilets': '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'}
+    hero_image_map = {
+        'gilets': '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg', #
+        'intro': '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg', # 
+    }
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if context['slug'] in self.hero_image_map:
