@@ -12,12 +12,18 @@
 {% block twitter_title %}Le Vélopolitain{% endblock twitter_title %}
 {% block twitter_description %}La crise sanitaire nous offre en même temps une opportunité : un moment calme pour mettre en oeuvre le début d'un système de transport plus équitable.  Prenons ensemble ce moment pour commencer le Vélopolitain de Nantes Métropole.{% endblock twitter_description %}
 
-{% block app_content %}
-<div container>
+{% block content %}
+<div class="hero-image">
+  <div class="hero-text">
+    <h1>Les rencontres visibles</h1>
+    {% comment %}<p class="hero-description"></p>{% endcomment %}
+    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
+  </div>
+</div>
+
+<div class="container pt-5">
     <div class="row">
 	<div class="col-lg-12">
-	    <p><i>image : pont AdB</i></p>
-	    <h1>Les recontres visibles</h1>
 
 	    <p>
 		Un jour, un lieu, une distribution de gilets
@@ -40,8 +46,8 @@
 	<div class="col-sm-6">
 	    <div class="thumbnail">
 		<a href="{% url 'velopolitain:lab' 'intro' %}">
-		    <img src="/static/asso_tn/images-quentin-boulegon/vélopolitain-2.jpg"
-			 alt="Vel fingilla" style="width:100%">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
+			 alt="Le Vélopolitain" style="width:100%">
 		    <div class="caption">
 			<h2 class="font-weight-light"
 			    style="font-variant: small-caps;">Le Vélopolitain</h2>
@@ -52,8 +58,8 @@
 	<div class="col-sm-6">
 	    <div class="thumbnail">
 		<a href="{% url 'grand_nantes:index' %}">
-		    <img src="/static/asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg"
-			 alt="Morbi enim" style="width:100%">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+			 alt="La Grande Mobilité" style="width:100%">
 		    <div class="caption">
 			<h2 class="font-weight-light"
 			    style="font-variant: small-caps;">La Grande mobilité</h2>
@@ -75,7 +81,7 @@
     </div>
 </div>
 
-<div container>
+<div class="container">
     <div class="row">
 	<h1>Participez à l’aventure&nbsp;!</h1>
     </div>

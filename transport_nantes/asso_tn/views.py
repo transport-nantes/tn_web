@@ -23,7 +23,7 @@ class AssoView(TemplateView):
                       'asso_tn/contact.html':
                       "/static/asso_tn/happy-folks-1000.jpg", #
                       'asso_tn/ambassadeur.html':
-                      "/static/asso_tn/happy-folks-1000.jpg", #
+                      "/static/asso_tn/images-libres/pexels-andrea-piacquadio-3777952-1000.jpg", #
     }
 
     def get_context_data(self, **kwargs):
