@@ -1,4 +1,5 @@
 from asso_tn.utils import make_timed_token, token_valid
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -13,7 +14,7 @@ from django.utils.crypto import get_random_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
 
-from authentication.forms import SignUpForm
+from authentication.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 
 def login(request):
     if request.method == 'POST':
@@ -89,7 +90,7 @@ def activate(request, token):
         auth.login(request, user)
         return redirect('index')
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        return render(request, 'account_activation_invalid.html')
+        return render(request, 'authentication/account_activation_invalid.html')
 
 class DeauthView(LogoutView):
     """Log out the user.
@@ -101,3 +102,23 @@ class DeauthView(LogoutView):
 
     """
     template_name = "asso_tn/index.html"
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            # messages.success(request, f'Your Profile has been Updated Successfully')
+            return redirect('authentication:mod')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+        context = {
+            'u_form': u_form,
+            'p_form': p_form
+        }
+    return render(request, 'authentication/profile.html', context)
