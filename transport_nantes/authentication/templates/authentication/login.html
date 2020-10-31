@@ -24,10 +24,6 @@
 		    Si vous n'avez pas déjà de compte, votre première connexion
 		    en créerait un.
 		</p>
-		<button type="submit" class="btn btn-outline-primary">Connexion</button>
-
-		{% if False %}
-		<p><hr></p>
 		<p>
 		    {{ form.password1.label }}<br>
 		    {{ form.password1 }}
@@ -38,6 +34,15 @@
 		    <p style="color: red">{{ error }}</p>
 		    {% endfor %}
 		</p>
+		<p class="text-secondary">
+		    Sans mot de passe, vous recevrait un mél avec un
+		    lien pour valider votre connexion.  Si vous avez
+		    oublié votre mot de passe, connectez sans, vous
+		    recevrez un mél pour vous connecter.
+		</p>
+		<button type="submit" class="btn btn-outline-primary">Connexion</button>
+
+		<p><hr></p>
 		<p>
 		    {{ form.password2.label }}<br>
 		    {{ form.password2 }}
@@ -48,10 +53,9 @@
 		    <p style="color: red">{{ error }}</p>
 		    {% endfor %}
 		</p>
-		<p>Avec un mot de passe, vous pouvez reconnecter sans
-		    besoin de mél.)</p>
+		<p class="text-secondary">Si vous créez votre compte et vous fournissez un
+		    mot de passe, tapez-le une deuxième fois.</p>
 		<button type="submit" class="btn btn-outline-secondary">Inscription</button>
-		{% endif %}
 	    </form>
 	</div>
     </div>
