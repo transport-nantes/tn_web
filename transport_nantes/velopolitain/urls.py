@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from clickcollect import views as ccv
 
 app_name = 'velopolitain'
 urlpatterns = [

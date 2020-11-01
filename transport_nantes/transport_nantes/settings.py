@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
     'observatoire.apps.ObservatoireConfig',
     'clusterblog.apps.ClusterBlogConfig',
+    'clickcollect.apps.ClickCollectConfig',
     'authentication.apps.AuthenticationConfig',
     'django.contrib.admin',
     'django.contrib.auth',

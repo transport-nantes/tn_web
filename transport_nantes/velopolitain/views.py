@@ -1,4 +1,5 @@
 from django.views.generic.base import TemplateView
+from django.urls import reverse
 
 class MainVelopolitain(TemplateView):
     template_name = 'velopolitain/index.html'

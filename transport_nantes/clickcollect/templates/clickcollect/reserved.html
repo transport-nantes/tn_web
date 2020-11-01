@@ -25,28 +25,56 @@
     <div class="row">
 	<div class="col-lg-12">
 
-	    <p>
-		Un jour, un lieu, une distribution de gilets
-		réfléchissants et l'occasion d’échanger avec vous !
-		Le 29 octobre nous avons distribué 300 gilets
-		réfléchissants, merci pour tous les échanges&nbsp;!</p>
+	    <p class="text-primary">
+		<strong>Votre gilet sera bientôt mis à côté pour vous&nbsp;!</p>
 
-	    <p>
-		Le confinement nous empêche de continuer alors nous
-		vous proposons notre «&nbsp;Click and collect&nbsp;».
-		C’est quoi ? Vous réservez votre gilet et on vous
-		l’offre lors d’une rencontre post-confinement.</p>
+	    <form method="post">
+		{% csrf_token %}
+		<p>
+		    {{ form.first_name.label }}<br>
+		    {{ form.first_name }}
+		    {% if form.first_name.help_text %}
+		    <small style="color: grey">{{ form.first_name.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in form.first_name.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		<p>
+		    {{ form.last_name.label }}<br>
+		    {{ form.last_name }}
+		    {% if form.last_name.help_text %}
+		    <small style="color: grey">{{ form.last_name.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in form.last_name.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
 
-	    <p align="center">
-		<strong>Je réserve mon gilet gratuit
-		dès maintenant&nbsp;!</strong>
-	    </p>
-	    <p align="center">
-		<a href="{% url 'click_collect:gilet_reserve' %}"
-		   class="btn btn-outline-primary btn-lg" role="button">Je réserve&nbsp;!</a>
-	    </p>
+		<p>
+		    {{ form.email.label }}<br>
+		    {{ form.email }}
+		    {% if form.email.help_text %}
+		    <small style="color: grey">{{ form.email.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in form.email.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		<p>
+		    {{ form.captcha.label }}<br>
+		    {{ form.captcha }}
+		    {% if form.captcha.help_text %}
+		    <small style="color: grey">{{ form.captcha.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in form.captcha.errors %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		<button type="submit" class="btn btn-outline-primary">Je réserve</button>
+	    </form>
 
-	    <p align="center">
+	    <p align="center" class="pt-5">
 		Nous avons hâte de vous rencontrer autour de nos 2
 		projets&nbsp;:
 	    </p>
