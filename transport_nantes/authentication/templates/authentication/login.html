@@ -15,11 +15,20 @@
 		    {% if form.email.help_text %}
 		    <small style="color: grey">{{ form.email.help_text }}</small>
 		    {% endif %}
-		    {% for error in form.email.error_messages %}
-		    <p style="color: red">{{ error }}</p>
-		    {% endfor %}
 		</p>
-		<p class="text-important">C'est tout ce qu'il faut !
+		{% for error in form.email.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		<p>
+		    {{ form.captcha }}
+		    {% if form.captcha.help_text %}
+		    <small style="color: grey">{{ form.captcha.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in form.captcha.errors %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		<p class="text-secondary">C'est tout ce qu'il faut !
 		    Vous recevrez un mél pour valider votre connexion.
 		    Si vous n'avez pas déjà de compte, votre première connexion
 		    en créerait un.
@@ -30,10 +39,10 @@
 		    {% if form.password1.help_text %}
 		    <small style="color: grey">{{ form.password1.help_text }}</small>
 		    {% endif %}
-		    {% for error in form.password1.error_messages %}
-		    <p style="color: red">{{ error }}</p>
-		    {% endfor %}
 		</p>
+		{% for error in form.password1.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
 		<p class="text-secondary">
 		    Sans mot de passe, vous recevrait un mél avec un
 		    lien pour valider votre connexion.  Si vous avez
@@ -49,10 +58,10 @@
 		    {% if form.password2.help_text %}
 		    <small style="color: grey">{{ form.password2.help_text }}</small>
 		    {% endif %}
-		    {% for error in form.password2.error_messages %}
-		    <p style="color: red">{{ error }}</p>
-		    {% endfor %}
 		</p>
+		{% for error in form.password2.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
 		<p class="text-secondary">Si vous créez votre compte et vous fournissez un
 		    mot de passe, tapez-le une deuxième fois.</p>
 		<button type="submit" class="btn btn-outline-secondary">Inscription</button>

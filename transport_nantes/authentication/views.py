@@ -16,6 +16,26 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from authentication.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 
+"""
+A quick note on the captcha:
+
+1.  We should monitor it to know how often entities fail and how many
+    attempts it requires to succeed.
+
+2.  We should probably rate-limit the ability to response to captcha
+    challenges.
+
+3.  This article suggests that machines have become so good at
+    responding to captchas that more human techniques are required.
+    It proposes "add one to digits" as a test.  (This is consistent
+    with the evolution of Google's recaptcha.)
+
+    https://starcross.dev/blog/6/customising-django-simple-captcha/
+
+4.  We don't use Google's recaptcha because we'd like to minimise data
+    leaks to third parties, especially to GAFAs.
+
+"""
 def login(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -48,6 +68,9 @@ def login(request):
             user.save()
             send_activation(request, user)
             return redirect('authentication:account_activation_sent', is_new=True)
+        else:
+            # Form is not valid.
+            pass
     else:
         form = SignUpForm()
     return render(request, 'authentication/login.html', {'form': form})

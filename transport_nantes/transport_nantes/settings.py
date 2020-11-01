@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'captcha',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -179,3 +180,11 @@ STATIC_URL = '/static/'
 # Define this for nginx contexts.
 if 'STATIC_ROOT' in dir(settings_local):
     STATIC_ROOT = settings_local.STATIC_ROOT
+
+# CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
+## I have a low success rate on the captcha with noise_arcs enabled.
+## (This is the default behaviour.)
+# CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs','captcha.helpers.noise_dots',)
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_LENGTH = 5

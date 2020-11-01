@@ -31,4 +31,5 @@ urlpatterns = [
     path('vo/', include('velopolitain_observatoire.urls')),
     path('og/', include('open_graph.urls')),
     path('observatoire/', include('observatoire.urls')),
+    path('captcha/', include('captcha.urls')),
 ]
