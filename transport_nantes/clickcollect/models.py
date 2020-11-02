@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import django.utils.timezone
+import uuid
 
 # Create your models here.
 
@@ -9,6 +11,8 @@ class ClickableCollectable(models.Model):
     """Represent things that can be clicked and collected.
     """
     collectable = models.CharField(max_length=80, blank=False)
+    collectable_token = models.CharField(max_length=80, blank=False,
+                                         unique=True)
 
 class ClickAndCollect(models.Model):
     """Represent a click-and-collect instances.
@@ -21,7 +25,13 @@ class ClickAndCollect(models.Model):
     lockdown reflective vest campaign.
 
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     collectable = models.ForeignKey(ClickableCollectable,
                                     on_delete=models.CASCADE)
-    reserve_date = models.DateField()
+    reserve_datetime = models.DateTimeField(default=django.utils.timezone.now)
+
+@receiver(post_save, sender=User)
+def update_user_click_and_collect(sender, instance, created, **kwargs):
+    if created:
+        ClickAndCollect.objects.create(user=instance)
+    instance.clickcollect.save()
