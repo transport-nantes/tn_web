@@ -22,9 +22,12 @@
 		Mobilitains&nbsp;!</p>
 
 	    <p>
-		<strong>Alors concrètement ?</strong> Vous choisissez
-		le projet que vous avez envie de faire vivre et
-		rencontrons-nous vite !</p>
+		<strong>Alors concrètement ?</strong>
+	    </p>
+
+	    <p>
+		Choisissez le projet que vous avez envie de faire
+		vivre et rencontrons-nous vite !</p>
 
 	</div>
     </div>
@@ -32,21 +35,19 @@
     <div class="row">
 	<div class="col-sm-6 image-overlay-container">
 	    <a href="{% url 'asso_tn:contact' %}">
-		<img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
-		     alt="vélopolitain" style="width:100%;">
+		<img src="{% static 'asso_tn/images-libres/vélopolitain.jpg' %}"
+		     alt="vélopolitain" style="width:100%;" class="image-darken-75">
 		<span class="image-overlay-text
-			     image-overlay-text-blue
-			     image-overlay-background-gray
+			     image-overlay-text-white
 			     image-overlay-centered">Vélopolitain</span>
 	    </a>
 	</div>
 	<div class="col-sm-6 image-overlay-container">
 	    <a href="{% url 'asso_tn:contact' %}">
-		<img src="{% static 'asso_tn/images-libres/grande-mobilité-500.jpg' %}"
-		     alt="foo" style="width:100%;">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-75">
 		<div class="image-overlay-text
-			    image-overlay-text-blue
-			    image-overlay-background-gray
+			    image-overlay-text-white
 			    image-overlay-centered">Grande Mobilité</div>
 	    </a>
 	</div>
@@ -59,8 +60,14 @@
 		cyclables et d'inciter à plus de pratique du vélo : d’en
 		parler, de repérer et faire repérer les choses à faire
 		évoluer, de proposer des échanges, d’animer une communauté
-		de ma commune = <a href="{% url 'asso_tn:contact' %}">Je
-		veux être ambassadeur Vélopolitain</a>.
+		de ma commune.
+	    </p>
+	    <p>
+		<a href="{% url 'asso_tn:contact' %}"
+		       class="btn
+			      btn-outline-primary btn-lg">Je
+		    veux être ambassadeur Vélopolitain
+		    <i class="fa fa-arrow-right" area-hidden="true"></i></a>
 	    </p>
 	</div>
 	<div class="col-sm-6">
@@ -70,14 +77,20 @@
 		plus important avec la grande Moblité : d’en parler,
 		de repérer et faire repérer les choses à faire
 		évoluer, de proposer des échanges, d’animer une
-		communauté de ma commune = <a href="{% url 'asso_tn:contact' %}">Je
-		veux être ambassadeur de la Grande Mobilité</a>.
+		communauté de ma commune
+	    </p>
+	    <p>
+		<a href="{% url 'asso_tn:contact' %}"
+		       class="btn
+			      btn-outline-primary btn-lg">Je
+		    veux être ambassadeur de la Grande Mobilité
+		    <i class="fa fa-arrow-right" area-hidden="true"></i></a>
 	    </p>
 	</div>
     </div>
 </div>
 
-<div class="container">
+<div class="container pt-5">
     <div class="row">
 	<div class="col-lg-12">
 	    <h1>Participez à l’aventure&nbsp;!</h1>
@@ -86,22 +99,22 @@
     <div class="row">
 	<div class="col-sm-6 image-overlay-container">
 	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
-		<img src="/static/velopolitain/tactical/provisoire-2.png"
-		     alt="foo" style="width:100%;">
-		<span class="image-overlay-text
-			     image-overlay-text-blue
-			     image-overlay-background-gray
+		<img src="{% static 'asso_tn/images-libres/don.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<span class="smallcap
+			     image-overlay-text
+			     image-overlay-text-white
 			     image-overlay-centered">Faire un don</span>
 	    </a>
 	</div>
 	<div class="col-sm-6 image-overlay-container">
-	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
-		<img src="/static/velopolitain/tactical/provisoire-3.jpg"
-		     alt="foo" style="width:100%;">
-		<div class="image-overlay-text
-			    image-overlay-text-blue
-			    image-overlay-background-gray
-			    image-overlay-centered">Faire un don</div>
+	    <a href="{% url 'legal:volunteer' %}">
+		<img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<div class="smallcap
+			    image-overlay-text
+			    image-overlay-text-white
+			    image-overlay-centered">Devenir bénévole</div>
 	    </a>
 	</div>
     </div>

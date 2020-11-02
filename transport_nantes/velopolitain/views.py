@@ -12,7 +12,7 @@ class BlogVelopolitain(TemplateView):
     """Should this perhaps move to communications/ ?
     """
     hero_image_map = {
-        'gilets': '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg', #
+        'gilets': '/static/velopolitain/gilet-banner.png', #
         'intro': '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg', # 
     }
     def get_context_data(self, **kwargs):

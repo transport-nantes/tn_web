@@ -24,7 +24,7 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'velopolitain:lab' 'gilets' %}">
-		    <img src="/static/asso_tn/images-quentin-boulegon/gilets-1.jpg"
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
 			 alt="" style="width:100%">
 		    <div class="caption">
 			<h2 class="font-weight-light"
@@ -39,7 +39,7 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'velopolitain:lab' 'intro' %}">
-		    <img src="/static/asso_tn/images-quentin-boulegon/vélopolitain-2.jpg"
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
 		    alt="Vel fingilla" style="width:100%">
 		    <div class="caption">
 			<h2 class="font-weight-light"
@@ -54,7 +54,7 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'grand_nantes:index' %}">
-		   <img src="/static/asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg"
+		   <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
 		   alt="Morbi enim" style="width:100%">
 		   <div class="caption">
 		       <h2 class="font-weight-light"
@@ -69,7 +69,7 @@
 	<div class="col-md-3">
 	    <div class="thumbnail">
 		<a href="{% url 'asso_tn:ambassadeur' %}">
-		    <img src="{% static 'asso_tn/images-libres/pexels-andrea-piacquadio-3777952-500.jpg' %}"
+		    <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
 		   alt="Devenir ambassadeur" style="width:100%">
 		    <div class="caption">
 		       <h2 class="font-weight-light"
@@ -127,22 +127,22 @@
     <div class="row">
 	<div class="col-sm-6 image-overlay-container">
 	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
-		<img src="/static/velopolitain/tactical/provisoire-2.png"
-		     alt="foo" style="width:100%;">
-		<span class="image-overlay-text
-			     image-overlay-text-blue
-			     image-overlay-background-gray
+		<img src="{% static 'asso_tn/images-libres/don.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<span class="smallcap
+			     image-overlay-text
+			     image-overlay-text-white
 			     image-overlay-centered">Faire un don</span>
 	    </a>
 	</div>
 	<div class="col-sm-6 image-overlay-container">
-	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
-		<img src="/static/velopolitain/tactical/provisoire-3.jpg"
-		     alt="foo" style="width:100%;">
-		<div class="image-overlay-text
-			    image-overlay-text-blue
-			    image-overlay-background-gray
-			    image-overlay-centered">Faire un don</div>
+	    <a href="{% url 'legal:volunteer' %}">
+		<img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<div class="smallcap
+			    image-overlay-text
+			    image-overlay-text-white
+			    image-overlay-centered">Devenir bénévole</div>
 	    </a>
 	</div>
     </div>

@@ -35,6 +35,15 @@ body, html {
     #FA4616;
 */
 
+.image-darken-50 {
+    filter: brightness(50%);
+}
+.image-darken-65 {
+    filter: brightness(65%);
+}
+.image-darken-75 {
+    filter: brightness(75%);
+}
 /*
   For placing images over text, other than hero images.
 */
@@ -49,6 +58,9 @@ body, html {
 }
 .image-overlay-text-white {
   color: white;
+}
+.image-overlay-text-black {
+  color: black;
 }
 .image-overlay-text-gray {
   color: #7F6966;
@@ -98,3 +110,14 @@ body, html {
   left: 50%;
   transform: translate(-50%, -50%);
 } 
+.image-overlay-small-text {
+    font-size: 70%;
+}
+
+.smallcap {
+    font-variant: small-caps;
+}
+span.centered {
+    display: table;
+    margin: 0 auto;
+}

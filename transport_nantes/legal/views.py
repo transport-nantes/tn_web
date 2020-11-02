@@ -21,6 +21,8 @@ class SponsorView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['hero'] = True
+        context['hero_image'] = "/static/legal/sponsor.jpg"
         return context
 
 class VolunteerView(TemplateView):
@@ -28,6 +30,8 @@ class VolunteerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['hero'] = True
+        context['hero_image'] = "/static/legal/bénévole.jpg"
         return context
 
 class JobsView(TemplateView):
