@@ -40,6 +40,7 @@ class GiletReserveView(FormView):
             user = User.objects.filter(email=form.cleaned_data['email']).first()
             if user is None:
                 user = User()   # New user.
+                user.username = get_random_string(20)
                 user.first_name = form.cleaned_data['first_name']
                 user.last_name = form.cleaned_data['last_name']
                 user.email = form.cleaned_data['email']
