@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm settings_local.py
+ln -s settings_local.py.DEV settings_local.py

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rm settings_local.py
+ln -s settings_local.py.BETA settings_local.py
+echo "Restart local dev server to pick up settings changes."
+
+ssh -L5432:localhost:5432 nantes-4.p27.eu "while true; do echo forwarding $(date); sleep 30; done"
+
+./use-dev
+ls -l settings_local.py
+echo "Restart local dev server to pick up settings changes."
