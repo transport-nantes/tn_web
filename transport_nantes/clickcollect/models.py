@@ -29,9 +29,3 @@ class ClickAndCollect(models.Model):
     collectable = models.ForeignKey(ClickableCollectable,
                                     on_delete=models.CASCADE)
     reserve_datetime = models.DateTimeField(default=django.utils.timezone.now)
-
-@receiver(post_save, sender=User)
-def update_user_click_and_collect(sender, instance, created, **kwargs):
-    if created:
-        ClickAndCollect.objects.create(user=instance)
-    instance.clickcollect.save()
