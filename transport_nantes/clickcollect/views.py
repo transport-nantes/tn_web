@@ -3,6 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.crypto import get_random_string
 from .forms import ClickCollectForm
 from .models import ClickableCollectable, ClickAndCollect
 
