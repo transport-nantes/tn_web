@@ -39,14 +39,16 @@ class GiletReserveView(FormView):
         if user is None or user.pk is None:
             user = User.objects.filter(email=form.cleaned_data['email']).first()
             if user is None:
-                user = User     # New user.
+                user = User()   # New user.
                 user.first_name = form.cleaned_data['first_name']
                 user.last_name = form.cleaned_data['last_name']
                 user.email = form.cleaned_data['email']
                 user.save()
         print((user, user.pk,))
         gilet = ClickableCollectable.objects.get(collectable_token='gilet-transport-nantes')
-        ClickAndCollect.objects.create(user=user, collectable=gilet)
+        click_and_collect = ClickAndCollect.objects.create(user=user, collectable=gilet)
+        click_and_collect.save()
+        print((click_and_collect, click_and_collect.pk,))
         return super(GiletReserveView, self).form_valid(form)
 
 class GiletReservedView(TemplateView):
