@@ -121,3 +121,10 @@ span.centered {
     display: table;
     margin: 0 auto;
 }
+.banner-caption {
+    background: #7f6966;
+    color: #5bc2e7;
+    font-weight: 700;
+    text-align: center;
+    font-size: 150%;
+}
