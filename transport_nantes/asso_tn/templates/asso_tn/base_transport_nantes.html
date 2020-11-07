@@ -91,7 +91,7 @@
     {% block navbar %}
        <nav class="navbar navbar-expand-md bg-dark navbar-dark">
 	<!-- Brand -->
-	<a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-logo_colored-32.png' %}" alt="Transport Nantes logo"></a>
+	<a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-logo_white-32.png' %}" alt="Transport Nantes logo"></a>
 	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
 	  {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
 	  {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
@@ -119,10 +119,8 @@
 	      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Plus</a>
 	      <div class="dropdown-menu">
 		  <a class="dropdown-item" href="{% url 'asso_tn:join' %}">Adhérer</a>
+		  <a class="dropdown-item" href="{% url 'legal:volunteer' %}">Agir</a>
 		  <a class="dropdown-item" href="{% url 'legal:sponsor' %}">Sponsor</a>
-		  <a class="dropdown-item" href="{% url 'legal:aligned_orgs' %}">Associations</a>
-		  <a class="dropdown-item" href="{% url 'legal:volunteer' %}">Bénévolat</a>
-		  <a class="dropdown-item" href="{% url 'legal:jobs' %}">Jobs</a>
 		  <a class="dropdown-item" href="{% url 'asso_tn:contact' %}">Nous contacter</a>
 		  {% if user.is_authenticated %}
 		  <a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
@@ -184,23 +182,48 @@
 	<div class="col-sm-4">
 	    <h3>S'engager</h3>
 	    <ul>
-		<li style="list-style: none">Faire un don</li>
-		<li style="list-style: none">Devenir bénévole</li>
-		<li style="list-style: none">Devenir ambassadeur</li>
+		<li style="list-style: none">
+		    <a href="{% url 'asso_tn:join' %}">
+			Faire un don
+		    </a>
+		</li>
+		<li style="list-style: none">
+		    <a href="{% url 'legal:volunteer' %}">
+			Devenir bénévole
+		    </a>
+		</li>
+		<li style="list-style: none">
+		    <a href="{% url 'asso_tn:ambassadeur' %}">
+			Devenir ambassadeur
+		    </a>
+		</li>
 	    </ul>
 	</div>
 	<div class="col-sm-4">
 	    <h3>S'informer</h3>
 	    <ul>
-		<li style="list-style: none">Le Vélopolitain</li>
-		<li style="list-style: none">La Grande Mobilité</li>
+		<li style="list-style: none">
+		    <a href="{% url 'velopolitain:lab' 'intro' %}">Vélopolitain</a>
+		</li>
+		<li style="list-style: none">
+		    <a href="{% url 'grand_nantes:index' %}">La Grande Mobilité</a>    
+		</li>
+	    </ul>
+	    <ul>
+		<li style="list-style: none">
+		    <a href="{% url 'legal:aligned_orgs' %}">Ils s'engagent aussi</a>
+		</li>
 	    </ul>
 	</div>
 	<div class="col-sm-4">
 	    <h3>Échanger</h3>
 	    <ul>
-		<li style="list-style: none">Nous contacter</li>
-		<li style="list-style: none">Rejoindre l'équipe</li>
+		<li style="list-style: none">
+		    <a href="{% url 'asso_tn:contact' %}">Nous contacter</a>
+		</li>
+		<li style="list-style: none">
+		    <a href="{% url 'legal:jobs' %}">Jobs</a>
+		</li>
 	    </ul>
 	    <ul>
 		<li style="list-style: none">Copyright</li>
