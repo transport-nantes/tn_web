@@ -50,14 +50,14 @@
       (function() {
 	var u="//wa.transport-nantes.com/";
 	_paq.push(['setTrackerUrl', u+'matomo.php']);
-	if _paq.push(['setSiteId', {% if role == 'beta' %}'4'{% elif role == 'prod %}'3'{% else %}'-1'{% endif %}]);
+	if _paq.push(['setSiteId', {% if role == 'beta' %}'4'{% elif role == 'prod' %}'3'{% else %}'-1'{% endif %}]);
 	var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
 	g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
     <!-- End Matomo Code -->
     <!-- Matomo Image Tracker-->
-    <img src="https://wa.p27.eu/matomo.php?idsite={% if role == 'beta' %}4{% elif role == 'prod %}3{% else %}'-1'{% endif %}&amp;rec=1" style="border:0" alt="" />
+    <img src="https://wa.p27.eu/matomo.php?idsite={% if role == 'beta' %}4{% elif role == 'prod' %}3{% else %}'-1'{% endif %}&amp;rec=1" style="border:0" alt="" />
     {% endif %}
     <!-- End Matomo -->
     {% if hero %}
