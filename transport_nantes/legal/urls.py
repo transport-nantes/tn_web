@@ -14,15 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from . import views
+from asso_tn.views import AssoView
 
 app_name = 'legal'
 urlpatterns = [
-    path('mentions_legales', views.MentionsLegalesView.as_view(), name='TC'),
+    path('mentions_legales', AssoView.as_view(template_name='legal/mentions_legales.html'),
+         name='TC'),
 #    path('contact', views.contact, name='contact'),
 #    path('priv', views.privacy, name='privacy'),
-    path('assos', views.AlignedOrgsView.as_view(), name='aligned_orgs'),
-    path('sponsor', views.SponsorView.as_view(), name='sponsor'),
-    path('benevolat', views.VolunteerView.as_view(), name='volunteer'),
-    path('jobs', views.JobsView.as_view(), name='jobs'),
+    path('assos', AssoView.as_view(template_name='legal/aligned_orgs.html'),
+         name='aligned_orgs'),
+    path('sponsor', AssoView.as_view(template_name='legal/sponsor.html',
+                                     hero_image="legal/sponsor.jpg"),
+         name='sponsor'),
+    path('benevolat', AssoView.as_view(template_name='legal/volunteer.html',
+                                       hero_image="legal/bénévole.jpg"),
+         name='volunteer'),
+    path('jobs', AssoView.as_view(template_name='legal/jobs.html'),
+         name='jobs'),
 ]

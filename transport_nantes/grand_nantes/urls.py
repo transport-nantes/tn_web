@@ -1,8 +1,10 @@
 from django.urls import path
 
-from . import views
+from asso_tn.views import AssoView
 
 app_name = 'grand_nantes'
 urlpatterns = [
-    path('', views.MainGrandNantes.as_view(), name='index'),
+    path('', AssoView.as_view(template_name='grand_nantes/index.html',
+                              hero_image='asso_tn/images-libres/mobilité3.jpg'),
+         name='index'),
 ]
