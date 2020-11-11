@@ -130,3 +130,10 @@ span.centered {
     text-align: center;
     font-size: 150%;
 }
+.banner-list {
+    background: #7f6966;
+    color: #5bc2e7;
+    font-weight: 700;
+    text-align: left;
+    font-size: 150%;
+}
