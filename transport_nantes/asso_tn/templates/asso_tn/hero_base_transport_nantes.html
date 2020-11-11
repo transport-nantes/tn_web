@@ -1,0 +1,17 @@
+{% extends 'asso_tn/base_transport_nantes.html' %}
+{% load static %}
+
+{% block content %}
+<div class="hero-image">
+  <div class="hero-text">
+    <h1>{{ hero_title }}</h1>
+    {% comment %}<p class="hero-description"></p>{% endcomment %}
+    <p class="hero-description">{{ hero_description }}</p>
+    <p class="pt-4" align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
+  </div>
+</div>
+
+<div class="container pt-5">
+{% block app_content %}{% endblock %}
+</div>
+{% endblock %}
