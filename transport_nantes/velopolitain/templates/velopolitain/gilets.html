@@ -1,4 +1,4 @@
-{% extends 'asso_tn/base_transport_nantes.html' %}
+{% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 
 {% block og_title %}Je réserve mon gilet gratuit !{% endblock og_title %}
@@ -12,16 +12,8 @@
 {% block twitter_title %}Je réserve mon gilet gratuit !{% endblock twitter_title %}
 {% block twitter_description %}C'est le click-and-collect pour réserver votre gilet réfléchissant Transport Nantes pour après le reconfinement.{% endblock twitter_description %}
 
-{% block content %}
-<div class="hero-image">
-  <div class="hero-text">
-    <h1>Les rencontres visibles</h1>
-    {% comment %}<p class="hero-description"></p>{% endcomment %}
-    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
-  </div>
-</div>
-
-<div class="container pt-5">
+{% block app_content %}
+<div class="container">
     <div class="row">
 	<div class="col-lg-12">
 
