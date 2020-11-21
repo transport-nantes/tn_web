@@ -18,7 +18,8 @@ class GiletReserveView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
-        context['hero_image'] = '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'
+        context['hero_image'] = 'velopolitain/gilet-banner.png'
+        context['hero_title'] = 'Les rencontres visibles'
         self.success_url = reverse('click_collect:gilet_reserved')
         context['success_url'] = reverse('click_collect:gilet_reserved')
         return context
@@ -59,7 +60,8 @@ class GiletReservedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
-        context['hero_image'] = '/static/asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'
+        context['hero_image'] = 'velopolitain/gilet-banner.png'
+        context['hero_title'] = 'Les rencontres visibles'
         # Argument passed is the slug.  This should become a db lookup instead.
         # For the moment, all slugs lead to the laboratoire.
         return context
