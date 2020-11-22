@@ -27,6 +27,7 @@ urlpatterns = [
     path('cp/', include('communications.urls')),
     path('gn/', include('grand_nantes.urls')),
     path('j/', include('legal.urls')),
+    path('ml/', include('mailing_list.urls')),
     path('observatoire/', include('observatoire.urls')),
     path('og/', include('open_graph.urls')),
     path('surveys/', include('surveys.urls')),

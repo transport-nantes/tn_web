@@ -18,6 +18,12 @@ class Profile(models.Model):
     # check the password.)
     authenticates_by_mail = models.BooleanField(default=True)
 
+    # We would like to know something about where people think of
+    # themselves as being attached to.  Note that this is quite
+    # different from where they actually connect from.
+    commune = models.CharField(max_length=100, blank=True)
+    code_postal = models.CharField(max_length=10, blank=True)
+
     def __str__(self):
         if self.email_confirmed:
             confirmed = "email confirmed"
@@ -27,10 +33,11 @@ class Profile(models.Model):
             auth = "authenticates by mail"
         else:
             auth = "authenticates by password"
-        return '{email}/[{uid}] / {conf} / {auth}'.format(
+        return '{email}/[{uid}] / {conf} / {auth} ({commune}, {cp})'.format(
             email=self.user.email,
             uid=self.user.pk,
-            conf=confirmed, auth=auth)
+            conf=confirmed, auth=auth,
+            commune=self.commune, cp=self.code_postal)
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):

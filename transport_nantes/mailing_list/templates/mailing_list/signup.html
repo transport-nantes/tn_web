@@ -1,0 +1,118 @@
+{% extends 'asso_tn/hero_base_transport_nantes.html' %}
+{% load static %}
+
+{% block og_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock og_title %}
+{% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
+{% block og_image_url %}{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpgasso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock og_image_url %}
+{% block og_image_alt %}Les actualités de la mobilité{% endblock og_image_alt %}
+{% block og_image_type %}image/jpg{% endblock og_image_type %}
+{% block og_image_width %}1000{% endblock og_image_width %}
+{% block og_image_height %}667{% endblock og_image_height %}
+{% block twitter_image %}{% static 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock twitter_image %}
+{% block twitter_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock twitter_title %}
+{% block twitter_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock twitter_description %}
+
+{% block app_content %}
+
+<div class="container pt-5">
+    <div class="row">
+	<div class="col-lg-12">
+
+	    <p class="text-primary">
+		<strong>Oui, je souhaite rester au courant des avances
+		de la mobilité en région nantaise !</strong></p>
+
+	    <form method="post">{% csrf_token %}
+		<p>{{ form.non_field_errors }}</p>
+		{% for field in form %}
+		<p>
+		    {{ field.label }}<br>
+		    {{ field }}
+		    {% if field.help_text %}
+		    <small style="color: grey">{{ field.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in field.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		{% endfor %}
+
+		<button type="submit" class="btn btn-outline-primary">Je m'inscris</button>
+	    </form>
+
+	    <p align="center" class="pt-5">
+		Nous avons hâte de vous rencontrer autour de nos 2
+		projets&nbsp;:
+	    </p>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-sm-6">
+	    <div class="thumbnail">
+		<a href="{% url 'velopolitain:lab' 'intro' %}">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
+			 alt="Le Vélopolitain" style="width:100%">
+		    <div class="caption">
+			<h2 class="font-weight-light"
+			    style="font-variant: small-caps;">Le Vélopolitain</h2>
+		    </div>
+		</a>
+	    </div>
+	</div>
+	<div class="col-sm-6">
+	    <div class="thumbnail">
+		<a href="{% url 'grand_nantes:index' %}">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+			 alt="La Grande Mobilité" style="width:100%">
+		    <div class="caption">
+			<h2 class="font-weight-light"
+			    style="font-variant: small-caps;">La Grande mobilité</h2>
+		    </div>
+		</a>
+	    </div>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-lg-12">
+	    <p>
+		<strong>Portez nos gilets, #porteznosactions&nbsp;!</strong>
+	    </p>
+	    <p>
+		Nous vous communiquons très bientôt nos prochaines dates&nbsp;!
+	    </p>
+
+	</div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Participez à l’aventure&nbsp;!</h1>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
+		<img src="{% static 'asso_tn/images-libres/don.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<span class="smallcap
+			     image-overlay-text
+			     image-overlay-text-white
+			     image-overlay-centered">Faire un don</span>
+	    </a>
+	</div>
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="{% url 'legal:volunteer' %}">
+		<img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<div class="smallcap
+			    image-overlay-text
+			    image-overlay-text-white
+			    image-overlay-centered">Devenir bénévole</div>
+	    </a>
+	</div>
+    </div>
+</div>
+
+{% endblock %}

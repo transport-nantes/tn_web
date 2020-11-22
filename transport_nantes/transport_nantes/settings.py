@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'grand_nantes.apps.GrandNantesConfig',
     'velopolitain.apps.VelopolitainConfig',
     'communications.apps.CommunicationsConfig',
+    'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
     'observatoire.apps.ObservatoireConfig',
     'clusterblog.apps.ClusterBlogConfig',

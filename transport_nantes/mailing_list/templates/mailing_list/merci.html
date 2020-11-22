@@ -1,0 +1,67 @@
+{% extends 'asso_tn/hero_base_transport_nantes.html' %}
+{% load static %}
+
+{% block og_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock og_title %}
+{% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
+{% block og_image_url %}{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpgasso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock og_image_url %}
+{% block og_image_alt %}Les actualités de la mobilité{% endblock og_image_alt %}
+{% block og_image_type %}image/jpg{% endblock og_image_type %}
+{% block og_image_width %}1000{% endblock og_image_width %}
+{% block og_image_height %}667{% endblock og_image_height %}
+{% block twitter_image %}{% static 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock twitter_image %}
+{% block twitter_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock twitter_title %}
+{% block twitter_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock twitter_description %}
+
+{% block app_content %}
+
+<div class="container pt-5">
+    <div class="row">
+	<div class="col-lg-12">
+
+	    <p class="text-primary">
+		<strong>Merci de vous être inscrit&nbsp;!</strong>
+		Bientôt nous vous enverrons votre premier newsletter.
+	    </p>
+
+	    <p class="pt-3">
+		Puisque vous êtes là, pourquoi pas faire un pas encore
+		plus fort&nbsp;: <strong>ajouter votre voix à la nôtre.</strong>
+		C'est simple, c'est facile, et même à un euro, nous
+		sommes plus fort ensemble.
+	    </p>
+	</div>
+    </div>
+</div>
+
+
+<div class="container pt-3">
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Participez à l’aventure&nbsp;!</h1>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" target=" blank">
+		<img src="{% static 'asso_tn/images-libres/don.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<span class="smallcap
+			     image-overlay-text
+			     image-overlay-text-white
+			     image-overlay-centered">Adhérer</span>
+	    </a>
+	</div>
+	<div class="col-sm-6 image-overlay-container">
+	    <a href="{% url 'legal:volunteer' %}">
+		<img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		     alt="foo" style="width:100%;" class="image-darken-65">
+		<div class="smallcap
+			    image-overlay-text
+			    image-overlay-text-white
+			    image-overlay-centered">Devenir bénévole</div>
+	    </a>
+	</div>
+    </div>
+</div>
+
+{% endblock %}
