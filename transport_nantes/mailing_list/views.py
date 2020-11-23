@@ -42,9 +42,9 @@ class MailingListSignup(FormView):
                 user.first_name = form.cleaned_data['first_name']
                 user.last_name = form.cleaned_data['last_name']
                 user.email = form.cleaned_data['email']
+        user.save()
         user.profile.commune = form.cleaned_data['commune']
         user.profile.code_postal = form.cleaned_data['code_postal']
-        user.save()
         user.profile.save()
         if form.cleaned_data['monthly']:
             newsletter = MailingList.objects.get(
