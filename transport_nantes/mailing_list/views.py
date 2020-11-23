@@ -91,6 +91,6 @@ class MailingListMerci(TemplateView):
         context['hero'] = True
         context['hero_image'] = 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg'
         context['hero_title'] = 'Newsletter'
-        context['hero_description'] = '(currently debugging)'
+        context['hero_description'] = '(actuellement debugging)'
         return context
 
