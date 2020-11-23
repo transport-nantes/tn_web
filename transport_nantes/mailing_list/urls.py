@@ -8,5 +8,5 @@ urlpatterns = [
 ]
 
 # For debugging the thankyou template:
-if hasattr(settings, 'ROLE') and 'prod' != settings.ROLE:
+if hasattr(settings, 'ROLE') and 'production' != settings.ROLE:
     urlpatterns.append(path('merci', views.MailingListMerci.as_view(), name='list_ok'))

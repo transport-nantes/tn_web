@@ -9,5 +9,5 @@ urlpatterns = [
     path('gr1', views.GiletReserveView.as_view(), name='gilet_reserve'),
 ]
 
-if hasattr(settings, 'ROLE') and 'prod' != settings.ROLE:
+if hasattr(settings, 'ROLE') and 'production' != settings.ROLE:
     urlpatterns.append(path('gr2', views.GiletReservedView.as_view(), name='gilet_reserved'))
