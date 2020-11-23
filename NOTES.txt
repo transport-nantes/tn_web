@@ -8,6 +8,7 @@ Some useful commands:
     python manage.py shell
 
     python manage.py createsuperuser
+    python manage.py changepassword <username>
 
 To run django application with various settings files:
 
