@@ -71,5 +71,5 @@ class GiletReservedView(TemplateView):
         context['hero'] = True
         context['hero_image'] = 'velopolitain/gilet-banner.png'
         context['hero_title'] = 'Les rencontres visibles'
-        context['hero_description'] = '(currently debugging)'
+        context['hero_description'] = '(actuellement debugging)'
         return context
