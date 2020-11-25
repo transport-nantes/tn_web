@@ -16,6 +16,7 @@ class MainTransportNantes(TemplateView):
         return context
 
 class AssoView(TemplateView):
+    title = None
     hero_image = None
     hero_title = None
     hero_description = None
@@ -24,6 +25,7 @@ class AssoView(TemplateView):
         context = super().get_context_data(**kwargs)
         print(context['view'].request.GET.get('dog'))
         print(context['view'].request.GET.keys())
+        context['title'] = self.title
         if self.hero_image is not None:
             context['hero'] = True
             context['hero_image'] = self.hero_image

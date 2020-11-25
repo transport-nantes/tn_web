@@ -6,6 +6,7 @@ class MainVelopolitain(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = "Vélopolitain"
         context['hero'] = True
         context['hero_image'] = 'asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'
         context['hero_title'] = 'Le Vélopolitain'
@@ -38,6 +39,7 @@ class BlogVelopolitain(TemplateView):
         if slug in self.hero_map:
             context['hero'] = True
             hero_data = self.hero_map[context['slug']]
+            context['title'] = "Vélopolitain"
             context['hero_image'] = hero_data['image']
             context['hero_title'] = hero_data['title']
         self.template_name = 'velopolitain/{sl}.html'.format(sl=context['slug'])
