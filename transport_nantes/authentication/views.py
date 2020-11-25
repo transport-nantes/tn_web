@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.crypto import get_random_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf import settings
 
 from authentication.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
 
@@ -89,7 +90,12 @@ def send_activation(request, user):
         'domain': current_site.domain,
         'token': make_timed_token(user.pk, 20),
     })
-    user.email_user(subject, message)
+    if hasattr(settings, 'ROLE') and settings.ROLE in ['staging', 'production']:
+        user.email_user(subject, message)
+    else:
+        # We're in dev.
+        print("Mode dev : mél qui aurait été envoyé :")
+        print(message)
 
 def account_activation_sent(request, is_new):
     is_new_bool = (is_new == True)
