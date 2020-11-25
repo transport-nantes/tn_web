@@ -3,6 +3,10 @@
 
 {% comment %}
   I use content and not app_content to avoid a container and so go full-width.
+
+  This excuse has become a bit feeble.  But also at issue is that I have
+  a link on the description, which I don't have elsewhere.  I should just
+  make this a standard option.  For today, it's a comment.
 {% endcomment %}
 
 {% block content %}
@@ -12,7 +16,7 @@
     {% comment %}<h1>Vélopolitain</h1>{% endcomment %}
     <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:lab' 'intro' %}">
     Pour une mobilité sûre, vertueuse, et agréable</a></p>
-    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
+    {% comment %}<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>{% endcomment %}
   </div>
 </div>
 

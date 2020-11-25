@@ -32,9 +32,10 @@ urlpatterns = [
          name='sponsor'),
     path('benevolat', AssoView.as_view(title="Devenir bénévole",
                                        template_name='legal/volunteer.html',
+                                       hero_title="Devenir bénévole",
                                        hero_image="legal/bénévole.jpg"),
          name='volunteer'),
     path('jobs', AssoView.as_view(title="Jobs",
-                                  template_name='legal/jobs.html'),
+                                  template_name='legal/jobs.html',),
          name='jobs'),
 ]
