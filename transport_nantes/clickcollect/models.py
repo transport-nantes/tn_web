@@ -29,3 +29,10 @@ class ClickAndCollect(models.Model):
     collectable = models.ForeignKey(ClickableCollectable,
                                     on_delete=models.CASCADE)
     reserve_datetime = models.DateTimeField(default=django.utils.timezone.now)
+
+    def __str__(self):
+        return '{c} . .  {fn} {ln} <{email}>  ({dt})'.format(
+            c=self.collectable.collectable,
+            fn=self.user.first_name, ln=self.user.last_name,
+            email=self.user.email,
+            dt=self.reserve_datetime)
