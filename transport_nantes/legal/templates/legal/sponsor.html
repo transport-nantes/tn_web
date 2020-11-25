@@ -1,156 +1,144 @@
-{% extends 'asso_tn/base_transport_nantes.html' %}
+{% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 
-{% block content %}
-<div class="hero-image">
-  <div class="hero-text">
-    <h1>Sponsor</h1>
-    {% comment %}<p class="hero-description"></p>{% endcomment %}
-    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>
-  </div>
+{% block app_content %}
+<div class="row">
+    <div class="col-lg-12">
+	<p class="text-muted">
+	    Transport Nantes est un lobby citoyen qui milite pour des
+	    politiques ambitieuses en faveur des transports doux ou
+	    actifs
+	    et plus efficaces pour chacun – tramway, bus, vélo, TER,
+	    marche, personnes à mobilité réduite, trottinette : à vous de
+	    choisir</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/tram.png' %}"
+	       alt="tramway" style="width:100%">
+	       <div class="caption">
+		   <caption>Tramways</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/bus.png' %}"
+	       alt="bus" style="width:100%">
+	       <div class="caption">
+		   <caption>Bus</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/vélo.png' %}"
+	       alt="vélo" style="width:100%">
+	       <div class="caption">
+		   <caption>Vélo</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/TER.png' %}"
+	       alt="TER" style="width:100%">
+	       <div class="caption">
+		   <caption>TER</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/marche.png' %}"
+	       alt="marche à pied" style="width:100%">
+	       <div class="caption">
+		   <caption>Marche</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-sm-2">
+	<div class="thumbnail">
+	    <img src="{% static 'legal/sponsor/PMR.png' %}"
+	       alt="PMR" style="width:100%">
+	       <div class="caption">
+		   <caption>PMR</caption>
+	       </div>
+	    </a>
+	</div>
+    </div>
+</div>
+<div class="row pt-3">
+    <div class="col-lg-12">
+
+	<h2>Envie de partager nos ambitions&nbsp;?</h2>
+
+	<p>
+	    Nous voulons augmenter massivement l'offre de mobilité
+	    afin de proposer des alternatives à la voiture
+	    individuelle pour tout déplacement dans la région nantaise
+	    et au-delà. Nous insistons sur des actions achevables lors
+	    d'un seul mandat.
+	</p>
+
+	<p>
+	    A l’instar des élections 2020 (pétition de plus de 1000
+	    signatures pour le Vélopolitain) nous souhaitons continuer
+	    de rassembler un lobby citoyen : montrer à nos élus
+	    l’importance que ces changements ont pour les électeurs en
+	    vue des élections 2021.
+	</p>
+    </div>
 </div>
 
-<div class="container pt-5">
+<div class="jumbotron">
     <div class="row">
 	<div class="col-lg-12">
-	    <p class="text-muted">
-		Transport Nantes est un lobby citoyen qui milite pour des
-		politiques ambitieuses en faveur des transports doux ou
-		actifs
-		et plus efficaces pour chacun – tramway, bus, vélo, TER,
-		marche, personnes à mobilité réduite, trottinette : à vous de
-		choisir</p>
-	</div>
-    </div>
-    <div class="row">
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/tram.png' %}"
-		   alt="tramway" style="width:100%">
-		   <div class="caption">
-		       <caption>Tramways</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/bus.png' %}"
-		   alt="bus" style="width:100%">
-		   <div class="caption">
-		       <caption>Bus</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/vélo.png' %}"
-		   alt="vélo" style="width:100%">
-		   <div class="caption">
-		       <caption>Vélo</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/TER.png' %}"
-		   alt="TER" style="width:100%">
-		   <div class="caption">
-		       <caption>TER</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/marche.png' %}"
-		   alt="marche à pied" style="width:100%">
-		   <div class="caption">
-		       <caption>Marche</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-sm-2">
-	    <div class="thumbnail">
-		<img src="{% static 'legal/sponsor/PMR.png' %}"
-		   alt="PMR" style="width:100%">
-		   <div class="caption">
-		       <caption>PMR</caption>
-		   </div>
-		</a>
-	    </div>
-	</div>
-    </div>
-    <div class="row pt-3">
-	<div class="col-lg-12">
+	    <h2 style="text-align:center">Nous soutenir c’est</h2>
 
-	    <h2>Envie de partager nos ambitions&nbsp;?</h2>
-	    
-	    <p>
-		Nous voulons augmenter massivement l'offre de mobilité
-		afin de proposer des alternatives à la voiture
-		individuelle pour tout déplacement dans la région nantaise
-		et au-delà. Nous insistons sur des actions achevables lors
-		d'un seul mandat.
-	    </p>
+	    <span class="centered"><img src="{% static 'legal/cochon.png' %}"></span>
+	    <p style="text-align:center"><strong>Un engagement financier&nbsp;:</strong><br>
+		à la mesure qui vous
+		convient.</p>
 
-	    <p>
-		A l’instar des élections 2020 (pétition de plus de 1000
-		signatures pour le Vélopolitain) nous souhaitons continuer
-		de rassembler un lobby citoyen : montrer à nos élus
-		l’importance que ces changements ont pour les électeurs en
-		vue des élections 2021.
-	    </p>
-	</div>
-    </div>
+	    <span class="centered"><img src="{% static 'legal/haut-parleur.png' %}"></span>
+	    <p style="text-align:center"><strong>Un engagement de diffusion des actions de
+		l’association&nbsp;:</strong><br>
+		auprès de vos employés, de vos
+		clients et partenaires, au public.</p>
 
-    <div class="jumbotron">
-	<div class="row">
-	    <div class="col-lg-12">
-		<h2 style="text-align:center">Nous soutenir c’est</h2>
+	    <span class="centered"><img src="{% static 'legal/notification.png' %}"></span>
+	    <p style="text-align:center"><strong>Un offre de suivi&nbsp;:</strong><br>
+		une page web dédié chez nous  pour
+		encourager vos employés, clients, partenaires, public...à
+		soutenir les objectifs de l’association.  Un retour régulier
+		sur l'engagement et la conversion de ceux-ci.</p>
 
-		<span class="centered"><img src="{% static 'legal/cochon.png' %}"></span>
-		<p style="text-align:center"><strong>Un engagement financier&nbsp;:</strong><br>
-		    à la mesure qui vous
-		    convient.</p>
-
-		<span class="centered"><img src="{% static 'legal/haut-parleur.png' %}"></span>
-		<p style="text-align:center"><strong>Un engagement de diffusion des actions de
-		    l’association&nbsp;:</strong><br>
-		    auprès de vos employés, de vos
-		    clients et partenaires, au public.</p>
-	    
-		<span class="centered"><img src="{% static 'legal/notification.png' %}"></span>
-		<p style="text-align:center"><strong>Un offre de suivi&nbsp;:</strong><br>
-		    une page web dédié chez nous  pour
-		    encourager vos employés, clients, partenaires, public...à
-		    soutenir les objectifs de l’association.  Un retour régulier
-		    sur l'engagement et la conversion de ceux-ci.</p>
-		
-		<p>Un offre de visibilité sur le site web de l’association et
-		    vers sa communauté s (logo, etc.).</p>
-	    </div>
+	    <p>Un offre de visibilité sur le site web de l’association et
+		vers sa communauté s (logo, etc.).</p>
 	</div>
     </div>
 </div>
 
-<div class="container">
-    <div class="row">
-	<div class="col-lg-12">
-	    <p>Pour plus d’informations,
-		<a href="mailto:sponsor@transport-nantes.com"
-		   class="btn
-			  btn-outline-primary btn-md">contactez-nous</a>
-	    </p>	    
-	    
-	    <p>L'adhésion individuel est également possible avec un
-		simple <a
-    href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
-    class="btn btn-primary btn-sm" role="button" target="_blank">clique</a>.</p>
-	</div>
+<div class="row">
+    <div class="col-lg-12">
+	<p>Pour plus d’informations,
+	    <a href="mailto:sponsor@transport-nantes.com"
+	       class="btn
+		      btn-outline-primary btn-md">contactez-nous</a>
+	</p>
+
+	<p>L'adhésion individuel est également possible avec un
+	    simple <a
+href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
+class="btn btn-primary btn-sm" role="button" target="_blank">clique</a>.</p>
     </div>
 </div>
 

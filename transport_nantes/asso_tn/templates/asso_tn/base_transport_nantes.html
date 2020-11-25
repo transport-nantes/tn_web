@@ -133,16 +133,16 @@
 		<a class="nav-link" href="{% url 'grand_nantes:index' %}">La Grande Mobilité</a>
 	    </li>
 	    <li class="nav-item">
+		<a class="nav-link" href="{% url 'asso_tn:join' %}" target="_blank">Adhérer</a>
+	    </li>
+	    <li class="nav-item">
 		<a class="nav-link" href="{% url 'asso_tn:qui-sommes-nous' %}">Qui sommes-nous ?</a>
 	    </li>
 
+{% comment %}
 	    <li class="nav-item dropdown">
-	      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Plus</a>
+		<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
 	      <div class="dropdown-menu">
-		  <a class="dropdown-item" href="{% url 'asso_tn:join' %}">Adhérer</a>
-		  <a class="dropdown-item" href="{% url 'legal:volunteer' %}">Agir</a>
-		  <a class="dropdown-item" href="{% url 'legal:sponsor' %}">Sponsor</a>
-		  <a class="dropdown-item" href="{% url 'asso_tn:contact' %}">Nous contacter</a>
 		  {% if user.is_authenticated %}
 		  <a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
 		  <form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
@@ -151,6 +151,7 @@
 		  {% endif %}
 	      </div>
 	    </li>
+{% endcomment %}
 	  </ul>
 	</div>
       </nav> 
@@ -216,6 +217,11 @@
 		<li style="list-style: none">
 		    <a href="{% url 'asso_tn:ambassadeur' %}">
 			Devenir ambassadeur
+		    </a>
+		</li>
+		<li style="list-style: none">
+		    <a href="{% url 'legal:sponsor' %}">
+			Sponsor
 		    </a>
 		</li>
 	    </ul>
