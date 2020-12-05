@@ -16,6 +16,10 @@ class MailingListSignup(FormView):
     form_class = MailingListSignupForm
     # success_url = reverse_lazy('mailing_list:list_ok')
 
+    # We don't currently populate this form with the user's current
+    # subscriptions.  If the user is logged in, we should.  This then
+    # becomes the edit form as well.
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
@@ -52,6 +56,14 @@ class MailingListSignup(FormView):
                 mailing_list=newsletter,
                 event_type=MailingListEvent.EventType.SUBSCRIBE)
             subscription.save()
+            # At some point we should also store the last known
+            # subscription state in a table with foreign key user.  If
+            # the user is in that table, we use it, otherwise we look
+            # up in mailing_list_events.  (We'll always need this
+            # extra lookup, because a newly created list won't
+            # populate users' current (unsubscribed) state.
+            #
+            # We should wait until this is a performance issue, however.
             subscribe = True
         if subscribe:
             return render(
