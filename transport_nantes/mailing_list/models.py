@@ -20,6 +20,11 @@ class MailingList(models.Model):
     # Zero means no frequency objective.
     contact_frequency_weeks = models.IntegerField(default=0)
     list_created = models.DateTimeField(default=django.utils.timezone.now)
+    # We shouldn't ever delete newsletters, because that would either
+    # cascade deletes or lead to dangling foreign keys.  Rather, we
+    # should make the newsletter inactive, which should make it not
+    # appear in any choice lists and otherwise not be usable.
+    list_active = models.BooleanField(default=False)
 
     def __str__(self):
         print('MailingList')

@@ -46,18 +46,7 @@ class MailingListSignup(FormView):
         user.profile.commune = form.cleaned_data['commune']
         user.profile.code_postal = form.cleaned_data['code_postal']
         user.profile.save()
-        if form.cleaned_data['monthly']:
-            newsletter = MailingList.objects.get(
-                mailing_list_token='general-monthly')
-            subscription = MailingListEvent.objects.create(
-                user=user,
-                mailing_list=newsletter,
-                event_type=MailingListEvent.EventType.SUBSCRIBE)
-            subscription.save()
-            subscribe = True
-        if form.cleaned_data['quarterly']:
-            newsletter = MailingList.objects.get(
-                mailing_list_token='general-quarterly')
+        for newsletter in form.cleaned_data['newsletters']:
             subscription = MailingListEvent.objects.create(
                 user=user,
                 mailing_list=newsletter,

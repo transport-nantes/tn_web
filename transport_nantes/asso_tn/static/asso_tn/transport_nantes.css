@@ -11,6 +11,10 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+ul.no-bullet-list {
+    list-style-type: none;
+}
+
 /* Place text in the middle of the image */
 .hero-text {
     text-align: center;
