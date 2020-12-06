@@ -6,10 +6,12 @@ class MainVelopolitain(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Vélopolitain"
+        context['title'] = "Transport Nantes | Vélopolitain"
         context['hero'] = True
         context['hero_image'] = 'asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'
         context['hero_title'] = 'Le Vélopolitain'
+        context['twitter_title'] = "Vélopolitain | Nantes - Un aménagement cyclable continu, lisible et sécurisé."
+        context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole."
         return context
 
 class BlogVelopolitain(TemplateView):
@@ -29,7 +31,7 @@ class BlogVelopolitain(TemplateView):
         'gilets': {'image': 'velopolitain/gilet-banner.png',
                    'title': 'Les rencontres visibles',},
         'intro': {'image': 'asso_tn/images-quentin-boulegon/vélopolitain-1.jpg',
-                  'title': 'Le Vélopolitain',},
+                  'title': 'Le Vélopolitain sur Nantes Métropole',},
         'laboratoire': {'image': 'asso_tn/images-quentin-boulegon/vélopolitain-1.jpg',
                   'title': 'Le Laboratoire du Vélopolitain',},
     }
@@ -43,6 +45,8 @@ class BlogVelopolitain(TemplateView):
             context['hero_image'] = hero_data['image']
             context['hero_title'] = hero_data['title']
         self.template_name = 'velopolitain/{sl}.html'.format(sl=context['slug'])
+        context['twitter_title'] = "Vélopolitain | Nantes - Un aménagement cyclable continu, lisible et sécurisé."
+        context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole."
         # Argument passed is the slug.  This should become a db lookup instead.
         # For the moment, all slugs lead to the laboratoire.
         return context

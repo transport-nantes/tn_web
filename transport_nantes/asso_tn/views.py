@@ -22,12 +22,18 @@ class AssoView(TemplateView):
     hero_image = None
     hero_title = None
     hero_description = None
+    meta_descr = None
+    twitter_title = None
+    twitter_descr = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         print(context['view'].request.GET.get('dog'))
         print(context['view'].request.GET.keys())
         context['title'] = self.title
+        context['meta_descr'] = self.meta_descr
+        context['twitter_title'] = self.twitter_title
+        context['twitter_description'] = self.twitter_descr
         if self.hero_image is not None:
             context['hero'] = True
             context['hero_image'] = self.hero_image
