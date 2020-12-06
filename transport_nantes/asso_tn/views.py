@@ -10,6 +10,8 @@ class MainTransportNantes(TemplateView):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
         context['hero_image'] = "asso_tn/images-quentin-boulegon/pont-rousseau-1.jpg"
+        context['hero_title'] = "Pour une mobilité sûre, vertueuse, et agréable"
+        context['title'] = "Transport Nantes - Pour une mobilité plus douce - Association Nantaise"
         # print(dir(context['view'].request))
         # print(get_current_site(context['view'].request))
         # print(Site.objects.get_current().domain == 'example.com')

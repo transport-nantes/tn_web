@@ -1,28 +1,16 @@
-{% extends 'asso_tn/base_transport_nantes.html' %}
+{% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 
-{% comment %}
-  I use content and not app_content to avoid a container and so go full-width.
+{% block meta_descr %}
+<meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
 
-  This excuse has become a bit feeble.  But also at issue is that I have
-  a link on the description, which I don't have elsewhere.  I should just
-  make this a standard option.  For today, it's a comment.
-{% endcomment %}
+{% endblock meta_descr %}
 
-{% block content %}
-
-<div class="hero-image">
-  <div class="hero-text">
-    {% comment %}<h1>Vélopolitain</h1>{% endcomment %}
-    <p class="hero-description"><a class="hero-link" href="{% url 'velopolitain:lab' 'intro' %}">
-    Pour une mobilité sûre, vertueuse, et agréable</a></p>
-    {% comment %}<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a>{% endcomment %}
-  </div>
-</div>
+{% block app_content %}
 
 <div class="container pt-5">
     <div class="Row">
-	<h1>Nos projets</h1>
+	<h2>Les projets de l'assos</h2>
     </div>
     <div class="row">
 	<div class="col-md-3">
@@ -31,8 +19,8 @@
 		    <img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
 			 alt="gilets gratuits" style="width:100%">
 		    <div class="caption">
-			<h2 class="font-weight-light"
-			    style="font-variant: small-caps; font-size: 150%;">Rencontres visibles</h2>
+			<h3 class="font-weight-light"
+			    style="font-variant: small-caps;">Rencontres visibles</h3>
 			<p>
 			    Réservez votre gilet gratuit
 			</p>
@@ -46,8 +34,8 @@
 		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
 		    alt="Le vélopolitain" style="width:100%">
 		    <div class="caption">
-			<h2 class="font-weight-light"
-			    style="font-variant: small-caps; font-size: 150%;">Vélopolitain</h2>
+			<h3 class="font-weight-light"
+			    style="font-variant: small-caps;">Vélopolitain</h3>
 			<p>
 			    Un vrai réseau cyclable dans votre métropole&nbsp;!
 			</p>
@@ -61,8 +49,8 @@
 		   <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
 		   alt="La grande mobilité" style="width:100%">
 		   <div class="caption">
-		       <h2 class="font-weight-light"
-			   style="font-variant: small-caps; font-size: 150%;">Grande mobilité</h2>
+		       <h3 class="font-weight-light"
+			   style="font-variant: small-caps;">Grande mobilité</h3>
 		       <p>
 			   Plus de dessertes partout dans la région
 		       </p>
@@ -76,8 +64,8 @@
 		    <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
 		   alt="Devenir ambassadeur" style="width:100%">
 		    <div class="caption">
-		       <h2 class="font-weight-light"
-			   style="font-variant: small-caps; font-size: 150%;">Ambassadeurs Mobilitains</h2>
+		       <h3 class="font-weight-light"
+			   style="font-variant: small-caps;">Ambassadeurs Mobilitains</h3>
 			<p>
 			    Vous avez envie d’être un.e porte parole,
 			    de réfléchir et agir avec nous ?
@@ -87,6 +75,12 @@
 		</a>
 	    </div>
 	</div>
+    </div>
+
+    <div>
+	{% comment %}<iframe width="560" height="315" src="https://www.youtube.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>{% endcomment %}
+	{% comment %}<iframe width="100%" height="315" src="https://www.youtube.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>{% endcomment %}
+	<iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
 
     <div class="jumbotron">
