@@ -48,6 +48,8 @@ class BlogVelopolitain(TemplateView):
         self.template_name = 'velopolitain/{sl}.html'.format(sl=context['slug'])
         context['twitter_title'] = "Vélopolitain | Nantes - Un aménagement cyclable continu, lisible et sécurisé."
         context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole."
+        context['twitter_image'] = "asso_tn/velopolitain-cest-quoi.jpg"
+
         # Argument passed is the slug.  This should become a db lookup instead.
         # For the moment, all slugs lead to the laboratoire.
         return context
