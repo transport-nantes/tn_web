@@ -24,7 +24,7 @@
 
        -->
     {% block head %}
-    <title>{% block title %}{{ title|default:"Transport Nantes" }}{% endblock title %}</title>
+    <title>{% block title %}{{ title|default:"Transport Nantes - Pour une mobilité multimodale - Association Nantaise" }}{% endblock title %}</title>
     {% block metas %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -102,9 +102,9 @@
     <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock twitter_card %}" />
     <meta name="twitter:site" content="{% block twitter_site %}@TransportNantes{% endblock twitter_site %}" />
     <meta name="twitter:creator" content="{% block twitter_creator %}@TransportNantes{% endblock twitter_creator %}" />
-    <meta name="twitter:image" content="https://{{ request.get_host }}{% block twitter_image %}/static/velopolitain/v1.png{% endblock twitter_image %}" />
-    <meta name="twitter:title" content="{% block twitter_title %}{{ twitter_title|default:"Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" }}{% endblock twitter_title %}" />
-    <meta name="twitter:description" content="{% block twitter_description %}{{ twitter_description|default:"Notre vision est simple : donner un choix de déplacement crédible à chacun, améliorer les déplacements de chacun, même ceux qui choisissent de ne pas changer. Pour agir, nous avons besoin de votre voix." }}{% endblock twitter_description %}" />
+    <meta name="twitter:image" content="https://{{ request.get_host }}{% block twitter_image %}/static/asso_tn/mobilite-pour-tous.jpg{% endblock twitter_image %}" />
+    <meta name="twitter:title" content="{% block twitter_title %}{{ twitter_title|default:"Transport Nantes - Pour une mobilité multimodale - Association Nantaise" }}{% endblock twitter_title %}" />
+    <meta name="twitter:description" content="{% block twitter_description %}{{ twitter_description|default:"Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" }}{% endblock twitter_description %}" />
     {% comment %}
     https://cards-dev.twitter.com/validator
     {% endcomment %}
