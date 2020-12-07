@@ -12,6 +12,7 @@ class MainVelopolitain(TemplateView):
         context['hero_title'] = 'Le Vélopolitain'
         context['twitter_title'] = "Vélopolitain | Nantes - Un aménagement cyclable continu, lisible et sécurisé."
         context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole."
+        context['twitter_image'] = "asso_tn/velopolitain-cest-quoi.jpg"
         return context
 
 class BlogVelopolitain(TemplateView):
