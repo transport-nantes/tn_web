@@ -22,9 +22,9 @@ class AssoView(TemplateView):
     hero_image = None
     hero_title = None
     hero_description = None
-    meta_descr = None
-    twitter_title = None
-    twitter_descr = None
+    meta_descr = ""
+    twitter_title = ""
+    twitter_descr = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
