@@ -190,7 +190,3 @@ if 'STATIC_ROOT' in dir(settings_local):
 CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_LENGTH = 5
-
-# Captcha condition for testing in dev mod
-if ROLE == "dev":
-    CAPTCHA_TEST_MODE = True

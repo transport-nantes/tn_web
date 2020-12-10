@@ -7,6 +7,7 @@ import authentication.views as views
 from asso_tn.utils import make_timed_token
 from django.utils.crypto import get_random_string
 from time import sleep
+from captcha.models import CaptchaStore
 
 # Create your tests here.
 
@@ -23,10 +24,12 @@ class UserTest(TestCase):
         site.name = "localhost"
         site.save()
 
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
         context = { "email": "test1@truc.com",
-                     'captcha_0': "captcha",
-                     'captcha_1': "PASSED" }
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response }
         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
 
         # Call .views.login()
@@ -68,10 +71,12 @@ class UserTest(TestCase):
             existing_test_user = False
         self.assertIs(existing_test_user, True)
 
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
         context = { "email": "test1@truc.com",
-                     'captcha_0': "captcha",
-                     'captcha_1': "PASSED" }
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response }
         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
 
         # Call .views.login()
@@ -113,10 +118,12 @@ class UserTest(TestCase):
             existing_test_user = False
         self.assertIs(existing_test_user, True)
 
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
         context = { "email": "test1@truc.com",
-                     'captcha_0': "captcha",
-                     'captcha_1': "PASSED" }
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response }
         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
         
         # Call .views.login()
@@ -153,10 +160,12 @@ class UserTest(TestCase):
         self.assertGreaterEqual(test_user_count, 2)
         self.assertIs(existing_test_user, True)
 
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
         context = { "email": "test@truc.com",
-                     'captcha_0': "captcha",
-                     'captcha_1': "PASSED" }
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response }
         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
         
         # Call .views.login()
