@@ -10,11 +10,11 @@
 	    <form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
 		<fieldset class="form-group">
-		    <legend class="border-bottom mb-4">Profile Info</legend>
+		    <legend class="border-bottom mb-4">Information du compte</legend>
 		    {{ u_form.as_p }}
 		    {{ p_form.as_p }}
 		</fieldset>
-		<button type="submit">Update</button>
+		<button type="submit">Mise à jour</button>
 	    </form>
 	</div>
     </div>
