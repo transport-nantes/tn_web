@@ -4,6 +4,9 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 import authentication.views as views
+from asso_tn.utils import make_timed_token
+from django.utils.crypto import get_random_string
+from time import sleep
 
 # Create your tests here.
 
@@ -161,3 +164,58 @@ class UserTest(TestCase):
         
         # Test printed error message
         self.assertIn(login_response.content.decode("utf-8"), "Data error: Multiple email addresses found")
+
+
+class TokenMailTest(TestCase):
+
+    # Test mail with valid token and redirection to index page
+    def test_mail_with_valid_token(self):
+        # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 20)
+        # Test redirection to index
+        index_response = self.client.get("/auth/activate/" + token)
+        self.assertEqual(index_response.url, "/")
+
+    # Test mail with invalid token and redirection to account_activation_invalid.html
+    def test_mail_with_invalid_token(self):
+        # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 20)
+        # Test redirection to invalid page
+        invalid_response = self.client.get("/auth/activate/" + token[:-2] + get_random_string(2))
+        self.assertIn("The confirmation link was invalid, possibly because it has already been used",
+            invalid_response.content.decode("utf-8"))
+
+    # Test already used token and redirection to account_activation_invalid.html
+    def test_mail_with_used_token(self):
+        # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 20)
+        # Test redirection to invalid page
+        response1 = self.client.get("/auth/activate/" + token)
+        response2 = self.client.get("/auth/activate/" + token)
+        self.assertNotEqual(response2.url, "/")
+    
+    # Test out of time token and redirection to account_activation_invalid.html
+    def test_mail_with_timed_out_token(self):
+        # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 1/60)
+        sleep(2)
+        # Test redirection to invalid page
+        response = self.client.get("/auth/activate/" + token)
+        self.assertInHTML("The confirmation link was invalid, possibly because it has already been used.",
+            response.content.decode("utf-8"))

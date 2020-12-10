@@ -110,7 +110,7 @@ def activate(request, token):
     """
     user_id = token_valid(token)
     if user_id < 0:
-        return render(request, 'account_activation_invalid.html')
+        return render(request, 'authentication/account_activation_invalid.html')
     try:
         user = User.objects.get(pk=user_id)
         user.is_active = True
