@@ -35,14 +35,9 @@ class UserTest(TestCase):
         # Call .views.login()
         login_response = views.login(request)
 
-        # Test good site page calling
-        self.assertEqual(login_response.url, "/auth/account_activation_sent/True")
-
-        # Get account_activation_sent page
-        sent_activation_response = self.client.get(login_response.url)
         # Test good printing of the page
         self.assertInHTML("Un mél est un route pour que vous puissiez confirmer la création de votre compte.",
-            sent_activation_response.content.decode("utf-8"))
+            login_response.content.decode("utf-8"))
 
         # Get user and test creation in User table
         try:
@@ -82,14 +77,9 @@ class UserTest(TestCase):
         # Call .views.login()
         login_response = views.login(request)
 
-        # Test good site page calling
-        self.assertEqual(login_response.url, "/auth/account_activation_sent/True")
-
-        # Get account_activation_sent page
-        sent_activation_response = self.client.get(login_response.url)
         # Test good printing of the page
         self.assertInHTML("Un mél est un route pour que vous puissiez confirmer la création de votre compte.",
-            sent_activation_response.content.decode("utf-8"))
+            login_response.content.decode("utf-8"))
         
         # Get user and test creation in User table
         try:
@@ -129,14 +119,9 @@ class UserTest(TestCase):
         # Call .views.login()
         login_response = views.login(request)
 
-        # Test good site page calling
-        self.assertEqual(login_response.url, "/auth/account_activation_sent/False")
-
-        # Get account_activation_sent page
-        sent_activation_response = self.client.get(login_response.url)
         # Test good printing of the page
         self.assertInHTML("Un mél est un route avec un lien magique qui vous permettra de connecter.",
-            sent_activation_response.content.decode("utf-8"))
+            login_response.content.decode("utf-8"))
         
     # Minimum of 2 user with the same mail in database and test site page shown
     def test_two_users_with_same_mail(self):

@@ -46,7 +46,7 @@ def login(request):
                 user.refresh_from_db()
                 if user.profile.authenticates_by_mail:
                     send_activation(request, user)
-                    return redirect('authentication:account_activation_sent', is_new=False)
+                    return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             except ObjectDoesNotExist:
                 print('ObjectDoesNotExist')
                 pass            # I'm not sure this can ever happen.
@@ -62,13 +62,13 @@ def login(request):
                 existing_user = existing_users[0]
                 if existing_user.profile.authenticates_by_mail:
                     send_activation(request, existing_user)
-                    return redirect('authentication:account_activation_sent', is_new=False)
+                    return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             user.email = form.cleaned_data['email']
             user.username = get_random_string(20)
             user.is_active = False
             user.save()
             send_activation(request, user)
-            return redirect('authentication:account_activation_sent', is_new=True)
+            return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
         else:
             # Form is not valid.
             pass
@@ -96,10 +96,6 @@ def send_activation(request, user):
         # We're in dev.
         print("Mode dev : mél qui aurait été envoyé :")
         print(message)
-
-def account_activation_sent(request, is_new):
-    is_new_bool = (is_new == True)
-    return render(request, 'authentication/account_activation_sent.html', {'is_new': is_new_bool})
 
 def activate(request, token):
     """Process an activation token.
