@@ -27,7 +27,6 @@ class MailingList(models.Model):
     list_active = models.BooleanField(default=False)
 
     def __str__(self):
-        print('MailingList')
         return '{name} ({token}) f={freq} semaines'.format(
             name=self.mailing_list_name,
             token=self.mailing_list_token,
@@ -53,8 +52,12 @@ class MailingListEvent(models.Model):
     event_type = models.CharField(max_length=6, choices=EventType.choices)
 
     def __str__(self):
-        return 'U={user}, L={mlist}, E={event}, {ts}'.format(
-            user=self.user, mlist=self.mailing_list,
+        return 'U={u_fn} {u_ln} <{u_e}> ({u_commune}), L={mlist}, E={event}, {ts}'.format(
+            u_fn=self.user.first_name,
+            u_ln=self.user.last_name,
+            u_e=self.user.email,
+            u_commune=self.user.profile.commune,
+            mlist=self.mailing_list,
             event=self.event_type, ts=self.event_timestamp)
 
 # For actually sending emails, we'll want another class for that.  It
