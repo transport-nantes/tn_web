@@ -9,5 +9,5 @@ Le lien suivant vous le permettra.
 Si toutefois ce mél ne correspond pas à votre demande, vous
 pouvez simplement supprimer ce mél.{% endif %}
 
-http://{{ domain }}{% url 'authentication:activate' token=token %}
+http://{{ domain }}{% url 'authentication:activate' token=token remember_me=remember_me %}
 {% endautoescape %}
