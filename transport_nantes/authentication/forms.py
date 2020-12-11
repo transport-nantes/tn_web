@@ -19,6 +19,8 @@ class SignUpForm(UserCreationForm):
         widget=forms.PasswordInput, max_length=254,
         label="Mot de passe", required=False,
         help_text="Encore la même chose")
+    remember_me = forms.BooleanField(required=False, label="Se souvenir de moi",
+        initial=False, widget=forms.CheckboxInput)
 
     class Meta:
         model = User
