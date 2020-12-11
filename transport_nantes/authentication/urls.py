@@ -29,9 +29,6 @@ urlpatterns = [
     path('in', views.login, name='login'),
     path('out', views.DeauthView.as_view(), name='logout'),
     path('mod', views.profile, name='mod'),
-    path('account_activation_sent/<is_new>',
-         views.account_activation_sent,
-         name='account_activation_sent'),
-    path('activate/<token>', views.activate, name='activate'),
+    path('activate/<remember_me>/<token>', views.activate, name='activate'),
 
 ]
