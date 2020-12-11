@@ -45,7 +45,7 @@ def login(request):
             try:
                 user.refresh_from_db()
                 if user.profile.authenticates_by_mail:
-                    send_activation(request, user)
+                    send_activation(request, user, False)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             except ObjectDoesNotExist:
                 print('ObjectDoesNotExist')
@@ -61,13 +61,13 @@ def login(request):
             if len(existing_users) == 1:
                 existing_user = existing_users[0]
                 if existing_user.profile.authenticates_by_mail:
-                    send_activation(request, existing_user)
+                    send_activation(request, existing_user, False)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             user.email = form.cleaned_data['email']
             user.username = get_random_string(20)
             user.is_active = False
             user.save()
-            send_activation(request, user)
+            send_activation(request, user, True)
             return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
         else:
             # Form is not valid.
@@ -76,7 +76,7 @@ def login(request):
         form = SignUpForm()
     return render(request, 'authentication/login.html', {'form': form})
 
-def send_activation(request, user):
+def send_activation(request, user, is_new):
     """Send user an activation/login link.
 
     The caller should then redirect to / render a template letting the
@@ -89,6 +89,7 @@ def send_activation(request, user):
         'user_id': user.pk,
         'domain': current_site.domain,
         'token': make_timed_token(user.pk, 20),
+        'is_new': is_new,
     })
     if hasattr(settings, 'ROLE') and settings.ROLE in ['staging', 'production']:
         user.email_user(subject, message)
