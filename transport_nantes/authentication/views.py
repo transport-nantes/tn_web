@@ -45,7 +45,8 @@ def login(request):
             try:
                 user.refresh_from_db()
                 if user.profile.authenticates_by_mail:
-                    send_activation(request, user, False)
+                    remember_me = form.cleaned_data["remember_me"]
+                    send_activation(request, user, False, remember_me)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             except ObjectDoesNotExist:
                 print('ObjectDoesNotExist')
@@ -61,13 +62,15 @@ def login(request):
             if len(existing_users) == 1:
                 existing_user = existing_users[0]
                 if existing_user.profile.authenticates_by_mail:
-                    send_activation(request, existing_user, False)
+                    remember_me = form.cleaned_data["remember_me"]
+                    send_activation(request, existing_user, False, remember_me)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             user.email = form.cleaned_data['email']
             user.username = get_random_string(20)
             user.is_active = False
             user.save()
-            send_activation(request, user, True)
+            remember_me = form.cleaned_data["remember_me"]
+            send_activation(request, user, True, remember_me)
             return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
         else:
             # Form is not valid.
@@ -76,7 +79,7 @@ def login(request):
         form = SignUpForm()
     return render(request, 'authentication/login.html', {'form': form})
 
-def send_activation(request, user, is_new):
+def send_activation(request, user, is_new, remember_me):
     """Send user an activation/login link.
 
     The caller should then redirect to / render a template letting the
@@ -90,6 +93,7 @@ def send_activation(request, user, is_new):
         'domain': current_site.domain,
         'token': make_timed_token(user.pk, 20),
         'is_new': is_new,
+        'remember_me': remember_me,
     })
     if hasattr(settings, 'ROLE') and settings.ROLE in ['staging', 'production']:
         user.email_user(subject, message)
@@ -98,7 +102,7 @@ def send_activation(request, user, is_new):
         print("Mode dev : mél qui aurait été envoyé :")
         print(message)
 
-def activate(request, token):
+def activate(request, token, remember_me):
     """Process an activation token.
 
     The result should be (1) to flag the user as having a valid email
@@ -114,6 +118,11 @@ def activate(request, token):
         user.profile.email_confirmed = True
         user.save()
         auth.login(request, user)
+        # Set session cookie expiration to session duration if "False" otherwise for 30 days
+        if remember_me == "False":
+            request.session.set_expiry(0)
+        else:
+            request.session.set_expiry(60*60*24*30)
         return redirect('index')
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         return render(request, 'authentication/account_activation_invalid.html')

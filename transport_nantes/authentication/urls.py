@@ -29,6 +29,6 @@ urlpatterns = [
     path('in', views.login, name='login'),
     path('out', views.DeauthView.as_view(), name='logout'),
     path('mod', views.profile, name='mod'),
-    path('activate/<token>', views.activate, name='activate'),
+    path('activate/<remember_me>/<token>', views.activate, name='activate'),
 
 ]

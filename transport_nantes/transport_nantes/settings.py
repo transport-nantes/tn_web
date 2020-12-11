@@ -195,5 +195,3 @@ CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_LENGTH = 5
 
-# Constant setting cookie session expiration to 1 month in seconds
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 365

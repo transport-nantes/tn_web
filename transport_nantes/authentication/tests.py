@@ -36,7 +36,7 @@ class UserTest(TestCase):
         login_response = views.login(request)
 
         # Test good printing of the page
-        self.assertInHTML("Un mél est un route pour que vous puissiez confirmer la création de votre compte.",
+        self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
             login_response.content.decode("utf-8"))
 
         # Get user and test creation in User table
@@ -78,7 +78,7 @@ class UserTest(TestCase):
         login_response = views.login(request)
 
         # Test good printing of the page
-        self.assertInHTML("Un mél est un route pour que vous puissiez confirmer la création de votre compte.",
+        self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
             login_response.content.decode("utf-8"))
         
         # Get user and test creation in User table
@@ -120,7 +120,7 @@ class UserTest(TestCase):
         login_response = views.login(request)
 
         # Test good printing of the page
-        self.assertInHTML("Un mél est un route avec un lien magique qui vous permettra de connecter.",
+        self.assertInHTML("Un mail est un route avec un lien magique qui vous permettra de vous connecter.",
             login_response.content.decode("utf-8"))
         
     # Minimum of 2 user with the same mail in database and test site page shown
@@ -171,7 +171,7 @@ class TokenMailTest(TestCase):
         # Create token with user.pk
         token = make_timed_token(user.pk, 20)
         # Test redirection to index
-        index_response = self.client.get("/auth/activate/" + token)
+        index_response = self.client.get("/auth/activate/True/" + token)
         self.assertEqual(index_response.url, "/")
 
     # Test mail with invalid token and redirection to account_activation_invalid.html
@@ -183,8 +183,8 @@ class TokenMailTest(TestCase):
         # Create token with user.pk
         token = make_timed_token(user.pk, 20)
         # Test redirection to invalid page
-        invalid_response = self.client.get("/auth/activate/" + token[:-2] + get_random_string(2))
-        self.assertIn("The confirmation link was invalid, possibly because it has already been used",
+        invalid_response = self.client.get("/auth/activate/True/" + token[:-2] + get_random_string(2))
+        self.assertIn("Le lien de confirmation est invalide. Peut-être qu'il a déjà été utilisé ou qu'il a expiré.",
             invalid_response.content.decode("utf-8"))
 
     # Test already used token and redirection to account_activation_invalid.html
@@ -196,8 +196,8 @@ class TokenMailTest(TestCase):
         # Create token with user.pk
         token = make_timed_token(user.pk, 20)
         # Test redirection to invalid page
-        response1 = self.client.get("/auth/activate/" + token)
-        response2 = self.client.get("/auth/activate/" + token)
+        response1 = self.client.get("/auth/activate/True/" + token)
+        response2 = self.client.get("/auth/activate/True/" + token)
         self.assertNotEqual(response2.url, "/")
     
     # Test out of time token and redirection to account_activation_invalid.html
@@ -210,6 +210,57 @@ class TokenMailTest(TestCase):
         token = make_timed_token(user.pk, 1/60)
         sleep(2)
         # Test redirection to invalid page
-        response = self.client.get("/auth/activate/" + token)
-        self.assertInHTML("The confirmation link was invalid, possibly because it has already been used.",
+        response = self.client.get("/auth/activate/True/" + token)
+        self.assertInHTML("Le lien de confirmation est invalide. Peut-être qu'il a déjà été utilisé ou qu'il a expiré.",
             response.content.decode("utf-8"))
+
+
+class SessionCookieTest(TestCase):
+
+    # Test remember me checked
+    def test_checked_remember_me(self):
+
+       # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 20)
+        
+        # Set remember_me to "True" like if checked
+        remember_me = "True"
+        # Simulate connexion
+        response = self.client.get("/auth/activate/" + remember_me + "/" + token)
+        
+        # Get cookies
+        cookies = response.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to 1 month
+        self.assertEqual(max_age, 60 * 60 * 24 * 30)
+
+    # Test remember me unchecked
+    def test_unchecked_remember_me(self):
+
+       # create user and get pk
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        user = User.objects.get(username="test_user")
+        
+        # Create token with user.pk
+        token = make_timed_token(user.pk, 20)
+        
+        # Set remember_me to "False" like if checked
+        remember_me = "False"
+        # Simulate connexion
+        response = self.client.get("/auth/activate/" + remember_me + "/" + token)
+        
+        # Get cookies
+        cookies = response.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to expire at the end of the session
+        self.assertEqual(max_age, "")
