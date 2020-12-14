@@ -65,13 +65,14 @@ def login(request):
                     remember_me = form.cleaned_data["remember_me"]
                     send_activation(request, existing_user, False, remember_me)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
-            user.email = form.cleaned_data['email']
-            user.username = get_random_string(20)
-            user.is_active = False
-            user.save()
-            remember_me = form.cleaned_data["remember_me"]
-            send_activation(request, user, True, remember_me)
-            return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
+            if len(existing_users) == 0:
+                user.email = form.cleaned_data['email']
+                user.username = get_random_string(20)
+                user.is_active = False
+                user.save()
+                remember_me = form.cleaned_data["remember_me"]
+                send_activation(request, user, True, remember_me)
+                return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
         else:
             # Form is not valid.
             pass
@@ -111,7 +112,7 @@ def activate(request, token, remember_me):
     """
     user_id = token_valid(token)
     if user_id < 0:
-        return render(request, 'account_activation_invalid.html')
+        return render(request, 'authentication/account_activation_invalid.html')
     try:
         user = User.objects.get(pk=user_id)
         user.is_active = True

@@ -1,5 +1,13 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
+from django.urls import reverse
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+import authentication.views as views
+from asso_tn.utils import make_timed_token
+from django.utils.crypto import get_random_string
+from time import sleep
+from captcha.models import CaptchaStore
 # Create your tests here.
 
 # TODO Test good printing of pages (first print, post, redirect) and also page needing token from mail
