@@ -566,3 +566,89 @@ class SessionCookieTest(TestCase):
 
         # Test that max-age value of sessionid cookie is set to expire at the end of the session
         self.assertEqual(max_age, "")
+
+    # Test remember_me unchecked for user logging in with password
+    def test_unchecked_remember_me_for_existing_user_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "",
+                     'remember_me': False }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+        # Get cookies
+        cookies = request.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to expire at the end of the session
+        self.assertEqual(max_age, "")
+
+    # Test remember_me checked for user logging in with password
+    def test_checked_remember_me_for_existing_user_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "",
+                     'remember_me': True }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+        # Get cookies
+        cookies = request.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to expire at the end of the session
+        self.assertEqual(max_age, 60 * 60 * 24 * 30)
