@@ -16,6 +16,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
 
 from authentication.forms import SignUpForm, UserUpdateForm, ProfileUpdateForm
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.urls import reverse_lazy
 
 """
 A quick note on the captcha:
@@ -198,3 +200,15 @@ def profile(request):
             'p_form': p_form
         }
     return render(request, 'authentication/profile.html', context)
+
+
+class CustomPasswordReset(PasswordResetView):
+
+    # Set reverse_lazy to local app path
+    success_url = reverse_lazy('authentication:password_reset_done')
+
+
+class CustomPasswordResetConfirm(PasswordResetConfirmView):
+
+    # Set reverse_lazy to local app path
+    success_url = reverse_lazy('authentication:password_reset_complete')
