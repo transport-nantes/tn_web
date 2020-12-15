@@ -42,10 +42,10 @@ def login(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            remember_me = form.cleaned_data["remember_me"]
             try:
                 user.refresh_from_db()
                 if user.profile.authenticates_by_mail:
-                    remember_me = form.cleaned_data["remember_me"]
                     send_activation(request, user, False, remember_me)
                     return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
             except ObjectDoesNotExist:
@@ -59,23 +59,62 @@ def login(request):
             if len(existing_users) > 1:
                 return HttpResponseServerError(
                     "Data error: Multiple email addresses found")
-            if len(existing_users) == 1:
-                existing_user = existing_users[0]
-                if existing_user.profile.authenticates_by_mail:
-                    remember_me = form.cleaned_data["remember_me"]
-                    send_activation(request, existing_user, False, remember_me)
-                    return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
-            if len(existing_users) == 0:
-                user.email = form.cleaned_data['email']
-                user.username = get_random_string(20)
-                user.is_active = False
-                user.save()
-                remember_me = form.cleaned_data["remember_me"]
-                send_activation(request, user, True, remember_me)
-                return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
+            
+            # If password given by user connect with it else connect by mail
+            password1 = form.cleaned_data["password1"]
+            password2 = form.cleaned_data["password2"]
+            if password1:
+                # If user exists and gives password, connect him
+                if len(existing_users) == 1:
+                    existing_user = existing_users[0].username
+                    user = auth.authenticate(username= existing_user, password= password1)
+
+                    if user:
+                        auth.login(request, user)
+                        # Set session cookie expiration to session duration if "False" otherwise for 30 days
+                        if remember_me == False:
+                            request.session.set_expiry(0)
+                        else:
+                            request.session.set_expiry(60*60*24*30)
+                        return redirect("index")
+                # If user doesn't exist and give password, create account and send a confirmation mail
+                if len(existing_users) == 0:
+                    if password2 and password1 == password2:
+                        user.email = form.cleaned_data['email']
+                        user.username = get_random_string(20)
+                        user.is_active = False
+                        user.set_password(password1)
+                        user.save()
+                        send_activation(request, user, True, remember_me)
+                        return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
+                    elif not password2 or password1 != password2:
+                        # return to login page with password error message
+                        context = {}
+                        context["form"] = form
+                        context["pwd_error"] = "Veuillez entrer à nouveau le mot de passe."
+                        return render(request, 'authentication/login.html', context)
+            
+            # If no password given
+            else:
+                # If user exisis, send authentication mail
+                if len(existing_users) == 1:
+                    existing_user = existing_users[0]
+                    if existing_user.profile.authenticates_by_mail:
+                        send_activation(request, existing_user, False, remember_me)
+                        return render(request, 'authentication/account_activation_sent.html', {'is_new': False})
+                # If user doesn't exist, create account and send confirmation mail
+                if len(existing_users) == 0:
+                    user.email = form.cleaned_data['email']
+                    user.username = get_random_string(20)
+                    user.is_active = False
+                    user.save()
+                    send_activation(request, user, True, remember_me)
+                    return render(request, 'authentication/account_activation_sent.html', {'is_new': True})
         else:
-            # Form is not valid.
-            pass
+            # # Form is not valid.
+            context = {}
+            context["form"] = form
+            return render(request, 'authentication/login.html', context)
     else:
         form = SignUpForm()
     return render(request, 'authentication/login.html', {'form': form})

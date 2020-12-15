@@ -39,6 +39,7 @@
 		    {% if form.password1.help_text %}
 		    <small style="color: grey">{{ form.password1.help_text }}</small>
 		    {% endif %}
+			
 		</p>
 		{% for error in form.password1.error_messages %}
 		<p style="color: red">{{ error }}</p>
@@ -59,9 +60,20 @@
 		    <small style="color: grey">{{ form.password2.help_text }}</small>
 		    {% endif %}
 		</p>
-		{% for error in form.password2.error_messages %}
-		<p style="color: red">{{ error }}</p>
+		{% if pwd_error %}
+			<p style="color: red">{{ pwd_error }}</p>
+		{% endif%}
+		
+		{% for error in form.password2.errors %}
+			<p style="color: red">
+				{% if error == "The two password fields didn’t match." %}
+					Les mots de passe ne sont pas identiques.
+				{% else %}
+					{{ error }}
+				{% endif %}
+			</p>
 		{% endfor %}
+
 		<p class="text-secondary">Si vous créez votre compte et vous fournissez un
 		    mot de passe, tapez-le une deuxième fois.</p>
 		<button type="submit" class="btn btn-outline-secondary">Inscription</button>
