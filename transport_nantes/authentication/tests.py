@@ -10,8 +10,7 @@ from time import sleep
 from captcha.models import CaptchaStore
 # Create your tests here.
 
-# TODO Test good printing of pages (first print, post, redirect) and also page needing token from mail
-# TODO Test adding of new user if account doesn't exist and if account already exists
+
 class UserTest(TestCase):
 
     # Add new user and test site page shown
@@ -158,6 +157,310 @@ class UserTest(TestCase):
         # Test printed error message
         self.assertIn(login_response.content.decode("utf-8"), "Data error: Multiple email addresses found")
 
+    # TODO Test user with password, one user, multiple users with same/different mail
+    # TODO Test with one password and both passwords
+    # Add new user using password and test site page shown
+    def test_add_new_user_with_both_passwords(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "secret_password" }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+
+        # Call .views.login()
+        login_response = views.login(request)
+
+        # Test good printing of the page
+        self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
+            login_response.content.decode("utf-8"))
+
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, True)
+
+    # Add new user using password with different mail of existing user and test site page shown
+    def test_add_new_user_with_different_mail_with_both_passwords(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test_user@truc.com")
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "secret_password", }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+
+        # Call .views.login()
+        login_response = views.login(request)
+
+        # Test good printing of the page
+        self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
+            login_response.content.decode("utf-8"))
+        
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, True)
+
+    # Add new user using with same mail of existing user and test site page shown
+    def test_add_new_user_with_same_mail_with_both_passwords(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "secret_password", }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+    ###
+    # Add new user using one password and test site page shown
+    def test_add_new_user_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "" }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+
+        # Call .views.login()
+        login_response = views.login(request)
+
+        # Test good printing of the page
+        self.assertInHTML("Veuillez entrer à nouveau le mot de passe.",
+            login_response.content.decode("utf-8"))
+
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, False)
+
+    # Add new user using one password with different mail of existing user and test site page shown
+    def test_add_new_user_with_different_mail_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test_user@truc.com")
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "", }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+
+        # Call .views.login()
+        login_response = views.login(request)
+
+        # Test good printing of the page
+        self.assertInHTML("Veuillez entrer à nouveau le mot de passe.",
+            login_response.content.decode("utf-8"))
+        
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, False)
+
+    # Add new user using password with same mail of existing user and test site page shown
+    def test_add_new_user_with_same_mail_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "", }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+    ###
+    # Add new user using different passwords and test site page shown
+    def test_add_new_user_with_different_passwords(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "password_secret" }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+
+        # Call .views.login()
+        login_response = views.login(request)
+
+        # Test good printing of the page
+        self.assertInHTML("Les mots de passe ne sont pas identiques.",
+            login_response.content.decode("utf-8"))
+
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, False)
+
+    # Add new user using one password with different mail of existing user and test site page shown
+    def test_add_new_user_with_different_mail_with_different_passwords(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test_user@truc.com")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test_user@truc.com")
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "password_secret", }
+        request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
+        
+        # Call .views.login()
+        login_response = views.login(request)
+        
+        # Test good printing of the page
+        self.assertInHTML("Les mots de passe ne sont pas identiques.",
+            login_response.content.decode("utf-8"))
+        
+        # Get user and test creation in User table
+        try:
+            user = User.objects.get(email="test1@truc.com")
+            existing_user = True
+        except:
+            existing_user = False
+        self.assertIs(existing_user, False)
+
 
 class TokenMailTest(TestCase):
 
@@ -263,3 +566,89 @@ class SessionCookieTest(TestCase):
 
         # Test that max-age value of sessionid cookie is set to expire at the end of the session
         self.assertEqual(max_age, "")
+
+    # Test remember_me unchecked for user logging in with password
+    def test_unchecked_remember_me_for_existing_user_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "",
+                     'remember_me': False }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+        # Get cookies
+        cookies = request.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to expire at the end of the session
+        self.assertEqual(max_age, "")
+
+    # Test remember_me checked for user logging in with password
+    def test_checked_remember_me_for_existing_user_with_one_password(self):
+
+        # Set site into Site table
+        site = Site.objects.get(id=1)
+        site.domain = "localhost:8000"
+        site.name = "localhost"
+        site.save()
+
+        # Add existing user in database
+        User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
+        # Test addition of user
+        try:
+            test_user = User.objects.get(email="test1@truc.com")
+            # test_user.is_active = True
+            existing_test_user = True
+        except:
+            existing_test_user = False
+        self.assertIs(existing_test_user, True)
+
+        # Set captcha
+        captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
+        # Set parameters to similate POST
+        context = { "email": "test1@truc.com",
+                     'captcha_0': captcha.hashkey,
+                     'captcha_1': captcha.response,
+                     'password1': "secret_password",
+                     'password2': "",
+                     'remember_me': True }
+        request = self.client.post(reverse("authentication:login"), context)
+        
+        # Test good printing of the page
+        self.assertEqual(request.url, "/")
+
+        # Get cookies
+        cookies = request.client.cookies
+        for k, v in cookies.items():
+            if k == "sessionid":
+                max_age = v["max-age"]
+
+        # Test that max-age value of sessionid cookie is set to expire at the end of the session
+        self.assertEqual(max_age, 60 * 60 * 24 * 30)

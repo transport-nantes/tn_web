@@ -14,11 +14,13 @@ class SignUpForm(UserCreationForm):
     password1 = forms.CharField(
         widget=forms.PasswordInput, max_length=254,
         label="Mot de passe", required=False,
-        help_text="Facultatif")
+        help_text="Facultatif", min_length=8,
+        error_messages=dict(min_length="Le mot de passe doit faire plus de 8 caractères"))
     password2 = forms.CharField(
         widget=forms.PasswordInput, max_length=254,
         label="Mot de passe", required=False,
-        help_text="Encore la même chose")
+        help_text="Encore la même chose", min_length=8,
+        error_messages=dict(min_length="Le mot de passe doit faire plus de 8 caractères"))
     remember_me = forms.BooleanField(required=False, label="Se souvenir de moi",
         initial=False, widget=forms.CheckboxInput)
 
