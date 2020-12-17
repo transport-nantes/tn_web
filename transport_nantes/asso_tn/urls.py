@@ -14,7 +14,7 @@ urlpatterns = [
         hero_title="Qui sommes-nous ?"),
          name='qui-sommes-nous'),
     # path('join', views.JoinUsView.as_view(), name='join'),
-    path('join', RedirectView.as_view(url="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"),
+    path('join', RedirectView.as_view(url="https://www.helloasso.com/associations/transport-nantes/formulaires/"),
          name='join'),
     path('contact', views.AssoView.as_view(
         title="Nous contacter",
