@@ -581,7 +581,7 @@ from django.contrib.auth.models import User
 class PasswordResetTest(TestCase):
 
     def test_custom_password_reset(self):
-    
+
         # Set site into Site table
         site = Site.objects.get(id=1)
         site.domain = "localhost:8000"
@@ -692,6 +692,6 @@ class PasswordResetTest(TestCase):
         reset_response = self.client.post(link_response.url,
             {"new_password1": "pwdsecret", "new_password2": "pwdsecret"},
             )
-        
+
         # Test final redirection when password reset is done
         self.assertEqual(reset_response.url, "/auth/reset/done/")
