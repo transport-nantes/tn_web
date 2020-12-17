@@ -1,5 +1,6 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block og_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock og_title %}
 {% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
@@ -60,7 +61,7 @@
 		chaleureusement.</p>
 	    <p>Ajoutez votre voix à la nôtre.  Il n'y a pas de limite
 		de ce que nous pouvons faire ensemble.</p>
-	    <p><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-sm" role="button" target="_blank">J'adhère</a></p>
+	    <p>{% bouton_don "J'adhère" %}</p>
 	</div>
     </div>
 

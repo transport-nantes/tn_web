@@ -1,4 +1,5 @@
 {% load static %}
+{% load don %}
 <!DOCTYPE html>
 <html lang="fr"{% block html_attribs %}{% endblock html_attribs %}>
 {% block html %}
@@ -193,7 +194,8 @@
 			compte : et votre soutien et votre voix clairement avec nous.
 			Soutenez-nous aujourd'hui à partir d'un €.
 
-		    <a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-sm" role="button" target="_blank">J'adhère</a></p>
+			{% bouton_don "J'adhère" %}
+		    </p>
 
 		    <p class="small"><i>Votre adhésion ou don donne droit
 			à un crédit d'impôt de 67 % selon votre situation fiscale.</i></p>
