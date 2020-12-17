@@ -1,5 +1,6 @@
 {% extends 'asso_tn/base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block app_content %}
 
@@ -61,7 +62,9 @@
 	    : donnez nous la force d’agir pour vous !</em>
 	</p>
 
-	<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+	<p align="center">
+	    {% bouton_don_lg "J'adhère" %}
+	</p>
 
     </div>
 </div>

@@ -1,5 +1,6 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block app_content %}
 <div class="row">
@@ -136,9 +137,7 @@
 	</p>
 
 	<p>L'adhésion individuel est également possible avec un
-	    simple <a
-href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
-class="btn btn-primary btn-sm" role="button" target="_blank">clique</a>.</p>
+	    simple {% bouton_join "clique" %}.</p>
     </div>
 </div>
 

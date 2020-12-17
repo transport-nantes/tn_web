@@ -1,5 +1,6 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block app_content %}
 
@@ -79,8 +80,9 @@
     </div>
     <div class="row">
 	<div class="col-lg-12 pt-3">
-	    <p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">
-		Faire un don</a></p>
+	    <p align="center">
+		{% bouton_don_lg "Faire un don" %}
+	    </p>
 	</div>
 
 	<div class="col-lg-12 pt-3">

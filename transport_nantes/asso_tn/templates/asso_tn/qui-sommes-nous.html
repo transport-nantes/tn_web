@@ -1,5 +1,6 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block app_content %}
 
@@ -70,7 +71,9 @@
 	    mais bien des aménagements de mode de vie.</p>
 	<p>Ça ne vous donne pas envie d’être un.e mobilitain.e&nbsp;?</p>
 
-	<p><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
+	<p>
+	    {% bouton_don_lg "J'adhère" %}
+	</p>
     </div>
 </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
+{% load don %}
 
 {% block app_content %}
 <div class="row">
@@ -7,14 +8,7 @@
 	<h1>Adhésion</h1>
 
 	<p>Désolé, cette page est en construction.  Vous pourriez
-	toutefois adhérer avec juste <a
-	href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"
-	target_="blank">un clique de plus</a>.</p>
-
-
-	{% comment %}
-	<p align="center"><a href="https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/" class="btn btn-primary btn-lg" role="button" target="_blank">J'adhère</a></p>
-	{% endcomment %}
+	toutefois adhérer avec juste {% bouton_don "un clique de plus %}.</p>
     </div>
 </div>
 {% endblock %}
