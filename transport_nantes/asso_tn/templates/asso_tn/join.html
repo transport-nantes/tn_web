@@ -7,8 +7,116 @@
     <div class="col-lg-12">
 	<h1>Adhésion</h1>
 
-	<p>Désolé, cette page est en construction.  Vous pourriez
-	toutefois adhérer avec juste {% bouton_don "un clique de plus %}.</p>
+	<p>Nous sommes une association soutenu entièrement par nos
+	    adhérents.  Nous vivons grâce à votre soutien financier et
+	    nos élus nous respecte pour ce même raison.  Et c'est
+	    cette indépendance qui nous donne notre pouvoir.</p>
+	<p>
+	    Vous êtes déjà nombreux à nous aider, mais évoluer la
+	    mobilité a besoin de beaucoup plus de participants.tes.
+	    Aidez-nous en faisant un don, quelque soit le montant.  Le
+	    montant est libre et est déductible des impôt à hauteur de
+	    66% selon votre situation fiscale.</p>
+	<p>{% bouton_don_lg "Je participe" %}
+	</p>
+
+{# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #}
+
+	<h2 class="pt-3">Qui sommes nous ?</h2>
+
+	<p>Depuis un peu plus de 2 ans, nous, les mobilitains et
+	    les mobiltaines, nous agissons pour une plus belle
+	    mobilité.</p>
+	<p>Indépendants et optimistes, nous pensons que les
+	    trajets professionnels et privés doivent aller vers moins
+	    de dangers, de contraintes et frustrations.</p>
+	<p>Nous pensons aussi qu’il faut aider notre Terre à aller
+	    mieux.</p>
+	<p>Nous sommes pour des communes et des zones
+	    intercommunales moins encombrées, moins polluées, moins
+	    bruyantes, et mieux pensées.</p>
+	<p>Notre mission est de cogiter un peu, beaucoup, à la
+	    folie, passionnément&nbsp;! Et d’aider à mettre en oeuvre des
+	    actions en faveur d’une mobilité multimodale = vélo,
+	    transports collectifs, marche, TER...  Animés par une vision
+	    globale, nous sommes anti personne mais pour des
+	    déplacements plus vertueux et plus agréables.</p>
+	<p>Notre démarche est de réunir un maximum d’usagers
+	    autour de nos actions pour qu’elles soient ensuite
+	    inscrites dans le programme des élus.</p>
     </div>
 </div>
+
+{# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #}
+
+<div class="container pt-5">
+    <div class="row">
+	<h2>Nos projets</h2>
+    </div>
+    <div class="row">
+	<div class="col-md-3">
+	    <div class="thumbnail">
+		<a href="{% url 'velopolitain:lab' 'gilets' %}">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
+			 alt="gilets gratuits" style="width:100%">
+		    <div class="caption">
+			<h3 class="font-weight-light"
+			    style="font-variant: small-caps;">Rencontres visibles</h3>
+			<p>
+			    Réservez votre gilet gratuit
+			</p>
+		    </div>
+		</a>
+	    </div>
+	</div>
+	<div class="col-md-3">
+	    <div class="thumbnail">
+		<a href="{% url 'velopolitain:lab' 'intro' %}">
+		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
+		    alt="Le vélopolitain" style="width:100%">
+		    <div class="caption">
+			<h3 class="font-weight-light"
+			    style="font-variant: small-caps;">Vélopolitain</h3>
+			<p>
+			    Un vrai réseau cyclable dans votre métropole&nbsp;!
+			</p>
+		    </div>
+		</a>
+	    </div>
+	</div>
+	<div class="col-md-3">
+	    <div class="thumbnail">
+		<a href="{% url 'grand_nantes:index' %}">
+		   <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		   alt="La grande mobilité" style="width:100%">
+		   <div class="caption">
+		       <h3 class="font-weight-light"
+			   style="font-variant: small-caps;">Grande mobilité</h3>
+		       <p>
+			   Plus de dessertes partout dans la région
+		       </p>
+		   </div>
+		</a>
+	    </div>
+	</div>
+	<div class="col-md-3">
+	    <div class="thumbnail">
+		<a href="{% url 'asso_tn:ambassadeur' %}">
+		    <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
+		   alt="Devenir ambassadeur" style="width:100%">
+		    <div class="caption">
+		       <h3 class="font-weight-light"
+			   style="font-variant: small-caps;">Ambassadeurs Mobilitains</h3>
+			<p>
+			    Vous avez envie d’être un.e porte parole,
+			    de réfléchir et agir avec nous ?
+			    {% comment %} Soutenez-nous dans votre commune {% endcomment %}
+			</p>
+		    </div>
+		</a>
+	    </div>
+	</div>
+    </div>
+</div>
+
 {% endblock %}
