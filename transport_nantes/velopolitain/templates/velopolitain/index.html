@@ -1,6 +1,7 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 {% load don %}
+{% load panels %}
 
 {% block meta_descr %}
 <meta name="description" content="Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole "/>
@@ -78,6 +79,8 @@
 		y compris pour les cyclistes de passage.</p>
 	</div>
     </div>
+
+{% show_projects %}
 
 {% comment %}
     <p>
