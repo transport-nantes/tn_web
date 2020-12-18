@@ -1,0 +1,31 @@
+{% load static %}
+
+<div class="row background-ad-hoc-blue" style="background-color:  #EAF3FC;">
+    <div class="col-md-6">
+	<h1>L'association des Mobilitains</h1>
+
+	<p>Nous agissons pour une mobilité plus fluide, plus
+	    sécurisée, plus vertueuse dans la l’Ouest pour les
+	    cyclistes, les piétons, les voyageurs des transports
+	    en commun, et les automobilistes.</p>
+
+	<p>A l’instar des élections 2020 avec le début du
+	    Vélopolitain (plus de 1000 signatures recueillies),
+	    nos actions doivent être portées et concrétisées en
+	    s'inscrivant au coeur des élections 2021.</p>
+
+	<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
+
+	<p>
+	    <a href="{% url 'asso_tn:qui-sommes-nous' %}"
+	       class="btn
+		      btn-outline-primary btn-lg">Nous
+		découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+	</p>
+    </div>
+    <div class="col-md-6">
+	    <img class="pt-5 pb-5 pl-5 pr-5"
+		 src="{% static 'asso_tn/belvederes.jpg' %}"
+		 alt="trois benevoles Mobilitains" style="width:100%;">
+    </div>
+</div>

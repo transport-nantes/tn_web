@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="container pt-5">
+    <div class="row">
+	<div class="col-md-6">
+	    <img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		 alt="un benevole Mobilitain" style="width:100%;">
+	</div>
+	<div class="col-md-6">
+	    <h2>Devenir bénévole</h2>
+
+	    <h3>Envie dágir avec nous&nbsp;?</h3>
+
+	    <p>Devenez Mobilitain et agissez concrètement pour la
+	    mobilité multimodale&nbsp;!</p>
+
+	    <p>Pas besoin d’être un pro de la mobilité pour passer à
+	    l’action, toutes les bonnes volontés sont bienvenues.</p>
+
+	    <p>
+		<a href="{% url 'asso_tn:qui-sommes-nous' %}"
+		   class="btn
+			  btn-outline-primary btn-lg">J'agis <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+	    </p>
+	</div>
+    </div>
+</div>

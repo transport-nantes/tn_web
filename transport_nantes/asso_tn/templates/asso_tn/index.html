@@ -20,78 +20,9 @@
 <div>
     <iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
-
-<div class="row background-ad-hoc-blue" style="background-color:  #EAF3FC;">
-    <div class="col-md-6">
-	<h1>L'association des Mobilitains</h1>
-
-	<p>Nous agissons pour une mobilité plus fluide, plus
-	    sécurisée, plus vertueuse dans la l’Ouest pour les
-	    cyclistes, les piétons, les voyageurs des transports
-	    en commun, et les automobilistes.</p>
-
-	<p>A l’instar des élections 2020 avec le début du
-	    Vélopolitain (plus de 1000 signatures recueillies),
-	    nos actions doivent être portées et concrétisées en
-	    s'inscrivant au coeur des élections 2021.</p>
-
-	<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
-
-	<p>
-	    <a href="{% url 'asso_tn:qui-sommes-nous' %}"
-	       class="btn
-		      btn-outline-primary btn-lg">Nous
-		découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
-	</p>
-    </div>
-    <div class="col-md-6">
-	    <img class="pt-5 pb-5 pl-5 pr-5"
-		 src="{% static 'asso_tn/belvederes.jpg' %}"
-		 alt="trois benevoles Mobilitains" style="width:100%;">
-    </div>
-</div>
-
-<div class="row">
-    <div class="image-overlay-container">
-	    <a href="{% url_don %}" target=" blank">
-		<img src="{% static 'asso_tn/soutenez-nous.jpg' %}"
-		     alt="soutenez l'association pour une mobilité multimodale - faire un don"
-		     style="width:100%;">
-
-		<span class="smallcap
-			     image-overlay-text
-			     image-overlay-background-white
-			     image-overlay-text-blue
-			     image-overlay-bottom-centered">&nbsp;Faire un don&nbsp;</span>
-	    </a>
-	</div>
-</div>
-
-<div class="container pt-5">
-    <div class="row">
-	<div class="col-md-6">
-	    <img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
-		 alt="un benevole Mobilitain" style="width:100%;">
-	</div>
-	<div class="col-md-6">
-	    <h2>Devenir bénévole</h2>
-
-	    <h3>Envie dágir avec nous&nbsp;?</h3>
-
-	    <p>Devenez Mobilitain et agissez concrètement pour la
-	    mobilité multimodale&nbsp;!</p>
-
-	    <p>Pas besoin d’être un pro de la mobilité pour passer à
-	    l’action, toutes les bonnes volontés sont bienvenues.</p>
-
-	    <p>
-		<a href="{% url 'asso_tn:qui-sommes-nous' %}"
-		   class="btn
-			  btn-outline-primary btn-lg">J'agis <i class="fa fa-arrow-right" area-hidden="true"></i></a>
-	    </p>
-	</div>
-    </div>
-</div>
+{% show_qui_sommes_nous %}
+{% show_donate %}
+{% show_volunteer %}
 
 {% comment %}
 <div class="container pt-3">
