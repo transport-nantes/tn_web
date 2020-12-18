@@ -5,16 +5,18 @@ from django.contrib.sites.models import Site
 # Create your views here.
 class MainTransportNantes(TemplateView):
     template_name = 'asso_tn/index.html'
+    twitter_image = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True
         context['hero_image'] = "asso_tn/images-quentin-boulegon/pont-rousseau-1.jpg"
         context['hero_title'] = "Pour une mobilité sûre, vertueuse, et agréable"
-        context['title'] = "Transport Nantes - Pour une mobilité plus douce - Association Nantaise"
+        context['title'] = "{asso} - Pour une mobilité multimodale".format(
+            asso=Site.objects.get_current().name)
+        context['twitter_image'] = "asso_tn/accueil-mobilité-multimodale.jpg"
         # print(dir(context['view'].request))
         # print(get_current_site(context['view'].request))
-        # print(Site.objects.get_current().domain == 'example.com')
         return context
 
 class AssoView(TemplateView):

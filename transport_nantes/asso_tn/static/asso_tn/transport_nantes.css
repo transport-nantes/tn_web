@@ -40,6 +40,25 @@ ul.no-bullet-list {
     #FA4616;    orange
     #44536D;    vert
 */
+.background-gray {
+    background-color: #7F6966;
+}
+.background-red {
+    background-color: #DDE5ED;
+}
+.background-blue {
+    background-color: #5BC2E7;
+}
+.background-orange {
+    background-color: #FA4616;
+}
+.background-green {
+    background-color: #44536D;
+}
+.background-ad-hoc-blue {
+    background-color: #EAF3FC;
+}
+
 
 .image-darken-50 {
     filter: brightness(50%);

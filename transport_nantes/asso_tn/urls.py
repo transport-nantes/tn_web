@@ -1,6 +1,9 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from . import views
+from django.contrib.sites.models import Site
+
+site_name = Site.objects.get_current().name
 
 app_name = 'asso_tn'
 urlpatterns = [

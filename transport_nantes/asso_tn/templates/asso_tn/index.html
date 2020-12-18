@@ -4,115 +4,151 @@
 
 {% block meta_descr %}
 <meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
-
 {% endblock meta_descr %}
+{% block og_image_alt %}{% endblock og_image_alt %}
+{% block og_image_type %}{% endblock og_image_type %}
+{% block og_image_image %}{% endblock og_image_image %}
+{% block twitter_title %}Transport Nantes - Pour une mobilité multimodale{% endblock twitter_title %}
+{% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
+
 
 {% block app_content %}
 
+<div class="row">
+    <h2 class="pl-3">Les projets de l'assos</h2>
+</div>
+<div class="row">
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'velopolitain:lab' 'gilets' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
+		     alt="un gilet orange" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Rencontres visibles</h3>
+		    <p>
+			Réservez votre gilet gratuit
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'velopolitain:lab' 'intro' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
+		     alt="La piste cyclable sur le Pont Anne de Bretagne a Nantes" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Vélopolitain</h3>
+		    <p>
+			Un vrai réseau cyclable dans votre métropole&nbsp;!
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'grand_nantes:index' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		     alt="Un TER et un tramway" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Grande mobilité</h3>
+		    <p>
+			Plus de dessertes partout dans la région
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'asso_tn:ambassadeur' %}">
+		<img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
+		     alt="Un ambassadeur" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Ambassadeurs Mobilitains</h3>
+		    <p>
+			Vous avez envie d’être un.e porte parole,
+			de réfléchir et agir avec nous ?
+			{% comment %} Soutenez-nous dans votre commune {% endcomment %}
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+</div>
+
+<div>
+    <iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+<div class="row background-ad-hoc-blue" style="background-color:  #EAF3FC;">
+    <div class="col-md-6">
+	<h1>L'association des Mobilitains</h1>
+
+	<p>Nous agissons pour une mobilité plus fluide, plus
+	    sécurisée, plus vertueuse dans la l’Ouest pour les
+	    cyclistes, les piétons, les voyageurs des transports
+	    en commun, et les automobilistes.</p>
+
+	<p>A l’instar des élections 2020 avec le début du
+	    Vélopolitain (plus de 1000 signatures recueillies),
+	    nos actions doivent être portées et concrétisées en
+	    s'inscrivant au coeur des élections 2021.</p>
+
+	<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
+
+	<p>
+	    <a href="{% url 'asso_tn:qui-sommes-nous' %}"
+	       class="btn
+		      btn-outline-primary btn-lg">Nous
+		découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+	</p>
+    </div>
+    <div class="col-md-6">
+	<img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
+	     alt="trois benevoles Mobilitains" style="width:100%;">
+    </div>
+</div>
+
+{# soutenez l'association ici #}
+
 <div class="container pt-5">
     <div class="row">
-	<h2>Les projets de l'assos</h2>
-    </div>
-    <div class="row">
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'velopolitain:lab' 'gilets' %}">
-		    <img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
-			 alt="gilets gratuits" style="width:100%">
-		    <div class="caption">
-			<h3 class="font-weight-light"
-			    style="font-variant: small-caps;">Rencontres visibles</h3>
-			<p>
-			    Réservez votre gilet gratuit
-			</p>
-		    </div>
-		</a>
-	    </div>
+	<div class="col-md-6">
+	    <img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+		 alt="un benevole Mobilitain" style="width:100%;">
 	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'velopolitain:lab' 'intro' %}">
-		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
-		    alt="Le vélopolitain" style="width:100%">
-		    <div class="caption">
-			<h3 class="font-weight-light"
-			    style="font-variant: small-caps;">Vélopolitain</h3>
-			<p>
-			    Un vrai réseau cyclable dans votre métropole&nbsp;!
-			</p>
-		    </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'grand_nantes:index' %}">
-		   <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
-		   alt="La grande mobilité" style="width:100%">
-		   <div class="caption">
-		       <h3 class="font-weight-light"
-			   style="font-variant: small-caps;">Grande mobilité</h3>
-		       <p>
-			   Plus de dessertes partout dans la région
-		       </p>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'asso_tn:ambassadeur' %}">
-		    <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
-		   alt="Devenir ambassadeur" style="width:100%">
-		    <div class="caption">
-		       <h3 class="font-weight-light"
-			   style="font-variant: small-caps;">Ambassadeurs Mobilitains</h3>
-			<p>
-			    Vous avez envie d’être un.e porte parole,
-			    de réfléchir et agir avec nous ?
-			    {% comment %} Soutenez-nous dans votre commune {% endcomment %}
-			</p>
-		    </div>
-		</a>
-	    </div>
+	<div class="col-md-6">
+	    <h2>Devenir bénévole</h2>
+
+	    <h3>Envie dágir avec nous&nbsp;?</h3>
+
+	    <p>Devenez Mobilitain et agissez concrètement pour la
+	    mobilité multimodale&nbsp;!</p>
+
+	    <p>Pas besoin d’être un pro de la mobilité pour passer à
+	    l’action, toutes les bonnes volontés sont bienvenues.</p>
+
+	    <p>
+		<a href="{% url 'asso_tn:qui-sommes-nous' %}"
+		   class="btn
+			  btn-outline-primary btn-lg">J'agis <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+	    </p>
 	</div>
     </div>
-
-    <div>
-	{% comment %}<iframe width="560" height="315" src="https://www.youtube.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>{% endcomment %}
-	{% comment %}<iframe width="100%" height="315" src="https://www.youtube.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>{% endcomment %}
-	<iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
-    <div class="jumbotron">
-	<div class="row">
-	    <div class="col-lg-12">
-		<h1>L'association des Mobilitains</h1>
-
-		<p>Nous agissons pour une mobilité plus fluide, plus
-		sécurisée, plus vertueuse dans la l’Ouest pour les
-		cyclistes, les piétons, les voyageurs des transports
-		en commun, et les automobilistes.</p>
-
-		<p>A l’instar des élections 2020 avec le début du
-		Vélopolitain (plus de 1000 signatures recueillies),
-		nos actions doivent être portées et concrétisées en
-		s'inscrivant au coeur des élections 2021.</p>
-
-		<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
-
-		<p>
-		    <a href="{% url 'asso_tn:qui-sommes-nous' %}"
-		       class="btn
-			      btn-outline-primary btn-lg">Nous
-			découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
-		</p>
-	    </div>
-	</div>
-    </div>
-
 </div>
-<div class="container">
+
+{% comment %}
+<div class="container pt-3">
     <div class="row">
 	<div class="col-lg-12">
 	    <h1>Participez à l’aventure&nbsp;!</h1>
@@ -141,5 +177,6 @@
 	</div>
     </div>
 </div>
+{% endcomment %}
 
 {% endblock %}
