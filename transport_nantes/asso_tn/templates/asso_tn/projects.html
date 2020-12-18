@@ -1,0 +1,74 @@
+{% load static %}
+{% load don %}
+
+<div class="row">
+    <h2 class="pl-3">Les projets de l'assos</h2>
+</div>
+<div class="row">
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url_don %}" target=" blank">
+		<img src="{% static 'asso_tn/solo-square.jpg' %}"
+		     alt="un gilet orange" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Fin d'année</h3>
+		    <p>
+			Nous avons besoin de vous : votre voix avec la nôtre.
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'velopolitain:lab' 'intro' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
+		     alt="La piste cyclable sur le Pont Anne de Bretagne a Nantes" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Vélopolitain</h3>
+		    <p>
+			Un vrai réseau cyclable dans votre métropole&nbsp;!
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'grand_nantes:index' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		     alt="Un TER et un tramway" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Grande mobilité</h3>
+		    <p>
+			Plus de dessertes partout dans la région
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'asso_tn:ambassadeur' %}">
+		<img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
+		     alt="Un ambassadeur" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Ambassadeurs Mobilitains</h3>
+		    <p>
+			Vous avez envie d’être un.e porte parole,
+			de réfléchir et agir avec nous ?
+			{% comment %} Soutenez-nous dans votre commune {% endcomment %}
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+</div>
