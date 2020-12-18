@@ -114,12 +114,27 @@
 	</p>
     </div>
     <div class="col-md-6">
-	<img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
-	     alt="trois benevoles Mobilitains" style="width:100%;">
+	    <img class="pt-5 pb-5 pl-5 pr-5"
+		 src="{% static 'asso_tn/belvederes.jpg' %}"
+		 alt="trois benevoles Mobilitains" style="width:100%;">
     </div>
 </div>
 
-{# soutenez l'association ici #}
+<div class="row">
+    <div class="image-overlay-container">
+	    <a href="{% url_don %}" target=" blank">
+		<img src="{% static 'asso_tn/soutenez-nous.jpg' %}"
+		     alt="soutenez l'association pour une mobilité multimodale - faire un don"
+		     style="width:100%;">
+
+		<span class="smallcap
+			     image-overlay-text
+			     image-overlay-background-white
+			     image-overlay-text-blue
+			     image-overlay-bottom-centered">&nbsp;Faire un don&nbsp;</span>
+	    </a>
+	</div>
+</div>
 
 <div class="container pt-5">
     <div class="row">

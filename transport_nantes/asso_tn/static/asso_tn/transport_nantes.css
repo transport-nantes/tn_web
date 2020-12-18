@@ -135,6 +135,14 @@ ul.no-bullet-list {
   left: 50%;
   transform: translate(-50%, -50%);
 } 
+.image-overlay-bottom-centered {
+  position: absolute;
+  #bottom: 10%;
+  #left: 50%;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -25%);
+}
 .image-overlay-small-text {
     font-size: 70%;
 }
