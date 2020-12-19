@@ -9,26 +9,16 @@
 {% endblock meta_descr %}
 
 {% block app_content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
 	<div class="col-lg-12">
-	    <h1>Le Vélopolitain</h1>
+	    <h2>C'est quoi le Vélopolitain ?</h2>
 
-	    <p>Le Vélopolitain est un projet de Transport Nantes qui vise
-		à un réseau cyclable qui en mérite le nom et qui couvre la métropole
-		entière : </p>
+	    <h3>Le Vélopolitain en 5 points</h3>
 
-
-	    <h2>L'Observatoire du Vélopolitain</h2>
-
-	    <p>Dans les jours qui viennent, nous vous donnerons accès
-		à un nouvel outil : l'observatoire du vélopolitain !
-		Il vous permettra de participer au recensement du
-		flux cyclable et de part modale du vélo dans la métropole.
-		Actuellement en phase de test auprès d'un groupe restreint de bénévoles,
-		nous lancerons une béta publique dès la semaine prochaine.</p>
-
-	    <h2>C'est quoi, le vélopolitain ?</h2>
+	    <p>Le projet du Vélopolitain est un réseau cyclable bien
+	    pensé, sécurisé et qui couvre la métropole entière et qu’on
+	    peut définir en 5 points fondamentaux :</p>
 
 	</div>
     </div>
@@ -79,32 +69,64 @@
 		y compris pour les cyclistes de passage.</p>
 	</div>
     </div>
-
-{% show_projects %}
-
-{% comment %}
-    <p>
-	En attendant, <a href="{% url 'velopolitain:lab' 'laboratoire' %}">Transport Nantes agit</a> !  En outre notre
-	Observatoire du Vélopolitain, nous veillons activement à ce
-	que Nantes Métropole avance lors de la période estivale 2020 :
-	de la construction de Coronapistes à la planification d'un
-	future beaucoup plus ambitieux de ce que nous avons vécu lors
-	du mandat 2014 - 2020.  Venez participez avec nous.  C'est
-	votre voix en tant qu'adhérent qui nous donne la force d'agir !
-    </p>
-{% endcomment %}
-    {% comment %}
-    <!-- ######################################################################  -->
-    <div class="row">
-	<div class="col-lg-12">
-
-	    <p align="center">
-		{% bouton_don_lg "J'adhère" %}
-	    </p>
-
+    <div class="row" style="margin-bottom:1mm">
+	<div class="col-md-2 col-sm-3">
+	    <img class="img-responsive" src="{% static 'velopolitain/tactical/provisoire-3.jpg' %}" style="width:100%;">
+	</div>
+	<div class="col-md-10 col-sm-9">
+	    <h3>#5 - Une mise en oeuvre rapide</h3>
+	    <p>Le Vélopolitain ne demande pas des aménagements longs
+		et coûteux.  Face à l’insécurité et la
+		génération massive de CO2, des aménagements
+		cyclables tactiques se servent
+		du matériel réglementaire de
+		signalisation de chantier.</p>
 	</div>
     </div>
-    {% endcomment %}
+    <div class="row pt-3">
+	<div class="container-fluid pt-3">
+	    <div class="row">
+		<div class="col-md-6">
+		    <h2>Le Vélopolitain 2021</h2>
+
+		    <h3>Cap sur les élections municipale 2021</h3>
+
+		    <p>Transport Nantes agit pour que le Vélopolitain
+		    démarre réellement dans toutes les communes de
+		    Nantes Métropole.  Notre objectif est simple :
+		    d'ici la fin du mandant municipal, que le
+		    Vélopolitain soit achevé, au moins via aménagement
+		    tactique.  À l'approche des élections
+		    départementales de 2021, nous insistons sur la
+		    même chose au niveau départementale.</p>
+
+		    <h3>Les 3 grands principes du Vélopolitain</h3>
+
+		    <ol>
+			<li>Un axe cyclable tous les kilomètres</li>
+			<li>Assurer la sécurité sur les voies et les
+			    ronds-points de 7 à 77 ans</li>
+			<li>Permettre au débutant comme au confirmé la
+			    liberté de rouler à son allure</li>
+		    </ol>
+
+		</div>
+		<div class="col-md-6">
+		    <img src="{% static 'velopolitain/panneau-pieton-velo.jpg' %}"
+			 alt="panneau bleu priorite velo pieton" style="width:100%;">
+		</div>
+	    </div>
+	</div>
+    </div>
+
+    <div class="container-fluid pt-4">
+	{% show_donate %}
+    </div>
+    <div class="container-fluid pt-4">
+	{% show_projects %}
+    </div>
+    {% show_qui_sommes_nous %}
+    {% show_volunteer %}
 
 </div>
 {% endblock %}

@@ -88,10 +88,10 @@
     {% endif %}
 
     {% endblock styles %}
-    <meta property="og:title" content="{% block og_title %}Pour un vrai choix dans vos déplacements{% endblock og_title %}" />
+    <meta property="og:title" content="{% block og_title %}{{ twitter_title|default:"Transport Nantes - Pour une mobilité multimodale - Association Nantaise" }}{% endblock og_title %}" />
     <meta property="og:type" content="{% block og_type %}website{% endblock og_type %}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:description" content="{% block og_description %}Notre vision est simple : donner un choix de déplacement crédible à chacun, améliorer les déplacements de chacun, même ceux qui choisissent de ne pas changer. Pour agir, nous avons besoin de votre voix.{% endblock og_description %}" />
+    <meta property="og:description" content="{% block og_description %}{{ twitter_description|default:"Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" }}{% endblock og_description %}" />
     <meta property="og:image" content="https://{{ request.get_host }}{% block og_image_url %}/static/velopolitain/v1.png{% endblock og_image_url %}" />
     <meta property="og:image:alt" content="{% block og_image_alt %}{% endblock og_image_alt %}" />
     <meta property="og:image:type" content="{% block og_image_type %}image/png{% endblock og_image_type %}" />

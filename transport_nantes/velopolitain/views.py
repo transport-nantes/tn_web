@@ -6,12 +6,13 @@ class MainVelopolitain(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Transport Nantes | Vélopolitain"
+        context['title'] = "Transport Nantes | Vélopolitain - Le réseau cyclable"
+        context['meta_descr'] = """<meta name="description" content="Le Vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole "/>"""
         context['hero'] = True
         context['hero_image'] = 'asso_tn/images-quentin-boulegon/vélopolitain-1.jpg'
         context['hero_title'] = 'Le Vélopolitain'
         context['twitter_title'] = "Vélopolitain | Nantes - Un aménagement cyclable continu, lisible et sécurisé."
-        context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes métropole."
+        context['twitter_description'] = "Le vélopolitain a pour mission d’améliorer et de sécuriser les pistes cyclables sur Nantes Métropole."
         context['twitter_image'] = "asso_tn/velopolitain-cest-quoi.jpg"
         return context
 
