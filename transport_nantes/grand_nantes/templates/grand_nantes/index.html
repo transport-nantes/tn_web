@@ -1,102 +1,72 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 {% load don %}
+{% load panels %}
 
 {% block app_content %}
 
-<div class="container pt-5">
+<div class="container-fluid pt-3">
     <div class="row">
 	<div class="col-lg-12">
-	    <h1>La Grande Mobilité</h1>
-	    
-	    <h2>Nos ambitions élections 2021</h2>
-	    
+	    <h2>C'est quoi la Grande Mobilité&nbsp;?</h2>
+
+	    <p>La Grande Mobilité c’est considérer l’ensemble des
+	    solutions de mobilités actives et douces.</p>
+
+	    <h3>Une offre multimodale actuellement trop peu
+		optimisée</h3>
+
 	    <p>
-		Obtenir une fréquence d’au moins 15 mn pour tous les
-		cars/bus/trams/TER pendant toutes les périodes de
+		L’évidence est là, pour certains.nes laisser un
+		peu plus de côté la voiture individuelle est chose
+		compliquée en raison du manque de solution
+		alternative&nbsp;:
+		<ul>
+		    <li>pas assez de fréquence horaire sur les lignes </li>
+		    <li>lignes dont les dessertes sont trop loin de son point de départ/d’arrivée</li>
+		    <li>complémentarité entre 2 mobilités, comme le
+			vélo et le bus, impossible en raison du manque
+			d’aménagement </li>
+		    <li>zone trop dangereuse pour marcher</li>
+		    <li>transports collectifs bondés aux heures de pointe</li>
+		</ul>
+	    </p>
+	    
+	    <img src="{% static 'asso_tn/distribution-gilet.png' %}"
+		 alt="benevoles Transport Nantes qui distribue des gilets reflechissants a Nantes"
+		 style="width:100%;">
+
+	    <h2 class="pt-3">Cap sur l’élection municipale 2021</h2>
+
+	    <p>Nous sommes convaincus que les réseaux peuvent
+	    largement être optimisés dans nos communes et entre nos
+		communes afin que nous puissions mieux nous déplacer.</p>
+
+	    <h3>Comment améliorer la mobilité multimodale&nbsp;?</h3>
+
+	    <p>
+		Notre programme&nbsp;:
+		<ul>
+		    <li><strong>Plus de fréquence :</strong> au moins
+			15 minutes entre 2 horaires pour bus, tramway,
+			cars et TER pendant toute la période de
+			service.</li>
+		    <li><strong>Plus de stationnements vélo</strong> à proximité de
+			toutes les gares et arrêts de la Région.</li>
+		    <li><strong>Des réseaux piétons et
+			cyclables</strong> dans un rayon de 10 minutes
+			autour de toute gare, toute station, tout arrêt.</li>
+		    <li>
+
 		service. Multiplier les lignes ferroviaires en zone urbaine et
 		péri urbaine.</p>
 	</div>
     </div>
 
-
-
-    <div class="row">
-	<div class="col-lg-12 image-overlay-container pt-3">
-		<img src="{% static 'grand_nantes/appuis.png' %}"
-		     alt="stationnement vélo" style="width:100%;" class="image-darken-65">
-		<span class="smallcap
-			     image-overlay-text
-			     image-overlay-text-white
-			     image-overlay-centered">
-		    Stationnements de vélo</span>
-	    </a>
-	</div>
-    </div>
-    <div class="row">
-	<div class="col-lg-12"><p><span class="centered banner-caption">
-	    avec des stationnements de vélo au niveau des arrêts
-	</span></p></div>
-    </div>
-
-
-
-    <div class="row">
-	<div class="col-lg-12 image-overlay-container pt-3">
-		<img src="{% static 'grand_nantes/ligne-jaune.png' %}"
-		     alt="une ligne jaune sur un trottoir"
-		     style="width:100%;" class="image-darken-65">
-		<span class="smallcap
-			     image-overlay-text
-			     image-overlay-text-white
-			     image-overlay-centered">
-		    Sécurité</span>
-	    </a>
-	</div>
-    </div>
-    <div class="row">
-	<div class="col-lg-12"><p><span class="centered banner-caption">
-	    des réseaux sécurisés piéton et vélo dans un rayon de
-		10&nbsp;minutes autour des arrêts et des gares
-	</span></p></div>
-    </div>
-    <div class="row">
-	<div class="col-lg-12 image-overlay-container pt-3">
-		<img src="{% static 'velopolitain/enfant-vélo.png' %}"
-		     alt="un enfant en vélo" style="width:100%;" class="image-darken-65">
-		<span class="smallcap
-			     image-overlay-text
-			     image-overlay-text-white
-			     image-overlay-centered">
-		    Avec l'existant</span>
-	    </a>
-	</div>
-    </div>
-    <div class="row">
-	<div class="col-lg-12"><p><span class="centered banner-caption">
-	    il s’agit simplement de mieux utiliser et d’optimiser
-	    l’existant
-	</span></p></div>
-    </div>
-    <div class="row">
-	<div class="col-lg-12 pt-3">
-	    <p align="center">
-		{% bouton_don_lg "Faire un don" %}
-	    </p>
-	</div>
-
-	<div class="col-lg-12 pt-3">
-	    <h2>Devenez ambassadeur Mobilitain pour la grande mobilité</h2>
-	    
-	    <p>Cette évolution doit se faire de façon collective et nous
-		avons besoin de représentants qui puisse réfléchir et agir
-		avec nous afin que nous soyons plus forts pour avoir un impact
-		auprès des élus.</p>
-	    
-	    <p><a href="{% url 'asso_tn:contact' %}">Je veux en être</a>.
-	    </p>
-	</div>
-    </div>
 </div>
-</div>
+
+{% show_projects %}
+{% show_qui_sommes_nous %}
+{% show_volunteer %}
+
 {% endblock %}
