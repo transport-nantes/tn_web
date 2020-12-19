@@ -1,6 +1,7 @@
 {% extends 'asso_tn/hero_base_transport_nantes.html' %}
 {% load static %}
 {% load don %}
+{% load panels %}
 
 {% block app_content %}
 <div class="row">
@@ -52,74 +53,6 @@
 
 {# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% #}
 
-<div class="container pt-5">
-    <div class="row">
-	<h2>Nos projets</h2>
-    </div>
-    <div class="row">
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'velopolitain:lab' 'gilets' %}">
-		    <img src="{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpg' %}"
-			 alt="gilets gratuits" style="width:100%">
-		    <div class="caption">
-			<h3 class="font-weight-light"
-			    style="font-variant: small-caps;">Rencontres visibles</h3>
-			<p>
-			    Réservez votre gilet gratuit
-			</p>
-		    </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'velopolitain:lab' 'intro' %}">
-		    <img src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
-		    alt="Le vélopolitain" style="width:100%">
-		    <div class="caption">
-			<h3 class="font-weight-light"
-			    style="font-variant: small-caps;">Vélopolitain</h3>
-			<p>
-			    Un vrai réseau cyclable dans votre métropole&nbsp;!
-			</p>
-		    </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'grand_nantes:index' %}">
-		   <img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
-		   alt="La grande mobilité" style="width:100%">
-		   <div class="caption">
-		       <h3 class="font-weight-light"
-			   style="font-variant: small-caps;">Grande mobilité</h3>
-		       <p>
-			   Plus de dessertes partout dans la région
-		       </p>
-		   </div>
-		</a>
-	    </div>
-	</div>
-	<div class="col-md-3">
-	    <div class="thumbnail">
-		<a href="{% url 'asso_tn:ambassadeur' %}">
-		    <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
-		   alt="Devenir ambassadeur" style="width:100%">
-		    <div class="caption">
-		       <h3 class="font-weight-light"
-			   style="font-variant: small-caps;">Ambassadeurs Mobilitains</h3>
-			<p>
-			    Vous avez envie d’être un.e porte parole,
-			    de réfléchir et agir avec nous ?
-			    {% comment %} Soutenez-nous dans votre commune {% endcomment %}
-			</p>
-		    </div>
-		</a>
-	    </div>
-	</div>
-    </div>
-</div>
+{% show_projects %}
 
 {% endblock %}
