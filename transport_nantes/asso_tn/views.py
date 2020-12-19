@@ -27,6 +27,7 @@ class AssoView(TemplateView):
     meta_descr = ""
     twitter_title = ""
     twitter_descr = ""
+    twitter_image = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

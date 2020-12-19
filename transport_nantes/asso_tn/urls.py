@@ -10,8 +10,9 @@ urlpatterns = [
     path('nous', views.AssoView.as_view(
         title="Qui sommes-nous ? | Transport Nantes - Association Nantaise",
         meta_descr="""<meta name="description" content="Depuis 2 ans, Transport Nantes oeuvre pour une mobilité plus sécurisée, plus fluide et plus vertueuse."/>""",
-        twitter_title = "Qui sommes-nous ? | Transport Nantes - Association Nantaise",
+        twitter_title = "Qui sommes-nous ? | Transport Nantes",
         twitter_descr = "Depuis 2 ans, Transport Nantes oeuvre pour une mobilité plus sécurisée, plus fluide et plus vertueuse.",
+        twitter_image = "asso_tn/accueil-mobilité-multimodale.jpg",
         template_name='asso_tn/qui-sommes-nous.html',
         hero_image="asso_tn/happy-folks-1000.jpg",
         hero_title="Qui sommes-nous ?"),
