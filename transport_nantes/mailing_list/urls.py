@@ -5,6 +5,7 @@ from . import views
 app_name = 'mailing_list'
 urlpatterns = [
     path('inscrire', views.MailingListSignup.as_view(), name='list_signup'),
+    path('inscrire-captcha', views.QuickMailingListSignup.as_view(), name='quick_list_signup'),
 ]
 
 # For debugging the thankyou template:

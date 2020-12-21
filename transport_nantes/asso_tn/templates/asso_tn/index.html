@@ -2,6 +2,7 @@
 {% load static %}
 {% load don %}
 {% load panels %}
+{% load newsletter %}
 
 {% block meta_descr %}
 <meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
@@ -20,6 +21,7 @@
 <div>
     <iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/HP2Oa1O-aD4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
+{% show_mailing_list %}
 {% show_qui_sommes_nous %}
 {% show_donate %}
 {% show_volunteer %}

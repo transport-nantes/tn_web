@@ -51,3 +51,13 @@ class MailingListSignupForm(ModelForm):
             'last_name': "*",
             'email': "*",
         }
+
+# Like MailingListSignupForm, but only requests email.
+class QuickMailingListSignupForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('email',)
+
+        labels = {
+            'email': "Adresse mél",
+        }
