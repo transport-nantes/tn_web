@@ -93,12 +93,25 @@ class QuickMailingListSignup(FormView):
         return context
 
     def form_invalid(self, form):
+        """Display the correct form.
+
+        This is actually a bit of a hack.  We should build the correct
+        form, extract the email address from the incoming form, and
+        then display the correct thing.  I think.
+
+        This should also pre-select one newsletter, which should be a
+        change to the newsletter model.  If the user is logged in, it
+        should also pre-populate the subscribed newsletters.
+
+        """
         return render(self.request, self.template_name, {'form': form})
 
     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        #form.send_email()
+        """Process a valid MailingListSignupForm.
+
+        This method is called when valid form data has been POSTed.
+        It returns an HttpResponse.
+        """
         subscribe = False
         user = form.save(commit=False)
         try:
