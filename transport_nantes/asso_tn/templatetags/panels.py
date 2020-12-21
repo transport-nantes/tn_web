@@ -2,7 +2,7 @@ from django import template
 
 register = template.Library()
 
-@register.inclusion_tag('asso_tn/panel_projects.html')
+@register.inclusion_tag('asso_tn/panel/projects.html')
 def show_projects(but_not=None):
     """Render our four principle projects at this point.
 
@@ -13,21 +13,21 @@ def show_projects(but_not=None):
     """
     return {}
 
-@register.inclusion_tag('asso_tn/panel_volunteer.html')
+@register.inclusion_tag('asso_tn/panel/volunteer.html')
 def show_volunteer():
     """Render a proposal to volunteer.
 
     """
     return {}
 
-@register.inclusion_tag('asso_tn/panel_donate.html')
+@register.inclusion_tag('asso_tn/panel/donate.html')
 def show_donate():
     """Render a proposal to donate.
 
     """
     return {}
 
-@register.inclusion_tag('asso_tn/panel_qui_sommes_nous.html')
+@register.inclusion_tag('asso_tn/panel/qui_sommes_nous.html')
 def show_qui_sommes_nous():
     """Render a brief history.
 
