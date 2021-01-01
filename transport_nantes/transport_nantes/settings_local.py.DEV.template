@@ -1,0 +1,31 @@
+# This file (as settings_local.py.DEV) is in git.
+# The file settings_local.py is not.
+# Provide by linking to settings_local_DEV.py or via salt.
+# In production, the settings_local.py is provided by saltstack.
+
+import os
+
+SECRET_KEY = your-secret-here
+DEBUG = True
+ROLE = 'dev'
+
+ALLOWED_HOSTS  = ['localhost', '127.0.0.1', '[::1]']
+
+MORE_INSTALLED_APPS = [
+]
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+## Not needed in development, but maybe need to be set.
+# AWS_ACCESS_KEY_ID = ''
+# AWS_SECRET_ACCESS_KEY = ''
+# AWS_DEFAULT_REGION = ''
+# DEFAULT_FROM_EMAIL = ''
