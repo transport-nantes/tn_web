@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'asso_tn.middleware.site.DynamicSiteDomainMiddleware',
 ]
 
 ROOT_URLCONF = 'transport_nantes.urls'
