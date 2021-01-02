@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'clusterblog.apps.ClusterBlogConfig',
     'clickcollect.apps.ClickCollectConfig',
     'authentication.apps.AuthenticationConfig',
+    'topicblog.apps.TopicBlogConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
