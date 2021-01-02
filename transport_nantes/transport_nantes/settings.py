@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'asso_tn.middleware.site.DynamicSiteDomainMiddleware',
 ]
 
-ROOT_URLCONF = 'transport_nantes.urls'
+ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_tn')
 
 TEMPLATES = [
     {

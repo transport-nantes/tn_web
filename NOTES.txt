@@ -12,13 +12,16 @@ Some useful commands:
 
 To run django application with various settings files:
 
-    python manage.py runserver --settings=transport_nantes.settings_tn
-    python manage.py runserver --settings=transport_nantes.settings_gn
-    python manage.py runserver --settings=transport_nantes.settings_v
+    ROOT_URLCONF=transport_nantes.urls_tn DEFAULT_SITE_ID=1 \
+      python manage.py runserver --settings=transport_nantes.settings_tn
+
+    (and similarly for urls_v and urls_m)
+    (The value of site_id will vary from developer to developer.)
 
 To test:
 
-    python manage.py test --settings=transport_nantes.settings_tn
+    ROOT_URLCONF=transport_nantes.urls_tn DEFAULT_SITE_ID=1 \
+      python manage.py test --settings=transport_nantes.settings_tn
 
 To start a new app:
 
