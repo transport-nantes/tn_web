@@ -23,21 +23,26 @@ from django.contrib.sites.models import Site
 # Based on https://stackoverflow.com/a/64037438/833300 .
 
 class DynamicSiteDomainMiddleware:
+    default_site_id = None
 
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
+        self.default_site_id = settings.DEFAULT_SITE_ID
+        if self.default_site_id is not None:
+            current_site = Site.objects.get(id=self.default_site_id)
 
     def __call__(self, request):
-        try:
-            current_site = Site.objects.get(domain=request.get_host())
-        except Site.DoesNotExist:
-            current_site = Site.objects.get(id=settings.DEFAULT_SITE_ID)
+        if self.default_site_id is None:
+            try:
+                current_site = Site.objects.get(domain=request.get_host())
+            except Site.DoesNotExist:
+                current_site = Site.objects.get(id=settings.DEFAULT_SITE_ID)
+        else:
+            current_site = Site.objects.get(id=self.default_site_id)
 
         request.current_site = current_site
         settings.SITE_ID = current_site.id
 
-
         response = self.get_response(request)
         return response
-

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import os
 from . import settings_local
 
 # Quick-start development settings - unsuitable for production
@@ -23,6 +24,10 @@ DEBUG = settings_local.DEBUG
 ROLE = settings_local.ROLE
 
 ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
+# This will override DynamicSiteDomainMiddleware.
+# It is meant for developers in dev, not for use on
+# deployed instances.
+DEFAULT_SITE_ID = os.getenv('DEFAULT_SITE_ID')
 
 # Application definition
 
