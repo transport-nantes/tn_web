@@ -27,4 +27,5 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('tb/', include ('topicblog.urls'), {'base_template': base_template}),
     path('l/', include('asso_tn.urls_m'), {'base_template': base_template}),
+    path('ml/', include('mailing_list.urls_m'), {'base_template': base_template}),
 ]

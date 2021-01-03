@@ -11,6 +11,7 @@ class TopicBlogViewTrivial(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.template_name = kwargs['base_template']
+        self.template_name = 'topicblog/2020.html'
         return context
 
 class TopicBlogView(TemplateView):
