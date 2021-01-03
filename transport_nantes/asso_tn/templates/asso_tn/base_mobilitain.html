@@ -116,7 +116,7 @@
     {% block navbar %}
        <nav class="navbar navbar-expand-md bg-dark navbar-dark">
 	<!-- Brand -->
-	<a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/TN-logo_white-32.png' %}" alt="Mobilitains logo"></a>
+	   <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
 	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
 	  {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
 	  {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
