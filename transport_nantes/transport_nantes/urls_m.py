@@ -15,16 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from asso_tn.views import MainTransportNantes
-from django.contrib.sites.models import Site
+from topicblog.views import TopicBlogViewTrivial
 
-#print(Site.objects.get_current())
-print('setting urlpatterns')
+base_template = 'asso_tn/base_mobilitain.html'
 
 urlpatterns = [
-    path('', MainTransportNantes.as_view(), name='index'),
+    path('', TopicBlogViewTrivial.as_view(), {'base_template': base_template},
+         name='index'),
     path('admin/', admin.site.urls),
-    path('auth/', include('authentication.urls')),
+    path('auth/', include('authentication.urls'), {'base_template': base_template}),
     path('captcha/', include('captcha.urls')),
-    path('tb/', include ('topicblog.urls')),
+    path('tb/', include ('topicblog.urls'), {'base_template': base_template}),
+    path('l/', include('asso_tn.urls_m'), {'base_template': base_template}),
 ]

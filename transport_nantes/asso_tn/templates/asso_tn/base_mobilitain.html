@@ -210,29 +210,29 @@
 	</div>
     </div>
     {% endblock bottom_appeal %}
-{% comment %}
+
 <div class="fluid-container pl-3 pr-2">
     <div class="row">
 	<div class="col-sm-4">
 	    <h3>S'engager</h3>
 	    <ul>
 		<li style="list-style: none">
-		    <a href="{% url 'asso_tn:join' %}">
+		    <a href="{% url 'index' %}">
 			Faire un don
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'legal:volunteer' %}">
+		    <a href="{% url 'index' %}">
 			Devenir bénévole
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'asso_tn:ambassadeur' %}">
+		    <a href="{% url 'index' %}">
 			Devenir ambassadeur
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'legal:sponsor' %}">
+		    <a href="{% url 'index' %}">
 			Sponsor
 		    </a>
 		</li>
@@ -248,27 +248,22 @@
 		    <a href="{% url 'index' %}">La Grande Mobilité</a>    
 		</li>
 	    </ul>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="{% url 'legal:aligned_orgs' %}">Ils s'engagent aussi</a>
-		</li>
-	    </ul>
 	</div>
 	<div class="col-sm-4">
 	    <h3>Échanger</h3>
 	    <ul>
 		<li style="list-style: none">
-		    {# <a href="{% url 'asso_tn:contact' %}">Nous contacter</a> #}
+		    {# <a href="{% url 'asso_m:contact' %}">Nous contacter</a> #}
 		    <a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'legal:jobs' %}">Jobs</a>
+		    <a href="{% url 'asso_m:jobs' %}">Jobs</a>
 		</li>
 	    </ul>
 	    <ul>
 		<li style="list-style: none">Copyright</li>
 		<li style="list-style: none">
-		    <a href="{% url 'legal:TC' %}">
+		    <a href="{% url 'asso_m:TC' %}">
 			Mentions Légales
 		    </a>
 		</li>
@@ -276,7 +271,7 @@
 	</div>
     </div>
 </div>
-{% endcomment %}
+
     {% block scripts %} {# jQuery library #}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     {# Popper JS #}

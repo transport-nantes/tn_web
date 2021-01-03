@@ -1,10 +1,10 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import TopicBlogView, TopicBlogViewTrivial
+from django.conf import settings
 
 app_name = 'topic_blog'
 urlpatterns = [
-    path('', TopicBlogViewTrivial.as_view(), name='index'),
     path('t/<slug:topic_slug>/', TopicBlogView.as_view(),
          name='view_topic'),
     path('s/<int:pkid>/<slug:page_slug>/', TopicBlogView.as_view(),
@@ -14,6 +14,8 @@ urlpatterns = [
     path('admin/list/', TopicBlogView.as_view(), name='list_articles'),
     path('admin/list/<slug:topic_slug>', TopicBlogView.as_view(), name='list_topic'),
 ]
+if hasattr(settings, 'ROLE') and 'dev' == settings.ROLE:
+    urlpatterns.append(path('', TopicBlogViewTrivial.as_view(), name='index'))
 
 
 # Need topic creation.

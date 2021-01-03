@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import include, path
 from asso_tn.views import MainTransportNantes
 
+base_template =  'asso_tn/hero_base_transport_nantes.html'
+
 urlpatterns = [
     path('', MainTransportNantes.as_view(), name='index'),
     path('admin/', admin.site.urls),
