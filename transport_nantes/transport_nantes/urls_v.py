@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from asso_tn.views import MainTransportNantes
+from topicblog.views import TopicBlogViewTrivial
 
 base_template = 'asso_tn/base_velopolitain.html'
 
