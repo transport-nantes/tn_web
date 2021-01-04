@@ -1,0 +1,62 @@
+{% extends base_template|default:'asso_tn/base_mobilitain.html' %}
+{# Base template as we used in late 2020. #}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+
+{% block meta_descr %}
+<meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
+{% endblock meta_descr %}
+{% block og_image_alt %}{% endblock og_image_alt %}
+{% block og_image_type %}{% endblock og_image_type %}
+{% block og_image_image %}{% endblock og_image_image %}
+{% block twitter_title %}Mobilitains - Pour une mobilité multimodale{% endblock twitter_title %}
+{% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
+
+{% block app_content %}
+
+<div class="row">
+    <div class="col-lg-12">
+	{{ page.body1_md|markdown }}
+    </div>
+</div>
+{% for bullet_image, bullet_text_md in bullets %}
+{% if bullet_text_md|length > 0 %}
+<div class="row" style="margin-bottom:1mm">
+    <div class="col-md-2 col-sm-3">
+	<img src="{% static bullet_image %}" style="width:100%;" >
+    </div>
+    <div class="col-md-10 col-sm-9">
+	{{ bullet_text_md|markdown }}
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+<div class="row pt-3">
+    <div class="container-fluid pt-3">
+	<div class="row">
+	    <div class="col-md-6">
+		{{ page.body2_md|markdown }}
+	    </div>
+	    <div class="col-md-6">
+		<img src="{% static page.middle_image %}"
+		     alt="page.middle_image_alt"
+		     style="width:100%;">
+	    </div>
+	</div>
+    </div>
+</div>
+
+<div class="container-fluid pt-4">
+    {% show_donate %}
+</div>
+<div class="container-fluid pt-4">
+    {% show_projects %}
+</div>
+{% show_mailing_list %}
+{% show_qui_sommes_nous %}
+{% show_volunteer %}
+
+{% endblock %}

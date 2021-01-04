@@ -77,15 +77,15 @@ class TopicBlogPage(models.Model):
     # For pages that list several points with images and text.  If the
     # image and text are not both provided, we don't render the pair.
     bullet_image_1 = models.CharField(max_length=100, blank=True)
-    bullet_text_1 = models.TextField(blank=True)
+    bullet_text_1_md = models.TextField(blank=True)
     bullet_image_2 = models.CharField(max_length=100, blank=True)
-    bullet_text_2 = models.TextField(blank=True)
+    bullet_text_2_md = models.TextField(blank=True)
     bullet_image_3 = models.CharField(max_length=100, blank=True)
-    bullet_text_3 = models.TextField(blank=True)
+    bullet_text_3_md = models.TextField(blank=True)
     bullet_image_4 = models.CharField(max_length=100, blank=True)
-    bullet_text_4 = models.TextField(blank=True)
+    bullet_text_4_md = models.TextField(blank=True)
     bullet_image_5 = models.CharField(max_length=100, blank=True)
-    bullet_text_5 = models.TextField(blank=True)
+    bullet_text_5_md = models.TextField(blank=True)
 
     # Social media.
     meta_description = models.TextField(blank=True)
