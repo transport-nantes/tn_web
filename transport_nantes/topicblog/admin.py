@@ -4,4 +4,4 @@ from .models import TopicBlogPage
 class TopicBlogPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
-admin.site.register(TopicBlogPage)
+admin.site.register(TopicBlogPage, TopicBlogPageAdmin)
