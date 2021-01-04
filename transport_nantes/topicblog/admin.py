@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import TopicBlog
+from .models import TopicBlogPage
 
-class TopicBlogAdmin(admin.ModelAdmin):
+class TopicBlogPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
-admin.site.register(TopicBlog)
+admin.site.register(TopicBlogPage)

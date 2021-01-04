@@ -16,6 +16,7 @@ Django==3.0.7
 django-amazon-ses==3.0.2
 django-ranged-response==0.2.0
 django-simple-captcha==0.5.13
+dj-stripe==2.3.0
 docutils==0.15.2
 future==0.18.2
 gunicorn==20.0.4
@@ -26,7 +27,9 @@ ipython==7.12.0
 ipython-genutils==0.2.0
 jedi==0.16.0
 jmespath==0.9.5
+jsonfield==3.1.0
 lockfile==0.12.2
+markdown2==2.3.10
 msgpack==0.6.2
 packaging==20.3
 parso==0.6.1
@@ -54,6 +57,7 @@ rsa==3.4.2
 s3transfer==0.3.3
 six==1.14.0
 sqlparse==0.3.0
+stripe==2.55.0
 traitlets==4.3.3
 urllib3==1.25.9
 wcwidth==0.1.8

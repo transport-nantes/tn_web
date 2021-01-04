@@ -14,9 +14,6 @@ urlpatterns = [
     path('admin/list/', TopicBlogView.as_view(), name='list_articles'),
     path('admin/list/<slug:topic_slug>', TopicBlogView.as_view(), name='list_topic'),
 ]
-if hasattr(settings, 'ROLE') and 'dev' == settings.ROLE:
-    urlpatterns.append(path('', TopicBlogViewTrivial.as_view(), name='index'))
-
 
 # Need topic creation.
 # Need markdown translator.

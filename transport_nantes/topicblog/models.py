@@ -1,6 +1,32 @@
 from django.db import models
+from django.db.models import Count
+from random import randint
 
-class TopicBlog(models.Model):
+class TopicBlogPageManager(models.Manager):
+    """Manager to help us query for records at random.
+
+    https://web.archive.org/web/20110802060451/http://bolddream.com/2010/01/22/getting-a-random-row-from-a-relational-database/
+    """
+
+    def random_topic_member(self, topic):
+        """Return a random record from the db.
+
+        Usage: page = TopicBlogPage.objects.random(my_topic)
+        """
+        print('rtm: ', topic)
+        if True:
+            # Temporary hack, be really, really inefficient.
+            all_in_topic = self.filter(topic=topic)
+            random_index = randint(0, all_in_topic.count() - 1)
+            print('random_index=', random_index)
+            return all_in_topic[random_index]
+        count = self.aggregate(ids=Count('id'), filter=Q(topic=topic))['ids']
+        print('rtm: ', count)
+        random_index = randint(0, count - 1)
+        print('rtm: ', random_index)
+        return self.all()[random_index]
+
+class TopicBlogPage(models.Model):
     """Represent a blog entry that permits some measurement.
 
     We want to discover and measur what works and what doesn't.  So
@@ -34,22 +60,42 @@ class TopicBlog(models.Model):
 
     # Body text as markdown.
     # Internal links are via topic slug.
-    body1_md = models.TextField()
-    body2_md = models.TextField()
+    body1_md = models.TextField(blank=True)
+    body2_md = models.TextField(blank=True)
+    body3_md = models.TextField(blank=True)
 
     # Images and presentation.
     # The template should be one of UNIQUE(template).
     template = models.CharField(max_length=80)
-    # hero_image = ImageField()
-    hero_text = models.CharField(max_length=80)
-    
-    # Social media.
-    meta_description = models.TextField()
-    twitter_title = models.CharField(max_length=80)
-    twitter_description = models.TextField()
+    # hero_image = models.ImageField()
+    hero_image = models.CharField(max_length=100, blank=True)
+    hero_title = models.CharField(max_length=80, blank=True)
+    hero_description = models.CharField(max_length=120, blank=True)
+    # mid_image = models.ImageField()
+    middle_image = models.CharField(max_length=100, blank=True)
+    middle_image_alt = models.CharField(max_length=240, blank=True)
+    # For pages that list several points with images and text.  If the
+    # image and text are not both provided, we don't render the pair.
+    bullet_image_1 = models.CharField(max_length=100, blank=True)
+    bullet_text_1 = models.TextField(blank=True)
+    bullet_image_2 = models.CharField(max_length=100, blank=True)
+    bullet_text_2 = models.TextField(blank=True)
+    bullet_image_3 = models.CharField(max_length=100, blank=True)
+    bullet_text_3 = models.TextField(blank=True)
+    bullet_image_4 = models.CharField(max_length=100, blank=True)
+    bullet_text_4 = models.TextField(blank=True)
+    bullet_image_5 = models.CharField(max_length=100, blank=True)
+    bullet_text_5 = models.TextField(blank=True)
 
-    og_title = models.CharField(max_length=80)
-    og_description = models.TextField()
+    # Social media.
+    meta_description = models.TextField(blank=True)
+    twitter_title = models.CharField(max_length=80, blank=True)
+    twitter_description = models.TextField(blank=True)
+
+    og_title = models.CharField(max_length=80, blank=True)
+    og_description = models.TextField(blank=True)
+
+    objects = TopicBlogPageManager()
 
     def __str__(self):
-        return 'self'
+        return '{topic} / {slug}'.format(topic=self.topic, slug=self.slug)

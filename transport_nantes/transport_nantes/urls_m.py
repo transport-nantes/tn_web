@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from topicblog.views import TopicBlogViewTrivial
+from topicblog.views import TopicBlogView
 
 base_template = 'asso_tn/base_mobilitain.html'
 
 urlpatterns = [
-    path('', TopicBlogViewTrivial.as_view(), {'base_template': base_template},
+    path('', TopicBlogView.as_view(), {'base_template': base_template,
+                                       'topic_slug': 'index'},
          name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls'), {'base_template': base_template}),
