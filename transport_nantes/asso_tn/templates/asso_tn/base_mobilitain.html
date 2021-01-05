@@ -131,16 +131,16 @@
 	<div class="collapse navbar-collapse" id="collapsibleNavbar">
 	    <ul class="navbar-nav">
 	      <li class="nav-item">
-		<a class="nav-link" href="{% url 'index' %}">Vélopolitain</a>
+		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
 	    </li>
 	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'index' %}">La Grande Mobilité</a>
+		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 	    </li>
 	    <li class="nav-item">
 		{% bouton_don "Faire un don" %}
 	    </li>
 	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'index' %}">Qui sommes-nous ?</a>
+		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
 	    </li>
 
 {% comment %}
@@ -217,22 +217,22 @@
 	    <h3>S'engager</h3>
 	    <ul>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">
+		    <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}">
 			Faire un don
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">
+		    <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}">
 			Devenir bénévole
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">
+		    <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
 			Devenir ambassadeur
 		    </a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">
+		    <a href="{% url 'topic_blog:view_topic' 'sponsor' %}">
 			Sponsor
 		    </a>
 		</li>
@@ -242,10 +242,10 @@
 	    <h3>S'informer</h3>
 	    <ul>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">Vélopolitain</a>
+		    <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
 		</li>
 		<li style="list-style: none">
-		    <a href="{% url 'index' %}">La Grande Mobilité</a>    
+		    <a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 		</li>
 	    </ul>
 	</div>
