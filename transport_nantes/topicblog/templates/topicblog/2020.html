@@ -18,9 +18,11 @@
 {% block app_content %}
 
 {{ page.body1_md|markdown }}
+{% if page.middle_image_alt|len > 0 %}
 <img src="{% static page.middle_image %}"
-		 alt="page.middle_image_alt"
+		 alt="{{ page.middle_image_alt }}"
      style="width:100%;">
+{% endif %}
 {{ page.body2_md|markdown }}
 
 {% show_projects %}
