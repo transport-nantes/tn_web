@@ -34,6 +34,7 @@
 </div>
 {% endif %}
 {% endfor %}
+{% if page.body2_md|length > 0 %}
 <div class="row pt-3">
     <div class="container-fluid pt-3">
 	<div class="row">
@@ -48,6 +49,7 @@
 	</div>
     </div>
 </div>
+{% endif %}
 
 <div class="container-fluid pt-4">
     {% show_donate %}
