@@ -18,7 +18,7 @@
 {% block app_content %}
 
 {{ page.body1_md|markdown }}
-{% if page.middle_image_alt|len > 0 %}
+{% if page.middle_image_alt|length > 0 %}
 <img src="{% static page.middle_image %}"
 		 alt="{{ page.middle_image_alt }}"
      style="width:100%;">
