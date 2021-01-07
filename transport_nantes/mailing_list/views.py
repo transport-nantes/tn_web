@@ -13,6 +13,7 @@ from .models import MailingList, MailingListEvent
 
 class MailingListSignup(FormView):
     template_name = 'mailing_list/signup.html'
+    merci_template = 'mailing_list/merci.html'
     form_class = MailingListSignupForm
     # success_url = reverse_lazy('mailing_list:list_ok')
 
@@ -67,7 +68,7 @@ class MailingListSignup(FormView):
             subscribe = True
         if subscribe:
             return render(
-                self.request, 'mailing_list/merci.html',
+                self.request, self.merci_template,
                 {
                     'hero': True,
                     'hero_image':
@@ -79,6 +80,7 @@ class MailingListSignup(FormView):
 
 class QuickMailingListSignup(FormView):
     template_name = 'mailing_list/quick_signup.html'
+    merci_template = 'mailing_list/merci.html'
     form_class = MailingListSignupForm
 
     # We don't currently populate this form with the user's current
@@ -148,7 +150,7 @@ class QuickMailingListSignup(FormView):
             subscribe = True
         if subscribe:
             return render(
-                self.request, 'mailing_list/merci.html',
+                self.request, self.merci_template,
                 {
                     'hero': True,
                     'hero_image':

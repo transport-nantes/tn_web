@@ -1,0 +1,63 @@
+{% extends 'asso_tn/base_mobilitiain.html' %}
+{% load static %}
+{% load don %}
+{% load mpanels %}
+
+{% block og_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock og_title %}
+{% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
+{% block og_image_url %}{% static 'asso_tn/images-quentin-boulegon/gilets-1.jpgasso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock og_image_url %}
+{% block og_image_alt %}Les actualités de la mobilité{% endblock og_image_alt %}
+{% block og_image_type %}image/jpg{% endblock og_image_type %}
+{% block og_image_width %}1000{% endblock og_image_width %}
+{% block og_image_height %}667{% endblock og_image_height %}
+{% block twitter_image %}{% static 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg' %}{% endblock twitter_image %}
+{% block twitter_title %}Inscrivez-vous à la newsletter de Transport Nantes !{% endblock twitter_title %}
+{% block twitter_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock twitter_description %}
+
+{% block app_content %}
+
+<div class="container pt-5">
+    <div class="row">
+	<div class="col-md-12">
+
+	    <p>Même si un dicton nous dit "pour vivre heureux, vivons
+		caché", nous avons envie de vous faire connaître nos
+		actions régulièrement.</p>
+
+	    <p>Être informé.e, vous donnera certainement encore plus
+		envie de nous soutenir et nous serons heureux !</p>
+
+	    <p class="text-primary">
+		<strong>J'ai envie d’avoir des nouvelles des
+		Mobilitains et d’être informé.e de leurs actions.
+		</strong></p>
+
+	    <form method="post">{% csrf_token %}
+		<p>{{ form.non_field_errors }}</p>
+		{% for field in form %}
+		<p>
+		    {{ field.label }}<br>
+		    {{ field }}
+		    {% if field.help_text %}
+		    <small style="color: grey">{{ field.help_text }}</small>
+		    {% endif %}
+		</p>
+		{% for error in field.error_messages %}
+		<p style="color: red">{{ error }}</p>
+		{% endfor %}
+		{% endfor %}
+
+		<button type="submit" class="btn btn-outline-primary">Je m'inscris</button>
+	    </form>
+	</div>
+    </div>
+
+    <div class="row pt-4">
+	{% show_projects %}
+    </div>
+</div>
+
+{% show_donate %}
+{% show_volunteer %}
+
+{% endblock %}
