@@ -41,8 +41,9 @@ class TnLinkParserTest(TestCase):
                          don.bouton_don_lg('give!'))
         self.assertEqual(self.parser.transform('[[don:adhésion]]((give!))'), \
                          don.bouton_join('give!'))
-        self.assertEqual(self.parser.transform('[[contact:]]((Je veux être bénévole))'), \
-                         don.contact_button('Je veux être bénévole'))
+        self.assertEqual(self.parser.transform(
+            '[[contact:Hello, World!]]((Je veux être bénévole))'), \
+                         don.contact_button('Hello, World!', 'Je veux être bénévole'))
 
     def test_call_to_action(self):
         self.assertEqual(self.parser.transform('[[action:join us!]]((my_topic_name))'), \
