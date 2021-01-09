@@ -42,3 +42,10 @@ def lien_don(link_text):
 @register.simple_tag
 def url_don():
     return mark_safe(hello_asso_don)
+
+@register.simple_tag
+def action_button(link_url, topic_name):
+    return """<p><a href="{link_url}" class="btn """ + \
+        """btn-outline-primary btn-lg">{text} """ + \
+        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>""".format(
+            link_url=link_url, text=topic_name)
