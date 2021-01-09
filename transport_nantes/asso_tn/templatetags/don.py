@@ -49,3 +49,12 @@ def action_button(link_url, topic_name):
         """btn-outline-primary btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
     return html_template.format(link_url=link_url, text=topic_name)
+
+@register.simple_tag
+def contact_button(email_subject):
+    """This might (should) someday become a form."""
+    html_template = """<p class="pl-5"> """ + \
+	"""<a href="mailto:jevousaide@transport-nantes.com?subject={subj}&nbsp;!" """ + \
+	"""class="btn btn-outline-primary btn-lg">Nous contacter """ + \
+        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+    return html_template.format(subj=email_subject)
