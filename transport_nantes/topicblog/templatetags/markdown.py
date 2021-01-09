@@ -2,6 +2,8 @@ from django import template
 from django.utils.html import escape, mark_safe
 from markdown2 import markdown
 
+from topicblog.tn_links import TNLinkParser
+
 register = template.Library()
 
 @register.filter(name='markdown')
@@ -17,4 +19,5 @@ def safe_markdown(value):
 
       {{ value|markdown }}
     """
-    return mark_safe(markdown(escape(value)))
+    parser = TNLinkParser(verbose=True)
+    return mark_safe(markdown(parser.transform(escape(value))))

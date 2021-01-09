@@ -27,6 +27,13 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform('dog [[hello:goodbye]] cat'),
                          'dog [[hello:goodbye]] cat')
 
+    def test_bad_url(self):
+        self.assertEqual(self.parser.transform(
+            '[[action:Do something!]]((does-not-exist))'),
+                         don.action_button(reverse('topic_blog:view_topic',
+                                                   args=['does-not-exist']),
+                                           'Do something!'))
+
     def test_buttons(self):
         self.assertEqual(self.parser.transform('[[don:]]((give!))'), \
                          don.bouton_don('give!'))
@@ -41,3 +48,14 @@ class TnLinkParserTest(TestCase):
                              'topic_blog:view_topic',
                              args=['my_topic_name']),
                                            'join us!'))
+
+    def test_two_buttons(self):
+        button1 = '[[action:join us!]]((my_topic_name))'
+        html1 = don.action_button(reverse('topic_blog:view_topic',
+                                          args=['my_topic_name']),
+                                  'join us!')
+        button2 = '[[don:adhésion]]((give!))'
+        html2 = don.bouton_join('give!')
+        one = self.parser.transform(button1 + button2)
+        self.assertEqual(self.parser.transform(button1 + button2), \
+                         html1 + html2)

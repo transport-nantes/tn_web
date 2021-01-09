@@ -1,5 +1,5 @@
 from asso_tn.templatetags import don
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 
 """Filter for Transport Nantes specific non-standard markdown.
 
@@ -80,6 +80,7 @@ class TNLinkParser(object):
 
         """
         self.clear()
+        self.log(in_text)
         self.consume_ordinary(in_text)
         return self.out_string
 
@@ -99,11 +100,9 @@ class TNLinkParser(object):
         if State.PARSING_OPEN_BRACKET == self.state:
             return
         self.out_string += '[' + self.bracket_class_string
-        self.bracket_class_string = ''
         if State.IN_DOUBLE_BRACKET_CLASS == self.state:
             return
         self.out_string += ':' + self.bracket_label_string
-        self.bracket_label_string = ''
         if State.IN_DOUBLE_BRACKET_LABEL == self.state:
             return
         self.out_string += ']'
@@ -116,14 +115,21 @@ class TNLinkParser(object):
         if State.PARSING_OPEN_PAREN == self.state:
             return
         self.out_string += '(' + self.paren_string
-        self.paren_string = ''
         if State.IN_DOUBLE_PAREN == self.state:
             return
         self.out_string += ')'
         if State.PARSING_CLOSE_PAREN == self.state:
             return
         self.out_string += ')'
-        
+
+    def reset_to_ordinary(self):
+        """Reset to ordinary, clear accumulators."""
+        self.log('Reset')
+        self.bracket_class_string = ''
+        self.bracket_label_string = ''
+        self.paren_string = ''
+        self.state = State.ORDINARY
+
     def flush_and_reset_to_ordinary(self, char):
         """Flush state and go back to ORDINARY.
 
@@ -131,10 +137,10 @@ class TNLinkParser(object):
         thinking otherwise, so flush state as needed and go back to
         ordinary pass-through.
         """
-        self.log('Resetting')
+        self.log('Flush and reset')
         self._flush()
         self.out_string += char
-        self.state = State.ORDINARY
+        self.reset_to_ordinary()
 
     def transcribe_accumulated_text(self):
         """We've finished accumulating something, transform and output it.
@@ -152,7 +158,10 @@ class TNLinkParser(object):
                 self.out_string += self.bracket_class_string + ':' + \
                     self.bracket_label_string + '(' + self.paren_string + ')'
         elif 'action' == self.bracket_class_string:
-            url = reverse('topic_blog:view_topic', args=[self.paren_string])
+            try:
+                url = reverse('topic_blog:view_topic', args=[self.paren_string])
+            except NoReverseMatch:
+                url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
             self.out_string += don.action_button(url, self.bracket_label_string)
         else:
             self.log('Unexpected transcription case: ' + self.bracket_class_string)
@@ -197,6 +206,7 @@ class TNLinkParser(object):
                 elif State.PARSING_CLOSE_PAREN == self.state:
                     self.transcribe_accumulated_text()
                     self.set_state(State.ORDINARY)
+                    self.reset_to_ordinary()
                 else:
                     self.flush_and_reset_to_ordinary(s)
             else:

@@ -45,7 +45,7 @@ def url_don():
 
 @register.simple_tag
 def action_button(link_url, topic_name):
-    return """<p><a href="{link_url}" class="btn """ + \
+    html_template = """<p><a href="{link_url}" class="btn """ + \
         """btn-outline-primary btn-lg">{text} """ + \
-        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>""".format(
-            link_url=link_url, text=topic_name)
+        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+    return html_template.format(link_url=link_url, text=topic_name)
