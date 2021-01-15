@@ -14,315 +14,363 @@ dans le Grand Ouest{% endblock twitter_description %}
 
 {% block app_content %}
 
-<div class="row">
-    <div class="col-lg-12">
-	<h1>Postes à pourvoir</h1>
+<div class="container">
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Postes à pourvoir</h1>
 
-	<p class="text-muted">La mission des Mobilitains est de donner un choix de
-	    déplacement crédible à chacun dans la région nantaise et
-	    d'améliorer les déplacements de chacun, y compris ceux qui
-	    choisissent de ne pas changer.  En outre, l'association
-	    souhaite influer sur le cycle électorale départementale et
-	    régionale du Grand Ouest (Régions Pays de la Loire et
-	    Bretagne), car une proportion importante des
-	    déplacements en région nantaise concerne ces deux
-	    régions.</p>
-	
-	<p>
-	    Petite association dynamique, croisement entre
-	    association classique et startup, les Mobilitains
-	    cherchent les compétences ci-dessous.  Association
-	    #RemoteFirst.
-	</p>
-	<p>
-	    Votre candidature est à adresser (CV et lettre de
-	    motivation) à <a
+	    <p class="text-muted">La mission des Mobilitains est de donner un choix de
+		déplacement crédible à chacun dans la région nantaise et
+		d'améliorer les déplacements de chacun, y compris ceux qui
+		choisissent de ne pas changer.  En outre, l'association
+		souhaite influer sur le cycle électorale départementale et
+		régionale du Grand Ouest (Régions Pays de la Loire et
+		Bretagne), car une proportion importante des
+		déplacements en région nantaise concerne ces deux
+		régions.</p>
+
+	    <div class="accordian" id="job-accordion">
+		<div class="card">
+		    <div class="card-header" id="header-intro">
+			<h2 style="font-size: 140%;">
+			    <a class="card-link" data-toggle="collapse" href="#intro">
+  Introduction et comment postuler
+			    </a>
+			</h2>
+		    </div>
+		    <div id="intro" class="collapse show" data-parent="#job-accordion">
+			<div class="card-body">
+			    <p>
+  Petite association dynamique, croisement entre association classique
+  et startup, les Mobilitains cherchent les compétences ci-dessous.
+  Association #RemoteFirst.</p>
+			    <p>
+  Votre candidature est à adresser (CV et lettre de motivation) à <a
     href="mailto:cv@transport-nantes.com">cv@transport-nantes.com</a>.
-	    Pensez à expliquer pourquoi vous serez le bon candidat et
-	    quelles expériences dans votre passée justifient vos compétences.
-	    Un entretien, sous forme d'une discussion, vous permettrez
-	    d'évoquer les besoins et
-	    capacités de l'association et de développer des bases d'un
-	    projet.  L'objectif sera non seulement de vérifier que
-	    nous pouvons travailler ensemble mais de tracer ensemble
-	    des pistes pour vos premiers mois de travail.</p>
+  Pensez à expliquer pourquoi vous serez le bon candidat et quelles
+  expériences dans votre passée justifient vos compétences.  Un
+  entretien, sous forme d'une discussion, vous permettrez d'évoquer
+  les besoins et capacités de l'association et de développer des bases
+  d'un projet.  L'objectif sera non seulement de vérifier que nous
+  pouvons travailler ensemble mais de tracer ensemble des pistes pour
+  vos premiers mois de travail.</p>
 
-	<ul>
-	    {# <li><a href="#entreprise">Directeur.ice relation entreprise</a></li> #}
-	    <li><a href="#cm">Community Manager</a></li>
-	    <li><a href="#django">Développeur django</a></li>
-	</ul>
+  <p>Attention : nous recevons un certain pourcentage de spam et de
+  réponses mal ciblées.  Ne vous laissez pas piéger par une telle
+  apparence.  Pensez à expliquer clairement dans votre mél à quoi vous
+  répondez et, dans 2-3 lignes maximum, pourquoi vous êtes le bon
+  candidat.</p>
+
+			</div>
+		    </div>
+		</div>
+
+
+		<div class="card">
+		    <div class="card-header" id="header-nous">
+			<h2 style="font-size: 140%;">
+			    <a class="card-link"  data-toggle="collapse" href="#nous">
+				Nous</a>
+			</h2>
+		    </div>
+		    <div id="nous" class="collapse" data-parent="#job-accordion">
+			<div class="card-body">
+
+  <p>Depuis 2018 l’association des Mobilitains agit pour une meilleure
+    mobilité.</p>
+
+  <p>Indépendants et optimistes, nous pensons que les trajets
+    professionnels et privés doivent être plus vertueux et doivent aller
+    vers moins de dangers, de contraintes et de frustrations.</p>
+
+  <p>Notre prochain cap est l’enjeu des élections 2021, l’association
+    souhaite influer sur le cycle électoral départemental du Grand Ouest
+    (Régions Pays de la Loire et Bretagne) et régionale dans toutes les
+    régions de la France Métropolitaine hors Île de France, car nos
+    déplacements ne connaissent pas de limites administratives.</p>
+			  </div>
+		      </div>
+		  </div>
+
+		  <div class="card">
+		      <div class="card-header" id="header-community-manager">
+			  <h2 style="font-size: 140%;">
+			      <a class="card-link"  data-toggle="collapse" href="#cm">
+				  Community Manager</a>
+			  </h2>
+		      </div>
+		      <div id="cm" class="collapse" data-parent="#job-accordion">
+			  <div class="card-body">
+			      <p class="text-muted">CDI</p>
+			      <h3>Le job</h3>
+
+  <p>Notre petite association dynamique, mêlant une association
+    classique et une startup, souhaite grandir et cherche le prochain.e
+    community manager qui rejoindra l’aventure. Confinement ou pas le
+    job est #RemoteFirst.</p>
+
+  <p>Vous rejoindrez une petite équipe courageuse et pleine de bonne
+    humeur. Pas de hiérarchie, l’ensemble de l’équipe doit effectuer des
+    reportings au président de l’association, notre avancée est
+    collective. Vous serez particulièrement lié.e à la directrice de
+    stratégie puisque les 2 postes sont absolument complémentaires.</p>
+
+  <h3>La mission</h3>
+
+  <p>Votre objectif sera à la fois d'assurer la croissance et la base
+    économique de l'association ainsi que d'augmenter son soutien
+    commercial (investissement entreprises mais aussi mécénat,
+    sponsoring). Notre force et notre légitimité politique viennent de
+    nos adhérents. Aussi, votre responsabilité sera surtout la
+    création de communautés et d'instiller une passion et une
+    reconnaissance des enjeux de la mobilité dans Nantes Métropole,
+    dans les Pays de la Loire, le Grand Ouest, et dans les autres
+    régions du territoire.</p>
+
+  <p>C'est un rôle qui reconnaît l'importance du relationnel tout en
+    admettant l'impossibilité d'être présent partout. Un bon community
+    manager Mobilitain n'est pas un simple gestionnaire de réseaux
+    sociaux mais une vraie force interactive dans les multiples
+    communautés qu'il crée, qu'il creuse pour trouver et inventer. Il
+    sait comprendre les motivations des usages de transports collectifs
+    et de cyclistes, de piétons et de PMRs, les ruraux comme les
+    urbains. Bref, un community manager Mobilitain sait servir un plat
+    humain grâce à une compétence à la fois numérique et humaine,
+    arrosée d'une sauce de psychologue et de journaliste.</p>
+
+  <h3>Vous</h3>
+
+  <p>Engagé.e, dynamique, autonome, et hyper optimiste, vous savez ou
+    avez envie de travailler en mode entrepreneuriale (même si vous êtes
+    salarié, le poste et son évolution sont très proches de cette façon
+    de travailler).</p>
+
+  <p>Une dose commerciale : Vous êtes tenace et toujours
+    souriant.e. Vous savez mettre un pied dans la porte et être force de
+    convictions.</p>
+
+  <p>Une dose créative : Vous êtes plein.e d’idées et vous savez les
+    renouveler sans cesse. </p>
+
+  <p>Un trait d’audace : Vous osez, vous tentez et vous tentez à
+    nouveau.</p>
+
+  <p>2 doses d’organisation : Autonome, vous savez structurer votre
+    travail et multiplier les projets ne vous fait pas peur.</p>
+
+  <p>Et beaucoup de volonté : postuler à cette offre de poste en
+    association n’est pas une action anodine et vous êtes convaincu.e
+    que les habitudes de mobilité doivent changer. Vous avez réellement
+    envie d’être acteur.rice du changement ? Alors racontez-nous votre
+    histoire (mais pas votre CV) et vos motivations d’engagement dans un
+    mail et joignez votre CV. </p>
+
+  <p>Envoyez-nous ces éléments à <a
+  href="mailto:cv@transport-nantes.com">cv@transport-nantes.com</a> et
+  si notre première lecture est positive, nous vous proposerons un
+  entretien, sous forme d'une discussion.  (N'oubliez pas de lire
+  comment postuler, ci-haut.</p>
+
+  <p>Nous parlerons des besoins et capacités de l'association et nous
+    commencerons à développer les bases d'un projet.  L'objectif sera
+    non seulement de vérifier que nous pouvons travailler ensemble mais
+    de tracer ensemble des pistes pour vos premiers mois de travail.</p>
+
+  <p>Nous avons hâte de vous découvrir !</p>
+
+			</div>
+		    </div>
+		</div>
+
+		<div class="card">
+		    <div class="card-header" id="header-fundraiser">
+			<h2 style="font-size: 140%;">
+			    <a class="card-link"  data-toggle="collapse" href="#fundraiser">
+				Fundraiser, développement adhésion</a>
+			</h2>
+		    </div>
+		    <div id="fundraiser" class="collapse" data-parent="#job-accordion">
+			<div class="card-body">
+			    <p class="text-muted">CDI</p>
+
+  <h3>Le job</h3>
+
+  <p>
+  </p>
+
+  <h3>La mission</h3>
+
+
+  <p>
+  </p>
+
+  <h3>Vous</h3>
+
+  <p>
+  </p>
+
+			</div>
+		    </div>
+		</div>
+
+		<div class="card">
+		    <div class="card-header" id="header-django">
+			<h2 style="font-size: 140%;">
+			    <a class="card-link"  data-toggle="collapse" href="#dev">
+				Développeur django</a>
+			</h2>
+		    </div>
+		    <div id="dev" class="collapse" data-parent="#job-accordion">
+			<div class="card-body">
+  <p class="text-muted">CDI (également envisageable à temps partiel ou
+  contrat)</p> <h3>La mission</h3>
+
+  <p>Votre objectif sera à la fois de développer le dynamisme de notre
+  site web et les plusieurs applications qui y tourne (ou vont bientôt
+  tourner) ainsi que de veiller sur l'A/B testing qui mène à une
+  amélioration continue du site.</p>
+
+  <p>Un point important est que la mission de l'association vous
+  passionne.  Ce n'est pas un poste de dev comme tout autre&nbsp;: vous
+  ferez une partie intégrale de l'équipe qui fait avancer la mission.
+  Votre sens de stratégie entrepreneurial vous sera un atout.</p> <p>
+  <ul> <li>Vous connaissez l'A/B testing.  Vous avez une notion de
+  l'analyse statistique.</li> <li>La performance d'un site web vous
+  passionne et vous savez l'améliorer par l'efficacité de votre code.
+  Vous préférez un site léger à un site compliqué qui pèse plus
+  lourd.</li> <li>Vous êtes à l'aise dans un environnement linux.</li>
+  <li>Vous êtes passionné des logiciels libres et avez l'instinct
+  d'éviter <em>vender lock-in</em>, sans pour autant que ce soit un
+  dogme.</li> <li>Vous avez suffisamment de notion de front (HTML, CSS,
+  parfois javascript) que vous pouvez réaliser les applications qui
+  seront nécessaire à la croissance de l'association.</li> <li>Vous
+  aimez le TDD.</li> <li>Vous êtes autonome.  Vous savez créer un
+  projet, l'évaluer en continu, et le mener à sa réussite éventuelle
+  avec toute modification nécessaire au fur et à mesure.  Vous n'avez
+  pas peur d'abandonner un projet ou de le changer complètement si les
+  faits le justifient.</li> <li>Vous avez un esprit startup.  Vous aimez
+  un environnement en évolution rapide.  Vous êtes souriant, surtout
+  face à l'adversité.</li> <li>Vous assurerez un reporting régulier au
+  président et au comité directeur.</li> <li>Vous savez respecter la
+  ligne stratégique donnée par le président et le comité directeur.
+  Vous comprenez que celle-ci sera en évolution constante, une évolution
+  dans laquelle vous participerez.</li> <li>Vous êtes en capacité de
+  faire le lien avec la mission des Mobilitains et les autres activités
+  et objectifs de l'association.  En particulier, vous savez
+  prioritiser, voire dire non à des propositions qui prendront un temps
+  excessif par rapport aux bénéfices.</li> <li>Vous savez gérer
+  multiples projets en même temps.</li> </ul>
+
+  Vous travaillerez étroitement avec la directrice de stratégie et notre
+  équipe de communication, vos activités respectives étant
+  complémentaires.</p>
+
+  <p> Dans votre lettre de motivation, vous devez fournir un ou deux
+  repos github afin de nous permettre de comprendre votre style et le
+  niveau de votre travail.  En plus, un élément très fort d'une lettre
+  de motivation serait une analyse (courte) des points d'amélioration de
+  ce site.  (Nous en sommes très au courant, pas besoin de cacher votre
+  avis.)</p>
+
+			</div>
+		    </div>
+		</div>
+
+
+
+    {% comment %}
+    <div class="row pt-3">
+	<div class="col-lg-12">
+	    <a id="entreprise"><h2 style="font-size: 140%;">CDI&nbsp;: Directeur.ice relation entreprise</h2></a>
+
+	    <h3>Nous</h3>
+
+	    <p>Depuis 2018 l’association des Mobilitains
+		agit pour une plus belle mobilité.</p>
+
+	    <p>Indépendants et optimistes, nous pensons que les trajets
+		professionnels et privés doivent être plus vertueux et
+		doivent aller vers moins de dangers, de contraintes et
+		frustrations.</p>
+
+	    <p>Notre prochain cap est l’enjeu des élections 2021,
+		l’association souhaite influer sur le cycle électorale
+		départementale et régionale du Grand Ouest (Régions Pays
+		de la Loire et Bretagne), car une proportion importante
+		des déplacements en région nantaise concerne ces deux
+		régions.</p>
+
+	    <h3>Le job</h3>
+
+	    <p>Notre petite association dynamique, croisement entre
+		association classique et startup, souhaite grandir et
+		cherche le prochain.e directeur.ice de relation entreprise
+		qui rejoindra l’aventure. Confinement ou pas le job est
+		#RemoteFirst.</p>
+
+	    <p>Vous rejoindrez une petite équipe courageuse et pleine de
+		bonne humeur. Pas de hiérarchie, l’ensemble de l’équipe
+		doit effectuer des reportings au Président de
+		l’association, notre avancée est collective. Vous serez
+		particulièrement lié.e à la directrice de stratégie
+		puisque les 2 postes sont absolument complémentaires.</p>
+	    
+	    <h3>La mission</h3>
+
+	    <p>Votre objectif sera à la fois d'assurer la croissance et la
+		base économique de l'association ainsi que d'augmenter son
+		soutien commercial (investissement entreprises mais aussi
+		mécénat, sponsoring).  Vous allez bâtir un modèle économique
+		durable sans financement public. Votre première responsabilité
+		sera d'assurer la durabilité du financement de votre poste
+		ainsi que ceux de vos collègues. Vous devrez nourrir la
+		stratégie globale, identifier les contacts potentiels et les
+		transformer.</p>
+
+	    <h3>Vous</h3>
+
+	    <p>Engagé.e, dynamique, autonome, et hyper optimiste, vous
+		savez ou avez envie de travailler en mode entrepreneuriale
+		(même si vous êtes salarié, le poste et son évolution sont
+		très proches de cette façon de travailler).</p>
+
+	    <p>Une dose commerciale : Vous êtes tenace et toujours
+		souriant.e. Vous savez mettre un pied dans la porte et être
+		force de convictions.</p>
+
+	    <p>Une dose créative : Vous êtes plein.e d’idées et vous savez
+		les renouveler sans cesse. </p>
+
+	    <p>Un trait d’audace : Vous osez, vous tentez et vous tentez à
+		nouveau.</p>
+
+	    <p>2 doses d’organisation : Autonome, vous savez structurer
+		votre travail et multiplier les projets ne vous fait pas
+		peur.</p>
+
+	    <p>Et beaucoup de volonté : postuler à cette offre de poste en
+		association n’est pas une action anodine et vous êtes
+		convaincu.e que les habitudes de mobilité doivent
+		changer. Vous avez réellement envie d’être acteur.rice du
+		changement ? Alors racontez-nous votre histoire (mais pas
+		votre CV) et vos motivations d’engagement dans un mail et
+		joignez votre CV. </p>
+
+	    <p>Envoyez-nous ces éléments à <a
+href="mailto:cv@transport-nantes.com">cv@transport-nantes.com</a>
+		et si notre première lecture est positive, nous vous
+		proposerons un entretien, sous forme d'une discussion. </p>
+
+	    <p>Nous parlerons des besoins et capacités de l'association et
+		nous commencerons à développer les bases d'un projet.
+		L'objectif sera non seulement de vérifier que nous pouvons
+		travailler ensemble mais de tracer ensemble des pistes pour
+		vos premiers mois de travail.</p>
+
+	    <p>Nous avons hâte de vous découvrir !</p>
+	</div>
     </div>
+    {% endcomment %}
+
 </div>
-
-<div class="row pt-3">
-    <div class="col-lg-12">
-	<a id="cm"><h2>CDI&nbsp;: Community Manager</h2></a>
-
-	<h3>Nous</h3>
-
-	<p>Depuis 2018 l’association des Mobilitains agit pour une
-	meilleure mobilité.</p>
-
-	<p>Indépendants et optimistes, nous pensons que les trajets
-	professionnels et privés doivent être plus vertueux et doivent
-	aller vers moins de dangers, de contraintes et de
-	frustrations.</p>
-
-	<p>Notre prochain cap est l’enjeu des élections 2021,
-	l’association souhaite influer sur le cycle électoral
-	départemental du Grand Ouest (Régions Pays de la Loire et
-	Bretagne) et régionale dans toutes les régions de la France
-	Métropolitaine hors Île de France, car nos déplacements ne
-	connaissent pas de limites administratives.</p>
-
-	<h3>Le job</h3>
-
-	<p>Notre petite association dynamique, mêlant une association
-	classique et une startup, souhaite grandir et cherche le
-	prochain.e community manager qui rejoindra
-	l’aventure. Confinement ou pas le job est #RemoteFirst.</p>
-
-	<p>Vous rejoindrez une petite équipe courageuse et pleine de
-	bonne humeur. Pas de hiérarchie, l’ensemble de l’équipe doit
-	effectuer des reportings au président de l’association, notre
-	avancée est collective. Vous serez particulièrement lié.e à la
-	directrice de stratégie puisque les 2 postes sont absolument
-	complémentaires.</p>
-
-	<h3>La mission</h3>
-
-	<p>Votre objectif sera à la fois d'assurer la croissance et la
-	base économique de l'association ainsi que d'augmenter son
-	soutien commercial (investissement entreprises mais aussi
-	mécénat, sponsoring). Notre force et notre légitimité
-	politique viennent de nos adhérents. Votre responsabilité sera
-	la création de communautés et d'instiller une passion et une
-	reconnaissance des enjeux de la mobilité dans Nantes
-	Métropole, dans les Pays de la Loire, le Grand Ouest, et dans
-	les autres régions du territoire.</p>
-
-	<p>C'est un rôle qui reconnaît l'importance du relationnel
-	tout en admettant l'impossibilité d'être présent partout. Un
-	bon community manager Mobilitain n'est pas un simple
-	gestionnaire de réseaux sociaux mais une vraie force
-	interactive dans les multiples communautés qu'il crée, qu'il
-	creuse pour trouver et inventer. Il sait comprendre les
-	motivations des usages de transports collectifs et de
-	cyclistes, de piétons et de PMRs, les ruraux comme les
-	urbains. Bref, un community manager Mobilitain sait servir un
-	plat humain grâce à une compétence à la fois numérique et
-	humaine, arrosée d'une sauce de psychologue et de journaliste</p>
-
-	<h3>Vous</h3>
-
-	<p>Engagé.e, dynamique, autonome, et hyper optimiste, vous
-	savez ou avez envie de travailler en mode entrepreneuriale
-	(même si vous êtes salarié, le poste et son évolution sont
-	    très proches de cette façon de travailler).</p>
-
-	<p>Une dose commerciale : Vous êtes tenace et toujours
-	souriant.e. Vous savez mettre un pied dans la porte et être
-	    force de convictions.</p>
-
-	<p>Une dose créative : Vous êtes plein.e d’idées et vous savez
-	    les renouveler sans cesse. </p>
-
-	<p>Un trait d’audace : Vous osez, vous tentez et vous tentez à
-	    nouveau.</p>
-
-	<p>2 doses d’organisation : Autonome, vous savez structurer
-	    votre travail et multiplier les projets ne vous fait pas
-	    peur.</p>
-
-	<p>Et beaucoup de volonté : postuler à cette offre de poste en
-	    association n’est pas une action anodine et vous êtes
-	    convaincu.e que les habitudes de mobilité doivent
-	    changer. Vous avez réellement envie d’être acteur.rice du
-	    changement ? Alors racontez-nous votre histoire (mais pas
-	    votre CV) et vos motivations d’engagement dans un mail et
-	    joignez votre CV. </p>
-
-	<p>Envoyez-nous ces éléments à <a
-	    href="mailto:cv@transport-nantes.com">cv@transport-nantes.com</a>
-	    et si notre première lecture est positive, nous vous
-	    proposerons un entretien, sous forme d'une discussion. </p>
-
-	<p>Nous parlerons des besoins et capacités de l'association et
-	nous commencerons à développer les bases d'un projet.
-	L'objectif sera non seulement de vérifier que nous pouvons
-	travailler ensemble mais de tracer ensemble des pistes pour
-	    vos premiers mois de travail.</p>
-
-	<p>Nous avons hâte de vous découvrir !</p>
-    </div>
-</div>
-
-{% comment %}
-<div class="row pt-3">
-    <div class="col-lg-12">
-	<a id="entreprise"><h2>CDI&nbsp;: Directeur.ice relation entreprise</h2></a>
-
-	<h3>Nous</h3>
-
-	<p>Depuis 2018 l’association des Mobilitains
-	    agit pour une plus belle mobilité.</p>
-
-	<p>Indépendants et optimistes, nous pensons que les trajets
-	    professionnels et privés doivent être plus vertueux et
-	    doivent aller vers moins de dangers, de contraintes et
-	    frustrations.</p>
-
-	<p>Notre prochain cap est l’enjeu des élections 2021,
-	    l’association souhaite influer sur le cycle électorale
-	    départementale et régionale du Grand Ouest (Régions Pays
-	    de la Loire et Bretagne), car une proportion importante
-	    des déplacements en région nantaise concerne ces deux
-	    régions.</p>
-
-	<h3>Le job</h3>
-
-	<p>Notre petite association dynamique, croisement entre
-	    association classique et startup, souhaite grandir et
-	    cherche le prochain.e directeur.ice de relation entreprise
-	    qui rejoindra l’aventure. Confinement ou pas le job est
-	    #RemoteFirst.</p>
-
-	<p>Vous rejoindrez une petite équipe courageuse et pleine de
-	    bonne humeur. Pas de hiérarchie, l’ensemble de l’équipe
-	    doit effectuer des reportings au Président de
-	    l’association, notre avancée est collective. Vous serez
-	    particulièrement lié.e à la directrice de stratégie
-	    puisque les 2 postes sont absolument complémentaires.</p>
-	
-	<h3>La mission</h3>
-
-	<p>Votre objectif sera à la fois d'assurer la croissance et la
-	base économique de l'association ainsi que d'augmenter son
-	soutien commercial (investissement entreprises mais aussi
-	mécénat, sponsoring).  Vous allez bâtir un modèle économique
-	durable sans financement public. Votre première responsabilité
-	sera d'assurer la durabilité du financement de votre poste
-	ainsi que ceux de vos collègues. Vous devrez nourrir la
-	stratégie globale, identifier les contacts potentiels et les
-	    transformer.</p>
-
-	<h3>Vous</h3>
-
-	<p>Engagé.e, dynamique, autonome, et hyper optimiste, vous
-	savez ou avez envie de travailler en mode entrepreneuriale
-	(même si vous êtes salarié, le poste et son évolution sont
-	    très proches de cette façon de travailler).</p>
-
-	<p>Une dose commerciale : Vous êtes tenace et toujours
-	souriant.e. Vous savez mettre un pied dans la porte et être
-	    force de convictions.</p>
-
-	<p>Une dose créative : Vous êtes plein.e d’idées et vous savez
-	    les renouveler sans cesse. </p>
-
-	<p>Un trait d’audace : Vous osez, vous tentez et vous tentez à
-	    nouveau.</p>
-
-	<p>2 doses d’organisation : Autonome, vous savez structurer
-	    votre travail et multiplier les projets ne vous fait pas
-	    peur.</p>
-
-	<p>Et beaucoup de volonté : postuler à cette offre de poste en
-	    association n’est pas une action anodine et vous êtes
-	    convaincu.e que les habitudes de mobilité doivent
-	    changer. Vous avez réellement envie d’être acteur.rice du
-	    changement ? Alors racontez-nous votre histoire (mais pas
-	    votre CV) et vos motivations d’engagement dans un mail et
-	    joignez votre CV. </p>
-
-	<p>Envoyez-nous ces éléments à <a
-	    href="mailto:cv@transport-nantes.com">cv@transport-nantes.com</a>
-	    et si notre première lecture est positive, nous vous
-	    proposerons un entretien, sous forme d'une discussion. </p>
-
-	<p>Nous parlerons des besoins et capacités de l'association et
-	nous commencerons à développer les bases d'un projet.
-	L'objectif sera non seulement de vérifier que nous pouvons
-	travailler ensemble mais de tracer ensemble des pistes pour
-	    vos premiers mois de travail.</p>
-
-	<p>Nous avons hâte de vous découvrir !</p>
-    </div>
-</div>
-{% endcomment %}
-
-<div class="row pt-3">
-    <div class="col-lg-12">
-	<a id="django"><h2>Développeur django</h2></a>
-
-	<h3>La mission</h3>
-
-	<p>Votre objectif sera à la fois de développer le dynamisme de
-	    notre site web et les plusieurs applications qui y tourne
-	    (ou vont bientôt tourner) ainsi que de veiller sur l'A/B
-	    testing qui mène à une amélioration continue du site.</p>
-
-	<p>Un point important est que la mission de l'association vous
-	    passionne.  Ce n'est pas un poste de dev comme tout autre&nbsp;:
-	    vous ferez une partie intégrale de l'équipe qui fait
-	    avancer la mission.  Votre sens de stratégie
-	    entrepreneurial vous sera un atout.</p>
-	<p>
-	    <ul>
-		<li>Vous connaissez l'A/B testing.  Vous avez
-		    une notion de l'analyse statistique.</li>
-		<li>La performance d'un site web vous passionne et
-		    vous savez l'améliorer par l'efficacité de votre
-		    code.  Vous préférez un site léger à un site compliqué qui
-		    pèse plus lourd.</li>
-		<li>Vous êtes à l'aise dans un environnement linux.</li>
-		<li>Vous êtes passionné des logiciels libres et avez l'instinct d'éviter
-		    <em>vender lock-in</em>, sans pour autant que ce soit un dogme.</li>
-		<li>Vous avez suffisamment de notion de front (HTML,
-		    CSS, parfois javascript) que vous pouvez réaliser
-		    les applications qui seront nécessaire à la
-		    croissance de l'association.</li>
-		<li>Vous aimez le TDD.</li>
-		<li>Vous êtes autonome.  Vous savez créer un projet,
-		    l'évaluer en continu, et le mener à sa réussite éventuelle
-		    avec toute modification nécessaire au fur et à mesure.
-		    Vous n'avez pas peur d'abandonner un projet ou de le changer
-		    complètement si les faits le justifient.</li>
-		<li>Vous avez un esprit startup.  Vous aimez un
-		    environnement en évolution rapide.  Vous êtes
-		    souriant, surtout face à l'adversité.</li>
-		<li>Vous assurerez un reporting régulier au président
-		    et au comité directeur.</li>
-		<li>Vous savez respecter la ligne stratégique donnée par
-		    le président et le comité directeur.  Vous
-		    comprenez que celle-ci sera en évolution
-		    constante, une évolution dans laquelle vous participerez.</li>
-		<li>Vous êtes en capacité de faire le lien avec la
-		    mission des Mobilitains et les autres activités et
-		    objectifs de l'association.  En particulier, vous savez
-		    prioritiser, voire dire non à des propositions qui
-		    prendront un temps excessif par rapport aux
-		    bénéfices.</li>
-		<li>Vous savez gérer multiples projets en même temps.</li>
-	    </ul>
-
-	    Vous travaillerez étroitement avec la directrice de
-	    stratégie et notre équipe de communication, vos activités
-	    respectives étant complémentaires.</p>
-
-	<p>
-	    Dans votre lettre de motivation, vous devez fournir un ou
-	    deux repos github afin de nous permettre de comprendre
-	    votre style et le niveau de votre travail.  En plus, un
-	    élément très fort d'une lettre de motivation serait une
-	    analyse (courte) des points d'amélioration de ce site.
-	    (Nous en sommes très au courant, pas besoin de cacher
-	    votre avis.)</p>
-
-	<!-- ---------------------------------------- -->
-	
-    </div>
-</div>
-
 {% endblock %}
