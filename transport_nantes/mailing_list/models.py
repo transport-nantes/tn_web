@@ -5,7 +5,10 @@ from django.dispatch import receiver
 import django.utils.timezone
 import uuid
 
-# Create your models here.
+# This application might have been called newsletter.  Think of this
+# as about newsletters, not about the lists, in the sense that this is
+# an application that is designed for keeping in touch with lists of
+# people, currently by email.
 
 class MailingList(models.Model):
     """Represent things a mailing list.
@@ -20,11 +23,22 @@ class MailingList(models.Model):
     # Zero means no frequency objective.
     contact_frequency_weeks = models.IntegerField(default=0)
     list_created = models.DateTimeField(default=django.utils.timezone.now)
+
     # We shouldn't ever delete newsletters, because that would either
     # cascade deletes or lead to dangling foreign keys.  Rather, we
     # should make the newsletter inactive, which should make it not
     # appear in any choice lists and otherwise not be usable.
     list_active = models.BooleanField(default=False)
+
+    # Is this list a petition?  The difference is only the minds of
+    # the humans.  To a human, a petition is something you sign in
+    # order to support something.  A mailing list is something you
+    # subscribe to in order to receive news.
+    #
+    # To us, they are both something that you link your user id to in
+    # order because you have an interest in something.  Privacy laws
+    # pretty much prevent us from telling anyone who signed anyway.
+    is_petition = models.BooleanField(default=False)
 
     def __str__(self):
         return '{name} ({token}) f={freq} semaines'.format(
