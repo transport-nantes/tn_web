@@ -13,8 +13,7 @@
 	    {% endif %}
 
 	    {% for question in questions %}
-	    <h2>{{ question.question_title }}</h2>
-	    <p><b>{{ question.question_number }}.</b>
+	    <p><b>{{ question.question_number }}.  {{ question.question_title }}. </b>
 		{{ question.question_text }}</p>
 	    {% endfor %}
 	</div>
