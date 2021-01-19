@@ -48,7 +48,7 @@ def action_button(link_url, topic_name):
     html_template = """<p><a href="{link_url}" class="btn """ + \
         """btn-outline-primary btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
-    return html_template.format(link_url=link_url, text=topic_name)
+    return mark_safe(html_template.format(link_url=link_url, text=topic_name))
 
 @register.simple_tag
 def contact_button(button_text, email_subject):
@@ -57,4 +57,4 @@ def contact_button(button_text, email_subject):
 	"""<a href="mailto:jevousaide@transport-nantes.com?subject={subj}&nbsp;!" """ + \
 	"""class="btn btn-outline-primary btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
-    return html_template.format(subj=email_subject, text=button_text)
+    return mark_safe(html_template.format(subj=email_subject, text=button_text))
