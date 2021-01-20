@@ -1,6 +1,7 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
 {% load don %}
+{% load markdown %}
 
 {% block app_content %}
 
@@ -12,7 +13,7 @@
 	    <p>Ce questionnaire n'est plus d'actualité.</p>
 	    {% endif %}
 
-	    <p class="text-info">{{ survey.description }}</p>
+	    <p class="text-info">{{ survey.description|markdown }}</p>
 
 	    {% for question in questions %}
 	    <p><b>{{ question.question_number }}.  {{ question.question_title }}. </b>
