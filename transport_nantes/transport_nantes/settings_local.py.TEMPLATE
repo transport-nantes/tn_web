@@ -21,3 +21,24 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Set email related variables to watch mail in console in dev mode
+# You must think to settings.local.ROLE in tests files following this exemple:
+#class PasswordResetTest(TestCase):
+#
+#    def setUp(self):
+#        settings_local.ROLE = "test"
+#        print("setup test")
+#
+#   your test code here
+
+if ROLE == "dev":
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'webmaster@localhost'
+else:
+    EMAIL_BACKEND = 'django_amazon_ses.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'betabot@transport-nantes.com'
+
+AWS_ACCESS_KEY_ID = 'je-suis-en-dev'
+AWS_SECRET_ACCESS_KEY = 'je-suis-en-dev'
+AWS_DEFAULT_REGION = 'eu-central-1'
