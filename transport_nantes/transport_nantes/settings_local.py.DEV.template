@@ -25,7 +25,7 @@ DATABASES = {
 }
 
 ## Not needed in development, but maybe need to be set.
-# AWS_ACCESS_KEY_ID = ''
-# AWS_SECRET_ACCESS_KEY = ''
-# AWS_DEFAULT_REGION = ''
-# DEFAULT_FROM_EMAIL = ''
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
+AWS_DEFAULT_REGION = ''
+DEFAULT_FROM_EMAIL = ''
