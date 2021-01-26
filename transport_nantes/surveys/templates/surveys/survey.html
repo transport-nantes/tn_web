@@ -1,4 +1,4 @@
-{% extends 'asso_tn/base_transport_nantes.html' %}
+{% extends base_template|default:'asso_tn/base_mobilitain.html' %}
 {% load don %}
 
 {% block app_content %}
@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-lg-12">
 	{# ####  This should be db-driven!  It is assuming survey_id == 1.  #### #}
-	<h1>Parlons Mobilité</h1>
+	<h1>{{ survey.name }}Parlons Mobilité</h1>
     </div>
 </div>
 
