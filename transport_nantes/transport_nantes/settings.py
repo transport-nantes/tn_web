@@ -27,7 +27,7 @@ ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
 # This will override DynamicSiteDomainMiddleware.
 # It is meant for developers in dev, not for use on
 # deployed instances.
-DEFAULT_SITE_ID = os.getenv('DEFAULT_SITE_ID')
+DEFAULT_SITE_ID = os.getenv('DEFAULT_SITE_ID', settings_local.DEFAULT_SITE_ID)
 
 # Application definition
 
@@ -66,7 +66,7 @@ MIDDLEWARE = [
     'asso_tn.middleware.site.DynamicSiteDomainMiddleware',
 ]
 
-ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_tn')
+ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_m')
 
 TEMPLATES = [
     {
