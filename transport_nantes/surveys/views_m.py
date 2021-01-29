@@ -1,6 +1,7 @@
 from django.views.generic.base import TemplateView
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.urls import reverse
 from .models import Survey, SurveyQuestion, SurveyCommune, SurveyResponder, SurveyResponse
 
 # This currently does nothing useful, just says it doesn't know.
@@ -23,8 +24,27 @@ class QuestionnaireView(TemplateView):
         context['survey'] = survey
         context['questions'] = SurveyQuestion.objects.filter(
             survey=survey).order_by('sort_index')
+        context['next_page'] = reverse('surveys:response_1', args=[slug])
         print(context)
         return context
+
+#### Views for answering questions ####################################
+
+#### Decorate for login. ####
+class ResponseView(TemplateView):
+    template_name = 'surveys/response_1.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        slug = kwargs['slug']
+        survey = get_object_or_404(Survey, slug=slug)
+        context['survey'] = survey
+        context['questions'] = SurveyQuestion.objects.filter(
+            survey=survey).order_by('sort_index')
+        print(context)
+        return context
+
+#### Views for viewing results ########################################
 
 class CommuneChooserSurveyView(TemplateView):
     template_name = 'surveys/survey.html'

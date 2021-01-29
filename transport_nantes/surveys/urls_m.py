@@ -11,6 +11,13 @@ urlpatterns = [
     path('questions/<slug:slug>',
          views_m.QuestionnaireView.as_view(),
          name='questions'),
+
+    # For answering questions.
+    path('repondre/1/<slug:slug>',
+         views_m.ResponseView.as_view(),
+         name='response_1'),
+
+    # For viewing results.
     path('commune/<int:survey_id>',
          views_m.CommuneChooserSurveyView.as_view(),
          name='choose_commune'),

@@ -24,18 +24,15 @@
     <div class="row pt-3">
 	<div class="col-md-6">
 	    {# {% action_button "#" "Voir les réponses" %} #}
-	    <p class="text-info"><i>
+	    <p class="text-info pt-3"><i>
 		Dès qu'il y aura des réponses, elles seront disponibles à partir de cette page.
 	    </i></p>
 	</div>
 	<div class="col-md-6">
 	    {% if survey.is_active %}
 	    <p>
-		{% action_button "#" "Je suis candidat.e, je réponds" %}
+		{% action_button next_page "Je suis candidat.e, je réponds" %}
 	    </p>
-	    <p><i>
-		Les réponses seront possibles dès le 28&nbsp;janvier 2021.
-	    </i></p>
 	    {% endif %}
 	</div>
     </div>

@@ -1,0 +1,57 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load don %}
+{% load markdown %}
+
+{% block app_content %}
+
+<div class="container">
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>Formulaire candidat.e</h1>
+
+	    <p>Nous vous remercions de votre rapidité !  Dans les tous
+	    prochains jours cette page se transformerons en
+	    formulaire.  En attendant, nous vous proposons d'entrer
+		vos réponses pour vous : envoyez-nous un <a
+	    href="mailto:sondage@mobilitains.fr">mél</a> avec vos
+	    réponses aux questions ainsi que les informations
+	    suivantes relatives à votre liste dans le mesure qu'elles
+	    sont pertinents pour vous :<ul>
+		    <li>Le nom de votre liste et le nom de la tête de
+			liste</li>
+		    <li>L'adresse mél</li>
+		    <li>Réseaux sociaux : twitter, facebook,
+			instagram, etc.</li>
+		    <li>Site web</li>
+		</ul>
+	    </p>
+	    <p>
+		Après validation, vos réponses figureront sur notre
+		site web et nous les médiatiserons.  (Vous aurez bien
+		entendu le droit de changer vos réponses si besoin.)</p>
+	</div>
+    </div>
+
+    <div class="row pt-3 pb-3">
+	<p style="border-bottom: 1px solid gray; width: 100%;"></p>
+    </div>
+
+    <div class="row">
+	<div class="col-lg-12">
+	    <h1>{{ survey.name }}</h1>
+	    {% if not survey.is_active %}
+	    <p>Ce questionnaire n'est plus d'actualité.</p>
+	    {% endif %}
+
+	    <div class="text-info">{{ survey.description|markdown }}</div>
+
+	    {% for question in questions %}
+	    <p><b>{{ question.question_number }}.  {{ question.question_title }}. </b>
+		{{ question.question_text }}</p>
+	    {% endfor %}
+	</div>
+    </div>
+</div>
+
+{% endblock %}
