@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from topicblog.views import TopicBlogView
 
-base_template = 'asso_tn/base_mobilitain.html'
+base_template = '/asso_tn/base_mobilitain.html'
 
 urlpatterns = [
     path('', TopicBlogView.as_view(), {'base_template': base_template,
@@ -30,4 +30,11 @@ urlpatterns = [
     path('l/', include('asso_tn.urls_m'), {'base_template': base_template}),
     path('ml/', include('mailing_list.urls_m'), {'base_template': base_template}),
     path('questionnaire/', include('surveys.urls_m'), {'base_template': base_template}),
+
+    # Those lines were added to remove errors in tests. 
+    # They should be remove or at least checked before definitly adding them
+    path('v/', include('velopolitain.urls')),
+    path('gn/', include('grand_nantes.urls')),
+    path('tn/', include('asso_tn.urls')),
+    path('j/', include('legal.urls')),
 ]

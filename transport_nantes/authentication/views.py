@@ -37,7 +37,8 @@ A quick note on the captcha:
     leaks to third parties, especially to GAFAs.
 
 """
-def login(request):
+def login(request, base_template=None):
+    
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -142,7 +143,7 @@ def send_activation(request, user, is_new, remember_me):
         print("Mode dev : mél qui aurait été envoyé :")
         print(message)
 
-def activate(request, token, remember_me):
+def activate(request, token, remember_me, base_template=None):
     """Process an activation token.
 
     The result should be (1) to flag the user as having a valid email
