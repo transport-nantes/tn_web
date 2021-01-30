@@ -138,6 +138,8 @@ def send_activation(request, user, is_new, remember_me):
     })
     if hasattr(settings, 'ROLE') and settings.ROLE in ['staging', 'production']:
         user.email_user(subject, message)
+    elif hasattr(settings, 'ROLE') and settings.ROLE == 'test':
+        print("  [Envoi de mél supprimé ici.]")
     else:
         # We're in dev.
         print("Mode dev : mél qui aurait été envoyé :")
