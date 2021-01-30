@@ -152,7 +152,7 @@ def activate(request, token, remember_me, base_template=None):
     address and (2) to login the user.
 
     """
-    user_id = token_valid(token)
+    (user_id, persistent,) = token_valid(token)
     if user_id < 0:
         return render(request, 'authentication/account_activation_invalid.html')
     try:
