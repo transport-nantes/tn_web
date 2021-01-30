@@ -30,7 +30,7 @@
 	</div>
 	<div class="col-md-6">
 	    {% if survey.is_active %}
-	    <p>
+	    <p>{# I know here the value of next_page, but I don't see how to insert it. #}
 		{% action_button next_page "Je suis candidat.e, je réponds" %}
 	    </p>
 	    {% endif %}
