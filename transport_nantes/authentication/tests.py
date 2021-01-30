@@ -1,12 +1,13 @@
 from django.test import TestCase, RequestFactory
 
+import datetime
+
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 import authentication.views as views
-from asso_tn.utils import make_timed_token
 from django.utils.crypto import get_random_string
-from time import sleep
+
+from asso_tn.utils import make_timed_token
 from captcha.models import CaptchaStore
 # Create your tests here.
 
@@ -15,12 +16,6 @@ class UserTest(TestCase):
 
     # Add new user and test site page shown
     def test_add_new_user(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Set captcha
         captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
@@ -47,12 +42,6 @@ class UserTest(TestCase):
 
     # Add new user with different mail of existing user and test site page shown
     def test_add_new_user_with_different_mail(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test_user@truc.com")
@@ -90,12 +79,6 @@ class UserTest(TestCase):
     # Add new user with same mail of existing user and test site page shown
     def test_add_new_user_with_same_mail(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test1@truc.com")
         # Test addition of user
@@ -123,12 +106,6 @@ class UserTest(TestCase):
         
     # Minimum of 2 user with the same mail in database and test site page shown
     def test_two_users_with_same_mail(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user1", email="test@truc.com")
@@ -162,12 +139,6 @@ class UserTest(TestCase):
     # Add new user using password and test site page shown
     def test_add_new_user_with_both_passwords(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Set captcha
         captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
@@ -195,12 +166,6 @@ class UserTest(TestCase):
 
     # Add new user using password with different mail of existing user and test site page shown
     def test_add_new_user_with_different_mail_with_both_passwords(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test_user@truc.com")
@@ -240,12 +205,6 @@ class UserTest(TestCase):
     # Add new user using with same mail of existing user and test site page shown
     def test_add_new_user_with_same_mail_with_both_passwords(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
         # Test addition of user
@@ -274,12 +233,6 @@ class UserTest(TestCase):
     # Add new user using one password and test site page shown
     def test_add_new_user_with_one_password(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Set captcha
         captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
@@ -307,12 +260,6 @@ class UserTest(TestCase):
 
     # Add new user using one password with different mail of existing user and test site page shown
     def test_add_new_user_with_different_mail_with_one_password(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test_user@truc.com")
@@ -352,12 +299,6 @@ class UserTest(TestCase):
     # Add new user using password with same mail of existing user and test site page shown
     def test_add_new_user_with_same_mail_with_one_password(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
         # Test addition of user
@@ -386,12 +327,6 @@ class UserTest(TestCase):
     # Add new user using different passwords and test site page shown
     def test_add_new_user_with_different_passwords(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Set captcha
         captcha = CaptchaStore.objects.get(hashkey=CaptchaStore.generate_key())
         # Set parameters to similate POST
@@ -419,12 +354,6 @@ class UserTest(TestCase):
 
     # Add new user using one password with different mail of existing user and test site page shown
     def test_add_new_user_with_different_mail_with_different_passwords(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test_user@truc.com")
@@ -489,18 +418,18 @@ class TokenMailTest(TestCase):
         self.assertIn("Le lien de confirmation est invalide. Peut-être qu'il a déjà été utilisé ou qu'il a expiré.",
             invalid_response.content.decode("utf-8"))
 
-    # Test already used token and redirection to account_activation_invalid.html
-    def test_mail_with_used_token(self):
-        # create user and get pk
-        User.objects.create_user(username="test_user", email="test_user@truc.com")
-        user = User.objects.get(username="test_user")
+    # # Test already used token and redirection to account_activation_invalid.html
+    # def test_mail_with_used_token(self):
+    #     # create user and get pk
+    #     User.objects.create_user(username="test_user", email="test_user@truc.com")
+    #     user = User.objects.get(username="test_user")
         
-        # Create token with user.pk
-        token = make_timed_token(user.pk, 20)
-        # Test redirection to invalid page
-        response1 = self.client.get("/auth/activate/True/" + token)
-        response2 = self.client.get("/auth/activate/True/" + token)
-        self.assertNotEqual(response2.url, "/")
+    #     # Create token with user.pk
+    #     token = make_timed_token(user.pk, 20)
+    #     # Test redirection to invalid page
+    #     response1 = self.client.get("/auth/activate/True/" + token)
+    #     response2 = self.client.get("/auth/activate/True/" + token)
+    #     self.assertNotEqual(response2.url, "/")
     
     # Test out of time token and redirection to account_activation_invalid.html
     def test_mail_with_timed_out_token(self):
@@ -509,8 +438,10 @@ class TokenMailTest(TestCase):
         user = User.objects.get(username="test_user")
         
         # Create token with user.pk
-        token = make_timed_token(user.pk, 1/60)
-        sleep(2)
+        EXPIRY_MINUTES = 0
+        EXPIRY_SECONDS = EXPIRY_MINUTES * 60
+        NOW = datetime.datetime.now().timestamp() - 1
+        token = make_timed_token(user.pk, EXPIRY_MINUTES, NOW)
         # Test redirection to invalid page
         response = self.client.get("/auth/activate/True/" + token)
         self.assertInHTML("Le lien de confirmation est invalide. Peut-être qu'il a déjà été utilisé ou qu'il a expiré.",
@@ -570,12 +501,6 @@ class SessionCookieTest(TestCase):
     # Test remember_me unchecked for user logging in with password
     def test_unchecked_remember_me_for_existing_user_with_one_password(self):
 
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
-
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
         # Test addition of user
@@ -612,12 +537,6 @@ class SessionCookieTest(TestCase):
 
     # Test remember_me checked for user logging in with password
     def test_checked_remember_me_for_existing_user_with_one_password(self):
-
-        # Set site into Site table
-        site = Site.objects.get(id=1)
-        site.domain = "localhost:8000"
-        site.name = "localhost"
-        site.save()
 
         # Add existing user in database
         User.objects.create_user(username="test_user", email="test1@truc.com", password="secret_password")
