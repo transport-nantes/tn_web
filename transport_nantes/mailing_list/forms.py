@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import Form, ModelForm
 from captcha.fields import CaptchaField
 from authentication.models import Profile
 from .models import MailingList
@@ -59,5 +59,25 @@ class QuickMailingListSignupForm(ModelForm):
         fields = ('email',)
 
         labels = {
+            'email': "Adresse mél",
+        }
+
+class QuickPetitionSignupForm(ModelForm):
+    captcha = CaptchaField(
+        label="Je suis humain",
+        help_text="* disponibilité réservée aux humains",
+        error_messages=dict(invalid="captcha incorrect, veuillez réessayer"))
+    petition_name = forms.CharField(
+        max_length=80,
+        required=False,#True
+        widget=forms.HiddenInput())
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'captcha')
+
+        labels = {
+            'first_name': "Prénom",
+            'last_name': "Nom",
             'email': "Adresse mél",
         }

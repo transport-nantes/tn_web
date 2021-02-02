@@ -1,0 +1,25 @@
+{% load static %}
+
+<p>
+    <form method="post" action="{% url 'mailing_list:quick_petition_signup' %}">{% csrf_token %}
+        {% if form.non_field_errors %}
+        <p>{{ form.non_field_errors }}</p>
+        {% endif %}
+        {% for field in form.visible_fields %}
+        <p>
+            {{ field.label }}<br>
+            {{ field }}
+            {% if field.help_text %}
+            <small style="color: grey">{{ field.help_text }}</small>
+            {% endif %}
+        </p>
+        <p>{% for field in form.hidden_fields %} {{ field }} {% endfor %}</p>
+
+        {% for error in field.error_messages %}
+        <p style="color: red">{{ error }}</p>
+        {% endfor %}
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-outline-primary">Je signe !</button>
+    </form>
+</p>
