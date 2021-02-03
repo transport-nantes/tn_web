@@ -46,6 +46,22 @@ class MailingList(models.Model):
             token=self.mailing_list_token,
             freq=self.contact_frequency_weeks)
 
+class Petition(models.Model):
+    """Parameters of a petition.
+
+    """
+    mailing_list = models.ForeignKey(MailingList,
+                                     on_delete=models.CASCADE)
+    # How we'll identify this petition on our website.
+    slug = models.SlugField(max_length=50, allow_unicode=True,
+                            blank=False, unique=True)
+    petition_md = models.TextField(blank=False)
+
+    def __str__(self):
+        return '{sl}  ->  ({list_name})'.format(
+            sl=self.slug,
+            list_name=self.mailing_list.mailing_list_name)
+
 class MailingListEvent(models.Model):
     """Events on mailing lists.
 

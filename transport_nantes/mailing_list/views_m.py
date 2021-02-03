@@ -1,11 +1,14 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.crypto import get_random_string
-from .models import MailingList, MailingListEvent
+from .models import MailingList, MailingListEvent, Petition
 
 from .views import MailingListSignup, QuickMailingListSignup, MailingListMerci
 from .forms import QuickPetitionSignupForm
+from asso_tn.views import AssoView
 
 from django.views.generic.edit import FormView
 
@@ -60,8 +63,8 @@ class QuickPetitionSignup(FormView):
         print('----------4')
         petition = MailingList.objects.filter(
             mailing_list_token=form.cleaned_data['petition_name'])
-        print(petition)
-        print(petition[0])
+        if len(petition) == 0:
+            return HttpResponseNotFound("Pétition inconnu")
         subscription = MailingListEvent.objects.create(
             user=user,
             mailing_list=petition[0],
@@ -77,3 +80,15 @@ class QuickPetitionSignup(FormView):
                 'hero_title': 'Newsletter',
             }
         )
+
+class PetitionView(AssoView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Need to look up petition here.
+        # Fetch Markdown for entire petition.
+        # Add to context.
+        petition = get_object_or_404(Petition, slug=kwargs['petition_slug'])
+        context['body_text'] = petition.petition_md
+        context['petition_token'] = petition.mailing_list.mailing_list_token
+        return context

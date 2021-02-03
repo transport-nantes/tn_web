@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from .views_m import *
-from asso_tn.views import AssoView
+# from asso_tn.views import AssoView
 from .forms import QuickPetitionSignupForm
 
 app_name = 'mailing_list'
@@ -10,9 +10,9 @@ urlpatterns = [
     path('inscrire-captcha', QuickMailingListSignupM.as_view(), name='quick_list_signup'),
 
     path('petition-captcha', QuickPetitionSignup.as_view(), name='quick_petition_signup'),
-    path('petition/<slug:petition>/', AssoView.as_view(
-        template_name='mailing_list/petition.html')),
-    #{name='petition'})
+    path('petition/<slug:petition_slug>/', PetitionView.as_view(
+        template_name='mailing_list/petition.html'),
+         name='petition'),
 ]
 
 # For debugging the thankyou template:
