@@ -53,7 +53,7 @@ class Petition(models.Model):
     mailing_list = models.ForeignKey(MailingList,
                                      on_delete=models.CASCADE)
     # How we'll identify this petition on our website.
-    slug = models.SlugField(max_length=50, allow_unicode=True,
+    slug = models.SlugField(max_length=70, allow_unicode=True,
                             blank=False, unique=True)
     petition_md = models.TextField(blank=False)
 
