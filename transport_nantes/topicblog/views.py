@@ -19,9 +19,9 @@ class TopicBlogView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         topic_slug = kwargs['topic_slug']
-        print('topic_slug=', topic_slug)
-        for page in TopicBlogPage.objects.all():
-            print(page.id, ' - ', page.topic)
+        # print('topic_slug=', topic_slug)
+        # for page in TopicBlogPage.objects.all():
+        #     print(page.id, ' - ', page.topic)
         try:
             page = TopicBlogPage.objects.random_topic_member(topic_slug)
         except:
@@ -35,7 +35,7 @@ class TopicBlogView(TemplateView):
             [page.bullet_image_3, page.bullet_text_3_md],
             [page.bullet_image_4, page.bullet_text_4_md],
             [page.bullet_image_5, page.bullet_text_5_md],]
-        print(context['bullets'])
+        # print(context['bullets'])
 
         # context[]
         return context

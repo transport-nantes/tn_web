@@ -19,5 +19,5 @@ def safe_markdown(value):
 
       {{ value|markdown }}
     """
-    parser = TNLinkParser(verbose=True)
+    parser = TNLinkParser(verbose=False)
     return mark_safe(markdown(parser.transform(escape(value))))

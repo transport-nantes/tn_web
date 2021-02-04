@@ -13,17 +13,17 @@ class TopicBlogPageManager(models.Manager):
 
         Usage: page = TopicBlogPage.objects.random(my_topic)
         """
-        print('rtm: ', topic)
+        # print('rtm: ', topic)
         if True:
             # Temporary hack, be really, really inefficient.
             all_in_topic = self.filter(topic=topic)
             random_index = randint(0, all_in_topic.count() - 1)
-            print('random_index=', random_index)
+            # print('random_index=', random_index)
             return all_in_topic[random_index]
         count = self.aggregate(ids=Count('id'), filter=Q(topic=topic))['ids']
-        print('rtm: ', count)
+        # print('rtm: ', count)
         random_index = randint(0, count - 1)
-        print('rtm: ', random_index)
+        # print('rtm: ', random_index)
         return self.all()[random_index]
 
 class TopicBlogPage(models.Model):
