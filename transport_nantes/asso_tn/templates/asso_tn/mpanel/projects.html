@@ -21,6 +21,7 @@
 	    </a>
 	</div>
     </div>
+{% comment %}
     <div class="col-md-3">
 	<div class="thumbnail">
 	    <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">
@@ -32,6 +33,23 @@
 			       font-size: 150%;">Vélopolitain</h3>
 		    <p>
 			Un vrai réseau cyclable dans votre métropole&nbsp;!
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+{% endcomment %}
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'topic_blog:view_topic' 'pont-saint-mihiel' %}">
+		<img src="{% static 'asso_tn/pont-saint-mihiel-carre.jpg' %}"
+		     alt="Le Pont Saint-Mihiel a Nantes" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Pont Saint-Mihiel</h3>
+		    <p>
+			Un symbole d'une métropole qui hésite&nbsp;!
 		    </p>
 		</div>
 	    </a>
@@ -53,6 +71,24 @@
 	    </a>
 	</div>
     </div>
+{% comment %}
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'topic_blog:view_topic' '2021-regionales' %}">
+		<img src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		     alt="Un TER et un tramway" style="width:100%">
+		<div class="caption">
+		    <h3 class="font-weight-light"
+			style="font-variant: small-caps;
+			       font-size: 150%;">Élections 2021</h3>
+		    <p>
+			Un enjeu pour la mobilité !
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+{% endcomment %}
     <div class="col-md-3">
 	<div class="thumbnail">
 	    <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
