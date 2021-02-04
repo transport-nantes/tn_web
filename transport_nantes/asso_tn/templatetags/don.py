@@ -44,6 +44,12 @@ def url_don():
     return mark_safe(hello_asso_don)
 
 @register.simple_tag
+def external_url(url, label):
+    html = """<a href="{url}">{label}</a>""".format(
+        url=url, label=label)
+    return mark_safe(html)
+
+@register.simple_tag
 def action_button(link_url, topic_name):
     html_template = """<p><a href="{link_url}" class="btn """ + \
         """btn-outline-primary btn-lg">{text} """ + \

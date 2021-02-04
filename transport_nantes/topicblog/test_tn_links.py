@@ -3,6 +3,7 @@ from django.urls import reverse
 from unittest import TestCase
 
 from asso_tn.templatetags import don
+from mailing_list.templatetags import newsletter
 from .tn_links import TNLinkParser
 
 class TnLinkParserTest(TestCase):
@@ -44,6 +45,30 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform(
             '[[contact:Hello, World!]]((Je veux être bénévole))'), \
                          don.contact_button('Hello, World!', 'Je veux être bénévole'))
+
+    def test_external_url(self):
+        url = 'my-url'
+        label = 'my-label-text'
+        markdown = '[[externe:{label}]](({url}))'.format(label=label, url=url)
+        html = don.external_url(url, label)
+        self.assertEqual(self.parser.transform(markdown), html)
+
+        markdown = 'dog [[externe:{label}]](({url})) cat'.format(label=label, url=url)
+        html = 'dog ' + don.external_url(url, label) + ' cat'
+        self.assertEqual(self.parser.transform(markdown), html)
+
+    def test_petition_url(self):
+        label = 'my-label-text'
+        petition = 'my-petition'
+        markdown = '[[petition:{label}]](({petition}))'.format(
+            label=label, petition=petition)
+        html = newsletter.petition_link(petition, label)
+        self.assertEqual(self.parser.transform(markdown), html)
+
+        markdown = 'dog [[petition:{label}]](({petition})) cat'.format(
+            label=label, petition=petition)
+        html = 'dog ' + newsletter.petition_link(petition, label) + ' cat'
+        self.assertEqual(self.parser.transform(markdown), html)
 
     def test_call_to_action(self):
         self.assertEqual(self.parser.transform('[[action:join us!]]((my_topic_name))'), \

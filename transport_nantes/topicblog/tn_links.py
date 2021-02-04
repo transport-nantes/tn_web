@@ -21,6 +21,11 @@ Some examples:
 
     [[action:text]]((topic_slug))
                                equivalent to [text](/tb/t/topic_slug/)
+    [[contact:button-label]]((email-subject-label))
+                               button that opens an email
+    [[externe:label]]((URL))   equivalent to [text](URL) (for external links)
+    [[petition:label]]((petition_slug))
+                               equivalent to [text](/ml/petition/petition_slug/)
 
 Note that we assume that there is no HTML in the incoming text and
 that standard markdown transformations will applied on output.  The
@@ -165,6 +170,15 @@ class TNLinkParser(object):
             self.out_string += don.action_button(url, self.bracket_label_string)
         elif 'contact' == self.bracket_class_string:
             self.out_string += don.contact_button(self.bracket_label_string, self.paren_string)
+        elif 'externe' == self.bracket_class_string:
+            url = self.paren_string
+            self.out_string += don.external_url(url, self.bracket_label_string)
+        elif 'petition' == self.bracket_class_string:
+            try:
+                url = reverse('mailing_list:petition', args=[self.paren_string])
+            except NoReverseMatch:
+                url = '(((pétition pas trouvé : {ps})))'.format(ps=self.paren_string)
+            self.out_string += don.external_url(url, self.bracket_label_string)
         else:
             self.log('Unexpected transcription case: ' + self.bracket_class_string)
 

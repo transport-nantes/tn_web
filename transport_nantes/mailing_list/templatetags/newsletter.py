@@ -1,4 +1,7 @@
 from django import template
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 from mailing_list.forms import QuickMailingListSignupForm
 from mailing_list.forms import QuickPetitionSignupForm
 
@@ -25,3 +28,10 @@ def show_petition_signup(petition_name):
     form = QuickPetitionSignupForm(
         initial={'petition_name': petition_name})
     return {'form': form}
+
+@register.simple_tag
+def petition_link(petition, label):
+    url = reverse('mailing_list:petition', args=[petition])
+    html = """<a href="{url}">{label}</a>""".format(
+        url=url, label=label)
+    return mark_safe(html)
