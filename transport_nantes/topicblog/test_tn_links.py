@@ -57,6 +57,13 @@ class TnLinkParserTest(TestCase):
         html = 'dog ' + don.external_url(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
+        self.parser = TNLinkParser(verbose=True)
+        pdll = 'Pays de la Loire'
+        pdll_url = 'https://dog/cat/horse'
+        markdown = '[[externe:{label}]](({url}))'.format(label=pdll, url=pdll_url)
+        html = don.external_url(pdll_url, pdll)
+        self.assertEqual(self.parser.transform(markdown), html)
+
     def test_petition_url(self):
         label = 'my-label-text'
         petition = 'my-petition'

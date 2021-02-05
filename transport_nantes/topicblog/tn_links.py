@@ -200,6 +200,9 @@ class TNLinkParser(object):
             elif ':' == s:
                 if State.IN_DOUBLE_BRACKET_CLASS == self.state:
                     self.set_state(State.IN_DOUBLE_BRACKET_LABEL)
+                elif State.IN_DOUBLE_PAREN == self.state:
+                    # Colons are permitted between double parens.
+                    self.paren_string += s
                 else:
                     self.flush_and_reset_to_ordinary(s)
             elif ']' == s:
