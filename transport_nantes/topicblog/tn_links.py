@@ -7,6 +7,20 @@ Provide a filter that parses text and renders certain non-standard
 markdown transformations that we use.  In particular, we use this to
 provide various donation buttons and calls to action.
 
+A good syntax summary for markdown lives here:
+
+    https://www.markdownguide.org/basic-syntax
+
+We extend markdown somewhat here in order to provide better
+integration with our own software.  The intent
+(cf. topicblog/templatetags/markdown.py) is that we escape user text,
+apply our transformer, then markdown, then mark as safe.  Note that
+generic markdown accepts HTML, but we don't want to accept HTML from
+users for security.  Running our transformations before markdown just
+avoids having to consider the effect of our notation on markdown (in
+principle, none, but easiest just avoided).  It also lets us assume
+that no HTML is present in our input.
+
 The format of the notation we interpret is this:
 
     [[class:label]]((satellite))
