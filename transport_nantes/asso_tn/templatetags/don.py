@@ -50,6 +50,14 @@ def external_url(url, label):
     return mark_safe(html)
 
 @register.simple_tag
+def external_url_button(url, label):
+    html = """<p class="pl-5"> """ + \
+	"""<a href="{url}" target="_blank" """ + \
+	"""class="btn btn-outline-primary btn-lg">{label} """ + \
+        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+    return mark_safe(html.format(url=url, label=label))
+
+@register.simple_tag
 def action_button(link_url, topic_name):
     html_template = """<p><a href="{link_url}" class="btn """ + \
         """btn-outline-primary btn-lg">{text} """ + \

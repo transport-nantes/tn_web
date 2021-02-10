@@ -1,5 +1,7 @@
-from asso_tn.templatetags import don
 from django.urls import reverse, NoReverseMatch
+
+from asso_tn.templatetags import don
+from mailing_list.templatetags import newsletter
 
 """Filter for Transport Nantes specific non-standard markdown.
 
@@ -38,6 +40,7 @@ Some examples:
     [[contact:button-label]]((email-subject-label))
                                button that opens an email
     [[externe:label]]((URL))   equivalent to [text](URL) (for external links)
+    [[EXTERNE:label]]((URL))   externe but a button with arrow
     [[petition:label]]((petition_slug))
                                equivalent to [text](/ml/petition/petition_slug/)
 
@@ -187,12 +190,11 @@ class TNLinkParser(object):
         elif 'externe' == self.bracket_class_string:
             url = self.paren_string
             self.out_string += don.external_url(url, self.bracket_label_string)
+        elif 'EXTERNE' == self.bracket_class_string:
+            url = self.paren_string
+            self.out_string += don.external_url_button(url, self.bracket_label_string)
         elif 'petition' == self.bracket_class_string:
-            try:
-                url = reverse('mailing_list:petition', args=[self.paren_string])
-            except NoReverseMatch:
-                url = '(((pétition pas trouvé : {ps})))'.format(ps=self.paren_string)
-            self.out_string += don.external_url(url, self.bracket_label_string)
+            self.out_string += newsletter.petition_link(self.paren_string, self.bracket_label_string)
         else:
             self.log('Unexpected transcription case: ' + self.bracket_class_string)
 

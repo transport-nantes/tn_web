@@ -57,11 +57,29 @@ class TnLinkParserTest(TestCase):
         html = 'dog ' + don.external_url(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
-        self.parser = TNLinkParser(verbose=True)
+        self.parser = TNLinkParser(verbose=False)
         pdll = 'Pays de la Loire'
         pdll_url = 'https://dog/cat/horse'
         markdown = '[[externe:{label}]](({url}))'.format(label=pdll, url=pdll_url)
         html = don.external_url(pdll_url, pdll)
+        self.assertEqual(self.parser.transform(markdown), html)
+
+    def test_external_url_button(self):
+        url = 'my-url'
+        label = 'my-label-text'
+        markdown = '[[EXTERNE:{label}]](({url}))'.format(label=label, url=url)
+        html = don.external_url_button(url, label)
+        self.assertEqual(self.parser.transform(markdown), html)
+
+        markdown = 'dog [[EXTERNE:{label}]](({url})) cat'.format(label=label, url=url)
+        html = 'dog ' + don.external_url_button(url, label) + ' cat'
+        self.assertEqual(self.parser.transform(markdown), html)
+
+        self.parser = TNLinkParser(verbose=False)
+        pdll = 'Pays de la Loire'
+        pdll_url = 'https://dog/cat/horse'
+        markdown = '[[EXTERNE:{label}]](({url}))'.format(label=pdll, url=pdll_url)
+        html = don.external_url_button(pdll_url, pdll)
         self.assertEqual(self.parser.transform(markdown), html)
 
     def test_petition_url(self):
