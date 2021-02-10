@@ -89,6 +89,10 @@ class PetitionView(AssoView):
         # Fetch Markdown for entire petition.
         # Add to context.
         petition = get_object_or_404(Petition, slug=kwargs['petition_slug'])
-        context['body_text'] = petition.petition_md
+        context['body_text_1'] = petition.petition1_md
+        context['body_text_2'] = petition.petition2_md
+        context['body_text_3'] = petition.petition3_md
+        context['body_text_4'] = petition.petition4_md
+        context['petition'] = petition
         context['petition_token'] = petition.mailing_list.mailing_list_token
         return context

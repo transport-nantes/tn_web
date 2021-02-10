@@ -19,14 +19,23 @@
 {% block app_content %}
 
 <div class="container pt-5">
-    <div class="row">
-	<div class="col-lg-10 col-md-9 col-sm-8">
+    <div class="row">{% comment %}
+	The petition signup should show at the right and at the bottom but not twice at the bottom.
+	{% endcomment %}
+	<div class="col-lg-10 col-md-8 col-sm-7 col-xs-12">
 	    {{ petition.petition1_md|markdown }} {# part 1 is required  #}
-	    {{ petition.petition2_md|markdown }} {# parts 2-4 are optional #}
+	    <div class="pl-1 pr-1 pt-1" style="background-color:  #EAF3FC;">
+		{{ petition.petition2_md|markdown }} {# parts 2-4 are optional #}
+	    </div>
 	    {{ petition.petition3_md|markdown }}
-	    {{ petition.petition4_md|markdown }}
+	    <div class="pl-1 pr-1 pt-1" style="background-color:  #FFB686;">
+		{{ petition.petition4_md|markdown }}
+	    </div>
+	    <div class="d-none d-sm-block">
+		{% show_petition_signup petition_token %}
+	    </div>
 	</div>
-	<div class="col-lg-2 col-md-3 col-sm-4">
+	<div class="col-lg-2 col-md-4 col-sm-5 d-block d-sm-block">
 	    {% show_petition_signup petition_token %}
 	</div>
     </div>

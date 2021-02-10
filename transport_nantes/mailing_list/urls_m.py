@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('petition-captcha', QuickPetitionSignup.as_view(), name='quick_petition_signup'),
     path('petition/<slug:petition_slug>/', PetitionView.as_view(
-        template_name='mailing_list/petition.html'),
+        template_name='mailing_list/petition4.html'),
          name='petition'),
 ]
 

@@ -55,7 +55,10 @@ class Petition(models.Model):
     # How we'll identify this petition on our website.
     slug = models.SlugField(max_length=70, allow_unicode=True,
                             blank=False, unique=True)
-    petition_md = models.TextField(blank=False)
+    petition1_md = models.TextField(blank=False)
+    petition2_md = models.TextField(blank=True)
+    petition3_md = models.TextField(blank=True)
+    petition4_md = models.TextField(blank=True)
 
     def __str__(self):
         return '{sl}  ->  ({list_name})'.format(
