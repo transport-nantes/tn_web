@@ -25,7 +25,7 @@ class MailingListMerciM(MailingListMerci):
 
 class QuickPetitionSignup(FormView):
     template_name = 'mailing_list/quick_signup_m.html'
-    merci_template = 'mailing_list/merci_m.html'
+    merci_template = 'mailing_list/merci_petition.html' # This needs to be parameterised by petition.
     form_class = QuickPetitionSignupForm
 
     # We don't currently populate this form with the user's current
