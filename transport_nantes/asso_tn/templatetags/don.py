@@ -45,7 +45,7 @@ def url_don():
 
 @register.simple_tag
 def external_url(url, label):
-    html = """<a href="{url}">{label}</a>""".format(
+    html = """<a href="{url}" target="_blank">{label}</a>""".format(
         url=url, label=label)
     return mark_safe(html)
 
