@@ -35,6 +35,6 @@ def petition_link(petition, label):
         url = reverse('mailing_list:petition', args=[petition])
     except NoReverseMatch:
         url = '(((pétition pas trouvé : {ps})))'.format(ps=petition)
-    html = """<a href="{url}" target="_blank">{label}</a>""".format(
+    html = """<a href="{url}">{label}</a>""".format(
         url=url, label=label)
     return mark_safe(html)
