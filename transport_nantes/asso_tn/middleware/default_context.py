@@ -48,8 +48,11 @@ class DefaultContextMiddleware:
 
     def process_template_response(self, request, response):
         # This runs after the view.
+        my_context = copy(self.social_media_context)
         if 'social' in response.context_data:
-            my_context = copy(self.social_media_context)
-            my_context.update(response.context_data["social"])
-            response.context_data["social"] = my_context
+            print('--')
+            for key, value in response.context_data["social"].items():
+                if value:
+                    my_context[key] = value
+        response.context_data["social"] = my_context
         return response
