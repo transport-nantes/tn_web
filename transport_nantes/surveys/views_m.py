@@ -25,7 +25,16 @@ class QuestionnaireView(TemplateView):
         context['questions'] = SurveyQuestion.objects.filter(
             survey=survey).order_by('sort_index')
         context['next_page'] = reverse('surveys:response_1', args=[slug])
-        print(context)
+
+        # Hack, hard code for today.
+        context['social'] = {}
+        context['social']['og_title'] = "Élections du printemps 2021"
+        context['social']['og_description'] = "Les mobiltains.es demandent des actions concrètes à l’échelle départementale et régionale"
+        context['social']['og_image'] = "asso_tn/traffic-1600.jpg"
+        context['social']['twitter_title'] = ""
+        context['social']['twitter_description'] = "Les mobiltains.es demandent des actions concrètes à l’échelle départementale et régionale"
+        context['social']['twitter_image'] = "asso_tn/traffic-1600.jpg"
+
         return context
 
 #### Views for answering questions ####################################
