@@ -91,11 +91,34 @@ class TopicBlogPage(models.Model):
     meta_description = models.TextField(blank=True)
     twitter_title = models.CharField(max_length=80, blank=True)
     twitter_description = models.TextField(blank=True)
+    twitter_image = models.CharField(max_length=100, blank=True)
 
     og_title = models.CharField(max_length=80, blank=True)
     og_description = models.TextField(blank=True)
+    og_image = models.CharField(max_length=100, blank=True)
 
     objects = TopicBlogPageManager()
+
+    def set_context(self, context):
+        """Set context that the model can provide.
+
+        """
+        social = {}
+        if self.twitter_title:
+            social['twitter_title'] = self.twitter_title
+        if self.twitter_description:
+            social['twitter_description'] = self.twitter_description
+        if self.twitter_image:
+            social['twitter_image'] = self.twitter_image
+
+        if self.og_title:
+            social['og_title'] = self.og_title
+        if self.og_description:
+            social['og_description'] = self.og_description
+        if self.og_image:
+            social['og_image'] = self.og_image
+
+        context['social'] = social
 
     def __str__(self):
         return '{topic} / {slug}'.format(topic=self.topic, slug=self.slug)

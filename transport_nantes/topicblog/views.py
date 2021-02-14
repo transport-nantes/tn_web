@@ -36,6 +36,6 @@ class TopicBlogView(TemplateView):
             [page.bullet_image_4, page.bullet_text_4_md],
             [page.bullet_image_5, page.bullet_text_5_md],]
         # print(context['bullets'])
-
-        # context[]
+        page.set_context(context)
+        print('2>   ', context['social'])
         return context

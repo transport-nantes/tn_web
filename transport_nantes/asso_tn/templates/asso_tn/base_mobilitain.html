@@ -87,24 +87,26 @@
     {% endif %}
 
     {% endblock styles %}
-    <meta property="og:title" content="{{ page.twitter_title|default:"Mobilitains - Pour une mobilité multimodale" }}" />
+    <meta property="og:title" content="{{ social.twitter_title }}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:description" content="{{ page.twitter_description|default:"Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" }}" />
-    <meta property="og:image" content="https://{{ request.get_host }}{% static {{ page.og_image|default:"velopolitain/v1.png" }}" />
-    <meta property="og:image:alt" content="{{ page.og_image_alt }}" />
-    <meta property="og:image:type" content="{{ page.og_image_type|default:"image/png" }}" />
-    <meta property="og:image:width" content="{{ page.og_image_width }}" />
-    <meta property="og:image:height" content="{{page.og_image_height }}" />
+    <meta property="og:description" content="{{ social.twitter_description }}" />
+    <meta property="og:image" content="https://{{ request.get_host }}{% static social.og_image %}" />
+    <meta property="og:image:alt" content="{{ social.og_image_alt }}" />
+    {% if social.og_image_type %}
+    <meta property="og:image:type" content="{{ social.og_image_type }}" />
+    <meta property="og:image:width" content="{{ social.og_image_width }}" />
+    <meta property="og:image:height" content="{{social.og_image_height }}" />
+    {% endif %}
     <meta property="og:locale" content="fr_FR" />
-    <meta property="og:site_name" content="Mobilitain" />
+    <meta property="og:site_name" content="Mobilitains" />
     {# https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started #}
-    <meta name="twitter:card" content="{{ page.twitter_card|default:"summary_large_image" }}" />
-    <meta name="twitter:site" content="{{ page.twitter_site|default:"@Mobilitains" }}" />
-    <meta name="twitter:creator" content="{{ page.twitter_creator|default:"@Mobilitains" }}" />
-    <meta name="twitter:image" content="https://{{ request.get_host }}{% static {{ page.twitter_image|default:"asso_tn/mobilite-pour-tous.jpg" }}" />
-    <meta name="twitter:title" content="{{ page.twitter_title|default:"Mobilitains - Pour une mobilité multimodale" }}" />
-    <meta name="twitter:description" content="{{ page.twitter_description|default:"Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" }}" />
+    <meta name="twitter:card" content="{{ social.twitter_card }}" />
+    <meta name="twitter:site" content="{{ social.twitter_site }}" />
+    <meta name="twitter:creator" content="{{ social.twitter_creator }}" />
+    <meta name="twitter:image" content="https://{{ request.get_host }}{% static social.twitter_image %}" />
+    <meta name="twitter:title" content="{{ social.twitter_title }}" />
+    <meta name="twitter:description" content="{{ social.twitter_description }}" />
     {% comment %}
     https://cards-dev.twitter.com/validator
     {% endcomment %}
