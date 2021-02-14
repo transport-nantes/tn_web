@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'asso_tn.middleware.site.DynamicSiteDomainMiddleware',
+    'asso_tn.middleware.default_context.DefaultContextMiddleware',
 ]
 
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_tn')
@@ -80,7 +81,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'asso_tn.context_processors.role',
-                'asso_tn.context_processors.default_context',
             ],
         },
     },
