@@ -29,10 +29,10 @@ class QuestionnaireView(TemplateView):
         # Hack, hard code for today.
         context['social'] = {}
         context['social']['og_title'] = "Élections du printemps 2021"
-        context['social']['og_description'] = "Les mobiltains.es demandent des actions concrètes à l’échelle départementale et régionale"
+        context['social']['og_description'] = "Les mobiltains demandent des actions concrètes à l’échelle départementale et régionale"
         context['social']['og_image'] = "asso_tn/traffic-1600.jpg"
         context['social']['twitter_title'] = ""
-        context['social']['twitter_description'] = "Les mobiltains.es demandent des actions concrètes à l’échelle départementale et régionale"
+        context['social']['twitter_description'] = "Les mobiltains demandent des actions concrètes à l’échelle départementale et régionale"
         context['social']['twitter_image'] = "asso_tn/traffic-1600.jpg"
 
         return context
