@@ -45,25 +45,22 @@
     <link rel="stylesheet" href="/static/asso_tn/mobilitains.css">
     {# Matomo #}
     <!-- Matomo -->
-    {% if role != 'dev' %}
     <script type="text/javascript">
       var _paq = window._paq = window._paq || [];
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(["setDomains", ["*.www.mobilitains.fr","*.www.transport-nantes.com"]]);
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {
-	var u="//wa.transport-nantes.com/";
+	var u="//wa.mobilitains.fr/";
 	_paq.push(['setTrackerUrl', u+'matomo.php']);
-	if _paq.push(['setSiteId', {% if role == 'beta' %}'4'{% elif role == 'production' %}'3'{% else %}'-1'{% endif %}]);
+	_paq.push(['setSiteId', '3']);
 	var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
 	g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
+    <noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
     <!-- End Matomo Code -->
-    <!-- Matomo Image Tracker-->
-    <img src="https://wa.p27.eu/matomo.php?idsite={% if role == 'beta' %}4{% elif role == 'production' %}3{% else %}'-1'{% endif %}&amp;rec=1" style="border:0" alt="" />
-    {% endif %}
-    <!-- End Matomo -->
     {% if page.hero_image %}
     <style>
 .hero-image {
