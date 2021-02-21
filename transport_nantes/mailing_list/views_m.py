@@ -96,4 +96,7 @@ class PetitionView(AssoView):
         context['body_text_4'] = petition.petition4_md
         context['petition'] = petition
         context['petition_token'] = petition.mailing_list.mailing_list_token
+        #context['hero_image'] = 'asso_tn/traffic-1600.jpg'
+        context['page'] = {'hero_image': 'asso_tn/traffic-1600.jpg',
+                           'hero_title': "C'est l'heure de changer"}
         return context
