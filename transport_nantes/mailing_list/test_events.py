@@ -68,3 +68,31 @@ class EventsTest(TestCase):
             event_type=MailingListEvent.EventType.SUBSCRIBE)
         self.assertEqual(user_subscribe_count(dog_list), 2)
         self.assertEqual(user_subscribe_count(cat_list), 0)
+
+    def test_subscriber_count(self):
+        alice = User.objects.get(username='Alice')
+        bob = User.objects.get(username='Bob')
+        cat_list = MailingList.objects.get(mailing_list_token='cat')
+        dog_list = MailingList.objects.get(mailing_list_token='dog')
+        MailingListEvent.objects.create(
+            user=alice, mailing_list=dog_list,
+            event_timestamp=self.base_time + datetime.timedelta(1),
+            event_type=MailingListEvent.EventType.SUBSCRIBE)
+        MailingListEvent.objects.create(
+            user=bob, mailing_list=dog_list,
+            event_timestamp=self.base_time + datetime.timedelta(3),
+            event_type=MailingListEvent.EventType.SUBSCRIBE)
+        MailingListEvent.objects.create(
+            user=alice, mailing_list=dog_list,
+            event_timestamp=self.base_time + datetime.timedelta(5),
+            event_type=MailingListEvent.EventType.SUBSCRIBE)
+        self.assertEqual(subscriber_count(dog_list), 2)
+        self.assertEqual(subscriber_count(cat_list), 0)
+
+        # Unsubscribe Bob but not Alice.
+        MailingListEvent.objects.create(
+            user=bob, mailing_list=dog_list,
+            event_timestamp=self.base_time + datetime.timedelta(4),
+            event_type=MailingListEvent.EventType.UNSUBSCRIBE)
+        self.assertEqual(subscriber_count(dog_list), 2)
+        self.assertEqual(subscriber_count(cat_list), 0)

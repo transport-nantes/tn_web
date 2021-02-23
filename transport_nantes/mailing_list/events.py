@@ -38,3 +38,20 @@ def user_subscribe_count(mailing_list):
     users_subscribed = user_states.filter(
         Q(event_type=MailingListEvent.EventType.SUBSCRIBE)).count()
     return users_subscribed
+
+def subscriber_count(mailing_list):
+    """Return the number of users who have signed a petition.
+
+    If we want the number of people who receive notifications on a
+    petition, we should use user_subscribe_count().  Signers may
+    unsubscribe from notifications, but that doesn't unsign the
+    petition.
+
+    """
+    user_states = MailingListEvent.objects.filter(
+        Q(event_type=MailingListEvent.EventType.SUBSCRIBE),
+        mailing_list=mailing_list).values(
+            'user').annotate(latest=Max('event_timestamp'))
+    users_subscribed = user_states.filter(
+        Q(event_type=MailingListEvent.EventType.SUBSCRIBE)).count()
+    return users_subscribed
