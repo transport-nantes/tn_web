@@ -13,6 +13,8 @@ urlpatterns = [
     path('petition/<slug:petition_slug>/', PetitionView.as_view(
         template_name='mailing_list/petition4.html'),
          name='petition'),
+
+    path('dashboard', DashboardView.as_view(), name='dashboard')
 ]
 
 # For debugging the thankyou template:

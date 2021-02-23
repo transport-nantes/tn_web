@@ -4,6 +4,9 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils.crypto import get_random_string
+from django.views.generic.base import TemplateView
+
+from .events import subscriber_count
 from .models import MailingList, MailingListEvent, Petition
 
 from .views import MailingListSignup, QuickMailingListSignup, MailingListMerci
@@ -37,7 +40,6 @@ class QuickPetitionSignup(FormView):
         context['hero'] = True
         context['hero_image'] = 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg'
         context['hero_title'] = 'Newsletter'
-        print('----------get context data--------')
         return context
 
     def form_valid(self, form):
@@ -55,12 +57,10 @@ class QuickPetitionSignup(FormView):
             user.last_name = form.cleaned_data['last_name'] or 'lastname'
             user.email = form.cleaned_data['email']
             user.save()
-        print('----------3')
         # user.profile.commune = form.cleaned_data['commune']
         # user.profile.code_postal = form.cleaned_data['code_postal']
         # user.profile.save()
         
-        print('----------4')
         petition = MailingList.objects.filter(
             mailing_list_token=form.cleaned_data['petition_name'])
         if len(petition) == 0:
@@ -70,7 +70,6 @@ class QuickPetitionSignup(FormView):
             mailing_list=petition[0],
             event_type=MailingListEvent.EventType.SUBSCRIBE)
         subscription.save()
-        print('----------5')
         return render(
             self.request, self.merci_template,
             {
@@ -99,4 +98,16 @@ class PetitionView(AssoView):
         #context['hero_image'] = 'asso_tn/traffic-1600.jpg'
         context['page'] = {'hero_image': 'asso_tn/traffic-1600.jpg',
                            'hero_title': "C'est l'heure de changer"}
+        return context
+
+class DashboardView(TemplateView):
+    template_name = 'mailing_list/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lists = MailingList.objects.all().order_by('is_petition', 'mailing_list_name')
+        context['mailing_lists'] = [(list, subscriber_count(list))
+                                    for list in lists if not list.is_petition]
+        context['petitions'] = [(list, subscriber_count(list))
+                                for list in lists if list.is_petition]
         return context

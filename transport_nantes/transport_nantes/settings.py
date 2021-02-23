@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'clickcollect.apps.ClickCollectConfig',
     'authentication.apps.AuthenticationConfig',
     'topicblog.apps.TopicBlogConfig',
+    'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

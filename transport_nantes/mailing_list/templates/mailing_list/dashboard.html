@@ -1,0 +1,29 @@
+{% extends 'dashboard/index.html' %}
+
+{% block this_dashboard %}
+
+<h2>Listes (newsletters, etc.)</h2>
+{% for list, count in mailing_lists %}
+<div class="row">
+    <div class="col-sm-8">
+	<p>{{ list }}</p>
+    </div>
+    <div class="col-sm-4">
+	<p>{{ count }}</p>
+    </div>
+</div>
+{% endfor %}
+
+<h2>Pétitions</h2>
+{% for list, count in petitions %}
+<div class="row">
+    <div class="col-sm-8">
+	<p>{{ list }}</p>
+    </div>
+    <div class="col-sm-4">
+	<p>{{ count }}</p>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
