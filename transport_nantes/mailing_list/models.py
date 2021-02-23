@@ -49,6 +49,15 @@ class MailingList(models.Model):
 class Petition(models.Model):
     """Parameters of a petition.
 
+    A petition is a wrapper on top of a mailing list.  The petition
+    object codifies the text and other presentation details of the
+    petition.  The underlying mailing list is the set of signers.
+
+    Signers can unsubscribe from notices, in which case we shouldn't
+    mail them anymore.  We don't currently support a concept of "I
+    didn't sign this", though perhaps we eventually should (but only
+    in the signing confirmation mail).
+
     """
     mailing_list = models.ForeignKey(MailingList,
                                      on_delete=models.CASCADE)
@@ -100,7 +109,7 @@ class MailingListEvent(models.Model):
     """
     class EventType(models.TextChoices):
         SUBSCRIBE = 'sub', 'inscription'
-        UNSUBCRIBE = 'unsub', 'désinscription'
+        UNSUBSCRIBE = 'unsub', 'désinscription'
         BOUNCE = 'bounce', 'bounce'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
