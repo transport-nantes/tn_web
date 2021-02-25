@@ -5,10 +5,16 @@
 <h2>Listes (newsletters, etc.)</h2>
 {% for list, count in mailing_lists %}
 <div class="row">
-    <div class="col-sm-8">
-	<p>{{ list }}</p>
+    <div class="col-sm-11">
+	<p>
+	    <strong>{{ list.mailing_list_name }}</strong><br>
+	    {% if list.contact_frequency_weeks > 0 %}
+	      Contact : pas plus de toutes les {{ list.contact_frequency_weeks }} semaines,
+	    {% endif %}
+	    {% if list.list_active %} active {% else %} inactive {% endif %}
+	</p>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-1">
 	<p>{{ count }}</p>
     </div>
 </div>
@@ -17,10 +23,16 @@
 <h2>Pétitions</h2>
 {% for list, count in petitions %}
 <div class="row">
-    <div class="col-sm-8">
-	<p>{{ list }}</p>
+    <div class="col-sm-11">
+	<p>
+	    <strong>{{ list.mailing_list_name }}</strong><br>
+	    {% if list.contact_frequency_weeks > 0 %}
+	      Contact : pas plus de toutes les {{ list.contact_frequency_weeks }} semaines,
+	    {% endif %}
+	    {% if list.list_active %} active {% else %} inactive {% endif %}
+	</p>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-1">
 	<p>{{ count }}</p>
     </div>
 </div>

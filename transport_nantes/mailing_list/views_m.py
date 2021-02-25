@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils.crypto import get_random_string
 from django.views.generic.base import TemplateView
 
-from .events import subscriber_count
+from .events import user_subscribe_count, subscriber_count
 from .models import MailingList, MailingListEvent, Petition
 
 from .views import MailingListSignup, QuickMailingListSignup, MailingListMerci
@@ -106,7 +106,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         lists = MailingList.objects.all().order_by('is_petition', 'mailing_list_name')
-        context['mailing_lists'] = [(list, subscriber_count(list))
+        context['mailing_lists'] = [(list, user_subscribe_count(list))
                                     for list in lists if not list.is_petition]
         context['petitions'] = [(list, subscriber_count(list))
                                 for list in lists if list.is_petition]
