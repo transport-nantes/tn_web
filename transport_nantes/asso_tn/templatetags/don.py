@@ -25,11 +25,10 @@ def bouton_join(link_text):
 
 @register.simple_tag
 def bouton_don_lg(link_text):
-    return mark_safe(
-        """<a href="{url}" class="btn btn-primary btn-lg" role="button" target="_blank">{text}</a>""".format(
-            url=hello_asso_don,
-            text=link_text)
-    )
+    html_template = """<p class="pl-5"><a href="{link_url}" class="btn """ + \
+        """btn-primary btn-lg" target="_blank">{text} """ + \
+        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+    return mark_safe(html_template.format(link_url=hello_asso_don, text=link_text))
 
 @register.simple_tag
 def lien_don(link_text):
