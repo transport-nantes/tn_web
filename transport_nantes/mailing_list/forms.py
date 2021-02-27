@@ -32,7 +32,7 @@ class MailingListSignupForm(ModelForm):
         required=False,
         label="Code postal", help_text='Nous aide à vous apporter des actualités')
     newsletters = MailingListMMCF(
-        queryset=MailingList.objects.filter(list_active=True),
+        queryset=MailingList.objects.filter(list_active=True, is_petition=False),
         widget=forms.CheckboxSelectMultiple({'class': 'no-bullet-list'}),
         label="Je m’inscris :")
 
