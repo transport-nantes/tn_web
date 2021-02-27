@@ -1,10 +1,11 @@
 # from django.test import TestCase
+from django.conf import settings
 from django.urls import reverse
 from unittest import TestCase
 
 from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
-from .tn_links import TNLinkParser
+from .tn_links import TNLinkParser, render_inclusion_tag_to_html
 
 class TnLinkParserTest(TestCase):
     def setUp(self):
@@ -45,6 +46,11 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform(
             '[[contact:Hello, World!]]((Je veux être bénévole))'), \
                          don.contact_button('Hello, World!', 'Je veux être bénévole'))
+
+    def test_news(self):
+        settings.csrf_token = 'some text that must exist'
+        self.assertEqual(self.parser.transform('[[news:kangaroo]]((aardvark))'), \
+                         render_inclusion_tag_to_html('newsletter', 'show_mailing_list'))
 
     def test_external_url(self):
         url = 'my-url'

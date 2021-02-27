@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.template import Template, Context
 from django.urls import reverse, NoReverseMatch
 
 from asso_tn.templatetags import don
@@ -35,10 +37,13 @@ Some examples:
     [[don:large]]((text))      equivalent to {% bouton_don_lg "text" %}
     [[don:adhésion]]((text))   equivalent to {% bouton_join "text" %}
 
+    [[news:name]]((text))      equivalent to {% show_mailing_list %}
+
     [[action:text]]((topic_slug))
                                equivalent to [text](/tb/t/topic_slug/)
     [[contact:button-label]]((email-subject-label))
                                button that opens an email
+
     [[externe:label]]((URL))   equivalent to [text](URL) (for external links)
     [[EXTERNE:label]]((URL))   externe but a button with arrow
     [[petition:label]]((petition_slug))
@@ -53,6 +58,15 @@ The HTML safety checks must have been applied before calling these
 functions in order to permit HTML on the output.
 
 """
+
+def render_inclusion_tag_to_html(tag_source, tag_name):
+    """Render an inclusion tag to a string.
+    """
+
+    template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
+    template_context = {'csrf_token': settings.csrf_token}
+    html = Template(template_string).render(Context(template_context))
+    return html
 
 from enum import Enum, unique, auto
 
@@ -179,6 +193,12 @@ class TNLinkParser(object):
             else:
                 self.out_string += self.bracket_class_string + ':' + \
                     self.bracket_label_string + '(' + self.paren_string + ')'
+        elif 'news' == self.bracket_class_string:
+            newsletter_name = self.bracket_label_string
+            description_text = self.paren_string
+            self.out_string += render_inclusion_tag_to_html('newsletter', 'show_mailing_list')
+            # Bug: this doesn't take into account the mailing list
+            # requested or the label we request.
         elif 'action' == self.bracket_class_string:
             try:
                 url = reverse('topic_blog:view_topic', args=[self.paren_string])

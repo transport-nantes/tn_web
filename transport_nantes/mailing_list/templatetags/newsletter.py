@@ -7,13 +7,14 @@ from mailing_list.forms import QuickPetitionSignupForm
 
 register = template.Library()
 
-@register.inclusion_tag('mailing_list/panel/mailing_list.html')
-def show_mailing_list():
+@register.inclusion_tag('mailing_list/panel/mailing_list.html', takes_context=True)
+def show_mailing_list(context):
     """Offer to join the mailing list.
 
     """
     form = QuickMailingListSignupForm
-    return {'form': form}
+    context['form'] = form
+    return context
 
 @register.inclusion_tag('mailing_list/panel/petition.html')
 def show_petition_signup(petition_name):
