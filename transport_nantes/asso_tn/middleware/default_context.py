@@ -44,7 +44,7 @@ class DefaultContextMiddleware:
 
     def __call__(self, request):
         context = RequestContext(request)
-        settings.csrf_token = request.COOKIES[settings.CSRF_COOKIE_NAME]
+        settings.csrf_token = request.COOKIES.get(settings.CSRF_COOKIE_NAME, "")
         response = self.get_response(request)
         return response
 
