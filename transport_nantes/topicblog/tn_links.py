@@ -216,6 +216,7 @@ class TNLinkParser(object):
         elif 'petition' == self.bracket_class_string:
             self.out_string += newsletter.petition_link(self.paren_string, self.bracket_label_string)
         else:
+            self.out_string += f"[[{self.bracket_class_string}:{self.bracket_label_string}]](({self.paren_string}))"
             self.log('Unexpected transcription case: ' + self.bracket_class_string)
 
     def consume_ordinary(self, in_text):
