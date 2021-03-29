@@ -44,7 +44,7 @@ prompt-toolkit==3.0.3
 psycopg2==2.8.4
 ptyprocess==0.6.0
 pyasn1==0.4.8
-Pygments==2.5.2
+Pygments==2.7.4
 pyparsing==2.4.6
 python-dateutil==2.8.1
 python-http-client==3.2.7
