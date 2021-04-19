@@ -31,4 +31,5 @@ urlpatterns = [
     path('d/', include('dashboard.urls'), {'base_template': base_template}),
     path('ml/', include('mailing_list.urls_m'), {'base_template': base_template}),
     path('questionnaire/', include('surveys.urls_m'), {'base_template': base_template}),
+    path('buttons/', include('buttons.urls', {'base_template': base_template})),
 ]
