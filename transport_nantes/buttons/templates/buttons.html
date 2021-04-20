@@ -1,6 +1,20 @@
 {% extends 'asso_tn/base_transport_nantes.html' %} 
+{% load static %}
 
 {% block content %}
-    <br/>
-    <h1>Buttons will be here</h1>
+    <h1 style="padding-left:1em;padding-top: 1em;">Buttons counter</h1>
+
+    <p style="padding-left:3em; padding-top: 1em;">
+        <button id="button_A" class ="btn btn-primary" type="button">A</button>
+        <button id="button_B" class ="btn btn-primary" type="button">B</button>
+        <button id="button_C" class ="btn btn-primary" type="button">C</button>
+        <button id="button_D" class ="btn btn-primary" type="button">D</button>
+    </p>
+
+    <p style="padding-left:3em; padding-top: 1em;">A counter : {{ A_value }}</p>
+    <p style="padding-left:3em; padding-top: 1em;">B counter : {{ B_value }}</p>
+    <p style="padding-left:3em; padding-top: 1em;">C counter : {{ C_Value }}</p>
+    <p style="padding-left:3em; padding-top: 1em;">D counter : {{ D_Value }}</p>
+
+    <script src="{% static 'js/main.js' %}"></script>
 {% endblock content %}

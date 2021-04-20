@@ -4,9 +4,14 @@
 # Python
 venv
 *.pyc
+Pipfile
+Pipfile.lock
 
 # Django
 db.sqlite3
 
 # Config
 aws_config
+
+# vscode
+.vscode/
