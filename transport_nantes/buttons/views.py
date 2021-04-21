@@ -37,4 +37,4 @@ class ButtonsView(View):
                                 "C": 0,
                                 "D": 0,
                                 }
-        return render(request, "buttons.html")
+        return render(request, "buttons/buttons.html")

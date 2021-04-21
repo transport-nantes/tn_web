@@ -33,6 +33,7 @@ DEFAULT_SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
+    'buttons.apps.ButtonsConfig',
     'surveys.apps.SurveysConfig',
     'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',

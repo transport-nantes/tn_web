@@ -14,4 +14,4 @@ db.sqlite3
 aws_config
 
 # vscode
-.vscode/
+.vscode
