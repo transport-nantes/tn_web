@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'surveys.apps.SurveysConfig',
     'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',
-    'grand_nantes.apps.GrandNantesConfig',
     'velopolitain.apps.VelopolitainConfig',
     'communications.apps.CommunicationsConfig',
     'mailing_list.apps.MailingListConfig',

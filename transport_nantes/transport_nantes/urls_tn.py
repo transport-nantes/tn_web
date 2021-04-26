@@ -27,7 +27,6 @@ urlpatterns = [
     path('cb/', include('clusterblog.urls')),
     path('cc/', include('clickcollect.urls')),
     path('cp/', include('communications.urls')),
-    path('gn/', include('grand_nantes.urls')),
     path('j/', include('legal.urls')),
     path('ml/', include('mailing_list.urls')),
     path('observatoire/', include('observatoire.urls')),
