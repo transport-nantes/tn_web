@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
 ]
 
-ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_tn')
+ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_m')
 
 TEMPLATES = [
     {
