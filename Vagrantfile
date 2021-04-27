@@ -80,6 +80,10 @@ Vagrant.configure("2") do |config|
     sudo apt-get dist-upgrade -y
     sudo apt-get install -y  emacs-nox python3 python3-virtualenv
     sudo apt-get install -y  libpq-dev gcc libpython3.8-dev
+    cd /vagrant
+    virtualenv --python=python3 venv.vagrant
+    . venv.vagrant/bin/activate
+    pip install -r requirements.txt
 SETUP
   # To run in vagrant:
   #  ROOT_URLCONF=transport_nantes.urls_m DEFAULT_SITE_ID=1 \
