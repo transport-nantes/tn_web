@@ -81,6 +81,7 @@ Vagrant.configure("2") do |config|
     sudo apt-get install -y  emacs-nox python3 python3-virtualenv
     sudo apt-get install -y  libpq-dev gcc libpython3.8-dev
     cd /vagrant
+    rm -rf venv.vagrant
     virtualenv --python=python3 venv.vagrant
     . venv.vagrant/bin/activate
     pip install -r requirements.txt
