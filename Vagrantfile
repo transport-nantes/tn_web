@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
     sudo apt-get update
     sudo apt-get upgrade -y
     sudo apt-get dist-upgrade -y
-    sudo apt-get install -y  emacs-nox python3 python3-virtualenv
+    sudo apt-get install -y  emacs-nox python3 python3-virtualenv python3-pip
     sudo apt-get install -y  libpq-dev gcc libpython3.8-dev
     cd /vagrant
     rm -rf venv.vagrant
