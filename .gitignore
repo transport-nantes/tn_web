@@ -16,5 +16,6 @@ aws_config
 #VSCODE
 .vscode/
 
-# Vagrant
+#Vagrant 
 .vagrant
+venv.vagrant
