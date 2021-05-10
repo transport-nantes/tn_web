@@ -3,6 +3,6 @@ from .models import MapPage
 
 # Register your models here.
 class GeoplanPageAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {"slug": ("title",)}
 
 admin.site.register(MapPage, GeoplanPageAdmin)
