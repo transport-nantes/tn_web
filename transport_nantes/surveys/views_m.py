@@ -55,6 +55,15 @@ class ResponseView(TemplateView):
 
 #### Views for viewing results ########################################
 
+social = {'twitter_title': "Élections régionales et départementales 2021",
+          'twitter_descr': "Vos déplacements vous sont importants.  Nous agissons.",
+          'twitter_image': 'asso_tn/trolley-sunset-1500w.jpg',
+
+          'og_title': "Élections régionales et départementales 2021",
+          'og_description': "Vos déplacements vous sont importants.  Nous agissons.",
+          'og_image': 'asso_tn/trolley-sunset-1500w.jpg',
+          }
+
 class CommuneChooserSurveyView(TemplateView):
     template_name = 'surveys/survey.html'
 
@@ -65,6 +74,7 @@ class CommuneChooserSurveyView(TemplateView):
         context['communes'] = set([responder.commune for responder in responders])
         context['listes'] = None;
         context['questions'] = None;
+        context['social'] = social
         return context
 
 class ListeChooserSurveyView(CommuneChooserSurveyView):
@@ -75,6 +85,7 @@ class ListeChooserSurveyView(CommuneChooserSurveyView):
         responders = SurveyResponder.objects.filter(
             survey_id=kwargs['survey_id'], commune=kwargs['commune_id'])
         context['listes'] = responders
+        context['social'] = social
         return context
 
 class QuestionChooserSurveyView(ListeChooserSurveyView):
@@ -92,6 +103,7 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
             this_question.text_paragraphs = \
                 this_question.question_text.split('\n')
             context['this_question'] = this_question
+        context['social'] = social
         return context
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
@@ -112,6 +124,7 @@ class ResponseDisplaySurveyView(QuestionChooserSurveyView):
             this_response.response_paragraphs = ["La liste n'a pas répondu à cette question."]
             # this_response.question_response = "La liste n'a pas répondu à cette question."
         context['this_response'] = this_response
+        context['social'] = social
         return context
 
 class QuestionnaireForSurveyView(TemplateView):
