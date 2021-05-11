@@ -12,11 +12,11 @@ class MapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Will need to retrieve that from browser probably
-        context["city"] = "Nantes"
+
+        # context["city"] and context["observatory_name"] are set in the URL /observatoire/<city>/<observatory_name>
 
         # The __iexact part makes the search not case senstive (Nantes = nantes)
-        city = MapDefinition.objects.get(city__iexact=context["city"])
+        city = MapDefinition.objects.get(city__iexact=context["city"], observatory_name__iexact=context["observatory_name"] )
         layer = MapLayer.objects.get(map_definition=city)
         content = MapContent.objects.get(map_layer=layer)
 
