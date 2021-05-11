@@ -4,5 +4,5 @@ from .views import MapView
 app_name = "geoplan"
 
 urlpatterns = [
-    path('', MapView.as_view(), name="map")
+    path('<city>/<observatory_name>', MapView.as_view(), name="map")
 ]
