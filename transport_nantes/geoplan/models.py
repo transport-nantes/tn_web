@@ -29,13 +29,21 @@ class MapDefinition(models.Model):
     longitude = models.FloatField() 
     latitude = models.FloatField() 
 
+    def __str__(self):
+        return '{city} / {observatory_name}'.format(city=self.city, observatory_name=self.observatory_name)
+    
+
 class MapLayer(models.Model):
     """Will set parameters for different layers caintained in the MapDefinition"""
     map_definition = models.ForeignKey(MapDefinition, on_delete=models.CASCADE)
     layer_name = models.CharField(max_length=100)
 
     # Depth = position on the stack
-    layer_depth = models.SmallIntegerField() 
+    layer_depth = models.SmallIntegerField()
+
+    def __str__(self):
+        return self.layer_name
+    
 
 class MapContent(models.Model):
     """Actual content of the layer, displayed on the map"""
