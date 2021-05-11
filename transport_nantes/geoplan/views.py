@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.views.generic import TemplateView
 import requests
@@ -12,20 +13,20 @@ class MapView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        city = kwargs["city"]
+        observatory_name = kwargs["observatory_name"]
 
-        # context["city"] and context["observatory_name"] are set in the URL /observatoire/<city>/<observatory_name>
+        try:
+            map_content = MapContent.objects.get(
+                map_layer__map_definition__city=city, map_layer__map_definition__observatory_name=observatory_name)
+        except:
+                raise Http404("Page non trouvée (404)")
+        
+        geojson = map_content.geojson
+        layer_name = map_content.map_layer.layer_name
+        lat, lon = map_content.map_layer.map_definition.latitude, map_content.map_layer.map_definition.longitude
 
-        # The __iexact part makes the search not case senstive (Nantes = nantes)
-        city = MapDefinition.objects.get(city__iexact=context["city"], observatory_name__iexact=context["observatory_name"] )
-        layer = MapLayer.objects.get(map_definition=city)
-        content = MapContent.objects.get(map_layer=layer)
-
-        # Variables used by folium
-        geojson = content.geojson
-        lat, lon = city.latitude, city.longitude
-        layer_name = layer.layer_name
-
-        # Building the map
+         # Building the map
         m = folium.Map(location=[lat, lon], zoom_start=12)
         # It only loads one geojson file as a layer for now
         folium.GeoJson(geojson, name=layer_name).add_to(m)
