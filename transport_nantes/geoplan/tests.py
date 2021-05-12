@@ -51,3 +51,6 @@ class GeoplanTest(TestCase):
         # Mistake in URL scheme (city name doesn't exist)
         response = self.client.get("/observatoire/NOTtestcity/planvelo")
         self.assertEqual(response.status_code, 404)
+
+        response = self.client.get("/observatoire/testcity/NOTplanvelo")
+        self.assertEqual(response.status_code, 404)
