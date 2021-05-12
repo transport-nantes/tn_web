@@ -24,7 +24,7 @@ class MapView(TemplateView):
                 "map_layer__layer_depth")
 
         # Checks if the query isn't empty, otherwise it would use unbound values.
-        if map_content_rows.count() == 0:
+        if map_content_rows.__len__() == 0:
             raise Http404("Page non trouvée (404)")
 
         for index, map_content in enumerate(map_content_rows):
