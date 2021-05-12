@@ -26,3 +26,16 @@ To test:
 To start a new app:
 
     python manage.py startapp <appname>
+
+To enable pylint_django : 
+
+  pip install pylint-django
+  
+  IN VSCODE : 
+    .vscode folder : 
+      settings.json: add the following 
+            "python.linting.pylintEnabled": true, 
+            "python.linting.pylintArgs": [
+            "--load-plugins=pylint_django",
+            "--django-settings-module=transport_nantes.settings",
+        ],

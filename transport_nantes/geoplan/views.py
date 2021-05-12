@@ -1,12 +1,11 @@
 from django.http import Http404
-from django.shortcuts import render
 from django.views.generic import TemplateView
-import requests
-
-from .models import MapPage, MapDefinition, MapLayer, MapContent
 
 import folium
-from pathlib import Path
+
+from .models import MapContent
+
+
 # Create your views here.
 
 
@@ -18,13 +17,11 @@ class MapView(TemplateView):
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
 
-        try:
-            # Gets all layers corresponding to a city and its observatory
-            map_content_rows = MapContent.objects.filter(
-                map_layer__map_definition__city=city,
-                map_layer__map_definition__observatory_name=observatory_name).order_by("map_layer__layer_depth")
-        except:
-            raise Http404("Page non trouvée (404)")
+        # Gets all layers corresponding to a city and its observatory
+        map_content_rows = MapContent.objects.filter(
+            map_layer__map_definition__city=city,
+            map_layer__map_definition__observatory_name=observatory_name).order_by(
+                "map_layer__layer_depth")
 
         # Checks if the query isn't empty, otherwise it would use unbound values.
         if map_content_rows.count() == 0:
@@ -35,18 +32,18 @@ class MapView(TemplateView):
                 # Building the map
                 lat = map_content.map_layer.map_definition.latitude
                 lon = map_content.map_layer.map_definition.longitude
-                m = folium.Map(location=[lat, lon], zoom_start=12)
+                geomap = folium.Map(location=[lat, lon], zoom_start=12)
 
             # Adds a layer to the map
             geojson = map_content.geojson
             layer_name = map_content.map_layer.layer_name
-            folium.GeoJson(geojson, name=layer_name).add_to(m)
+            folium.GeoJson(geojson, name=layer_name).add_to(geomap)
 
         # This is the Layer filter to enable / disable datas on map
-        folium.LayerControl(hideSingleBase=True).add_to(m)
+        folium.LayerControl(hideSingleBase=True).add_to(geomap)
 
         # Produce html code to embed on our page
-        root = m.get_root()
+        root = geomap.get_root()
         html = root.render()
         context["html_map"] = html
 
