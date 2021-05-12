@@ -8,6 +8,8 @@ from .models import MapPage, MapDefinition, MapLayer, MapContent
 import folium
 from pathlib import Path
 # Create your views here.
+
+
 class MapView(TemplateView):
     template_name = "geoplan/base_map.html"
 
@@ -17,19 +19,29 @@ class MapView(TemplateView):
         observatory_name = kwargs["observatory_name"]
 
         try:
-            map_content = MapContent.objects.get(
-                map_layer__map_definition__city=city, map_layer__map_definition__observatory_name=observatory_name)
+            # Gets all layers corresponding to a city and its observatory
+            map_content_rows = MapContent.objects.filter(
+                map_layer__map_definition__city=city,
+                map_layer__map_definition__observatory_name=observatory_name).order_by("map_layer__layer_depth")
         except:
-                raise Http404("Page non trouvée (404)")
-        
-        geojson = map_content.geojson
-        layer_name = map_content.map_layer.layer_name
-        lat, lon = map_content.map_layer.map_definition.latitude, map_content.map_layer.map_definition.longitude
+            raise Http404("Page non trouvée (404)")
 
-         # Building the map
-        m = folium.Map(location=[lat, lon], zoom_start=12)
-        # It only loads one geojson file as a layer for now
-        folium.GeoJson(geojson, name=layer_name).add_to(m)
+        # Checks if the query isn't empty, otherwise it would use unbound values.
+        if map_content_rows.count() == 0:
+            raise Http404("Page non trouvée (404)")
+
+        for index, map_content in enumerate(map_content_rows):
+            if index == 0:
+                # Building the map
+                lat = map_content.map_layer.map_definition.latitude
+                lon = map_content.map_layer.map_definition.longitude
+                m = folium.Map(location=[lat, lon], zoom_start=12)
+
+            # Adds a layer to the map
+            geojson = map_content.geojson
+            layer_name = map_content.map_layer.layer_name
+            folium.GeoJson(geojson, name=layer_name).add_to(m)
+
         # This is the Layer filter to enable / disable datas on map
         folium.LayerControl(hideSingleBase=True).add_to(m)
 
