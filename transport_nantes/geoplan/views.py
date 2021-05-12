@@ -27,13 +27,12 @@ class MapView(TemplateView):
         if map_content_rows.__len__() == 0:
             raise Http404("Page non trouvée (404)")
 
-        for index, map_content in enumerate(map_content_rows):
-            if index == 0:
-                # Building the map
-                lat = map_content.map_layer.map_definition.latitude
-                lon = map_content.map_layer.map_definition.longitude
-                geomap = folium.Map(location=[lat, lon], zoom_start=12)
+        # Building the map
+        lat = map_content_rows[0].map_layer.map_definition.latitude
+        lon = map_content_rows[0].map_layer.map_definition.longitude
+        geomap = folium.Map(location=[lat, lon], zoom_start=12)
 
+        for map_content in map_content_rows:
             # Adds a layer to the map
             geojson = map_content.geojson
             layer_name = map_content.map_layer.layer_name
