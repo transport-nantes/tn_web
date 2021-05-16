@@ -59,7 +59,7 @@ def external_url_button(url, label):
 @register.simple_tag
 def action_button(link_url, topic_name):
     html_template = """<p><a href="{link_url}" class="btn """ + \
-        """btn-outline-primary btn-lg">{text} """ + \
+        """cta-button btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
     return mark_safe(html_template.format(link_url=link_url, text=topic_name))
 
@@ -68,6 +68,6 @@ def contact_button(button_text, email_subject):
     """This might (should) someday become a form."""
     html_template = """<p class="pl-5"> """ + \
 	"""<a href="mailto:jevousaide@transport-nantes.com?subject={subj}&nbsp;!" """ + \
-	"""class="btn btn-outline-primary btn-lg">{text} """ + \
+	"""class="btn cta-button btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
     return mark_safe(html_template.format(subj=email_subject, text=button_text))
