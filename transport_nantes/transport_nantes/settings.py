@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',
     'velopolitain.apps.VelopolitainConfig',
-    'communications.apps.CommunicationsConfig',
     'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
     'observatoire.apps.ObservatoireConfig',
