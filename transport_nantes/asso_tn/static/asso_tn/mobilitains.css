@@ -40,6 +40,35 @@ ul.no-bullet-list {
     #FA4616;    orange
     #44536D;    vert
 */
+:root {
+    --mobilitains-gris:       #DDE5ED;
+    --mobilitains-rouge:      #7F6966;
+    --mobilitains-bleu:       #5BC2E7;
+    --mobilitains-orange:     #FA4616;
+    --mobilitains-bleu-fonce: #333F48;
+
+    --body-text: var(--mobilitains-bleu-fonce);
+}
+p {
+    color: var(--body-text);
+}
+h1,h2,h3,h4 {
+    color: var(--body-text);
+}
+a:link {
+    color: var(--mobilitains-bleu);
+}
+a:visited {
+    color: var(--mobilitains-gris);
+}
+a.hover {
+    color: var(--mobilitains-blue);
+    background-color: var(--mobilitains-gris);
+}
+a.active {
+    color: var(--mobilitains-bleu-fonce);
+    background-color: var(--mobilitains-gris);
+}
 .background-gray {
     background-color: #7F6966;
 }
