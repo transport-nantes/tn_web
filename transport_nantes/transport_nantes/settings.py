@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'asso_tn.apps.AssoTnConfig',
     'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
-    'observatoire.apps.ObservatoireConfig',
     'clickcollect.apps.ClickCollectConfig',
     'authentication.apps.AuthenticationConfig',
     'topicblog.apps.TopicBlogConfig',
