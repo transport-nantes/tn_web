@@ -17,18 +17,16 @@ from django.contrib import admin
 from django.urls import include, path
 from topicblog.views import TopicBlogView
 
-base_template = 'asso_tn/base_mobilitain.html'
-
 urlpatterns = [
-    path('', TopicBlogView.as_view(), {'base_template': base_template,
-                                       'topic_slug': 'index'},
+    path('', TopicBlogView.as_view(), {'topic_slug': 'index'},
          name='index'),
     path('admin/', admin.site.urls),
-    path('auth/', include('authentication.urls'), {'base_template': base_template}),
+    path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),
-    path('tb/', include ('topicblog.urls'), {'base_template': base_template}),
-    path('l/', include('asso_tn.urls_m'), {'base_template': base_template}),
-    path('d/', include('dashboard.urls'), {'base_template': base_template}),
-    path('ml/', include('mailing_list.urls_m'), {'base_template': base_template}),
-    path('questionnaire/', include('surveys.urls_m'), {'base_template': base_template}),
+    path('d/', include('dashboard.urls')),
+    path('l/', include('asso_tn.urls_m')),
+    path('ml/', include('mailing_list.urls_m')),
+    # path('og/', include('open_graph.urls')),
+    path('questionnaire/', include('surveys.urls_m')),
+    path('tb/', include ('topicblog.urls')),
 ]
