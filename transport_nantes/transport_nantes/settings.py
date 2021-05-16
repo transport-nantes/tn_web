@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'surveys.apps.SurveysConfig',
     'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',
-    'velopolitain.apps.VelopolitainConfig',
     'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
     'observatoire.apps.ObservatoireConfig',
