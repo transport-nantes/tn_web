@@ -48,6 +48,7 @@ ul.no-bullet-list {
     --mobilitains-bleu-fonce: #333F48;
 
     --body-text: var(--mobilitains-bleu-fonce);
+    --body-text-muted: var(--mobilitains-rouge);
 }
 p {
     color: var(--body-text);
