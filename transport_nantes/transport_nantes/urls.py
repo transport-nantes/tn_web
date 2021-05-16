@@ -23,10 +23,20 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),
+    ## ClickCollect is obsolete (and we should have used mailing_list,
+    ## but it maybe didn't exist at the time.  But we should keep it
+    ## around until we recover the contacts to a periodic annoncement
+    ## mailing list.
+    # path('cc/', include('clickcollect.urls')),
     path('d/', include('dashboard.urls')),
     path('l/', include('asso_tn.urls')),
     path('ml/', include('mailing_list.urls')),
+    ## The OpenGraph app will likely be useful some day for doing
+    ## dynamic og/tw images.
     # path('og/', include('open_graph.urls')),
     path('questionnaire/', include('surveys.urls')),
     path('tb/', include ('topicblog.urls')),
+    ## The misnamed VO app has a few fragments that will be useful for
+    ## the OGM project.  Cf. also the benjamin-ajax-exercise branch.
+    # path('??', include('velopolitain_observatoire.urls')),
 ]
