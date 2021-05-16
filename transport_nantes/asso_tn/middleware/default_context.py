@@ -1,28 +1,12 @@
 from copy import copy
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.template import RequestContext
 
-# Middleware to dynamically set the current site.
+# Middleware to set default social media data.
 #
-# The plan is that we no longer need to set SITE_ID and only
-# developers should have to set DEFAULT_SITE_ID in their settings_?.py
-# file (the thing that sets WSGI_APPLICATION).  At issue is that
-# setting SITE_ID by index number is fragile.  Just adding and
-# removing records from the database change the index number.
-#
-# It's possible to set SITE_ID =
-# Site.objects.get(name='my_site_name').id, but this doesn't work in
-# settings, where database connectivity and credentials are not yet
-# reliably set.  And later on, in the running (non-startup) code, we
-# don't know what the site name is supposed to be.
-#
-# So this bit of code looks at the host in the request and looks that
-# up in the sites table.  If it finds it, it uses it.  Otherwise, it
-# sets the value to DEFAULT_SITE_ID (which is what developers should
-# set).
-#
-# Based on https://stackoverflow.com/a/64037438/833300 .
+# This bit of middleware has been used and reused, notably for the
+# (now no longer used) Sites module.  We may or may not still need
+# this, at least in its current form.
 
 class DefaultContextMiddleware:
     social_media_context = {

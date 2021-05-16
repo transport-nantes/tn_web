@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
 from . import settings_local
 
 # Quick-start development settings - unsuitable for production
@@ -24,10 +23,6 @@ DEBUG = settings_local.DEBUG
 ROLE = settings_local.ROLE
 
 ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
-# This will override DynamicSiteDomainMiddleware.
-# It is meant for developers in dev, not for use on
-# deployed instances.
-DEFAULT_SITE_ID = os.getenv('DEFAULT_SITE_ID')
 
 # Application definition
 
@@ -47,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'captcha',
 ] + settings_local.MORE_INSTALLED_APPS
 
@@ -59,11 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'asso_tn.middleware.site.DynamicSiteDomainMiddleware',
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
 ]
 
-ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'transport_nantes.urls_m')
+ROOT_URLCONF = 'transport_nantes.urls'
 
 TEMPLATES = [
     {

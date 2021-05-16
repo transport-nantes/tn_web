@@ -1,6 +1,4 @@
 from django.views.generic.base import TemplateView
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.sites.models import Site
 
 # Create your views here.
 class MainTransportNantes(TemplateView):
@@ -12,11 +10,8 @@ class MainTransportNantes(TemplateView):
         context['hero'] = True
         context['hero_image'] = "asso_tn/images-quentin-boulegon/pont-rousseau-1.jpg"
         context['hero_title'] = "Pour une mobilité sûre, vertueuse, et agréable"
-        context['title'] = "{asso} - Pour une mobilité multimodale".format(
-            asso=Site.objects.get_current().name)
+        context['title'] = "Mobilitains - Pour une mobilité multimodale"
         context['twitter_image'] = "asso_tn/accueil-mobilité-multimodale.jpg"
-        # print(dir(context['view'].request))
-        # print(get_current_site(context['view'].request))
         return context
 
 class AssoView(TemplateView):
