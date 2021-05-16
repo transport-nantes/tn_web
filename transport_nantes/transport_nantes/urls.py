@@ -24,9 +24,9 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),
     path('d/', include('dashboard.urls')),
-    path('l/', include('asso_tn.urls_m')),
-    path('ml/', include('mailing_list.urls_m')),
+    path('l/', include('asso_tn.urls')),
+    path('ml/', include('mailing_list.urls')),
     # path('og/', include('open_graph.urls')),
-    path('questionnaire/', include('surveys.urls_m')),
+    path('questionnaire/', include('surveys.urls')),
     path('tb/', include ('topicblog.urls')),
 ]
