@@ -53,14 +53,14 @@ ul.no-bullet-list {
 p {
     color: var(--body-text);
 }
-h1,h2,h3,h4 {
+h1, h2, h3, h4 {
     color: var(--body-text);
 }
 a:link {
     color: var(--mobilitains-bleu);
 }
 a:visited {
-    color: var(--mobilitains-gris);
+    color: var(--mobilitains-blue);
 }
 a.hover {
     color: var(--mobilitains-blue);
@@ -70,6 +70,33 @@ a.active {
     color: var(--mobilitains-bleu-fonce);
     background-color: var(--mobilitains-gris);
 }
+
+a:link.donation-button {
+    color: var(--body-text);
+    background-color: var(--mobilitains-orange);
+    border: var(--mobilitain-bleu);
+    border-style: solid;
+    border-width: 1px;
+}
+a:hover:hover.donation-button {
+    color: var(--body-text);
+    background-color: var(--mobilitains-rouge);
+}
+
+a:link.cta-button {
+    color: var(--body-text);
+    background-color: var(--mobilitains-gris);
+    border: var(--mobilitain-bleu);
+    border-style: solid;
+    border-width: 1px;
+}
+a:hover:hover.cta-button {
+    color: var(--body-text);
+    background-color: var(--mobilitains-rouge);
+}
+
+
+
 .background-gray {
     background-color: #7F6966;
 }
