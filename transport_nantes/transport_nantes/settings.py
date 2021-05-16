@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
     'observatoire.apps.ObservatoireConfig',
-    'clusterblog.apps.ClusterBlogConfig',
     'clickcollect.apps.ClickCollectConfig',
     'authentication.apps.AuthenticationConfig',
     'topicblog.apps.TopicBlogConfig',
