@@ -3,6 +3,7 @@
 
 # Python
 venv
+venv.vagrant
 *.pyc
 Pipfile*
 
@@ -14,3 +15,6 @@ aws_config
 
 #VSCODE
 .vscode/
+
+# Vagrant
+.vagrant
