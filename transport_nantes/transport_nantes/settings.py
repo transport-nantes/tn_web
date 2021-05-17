@@ -28,7 +28,6 @@ ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
 
 INSTALLED_APPS = [
     'surveys.apps.SurveysConfig',
-    'legal.apps.LegalConfig',
     'asso_tn.apps.AssoTnConfig',
     'mailing_list.apps.MailingListConfig',
     'velopolitain_observatoire.apps.VelopolitainObservatoireConfig',
