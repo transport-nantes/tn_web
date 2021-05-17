@@ -1,5 +1,6 @@
 from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView, View
+from django.core.exceptions import ObjectDoesNotExist
 
 import folium
 
@@ -57,10 +58,15 @@ class DownloadGeoJSONView(View):
         observatory_name = kwargs["observatory_name"]
         layer_name = kwargs["layer_name"]
 
+
+        try:
         # Gets latest layer on a given city/observatory/layer set.
-        last_layer = MapContent.objects.filter(map_layer__map_definition__city=city,
-            map_layer__map_definition__observatory_name=observatory_name,
-            map_layer__layer_name=layer_name).latest('timestamp')
+            last_layer = MapContent.objects.filter(map_layer__map_definition__city=city,
+                map_layer__map_definition__observatory_name=observatory_name,
+                map_layer__layer_name=layer_name).latest('timestamp')
+        except ObjectDoesNotExist:
+            raise Http404(f"La couche {layer_name} n'existe pas pour l'observatoire\
+                 {observatory_name} à {city}")
 
         geojson = last_layer.geojson
 
