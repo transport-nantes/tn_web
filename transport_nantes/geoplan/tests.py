@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
 
 
 from .models import MapContent, MapLayer, MapDefinition
@@ -21,7 +22,7 @@ class GeoplanTest(TestCase):
 
         self.layer = {
             "map_definition" : map_def,
-             "layer_name":"test layer",
+             "layer_name":"testlayer",
              "layer_depth" : 0
         }
 
@@ -52,5 +53,15 @@ class GeoplanTest(TestCase):
         response = self.client.get("/observatoire/NOTtestcity/planvelo")
         self.assertEqual(response.status_code, 404)
 
+        # Mistake in URL scheme (observatory doesn't exit)
         response = self.client.get("/observatoire/testcity/NOTplanvelo")
         self.assertEqual(response.status_code, 404)
+
+    def test_observatoire_layer_download_status_code(self):
+        # 404 if layer doesn't exist
+        response = self.client.get("/observatoire/testcity/planvelo/NOTtestlayer")
+        self.assertRaises(ObjectDoesNotExist)
+
+        # 200 if the layer exists.
+        response = self.client.get("/observatoire/testcity/planvelo/testlayer")
+        self.assertEqual(response.status_code, 200)
