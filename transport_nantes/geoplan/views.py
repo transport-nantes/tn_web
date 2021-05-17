@@ -1,5 +1,5 @@
-from django.http import Http404
-from django.views.generic import TemplateView
+from django.http import Http404, HttpResponse
+from django.views.generic import TemplateView, View
 
 import folium
 
@@ -47,3 +47,25 @@ class MapView(TemplateView):
         context["html_map"] = html
 
         return context
+
+class DownloadGeoJSONView(View):
+
+    def get(self, request, **kwargs):
+
+        # Retrieved from URL
+        city = kwargs["city"]
+        observatory_name = kwargs["observatory_name"]
+        layer_name = kwargs["layer_name"]
+
+        # Gets latest layer on a given city/observatory/layer set.
+        last_layer = MapContent.objects.filter(map_layer__map_definition__city=city,
+            map_layer__map_definition__observatory_name=observatory_name,
+            map_layer__layer_name=layer_name).latest('timestamp')
+
+        geojson = last_layer.geojson
+
+        # Allows user to download the GeoJSON file. Name is the same as in database.
+        response = HttpResponse(geojson, content_type="application/json")
+        response['Content-Disposition'] = "attachment; filename=" + last_layer.map_layer.layer_name
+
+        return response
