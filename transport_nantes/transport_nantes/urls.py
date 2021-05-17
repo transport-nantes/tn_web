@@ -31,6 +31,7 @@ urlpatterns = [
     path('d/', include('dashboard.urls')),
     path('l/', include('asso_tn.urls')),
     path('ml/', include('mailing_list.urls')),
+    path('observatoire/', include('geoplan.urls'), {'base_template': base_template}),
     ## The OpenGraph app will likely be useful some day for doing
     ## dynamic og/tw images.
     # path('og/', include('open_graph.urls')),
