@@ -23,6 +23,7 @@ html {
     --mobilitains-bleu: #5BC2E7;
     --mobilitains-orange: #FA4616;
     --mobilitains-bleu-fonce: #333F48;
+    --mobilitains-bleu-clair: #EAF3FC;
 
     --body-text: var(--mobilitains-bleu-fonce);
     --body-text-muted: var(--mobilitains-rouge);
@@ -154,7 +155,7 @@ a:hover:hover.cta-button {
 }
 
 .background-ad-hoc-blue {
-    background-color: #EAF3FC;
+    background-color: var(--mobilitains-bleu-clair);
 }
 
 

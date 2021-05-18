@@ -1,31 +1,40 @@
 {% load static %}
 
-<div class="row background-ad-hoc-blue" style="background-color:  #EAF3FC;">
-    <div class="col-md-6 pl-4">
-	<h1>L'association des Mobilitains</h1>
 
-	<p>Nous agissons pour une mobilité plus fluide, plus
+<section class="container-fluid background-ad-hoc-blue">
+<div class="row">
+    <div class="col-md-6">
+		<div class="pt-3 pl-3">
+			<h1>L'association des Mobilitains</h1>
+
+			<p>Nous agissons pour une mobilité plus fluide, plus
 	    sécurisée, plus vertueuse pour les
 	    piétons, les cyclistes, les voyageurs des transports
 	    en commun, et les automobilistes.</p>
 
-	<p>A l’instar des élections 2020 avec le début du
+			<p>A l’instar des élections 2020 avec le début du
 	    Vélopolitain (plus de 1000 signatures recueillies),
 	    nos actions doivent être portées et concrétisées en
 	    s'inscrivant au coeur des élections 2021.</p>
 
-	<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
+		<p>Bref, nous sommes une association qui bouge&nbsp;!</p>
 
-	<p>
+<!--<button type="button" class="btn btn-outline-primary cta-button btn-lg"><a href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}" >Nous
+	découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
+	</button>-->
+ 		
+		<p>
 	    <a href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}"
-	       class="btn
-		      btn-outline-primary cta-button btn-lg">Nous
+	       class="btn btn-outline-primary cta-button btn-lg">Nous
 		découvrir <i class="fa fa-arrow-right" area-hidden="true"></i></a>
-	</p>
+		</p>
+	</div>
     </div>
-    <div class="col-md-6">
-	    <img class="pt-5 pb-5 pl-5 pr-5"
-		 src="{% static 'asso_tn/belvederes.jpg' %}"
+    
+	<div class="col-md-6 p-5">
+	    <img src="{% static 'asso_tn/belvederes.jpg' %}"
 		 alt="trois benevoles Mobilitains" style="width:100%;">
-    </div>
-</div>
+    	</div>
+	</div>
+
+</section>
