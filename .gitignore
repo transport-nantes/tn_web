@@ -18,4 +18,5 @@ aws_config
 
 #Vagrant 
 .vagrant
-venv.vagrant
+
+.DS_Store
