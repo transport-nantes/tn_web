@@ -179,8 +179,9 @@
       </div>
     </div>
 
-    <div class="container-fluid pt-5">
-    {% block app_content %}{% endblock %}
+	{% block app_content %}
+    <div class="container-fluid pt-5 row">
+    {% endblock %}
     </div>
     {% endblock content %}
 
@@ -196,7 +197,7 @@
 
     <div class="pt-5">
 	<div class="jumbotron">
-	    <div class="row">
+	    <div class="row mx-2">
 		<div class="col-lg-12">
 		    <p>
 			<strong>Nous avons choisi une approche différente.
@@ -211,93 +212,102 @@
 			transforment en action. Toutes les
 			contributions sont importantes, nous ne
 			pouvons pas agir seuls. Soutenez-nous dés
-			maintenant et faites avancer la mobilité.
-
-			{% bouton_don "J'adhère" %}</p>
+			maintenant et faites avancer la mobilité.</p>
 
 		    <p class="small"><i>Votre adhésion ou don donne droit
 			à un crédit d'impôt de 67 % selon votre situation fiscale.</i></p>
+
+			<span class="center">{% bouton_don "J'adhère" %}</span>
+
 		</div>
 	    </div>
 	</div>
     </div>
     {% endblock bottom_appeal %}
 
-<div class="fluid-container pl-3 pr-2">
-    <div class="row">
-	<div class="col-sm-3">
-	    <h3>S'engager</h3>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}">
-			Faire un don
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}">
-			Devenir bénévole
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
-			Devenir ambassadeur
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">
-			Entreprises
-		    </a>
-		</li>
-	    </ul>
-	</div>
-	<div class="col-sm-3">
-	    <h3>S'informer</h3>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
-		</li>
-	    </ul>
-	</div>
-	<div class="col-sm-3">
-	    <h3>Échanger</h3>
-	    <ul>
-		<li style="list-style: none">
-		    {# <a href="{% url 'asso_m:contact' %}">Nous contacter</a> #}
-		    <a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'asso_m:jobs' %}">Jobs</a>
-		</li>
-	    </ul>
-	    <ul>
-		<li style="list-style: none">Copyright</li>
-		<li style="list-style: none">
-		    <a href="{% url 'asso_m:TC' %}">
-			Mentions Légales
-		    </a>
-		</li>
-	    </ul>
-	</div>
-	<!--social network-->
-	<div class="col-sm-3">
-	    <h3>Nous suivre</h3>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="https://www.facebook.com/Mobilitains">Facebook</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4">Twitter</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4">Instagram</a>
-		</li>
-	    </ul>
-	</div>
-    </div>
-</div>
+	<footer class="text-center text-lg-start">
+		<div class="container p-4">
+		  <div class="row">
+			<!--s'engager-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">S'engager</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+				  <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}" class="footer-text">Faire un don</a>
+				</li>
+				<li>
+				  <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">Entreprises</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin s'engager-->
+	  
+			<!--s'informer-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">S'informer</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin s'informer-->
+	  
+			<!--Echanger-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">Échanger</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
+					<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
+				</li>
+				<li>
+					<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
+				</li>
+				<li class="small pt-2">Copyright</li>
+				<li>
+					<a href="{% url 'asso_m:TC' %}" class="footer-text">
+					Mentions Légales
+					</a>
+				</li>
+			  </ul>
+			</div>
+			<!--End echanger-->
+	  		
+			<!-- réseaux sociaux-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">Nous suivre</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					<a href="https://www.facebook.com/Mobilitains" class="footer-text">Facebook</a>
+				</li>
+				<li>
+					<a href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4" class="footer-text">Twitter</a>
+				</li>
+				<li>
+					<a href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4" class="footer-text">Instagram</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin réseaux sociaux-->
+		  </div>
+		</div>
+	  </footer>
+
+
 
     {% block scripts %} {# jQuery library #}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
