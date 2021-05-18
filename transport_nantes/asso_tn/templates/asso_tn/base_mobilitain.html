@@ -113,7 +113,9 @@
   <body{% block body_attribs %}{% endblock body_attribs %}>
     {% block body %}
     {% block navbar %}
-       <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+
 	<!-- Brand -->
 	   <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
 	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
@@ -288,7 +290,7 @@
 	  		
 			<!-- réseaux sociaux-->
 			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-			  <h5 class="text-uppercase">Nous suivre</h5>
+			  <h5 class="text-uppercase">Suivre</h5>
 	  
 			  <ul class="list-unstyled mb-0">
 				<li>
