@@ -1,3 +1,4 @@
+/* Global reset */
 .submit-with-icon {
     background: transparent;
     border: 0px;
@@ -12,14 +13,7 @@ html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/*
-  Colours:
-    #7F6966;    gris
-    #DDE5ED;    rouge
-    #5BC2E7;    bleu
-    #FA4616;    orange
-    #44536D;    vert
-*/
+/*Colours defined*/
 :root {
     --mobilitains-gris: #DDE5ED;
     --mobilitains-rouge: #7F6966;
@@ -31,8 +25,15 @@ html {
     --body-text-muted: var(--mobilitains-rouge);
 }
 
-/*alignement*/
+/*Global classes aligements*/
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+
+/*footer alignements*/
 footer {
     min-height: 220px;
 }
@@ -49,12 +50,6 @@ footer ul li {
 
 .footer-text {
     color: var(--mobilitains-bleu-fonce);
-}
-
-.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 /* Place text in the middle of the image */
