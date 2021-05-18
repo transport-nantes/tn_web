@@ -1,7 +1,8 @@
-from datetime import datetime
+from copy import deepcopy
+
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.utils.timezone import now
 
 from .models import MapContent, MapLayer, MapDefinition
 
@@ -39,7 +40,34 @@ class GeoplanTest(TestCase):
                         "type": "MultiLineString", "coordinates": [[ -1.710792615591268, 47.210384214678122 ]]}}
                 ]
             }""",
-            "timestamp": datetime.now()
+            "timestamp": now()
+        }
+
+        self.timestamp_1 = deepcopy(self.content["timestamp"])
+        MapContent.objects.create(**self.content)
+
+        # Creating an updated testlayer for testcity
+        self.layer = {
+            "map_definition" : map_def,
+             "layer_name":"testlayer",
+             "layer_depth" : 0
+        }
+
+        map_lay = MapLayer.objects.create(**self.layer)
+
+        self.content = {
+            "map_layer": map_lay,
+            "geojson": """{
+                "type": "FeatureCollection",
+                "name": "reseau_velo_metropolitain_4326",
+                "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                "features": [
+                    {"type": "Feature", "properties": {"id": 1}, "geometry": {
+                        "type": "MultiLineString", "coordinates": [[ -2, 47 ]]}}
+                ]
+            }""",
+            # This timestamp will be after the first layer
+            "timestamp": now()
         }
 
         MapContent.objects.create(**self.content)
@@ -65,3 +93,11 @@ class GeoplanTest(TestCase):
         # 200 if the layer exists.
         response = self.client.get("/observatoire/testcity/planvelo/testlayer")
         self.assertEqual(response.status_code, 200)
+
+    def test_latest_layer(self):
+        latest_layer = MapContent.objects.filter(map_layer__map_definition__city="testcity",
+                map_layer__map_definition__observatory_name="planvelo",
+                map_layer__layer_name="testlayer").latest('timestamp')
+
+        self.assertTrue(latest_layer.timestamp > self.timestamp_1,
+            msg=f'layer ={latest_layer.timestamp} t1 = {self.timestamp_1}')
