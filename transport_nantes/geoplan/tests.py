@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 from django.test import TestCase
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 
 from .models import MapContent, MapLayer, MapDefinition
@@ -88,7 +87,7 @@ class GeoplanTest(TestCase):
     def test_observatoire_layer_download_status_code(self):
         # 404 if layer doesn't exist
         response = self.client.get("/observatoire/testcity/planvelo/NOTtestlayer")
-        self.assertRaises(ObjectDoesNotExist)
+        self.assertEqual(response.status_code, 404)
 
         # 200 if the layer exists.
         response = self.client.get("/observatoire/testcity/planvelo/testlayer")
