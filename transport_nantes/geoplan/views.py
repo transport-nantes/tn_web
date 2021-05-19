@@ -35,7 +35,7 @@ class MapView(TemplateView):
             combined_queries = combined_queries | \
             MapContent.objects.filter(timestamp=item["latest"])
 
-        map_content_rows = combined_queries
+        map_content_rows = combined_queries.order_by("map_layer__layer_depth")
         # Checks if the query isn't empty,
         # otherwise it would use unbound values.
         if map_content_rows.__len__() == 0:
