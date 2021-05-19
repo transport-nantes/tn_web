@@ -256,8 +256,8 @@ a:hover:hover.cta-button {
 
 .image-overlay-bottom-centered {
     position: absolute;
-    #bottom: 10%;
-    #left: 50%;
+    bottom: 10%;
+    left: 50%;
     top: 80%;
     left: 50%;
     transform: translate(-50%, -25%);
