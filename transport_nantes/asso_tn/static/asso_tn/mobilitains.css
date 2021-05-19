@@ -71,7 +71,7 @@ footer ul li {
 }
 
 .hero-link {
-    #background: #253030;
+    background: #253030;
     color: #FFFFFF;
     font-weight: 700;
 }
@@ -131,8 +131,6 @@ a:hover:hover.cta-button {
     color: var(--body-text);
     background-color: var(--mobilitains-rouge);
 }
-
-
 
 .background-gray {
     background-color: #7F6966;

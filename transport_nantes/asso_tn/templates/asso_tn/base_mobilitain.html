@@ -113,6 +113,7 @@
   <body{% block body_attribs %}{% endblock body_attribs %}>
     {% block body %}
     {% block navbar %}
+
 	<nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
 		<!-- Brand -->
 		<a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
@@ -130,17 +131,16 @@
 		<div class="collapse navbar-collapse navbars" id="collapse_target1">
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
-					<a class="nav-link" href="#">Vélopolitain</a>
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">La Grande Mobilité</a>
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Adhérer</a>
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#">Qui sommes-nous ?</a>
-				</li>
+
+				<li class="nav-item pl-3"><a class="btn btn-primary" href="{% url_don %}" role="button">Contribuer au projet</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -178,6 +178,7 @@
 			  </ul>
 			</div>
 	</nav>
+	
 	
     {% endblock navbar %}
     {% block content %}
@@ -297,7 +298,7 @@
 	  		
 			<!-- réseaux sociaux-->
 			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-			  <h5 class="text-uppercase">Nous suivre</h5>
+			  <h5 class="text-uppercase">Suivre</h5>
 	  
 			  <ul class="list-unstyled mb-0">
 				<li>
