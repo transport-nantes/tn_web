@@ -20,9 +20,10 @@ class MapDefinition(models.Model):
     """
     # City name : "Nantes"
     city = models.CharField(max_length=50)
-    # Public display of what we're looking at : "Plan vélo théorique voté en Juin 2020"
+    # Public display of what we're looking at : "planvelo"
     observatory_name = models.CharField(max_length=50)
-    # Sort of observatory, in prevision of future other maps (public transports, bike...)
+    # Sort of observatory
+    # in prevision of future other maps (public transports, bike...)
     observatory_type = models.SlugField(max_length=100)
 
     # Longitude and latitude of the city according to OpenStreetMap
@@ -35,7 +36,7 @@ class MapDefinition(models.Model):
 
 
 class MapLayer(models.Model):
-    """Will set parameters for different layers caintained in the MapDefinition"""
+    """Will set parameters for different layers contained in MapDefinition"""
     map_definition = models.ForeignKey(MapDefinition, on_delete=models.CASCADE)
     layer_name = models.CharField(max_length=100)
 
@@ -43,7 +44,9 @@ class MapLayer(models.Model):
     layer_depth = models.SmallIntegerField()
 
     def __str__(self):
-        return self.layer_name
+        return str(self.layer_name)+ " " \
+            + str(self.map_definition.city) + " " \
+            + str(self.map_definition.observatory_name)
 
 
 class MapContent(models.Model):
@@ -55,3 +58,6 @@ class MapContent(models.Model):
 
     # Timestamp at creation date, not on edit (we're saving a history)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.map_layer) + " " + str(self.timestamp)[:19]
