@@ -114,47 +114,57 @@
     {% block body %}
     {% block navbar %}
 
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+	<nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
+		
+		<!-- Brand -->
+		<a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
+		{% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
+		{% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
+		{% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
+		{% endif %}
+		
+		<!-- Toggler/collapsibe Button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<!-- Navbar links -->
+		<div class="collapse navbar-collapse pt-2" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+			  <li class="nav-item">
+			<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
+			</li>
+			<li class="nav-item">
+			<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
+			</li>
+			<li class="nav-item">
+			<a class="nav-link" href="{% url_don %}">Adhérer</a>
+			</li>
+			<li class="nav-item">
+			<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
+			</li>
+		</div>
+	</nav>
+	<nav class="navbar navbar-expand-sm navbar-light bg-light">
+		<div class="collapse navbar-collapse navbars" id="collapse_target2">
 
-	<!-- Brand -->
-	   <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
-	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
-	  {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
-	  {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
-	  {% endif %}
+			<!--social network-->
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="https://www.facebook.com/Mobilitains">Facebook</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4">Twitter</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4">Instagram</a>
+				</li>
+			</ul>
+		</div>
 
-	<!-- Toggler/collapsibe Button -->
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-	  <span class="navbar-toggler-icon"></span>
-	</button>
 
-	<!-- Navbar links -->
-	<div class="collapse navbar-collapse pt-2" id="collapsibleNavbar">
-	    <ul class="navbar-nav ml-auto">
-	      <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url_don %}">Adhérer</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
-	    </li>
-
-		<!--social network-->
-		<li class="nav-item">
-			<a class="nav-link" href="https://www.facebook.com/Mobilitains"><i class="fab fa-facebook-f"></i></a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link" href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4"><i class="fab fa-twitter"></i></a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link" href="https://twitter.com/mobilitains?fbclid=IwAR1OCz9U7XrCI2A07jPpE7zMefO57FTjBoAzRP88sFb_WIqcgCtIerV6nx4"><i class="fab fa-instagram"></i></a>
-		</li>
-
+<div>
+	<ul>
 {% comment %}
 	    <li class="nav-item dropdown">
 		<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
@@ -170,8 +180,8 @@
 {% endcomment %}
 	  </ul>
 	</div>
-      </nav> 
-
+	</nav>
+	
     {% endblock navbar %}
     {% block content %}
     <div class="hero-image">
