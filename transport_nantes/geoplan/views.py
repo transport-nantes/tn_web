@@ -21,10 +21,11 @@ class MapView(TemplateView):
         # Gets all layers corresponding to a city and its observatory
         map_content_rows = MapContent.objects.filter(
             map_layer__map_definition__city=city,
-            map_layer__map_definition__observatory_name=observatory_name).order_by(
-                "map_layer__layer_depth")
+            map_layer__map_definition__observatory_name=observatory_name)\
+                .order_by("map_layer__layer_depth")
 
-        # Checks if the query isn't empty, otherwise it would use unbound values.
+        # Checks if the query isn't empty,
+        # otherwise it would use unbound values.
         if map_content_rows.__len__() == 0:
             raise Http404("Page non trouvée (404)")
 
@@ -61,17 +62,19 @@ class DownloadGeoJSONView(View):
 
         try:
         # Gets latest layer on a given city/observatory/layer set.
-            last_layer = MapContent.objects.filter(map_layer__map_definition__city=city,
+            last_layer = MapContent.objects.filter(
+                map_layer__map_definition__city=city,
                 map_layer__map_definition__observatory_name=observatory_name,
                 map_layer__layer_name=layer_name).latest('timestamp')
         except ObjectDoesNotExist:
-            raise Http404(f"La couche {layer_name} n'existe pas pour l'observatoire\
-                 {observatory_name} à {city}")
+            raise Http404(f"La couche {layer_name} \
+                n'existe pas pour l'observatoire {observatory_name} à {city}")
 
         geojson = last_layer.geojson
         timestamp = str(last_layer.timestamp)
-        
-        # Allows user to download the GeoJSON file. Name is the same as in database.
+
+        # Allows user to download the GeoJSON file.
+        # Name is the same as in database.
         response = HttpResponse(geojson, content_type="application/json")
         response['Content-Disposition'] = "attachment; filename=MOBILITAINS_"\
              + last_layer.map_layer.layer_name + "_" + timestamp
