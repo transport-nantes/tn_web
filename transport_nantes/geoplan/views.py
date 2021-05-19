@@ -69,9 +69,11 @@ class DownloadGeoJSONView(View):
                  {observatory_name} à {city}")
 
         geojson = last_layer.geojson
-
+        timestamp = str(last_layer.timestamp)
+        
         # Allows user to download the GeoJSON file. Name is the same as in database.
         response = HttpResponse(geojson, content_type="application/json")
-        response['Content-Disposition'] = "attachment; filename=" + last_layer.map_layer.layer_name
+        response['Content-Disposition'] = "attachment; filename=MOBILITAINS_"\
+             + last_layer.map_layer.layer_name + "_" + timestamp
 
         return response
