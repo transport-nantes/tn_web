@@ -1,6 +1,7 @@
 from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView, View
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 import folium
 
@@ -24,6 +25,17 @@ class MapView(TemplateView):
             map_layer__map_definition__observatory_name=observatory_name)\
                 .order_by("map_layer__layer_depth")
 
+        # Gets a dict of all unique layers with their latest timestamp
+        unique_layers = map_content_rows.values("map_layer__layer_name")\
+            .annotate(latest=Max("timestamp"))
+
+        # Makes a query containing the latest version of layers
+        combined_queries = MapContent.objects.none()
+        for item in unique_layers:
+            combined_queries = combined_queries | \
+            MapContent.objects.filter(timestamp=item["latest"])
+
+        map_content_rows = combined_queries
         # Checks if the query isn't empty,
         # otherwise it would use unbound values.
         if map_content_rows.__len__() == 0:
