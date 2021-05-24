@@ -32,20 +32,12 @@ ul.no-bullet-list {
     color: #FFFFFF;
     font-weight: 700;
 }
-/*
-  Colours:
-    #7F6966;    gris
-    #DDE5ED;    rouge
-    #5BC2E7;    bleu
-    #FA4616;    orange
-    #44536D;    vert
-*/
 :root {
     --mobilitains-gris:       #DDE5ED;
-    --mobilitains-rouge:      #7F6966;
-    --mobilitains-bleu:       #5BC2E7;
-    --mobilitains-orange:     #FA4616;
-    --mobilitains-bleu-fonce: #333F48;
+    --mobilitains-rouge:      #7F6966; /* éviter avec bleu-foncé */
+    --mobilitains-bleu:       #5BC2E7; /* éviter avec orange     */
+    --mobilitains-orange:     #FA4616; /* éviter avec bleu       */
+    --mobilitains-bleu-fonce: #333F48; /* éviter avec rouge      */
 
     --body-text: var(--mobilitains-bleu-fonce);
     --body-text-muted: var(--mobilitains-rouge);
@@ -73,26 +65,26 @@ a.active {
 
 a:link.donation-button {
     color: var(--body-text);
-    background-color: var(--mobilitains-orange);
-    border: var(--mobilitain-bleu);
+    background-color: var(--mobilitains-gris);
+    border: var(--mobilitains-bleu-fonce);
     border-style: solid;
-    border-width: 1px;
+    border-width: 2px;
 }
 a:hover:hover.donation-button {
-    color: var(--body-text);
-    background-color: var(--mobilitains-rouge);
+    color: var(--mobilitains-bleu-fonce);
+    background-color: var(--mobilitains-bleu);
 }
 
 a:link.cta-button {
     color: var(--body-text);
     background-color: var(--mobilitains-gris);
-    border: var(--mobilitain-bleu);
+    border: var(--mobilitains-bleu);
     border-style: solid;
     border-width: 1px;
 }
 a:hover:hover.cta-button {
     color: var(--body-text);
-    background-color: var(--mobilitains-rouge);
+    background-color: var(--mobilitains-gris);
 }
 
 
