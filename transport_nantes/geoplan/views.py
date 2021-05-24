@@ -61,6 +61,16 @@ class MapView(TemplateView):
         html = root.render()
         context["html_map"] = html
         context["map_defn"] = map_definition
+
+        # Hack, hard code for today.
+        context['social'] = {}
+        context['social']['og_title'] = "L'Observatoire du Vélopolitain"
+        context['social']['og_description'] = "Suivez l'avancement du vélo à Nantes Métropole"
+        context['social']['og_image'] = "asso_tn/20210228-210131-9011_velorution-psm-sm.jpg"
+        context['social']['twitter_title'] = context['social']['og_title']
+        context['social']['twitter_description'] = context['social']['og_description']
+        context['social']['twitter_image'] = context['social']['og_image']
+
         return context
 
 class DownloadGeoJSONView(View):
