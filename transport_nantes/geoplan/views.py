@@ -5,7 +5,7 @@ from django.db.models import Max
 
 import folium
 
-from .models import MapContent
+from .models import MapContent, MapDefinition
 
 
 # Create your views here.
@@ -18,6 +18,7 @@ class MapView(TemplateView):
         context = super().get_context_data(**kwargs)
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
+        map_definition = MapDefinition.objects.get(observatory_name=observatory_name)
 
         # Gets all layers corresponding to a city and its observatory
         map_content_rows = MapContent.objects.filter(
@@ -59,7 +60,7 @@ class MapView(TemplateView):
         root = geomap.get_root()
         html = root.render()
         context["html_map"] = html
-
+        context["map_defn"] = map_definition
         return context
 
 class DownloadGeoJSONView(View):

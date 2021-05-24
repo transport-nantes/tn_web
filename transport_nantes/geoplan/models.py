@@ -19,6 +19,10 @@ class MapDefinition(models.Model):
     longitude = models.FloatField()
     latitude = models.FloatField()
 
+    # Text to display along with the map.
+    public_title = models.CharField(max_length=80, default="")
+    public_description_md = models.TextField(default="")
+
     def __str__(self):
         return '{city} / {observatory_name}'.format(city=self.city,
         observatory_name=self.observatory_name)

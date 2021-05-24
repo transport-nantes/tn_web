@@ -1,7 +1,14 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+{% load markdown %}
 
 {% block content %}
-    <div style="width:75%;margin:auto;height:75%;padding:3em">
-        {{ html_map|safe }}
-    </div>
+
+<h2>{{ map_defn.public_title }}</h2>
+
+<div style="width:75%;margin:auto;height:75%;padding:3em">
+    {{ html_map|safe }}
+</div>
+
+{{ map_defn.public_description_md|markdown }}
+
 {% endblock content %}
