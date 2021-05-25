@@ -18,7 +18,7 @@
           <h5>$20.00</h5>
         </div>
       </div>
-      <button type="button" id="checkout-button">Checkout</button>
+      <button type="button" id="checkout-button">Checkout</button> 
     </section>
   </body>
   <script type="text/javascript">
@@ -27,7 +27,7 @@
     var checkoutButton = document.getElementById("checkout-button");
 
     checkoutButton.addEventListener("click", function () {
-      fetch("/create-checkout-session", {
+      fetch("/checkout/create-checkout-session/", {
         method: "POST",
       })
         .then(function (response) {
