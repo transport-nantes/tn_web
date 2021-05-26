@@ -1,79 +1,54 @@
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 import stripe
 
-# test key, will be in a separated file on prod
-stripe.api_key = 'sk_test_JA5eW82rv6lp61vNAwRUFIrr00rhzXUsLW'
+from transport_nantes.settings import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 
-# Create your views here.
+
 class StripeView(TemplateView):
+    template_name = "stripe_app/test.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.template_name = "stripe_app/checkout.html"
+@csrf_exempt
+def get_public_key(request):
+    if request.method == "GET":
+        public_key = {"publicKey": STRIPE_PUBLISHABLE_KEY}
+        return JsonResponse(public_key, safe=False)
 
-        return context
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == "GET":
+        domain_url = request.get_host()
+        stripe.api_key = STRIPE_SECRET_KEY
+        try:
+            # Create new Checkout Session for the order
+            # Other optional params include:
+            # [billing_address_collection] - to display
+            # billing address details on the page
+            # [customer] - if you have an existing Stripe Customer ID
+            # [payment_intent_data] - capture the payment later
+            # [customer_email] - prefill the email input in the form
+            # For full details see
+            # https://stripe.com/docs/api/checkout/sessions/create
 
-    # def create_checkout_session(self, request, *args, **kwargs):
-
-    #     checkout_session = stripe.checkout.Session.create(
-
-    #         payment_method_types=['card'],
-
-    #         line_items=[
-
-    #             {
-    #                 'price_data': {
-    #                     'currency': 'eur',
-    #                     'unit_amount': 20,
-    #                     'product_data': {
-    #                         'name': 'Soutien à Mobilitains',
-    #                         'images': ['https://i.imgur.com/EHyR2nP.png'],
-    #                     },
-    #                 },
-    #                 'quantity': 1,
-    #             },
-    #         ],
-
-    #         mode='payment',
-
-    #         success_url= request.get_host() + '/success.html',
-
-    #         cancel_url= request.get_host() + '/cancel.html',
-
-    #     )
-
-    #     return JsonResponse({'id': checkout_session.id})
-
-class CheckoutSession(View):
-
-    def get(self, **kwargs):
-        checkout_session = stripe.checkout.Session.create(
-
-            payment_method_types=['card'],
-
-            line_items=[
-
-                {
-                    'price_data': {
+            # ?session_id={CHECKOUT_SESSION_ID} means the redirect
+            # will have the session ID set as a query param
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url +
+                    'success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=[
+                    {
+                        'name': 'Donation',
+                        'quantity': 1,
                         'currency': 'eur',
-                        'unit_amount': 20,
-                        'product_data': {
-                            'name': 'Soutien à Mobilitains',
-                            'images': ['https://i.imgur.com/EHyR2nP.png'],
-                        },
-                    },
-                    'quantity': 1,
-                },
-            ],
-
-            mode='payment',
-
-            success_url= self.request.get_host() + '/success.html',
-
-            cancel_url= self.request.get_host() + '/cancel.html',
-
-        )
-
-        return JsonResponse({'id': checkout_session.id})
+                        'amount': '10',
+                    }
+                ]
+            )
+            return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
