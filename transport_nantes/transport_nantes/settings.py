@@ -188,3 +188,6 @@ if 'STATIC_ROOT' in dir(settings_local):
 CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_LENGTH = 5
+
+STRIPE_PUBLISHABLE_KEY = settings_local.STRIPE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY = settings_local.STRIPE_SECRET_KEY
