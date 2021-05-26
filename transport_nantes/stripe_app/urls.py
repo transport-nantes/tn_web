@@ -7,4 +7,6 @@ urlpatterns = [
     path('', StripeView.as_view(), name="stripe"),
     path('config/', get_public_key),
     path('create-checkout-session/', create_checkout_session ),
+    path('success/', StripeView.as_view(template_name="stripe_app/success.html")),
+    path('cancelled/', StripeView.as_view(template_name="stripe_app/cancel.html")),
 ]
