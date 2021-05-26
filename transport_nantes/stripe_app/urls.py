@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import StripeView, CheckoutSession
+from .views import StripeView, get_public_key, create_checkout_session
 
 app_name = "stripe_app"
 
 urlpatterns = [
     path('', StripeView.as_view(), name="stripe"),
-    path('create-checkout-session/', CheckoutSession.as_view(),
-        name="checkout_session")
+    path('config/', get_public_key),
+    path('create-checkout-session/', create_checkout_session ),
 ]
