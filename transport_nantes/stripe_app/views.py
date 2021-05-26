@@ -19,7 +19,7 @@ def get_public_key(request):
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == "GET":
-        domain_url = request.get_host()
+        domain_url = "http://" + str(request.get_host())
         stripe.api_key = STRIPE_SECRET_KEY
         try:
             # Create new Checkout Session for the order
@@ -35,9 +35,9 @@ def create_checkout_session(request):
             # ?session_id={CHECKOUT_SESSION_ID} means the redirect
             # will have the session ID set as a query param
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url +
-                    'success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url=domain_url + 'cancelled/',
+                # Links need to be valid
+                success_url= domain_url + "/checkout/success/",
+                cancel_url= domain_url+ "/checkout/cancelled/",
                 payment_method_types=['card'],
                 mode='payment',
                 line_items=[
@@ -45,7 +45,8 @@ def create_checkout_session(request):
                         'name': 'Donation',
                         'quantity': 1,
                         'currency': 'eur',
-                        'amount': '10',
+                        # Amount in cents
+                        'amount': '1000',
                     }
                 ]
             )
