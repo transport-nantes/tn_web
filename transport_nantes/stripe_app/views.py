@@ -1,10 +1,11 @@
 from django.views.generic.base import TemplateView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import stripe
 
-from transport_nantes.settings import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+from transport_nantes.settings import (
+    STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
 
 
 class StripeView(TemplateView):
@@ -51,5 +52,33 @@ def create_checkout_session(request):
                 ]
             )
             return JsonResponse({'sessionId': checkout_session['id']})
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
+        except Exception as error_message:
+            return JsonResponse({'error': str(error_message)})
+
+@csrf_exempt
+def stripe_webhook(request):
+    stripe.api_key = STRIPE_SECRET_KEY
+    endpoint_secret = STRIPE_ENDPOINT_SECRET
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError:
+        # Invalid payload
+        print("==== Payload ====")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Invalid signature
+        print("==== Signature ====")
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        print("Payment was successful.")
+        # TODO: run some custom code here
+
+    return HttpResponse(status=200)
