@@ -65,7 +65,8 @@
       })();
     </script>
 	<script src="https://js.stripe.com/v3/"></script>
-    <script src="{% static 'stripe_app/main.js' %}"></script> 
+    <script src="{% static 'stripe_app/main.js' %}"></script>
+	<script src="{% static 'stripe_app/integrated.js' %}" defer></script>
     <noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
     <!-- End Matomo Code -->
 
@@ -173,6 +174,33 @@
 
 
     {% endblock navbar %}
+	 <!-- Display a payment form -->
+
+	<form id="payment-form"> {% csrf_token %}
+	
+		<div id="card-element">
+			<!--Stripe.js injects the Card Element-->
+		</div>
+	
+		<button id="submit">
+	
+			<div class="spinner hidden" id="spinner"></div>
+	
+			<span id="button-text">Pay now</span>
+	
+		</button>
+	
+		<p id="card-error" role="alert"></p>
+	
+		<p class="result-message hidden">
+	
+			Payment succeeded, see the result in your
+	
+			<a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
+	
+		</p>
+	
+	</form>
     {% block content %}
     <div class="hero-image mt-n3">
       <div class="hero-text">
