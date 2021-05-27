@@ -1,3 +1,5 @@
+import json
+
 from django.views.generic.base import TemplateView
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -82,3 +84,33 @@ def stripe_webhook(request):
         # TODO: run some custom code here
 
     return HttpResponse(status=200)
+
+@csrf_exempt
+def order_amount(items):
+    # Here the formula to compute order amount.
+    # We aim for one time donations and recurring donations.
+    # Order amount will depend on the form we will implement later on.
+    # Amount is in cents. 1000 = 10¤
+    # Computing the amount server side prevents user from manipulating datas.
+    # Items should only contain a list of item that iterate through
+    # to get a proper price.
+    print(items)
+    return 1000
+
+
+@csrf_exempt
+def create_payment_intent(request):
+    try:
+        # request.data will be a dict containing items,
+        # retrieved in the browser's JS.
+        data = json.loads(request.data)
+        intent = stripe.PaymentIntent.create(
+            amount=order_amount(data['items']),
+            currency="eur",
+            api_key=STRIPE_SECRET_KEY
+        )
+        print("client secret :", intent["client_secret"])
+        return JsonResponse({'clientSecret': intent['client_secret']})
+
+    except Exception as error_message:
+        return JsonResponse({'error': str(error_message)})
