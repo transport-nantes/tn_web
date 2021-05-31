@@ -101,9 +101,9 @@ def order_amount(items):
 @csrf_exempt
 def create_payment_intent(request):
     try:
-        # request.data will be a dict containing items,
+        # request.body will be a dict containing items,
         # retrieved in the browser's JS.
-        data = json.loads(request.data)
+        data = json.loads(request.body)
         intent = stripe.PaymentIntent.create(
             amount=order_amount(data['items']),
             currency="eur",
