@@ -1,13 +1,20 @@
 {% extends "asso_tn/base_mobilitain.html" %}
     
 {% block content %}
-  
-   <!-- Display a payment form -->
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+<!-- 
+   <!- - Display a payment form - ->
      <form class="stripe" id="payment-form"> {% csrf_token %}
 		
 		<p style="text-align:center">Don de 10€ aux Mobilitains</p>
 		<div id="card-element">
-			<!--Stripe.js injects the Card Element-->
+			<!- -Stripe.js injects the Card Element- ->
 		</div>
 	
 		<button class="stripe" id="submit">
@@ -28,6 +35,6 @@
 	
 		</p>
 	
-	</form>
+	</form> -->
 
 {% endblock content %} 
