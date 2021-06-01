@@ -1,17 +1,38 @@
 import json
 
 from django.views.generic.base import TemplateView
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+from django.urls import reverse
 
 import stripe
 
 from transport_nantes.settings import (
     STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
+from .forms import DonationForm
 
 
 class StripeView(TemplateView):
     template_name = "stripe_app/donation_form.html"
+    form_class = DonationForm
+
+    def get(self, request, *args, **kwargs):
+        form = DonationForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # <process form cleaned data>
+            print(form.cleaned_data)
+            print(type(form.cleaned_data))
+            return HttpResponseRedirect(reverse('stripe_app:stripe_success'))
+
+        return render(request, self.template_name, {'form': form})
+
+class SuccessView(TemplateView):
+    template_name = "stripe_app/success.html"
 
 @csrf_exempt
 def get_public_key(request):
@@ -39,8 +60,8 @@ def create_checkout_session(request):
             # will have the session ID set as a query param
             checkout_session = stripe.checkout.Session.create(
                 # Links need to be valid
-                success_url= domain_url + "/checkout/success/",
-                cancel_url= domain_url+ "/checkout/cancelled/",
+                success_url= domain_url + "/donation/success/",
+                cancel_url= domain_url+ "/donation/cancelled/",
                 payment_method_types=['card'],
                 mode='payment',
                 line_items=[
