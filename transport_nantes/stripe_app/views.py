@@ -11,7 +11,7 @@ from transport_nantes.settings import (
 
 
 class StripeView(TemplateView):
-    template_name = "stripe_app/test.html"
+    template_name = "stripe_app/donation_form.html"
 
 @csrf_exempt
 def get_public_key(request):
