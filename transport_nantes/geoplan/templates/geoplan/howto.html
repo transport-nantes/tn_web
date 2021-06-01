@@ -1,0 +1,54 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<h2>Comment récupérer une couche de carte</h2>
+
+<p>
+La carte est disponible en plusieurs couches.  Afin de la modifier, il
+suffit de télécharger la couche que vous souhaitez modifier.
+</p>
+
+<p>
+    <ul> {# This list should be generated automatically from the map the user wants. #}
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20planifié">réseau magistral, planifié</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20réalisé,%20satisfaisant">réseau magistral, réalisé, satisfaisant</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20réalisé,%20non%20satisfaisant">réseau magistral, réalisé, non satisfaisant</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20structurant">réseau structurant, planifié</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/secondaire">réseau secondaire, planifié</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/maillage">réseau maillage, planifié</a></li>
+	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/autre">autre, planifié</a></li>
+    </ul>
+</p>
+
+<h2>Comment effectuer une modification de ma couche</h2>
+
+<p>
+    Visitez le site <a href="https://geojson.io/">geojson.io</a>.
+    Choisir "Open -> File".  Votre couche va s'afficher.  (Si vous
+    voyez toujours le monde entier, c'est que la couche est vide.
+    Zoomez sur Nantes.)
+</p>
+
+<p>
+    Ensuite, sélectionnez l'outil "polyline" et, clique-par-clique,
+    tracez le chemin que vous souhaitez ajouter à votre carte.
+</p>
+
+<p>
+    Toute à la fin, choisissez "Save -> GeoJSON" pour récupérer vos
+    changements.  (À noter : pas besoin de créer un compte ni de vous
+    connecter au site geojson.io.)
+</p>
+
+<p>
+    Finalement, partagez votre couche sur le slack des Mobilitains
+    dans le canal #observatoire-du-velopolitain.
+</p>
+
+<p>
+    Merci de votre participation en ce début de projet !
+</p>
+
+
+{% endblock app_content %}

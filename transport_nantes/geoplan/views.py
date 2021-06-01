@@ -18,7 +18,9 @@ class MapView(TemplateView):
         context = super().get_context_data(**kwargs)
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
-        map_definition = MapDefinition.objects.get(observatory_name=observatory_name)
+        map_definition = MapDefinition.objects.filter(
+            city=city,
+            observatory_name=observatory_name)
 
         # Gets all layers corresponding to a city and its observatory
         map_content_rows = MapContent.objects.filter(
