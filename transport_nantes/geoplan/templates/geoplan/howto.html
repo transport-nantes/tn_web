@@ -11,14 +11,10 @@ suffit de télécharger la couche que vous souhaitez modifier.
 </p>
 
 <p>
-    <ul> {# This list should be generated automatically from the map the user wants. #}
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20planifié">réseau magistral, planifié</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20réalisé,%20satisfaisant">réseau magistral, réalisé, satisfaisant</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20magistral,%20réalisé,%20non%20satisfaisant">réseau magistral, réalisé, non satisfaisant</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/réseau%20structurant,%20planifié">réseau structurant, planifié</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/secondaire,%20planifié">réseau secondaire, planifié</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/maillage,%20planifié">réseau maillage, planifié</a></li>
-	<li><a href="https://www.mobilitains.fr/observatoire/nantes/velopolitain/autre">autre, planifié</a></li>
+    <ul>
+        {% for layer in layers %}
+            <li><a href="https://www.mobilitains.fr/observatoire/{{city}}/{{observatory_name}}/{{layer.map_layer.layer_name}}">{{layer.map_layer.layer_name}}</a></li>
+        {% endfor %}
     </ul>
 </p>
 
@@ -28,7 +24,7 @@ suffit de télécharger la couche que vous souhaitez modifier.
     Visitez le site <a href="https://geojson.io/">geojson.io</a>.
     Choisir "Open -> File".  Votre couche va s'afficher.  (Si vous
     voyez toujours le monde entier, c'est que la couche est vide.
-    Zoomez sur Nantes.)
+    Zoomez sur {{city}}.)
 </p>
 
 <img src="{% static 'geoplan/geojson.io_homepage.png' %}" alt='geojson.io homepage' height="50%" width="50%" style="padding:1em">

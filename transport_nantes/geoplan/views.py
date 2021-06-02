@@ -63,6 +63,7 @@ class MapView(TemplateView):
         html = root.render()
         context["html_map"] = html
         context["map_defn"] = map_definition
+        context["layers"] = map_content_rows
 
         # Hack, hard code for today.
         context['social'] = {}
