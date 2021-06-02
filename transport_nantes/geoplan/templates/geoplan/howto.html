@@ -12,8 +12,8 @@ suffit de télécharger la couche que vous souhaitez modifier.
 
 <p>
     <ul>
-        {% for layer in layers %}
-            <li><a href="https://www.mobilitains.fr/observatoire/{{city}}/{{observatory_name}}/{{layer.map_layer.layer_name}}">{{layer.map_layer.layer_name}}</a></li>
+        {% for layer in layers_url %}
+            <li><a href="{% url 'geoplan:download_layer' city observatory_name layer %}">{{layer}}</a></li>
         {% endfor %}
     </ul>
 </p>

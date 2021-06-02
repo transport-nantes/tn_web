@@ -63,7 +63,11 @@ class MapView(TemplateView):
         html = root.render()
         context["html_map"] = html
         context["map_defn"] = map_definition
-        context["layers"] = map_content_rows
+
+        # Produces a tuple (url-compatible layer name, layer name) for
+        # each layer in the map.
+        context["layers_url"] = [map_content_rows[i].map_layer.layer_name
+            for i in range(len(map_content_rows))]
 
         # Hack, hard code for today.
         context['social'] = {}

@@ -10,5 +10,5 @@ urlpatterns = [
     # Hack: probably should change the layer path to be "/couche/" or something.
     path('<city>/<observatory_name>/howto', MapView.as_view(
         template_name="geoplan/howto.html"), name="howto"),
-    path('<city>/<observatory_name>/<layer_name>', DownloadGeoJSONView.as_view(), name="map"),
+    path('<city>/<observatory_name>/<layer_name>', DownloadGeoJSONView.as_view(), name="download_layer"),
 ]
