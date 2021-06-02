@@ -1,4 +1,5 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
 
 {% block app_content %}
 
@@ -30,10 +31,14 @@ suffit de télécharger la couche que vous souhaitez modifier.
     Zoomez sur Nantes.)
 </p>
 
+<img src="{% static 'geoplan/geojson.io_homepage.png' %}" alt='geojson.io homepage' height="50%" width="50%" style="padding:1em">
+
 <p>
     Ensuite, sélectionnez l'outil "polyline" et, clique-par-clique,
     tracez le chemin que vous souhaitez ajouter à votre carte.
 </p>
+
+<img src="{% static 'geoplan/geojson.io_polyline.png' %}" alt='geojson.io polyline' height="50%" width="50%" style="padding:1em">
 
 <p>
     Toute à la fin, choisissez "Save -> GeoJSON" pour récupérer vos
@@ -41,10 +46,15 @@ suffit de télécharger la couche que vous souhaitez modifier.
     connecter au site geojson.io.)
 </p>
 
+<img src="{% static 'geoplan/geojson.io_save.png' %}" alt='geojson.io save' height="50%" width="50%" style="padding:1em">
+
 <p>
-    Finalement, partagez votre couche sur le slack des Mobilitains
+    Finalement, partagez votre couche fraichement enregistrée sur le slack des Mobilitains
     dans le canal #observatoire-du-velopolitain.
+    N'oubliez pas de préciser la ville et la couche dont il s'agit.
 </p>
+
+<img src="{% static 'geoplan/geojson.io_slack.png' %}" alt='geojson.io slack' height="50%" width="50%" style="padding:1em">
 
 <p>
     Merci de votre participation en ce début de projet !
