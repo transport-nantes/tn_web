@@ -78,6 +78,13 @@ class MapView(TemplateView):
             else: # Shouldn't happen but who knows
                 index = 0
             folium.GeoJson(geojson, name=layer_name,
+                # This lambda function is mandatory to use the
+                # style_function argument. It passes a dict as argument
+                # which contains datas about the layer (like the coordinates)
+                # This dict is stored in the "_" argument, deleting it woult
+                # result in the first argument being overridden by the dict.
+                # styles is a list of dict containing args to set various
+                # styles settings such as thickness, opacity, color...
                 style_function=lambda _, ind=index, style=styles: style[ind])\
                 .add_to(geomap)
 
