@@ -95,7 +95,8 @@ class DownloadGeoJSONView(View):
             last_layer = MapContent.objects.filter(
                 map_layer__map_definition__city=city,
                 map_layer__map_definition__observatory_name=observatory_name,
-                map_layer__layer_name=layer_name).latest('timestamp')
+                map_layer__layer_name=layer_name).order_by(
+                    'map_layer__layer_depth').latest('timestamp')
         except ObjectDoesNotExist:
             raise Http404(f"La couche {layer_name} \
                 n'existe pas pour l'observatoire {observatory_name} à {city}")
