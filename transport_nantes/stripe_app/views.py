@@ -41,7 +41,7 @@ def get_public_key(request):
 
 @csrf_exempt
 def create_checkout_session(request):
-    if request.method == "GET":
+    if request.method == "POST":
         domain_url = "http://" + str(request.get_host())
         stripe.api_key = STRIPE_SECRET_KEY
         try:
@@ -57,23 +57,30 @@ def create_checkout_session(request):
 
             # ?session_id={CHECKOUT_SESSION_ID} means the redirect
             # will have the session ID set as a query param
-            checkout_session = stripe.checkout.Session.create(
-                # Links need to be valid
-                success_url= domain_url + "/donation/success/",
-                cancel_url= domain_url+ "/donation/cancelled/",
-                payment_method_types=['card'],
-                mode='payment',
-                line_items=[
-                    {
-                        'name': 'Donation',
-                        'quantity': 1,
-                        'currency': 'eur',
-                        # Amount in cents
-                        'amount': '1000',
-                    }
-                ]
-            )
-            return JsonResponse({'sessionId': checkout_session['id']})
+            print(f'{request.POST}')
+            form = DonationForm(request.POST)
+            if form.is_valid():
+                checkout_session = stripe.checkout.Session.create(
+                    # Links need to be valid
+                    success_url= domain_url + "/donation/success/",
+                    cancel_url= domain_url+ "/donation/cancelled/",
+                    payment_method_types=['card'],
+                    mode='payment',
+                    customer_email= request.POST["mail"],
+                    line_items=[
+                        {
+                            'name': 'Donation',
+                            'quantity': 1,
+                            'currency': 'eur',
+                            # Amount in cents
+                            'amount': order_amount(request.POST),
+                        }
+                    ]
+                )
+                return JsonResponse({'sessionId': checkout_session['id']})
+            else:
+                return render(
+                    request, "stripe_app/donation_form.html", {'form': form})
         except Exception as error_message:
             return JsonResponse({'error': str(error_message)})
 
@@ -114,8 +121,10 @@ def order_amount(items):
     # Computing the amount server side prevents user from manipulating datas.
     # Items should only contain a list of item that iterate through
     # to get a proper price.
-    print(items)
-    return 1000
+    if items["free_amount"] != "" and items['amount'] == "0":
+        return int(items["free_amount"])*100
+    else:
+        return int(items["amount"])*100
 
 
 @csrf_exempt
