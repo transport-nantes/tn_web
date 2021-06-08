@@ -1,11 +1,22 @@
 {% extends "asso_tn/base_mobilitain.html" %}
-    
-{% block content %}
+{% load static %}
 
-<form action="" method="post">
+{% block content %}
+{% comment %}
+	<!-- Pull scripts out of comment block into content block to activate -->
+	<script src="{% static 'stripe_app/integrated.js' %}" defer></script>
+
+{% endcomment %}
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'stripe_app/main.js' %}" defer></script>
+
+<form action="{% url 'stripe_app:checkout-session' %}" id="donation_form" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
+	{% for item in form %}
+		{{item.label_tag}} {{item}} <br>
+	{% endfor %}
+	<button id="supportButton">Soutenir</button>
 </form>
 
 <!-- 
