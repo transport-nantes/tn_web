@@ -13,7 +13,7 @@ form.stripe {
   padding: 40px;
 }
 
-input {
+input.stripe {
   border-radius: 6px;
   margin-bottom: 6px;
   padding: 12px;
