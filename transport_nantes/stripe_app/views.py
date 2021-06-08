@@ -27,7 +27,6 @@ class StripeView(TemplateView):
             # <process form cleaned data>
             print(form.cleaned_data)
             print(type(form.cleaned_data))
-            return HttpResponseRedirect(reverse('stripe_app:stripe_success'))
 
         return render(request, self.template_name, {'form': form})
 

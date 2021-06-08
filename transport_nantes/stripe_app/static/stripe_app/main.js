@@ -2,6 +2,13 @@
 
 console.log("Sanity check!");
 
+// Blocks the form from redirecting
+// Also allows Django to perorm input validation
+$(function(){
+    $("#donation_form").submit(function(){
+        return false
+    })
+})
 // Get Stripe publishable key
 fetch("/donation/config/")
 .then((result) => { return result.json(); })
