@@ -20,7 +20,9 @@ fetch("/donation/config/")
   // Event handler
   document.querySelector("#supportButton").addEventListener("click", () => {
     // Get Checkout Session ID
-    fetch("/donation/create-checkout-session/")
+    fetch("/donation/create-checkout-session/", {
+          body: new FormData(document.getElementById("donation_form")),
+          method:"POST"})
     .then((result) => { return result.json(); })
     .then((data) => {
       console.log(data);
