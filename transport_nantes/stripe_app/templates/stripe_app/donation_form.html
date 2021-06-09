@@ -10,11 +10,25 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'stripe_app/main.js' %}" defer></script>
+<script src="{% static 'stripe_app/form_flow.js' %}" defer></script>
 
-<form action="{% url 'stripe_app:checkout-session' %}" id="donation_form" method="post">
+<form action="" id="donation_form" method="post">
     {% csrf_token %}
-	{% for item in form %}
-		{{item.label_tag}} {{item}} <br>
+	{% for item in info_form %}
+		<div>
+			{{item.label_tag}} {{item}}
+		</div>
+	{% endfor %}
+	<button id="toStep2">Continuer</button>
+</form>
+
+<form id="amount_form" style='display: none;' action="" method="post">
+	{% csrf_token %}
+	<button type="button" id="toStep1">Retour à l'étape précédente</button>
+	{% for item in amount_form %}
+		<div>
+			{{item.label_tag}} {{item}}
+		</div>
 	{% endfor %}
 	<button id="supportButton">Soutenir</button>
 </form>
