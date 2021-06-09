@@ -1,5 +1,6 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load don %}
+{% load markdown %}
 
 {% block app_content %}
 <div class="container">
@@ -74,9 +75,7 @@
             <h3>La réponse de {{ this_liste.tete_de_liste|default:'' }} ({{ this_liste.liste|default:'' }}) :</h3>
             {% if this_response is not none %}
             <div>
-                {% for paragraph in this_response.response_paragraphs %}
-                <p>{{ paragraph }}</p>
-                {% endfor %}
+                {{ this_response.survey_question_response|markdown }}
             </div>
             {% else %}
             <p>La liste {{ liste }} n'a pas répondu à cette question.</p>

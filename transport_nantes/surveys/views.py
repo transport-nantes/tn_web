@@ -115,14 +115,11 @@ class ResponseDisplaySurveyView(QuestionChooserSurveyView):
             survey_responder=kwargs['responder_id'])
         if this_response_as_list:
             this_response = this_response_as_list[0]
-            this_response.response_paragraphs = \
-                this_response.survey_question_response.split('\n')
         else:
             this_response = SurveyResponse()
             this_response.survey_question = context['this_question']
             this_response.survey_responder = context['this_liste']
-            this_response.response_paragraphs = ["La liste n'a pas répondu à cette question."]
-            # this_response.question_response = "La liste n'a pas répondu à cette question."
+            this_response.survey_question_response = "La liste n'a pas répondu à cette question."
         context['this_response'] = this_response
         context['social'] = social
         return context
