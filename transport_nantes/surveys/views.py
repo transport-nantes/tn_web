@@ -86,6 +86,10 @@ class ListeChooserSurveyView(CommuneChooserSurveyView):
             survey_id=kwargs['survey_id'], commune=kwargs['commune_id'])
         context['listes'] = responders
         context['social'] = social
+        social['og_image_func'] = reverse('open_graph:survey-commune',
+                                          args=[kwargs['commune_id']])
+        social['twitter_image_func']= reverse('open_graph:survey-commune',
+                                              args=[kwargs['commune_id']])
         return context
 
 class QuestionChooserSurveyView(ListeChooserSurveyView):
@@ -104,6 +108,10 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
                 this_question.question_text.split('\n')
             context['this_question'] = this_question
         context['social'] = social
+        social['og_image_func'] = reverse('open_graph:survey-candidate',
+                                          args=[kwargs['responder_id']])
+        social['twitter_image_func']= reverse('open_graph:survey-candidate',
+                                              args=[kwargs['responder_id']])
         return context
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
@@ -122,6 +130,12 @@ class ResponseDisplaySurveyView(QuestionChooserSurveyView):
             this_response.survey_question_response = "La liste n'a pas répondu à cette question."
         context['this_response'] = this_response
         context['social'] = social
+        social['og_image_func'] = reverse('open_graph:survey-question',
+                                          args=[kwargs['responder_id'],
+                                                kwargs['question_id']])
+        social['twitter_image_func']= reverse('open_graph:survey-question',
+                                              args=[kwargs['responder_id'],
+                                                    kwargs['question_id']])
         return context
 
 class QuestionnaireForSurveyView(TemplateView):

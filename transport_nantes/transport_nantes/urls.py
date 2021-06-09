@@ -34,7 +34,7 @@ urlpatterns = [
     path('observatoire/', include('geoplan.urls')),
     ## The OpenGraph app will likely be useful some day for doing
     ## dynamic og/tw images.
-    # path('og/', include('open_graph.urls')),
+    path('og/', include('open_graph.urls')),
     path('questionnaire/', include('surveys.urls')),
     path('tb/', include ('topicblog.urls')),
     ## The misnamed VO app has a few fragments that will be useful for
