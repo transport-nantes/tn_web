@@ -1,16 +1,15 @@
 import json
 
 from django.views.generic.base import TemplateView
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from django.urls import reverse
 
 import stripe
 
 from transport_nantes.settings import (
     STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
-from .forms import DonationForm
+from .forms import DonationForm, AmountForm
 
 
 class StripeView(TemplateView):
@@ -18,8 +17,11 @@ class StripeView(TemplateView):
     form_class = DonationForm
 
     def get(self, request, *args, **kwargs):
-        form = DonationForm()
-        return render(request, self.template_name, {"form": form})
+        info_form = DonationForm()
+        amount_form = AmountForm()
+        return render(request, self.template_name, {"info_form": info_form,
+                                                    "amount_form": amount_form
+                                                    })
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -63,7 +65,7 @@ def create_checkout_session(request):
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
                     success_url= domain_url + "/donation/success/",
-                    cancel_url= domain_url+ "/donation/cancelled/",
+                    cancel_url= domain_url+ "/donation/",
                     payment_method_types=['card'],
                     mode='payment',
                     customer_email= request.POST["mail"],
@@ -143,3 +145,13 @@ def create_payment_intent(request):
 
     except Exception as error_message:
         return JsonResponse({'error': str(error_message)})
+
+def form_validation(request):
+    form = DonationForm(request.POST)
+    print(f"{form=}")
+    if form.is_valid():
+        print("form is valid")
+        return JsonResponse({"validity": True})
+    else:
+        print("form is invalid")
+        return JsonResponse({"validity": False})
