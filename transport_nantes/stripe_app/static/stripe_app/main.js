@@ -5,7 +5,7 @@ console.log("Sanity check!");
 // Blocks the form from redirecting
 // Also allows Django to perorm input validation
 $(function(){
-    $("#donation_form").submit(function(){
+    $("#amount_form").submit(function(){
         return false
     })
 })
@@ -25,7 +25,7 @@ fetch("/donation/config/")
           method:"POST"})
     .then((result) => { return result.json(); })
     .then((data) => {
-      console.log(data);
+      console.log("Session ID :", data);
       // Redirect to Stripe Checkout
       return stripe.redirectToCheckout({sessionId: data.sessionId})
     })
