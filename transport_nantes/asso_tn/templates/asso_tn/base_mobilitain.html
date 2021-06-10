@@ -136,11 +136,10 @@
 					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="{% url_don %}">Adhérer</a>
+					<a class="nav-link pr-3" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
-				</li>
+
+				<li class="nav-item"><a class="btn btn-primary" href="{% url_don %}" role="button">Contribuer au projet</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -178,6 +177,7 @@
 			  </ul>
 			</div>
 	</nav>
+	
 	
     {% endblock navbar %}
     {% block content %}
