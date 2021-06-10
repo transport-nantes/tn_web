@@ -9,6 +9,7 @@ $(function(){
         return false
     })
 })
+
 // Get Stripe publishable key
 fetch("/donation/config/")
 .then((result) => { return result.json(); })
@@ -16,12 +17,13 @@ fetch("/donation/config/")
   // Initialize Stripe.js
   const stripe = Stripe(data.publicKey);
 
-  // new
-  // Event handler
+// Upon support button click, forms data will be sent
   document.querySelector("#supportButton").addEventListener("click", () => {
     // Get Checkout Session ID
+    form_data = new FormData(document.getElementById("amount_form"))
+    form_data.append("mail", document.getElementById("id_mail").value)
     fetch("/donation/create-checkout-session/", {
-          body: new FormData(document.getElementById("donation_form")),
+          body: form_data,
           method:"POST"})
     .then((result) => { return result.json(); })
     .then((data) => {
