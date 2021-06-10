@@ -113,7 +113,7 @@
   <body{% block body_attribs %}{% endblock body_attribs %}>
     {% block body %}
     {% block navbar %}
-       <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+       <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
 	<!-- Brand -->
 	   <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
 	  {% if role == 'dev' %}<span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
@@ -122,43 +122,63 @@
 	  {% endif %}
 
 	<!-- Toggler/collapsibe Button -->
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+	<button class="navbar-toggler" data-toggle="collapse" data-target=".navbars">
 	  <span class="navbar-toggler-icon"></span>
 	</button>
 
-	<!-- Navbar links -->
-	<div class="collapse navbar-collapse pt-2" id="collapsibleNavbar">
-	    <ul class="navbar-nav ml-auto">
-	      <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url_don %}">Adhérer</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
-	    </li>
+		<!-- NavLink Menu -->
+		<div class="collapse navbar-collapse navbars" id="collapse_target1">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url_don %}">Adhérer</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<nav class="navbar navbar-expand-sm navbar-light bg-light">
+		<div class="collapse navbar-collapse navbars" id="collapse_target2">
+			<!--social network-->
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="https://www.facebook.com/Mobilitains">Facebook</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://twitter.com/mobilitains">Twitter</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://www.instagram.com/mobilitains/">Instagram</a>
+				</li>
+			</ul>
+		</div>
 
-{% comment %}
-	    <li class="nav-item dropdown">
-		<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
-	      <div class="dropdown-menu">
-		  {% if user.is_authenticated %}
-		  <a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
-		  <form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
-		  {% else %}{% if not is_production %}
-		  <a class="dropdown-item" href="{% url 'authentication:login' %}"><i class="fa fa-sign-in" style="color:gray" aria-hidden="true"></i> Connexion</a>{% endif %}
-		  {% endif %}
-	      </div>
-	    </li>
-{% endcomment %}
-	  </ul>
-	</div>
-      </nav> 
-
+		<div>
+			<ul>
+		{% comment %}
+				<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
+				  <div class="dropdown-menu">
+				  {% if user.is_authenticated %}
+				  <a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
+				  <form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
+				  {% else %}{% if not is_production %}
+				  <a class="dropdown-item" href="{% url 'authentication:login' %}"><i class="fa fa-sign-in" style="color:gray" aria-hidden="true"></i> Connexion</a>{% endif %}
+				  {% endif %}
+				  </div>
+				</li>
+		{% endcomment %}
+			  </ul>
+			</div>
+	</nav>
+	
     {% endblock navbar %}
     {% block content %}
     <div class="hero-image">
@@ -170,8 +190,8 @@
 
     <div class="container-fluid pt-5">
     {% block app_content %}{% endblock %}
-    </div>
-    {% endblock content %}
+   </div>
+   {% endblock content %}
 
     {% block bottom_appeal %}
     {% comment %}
@@ -185,7 +205,7 @@
 
     <div class="pt-5">
 	<div class="jumbotron">
-	    <div class="row">
+	    <div class="row mx-2">
 		<div class="col-lg-12">
 		    <p>
 			<strong>Nous avons choisi une approche différente.
@@ -200,78 +220,102 @@
 			transforment en action. Toutes les
 			contributions sont importantes, nous ne
 			pouvons pas agir seuls. Soutenez-nous dés
-			maintenant et faites avancer la mobilité.
-
-			{% bouton_don "J'adhère" %}</p>
+			maintenant et faites avancer la mobilité.</p>
 
 		    <p class="small"><i>Votre adhésion ou don donne droit
 			à un crédit d'impôt de 67 % selon votre situation fiscale.</i></p>
+
+			<span class="center">{% bouton_don "J'adhère" %}</span>
+
 		</div>
 	    </div>
 	</div>
     </div>
     {% endblock bottom_appeal %}
 
-<div class="fluid-container pl-3 pr-2">
-    <div class="row">
-	<div class="col-sm-4">
-	    <h3>S'engager</h3>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}">
-			Faire un don
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}">
-			Devenir bénévole
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
-			Devenir ambassadeur
-		    </a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">
-			Entreprises
-		    </a>
-		</li>
-	    </ul>
-	</div>
-	<div class="col-sm-4">
-	    <h3>S'informer</h3>
-	    <ul>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
-		</li>
-	    </ul>
-	</div>
-	<div class="col-sm-4">
-	    <h3>Échanger</h3>
-	    <ul>
-		<li style="list-style: none">
-		    {# <a href="{% url 'asso_m:contact' %}">Nous contacter</a> #}
-		    <a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
-		</li>
-		<li style="list-style: none">
-		    <a href="{% url 'asso_m:jobs' %}">Jobs</a>
-		</li>
-	    </ul>
-	    <ul>
-		<li style="list-style: none">Copyright</li>
-		<li style="list-style: none">
-		    <a href="{% url 'asso_m:TC' %}">
-			Mentions Légales
-		    </a>
-		</li>
-	    </ul>
-	</div>
-    </div>
-</div>
+	<footer class="text-left text-lg-start">
+		<div class="container pt-2">
+		  <div class="row">
+			<!--s'engager-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">S'engager</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+				  <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}" class="footer-text">Faire un don</a>
+				</li>
+				<li>
+				  <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">Entreprises</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin s'engager-->
+	  
+			<!--s'informer-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">S'informer</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
+				</li>
+				<li>
+					<a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin s'informer-->
+	  
+			<!--Echanger-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">Échanger</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
+					<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
+				</li>
+				<li>
+					<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
+				</li>
+				<li class="small pt-2">Copyright</li>
+				<li>
+					<a href="{% url 'asso_m:TC' %}" class="footer-text">
+					Mentions Légales
+					</a>
+				</li>
+			  </ul>
+			</div>
+			<!--End echanger-->
+	  		
+			<!-- réseaux sociaux-->
+			<div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+			  <h5 class="text-uppercase">Nous suivre</h5>
+	  
+			  <ul class="list-unstyled mb-0">
+				<li>
+					<a href="https://www.facebook.com/Mobilitains" class="footer-text">Facebook</a>
+				</li>
+				<li>
+					<a href="https://twitter.com/mobilitains" class="footer-text">Twitter</a>
+				</li>
+				<li>
+					<a href="https://www.instagram.com/mobilitains/" class="footer-text">Instagram</a>
+				</li>
+			  </ul>
+			</div>
+			<!--Fin réseaux sociaux-->
+		  </div>
+		</div>
+	  </footer>
+
+
 
     {% block scripts %} {# jQuery library #}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
