@@ -24,14 +24,12 @@ class AmountForm(forms.Form):
                                         widget=forms.RadioSelect,
                                         initial=0)
 
-    CHOICE_SUSBCRIPTION = [ (8, "8 euros"),
-                            (12, "12 euros"),
-                            (20, "20 euros"),
-                            (0, 'Montant libre')]
+    CHOICE_SUSBCRIPTION = [ ("price_1J0of7ClnCBJWy551iIQ6ydg", "8 euros"),
+                            ("price_1J0ogXClnCBJWy552i9Bs2bg", "12 euros"),
+                            ("price_1J0ohVClnCBJWy55dAJxHjXE", "20 euros")]
     subscription_amount = forms.ChoiceField(label="Paiement mensuel",
                                             choices=CHOICE_SUSBCRIPTION,
-                                            widget=forms.RadioSelect,
-                                            initial=0)
+                                            widget=forms.RadioSelect)
 
     free_amount = forms.IntegerField(label="Montant libre",
                                     min_value=1, required=False)
