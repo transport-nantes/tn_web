@@ -63,18 +63,36 @@ function donation_selected() {
     return selected
 }
 
+// Uses name to make fields not required.
+// reverse is a bool to make the reverse action if true. 
+function MakeNotRequiredByName(name, reverse) {
+    document.getElementsByName(name).forEach(item => {
+        if (reverse == true) {
+            item.setAttribute("required", "false")
+        } else {
+            item.setAttribute("required", "true")
+        }
+        
+    })
+}
+
 // Adds an event listener to each html object with name="donation_type"
 // The value is then evaluated to display appropriate amounts.
 document.getElementsByName("donation_type").forEach(item => {
     item.addEventListener('click', event => {
         let selected = donation_selected()
-        document.getElementById("free_amount").style.display = "block"
         if (selected == "payment") {
             document.getElementById("subscription_amount_rb").style.display = "none"
             document.getElementById("payment_amount_rb").style.display = "block"
+            document.getElementById("free_amount").style.display = "block"
+            MakeNotRequiredByName("subscription_amount", true)
+            MakeNotRequiredByName("payment_amount", false)
         } else {
             document.getElementById("subscription_amount_rb").style.display = "block"
             document.getElementById("payment_amount_rb").style.display = "none"
+            document.getElementById("free_amount").style.display = "none"
+            MakeNotRequiredByName("payment_amount", true)
+            MakeNotRequiredByName("subscription_amount", false) 
         }
     })
 })
