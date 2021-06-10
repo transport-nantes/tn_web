@@ -60,14 +60,14 @@ def create_checkout_session(request):
             # ?session_id={CHECKOUT_SESSION_ID} means the redirect
             # will have the session ID set as a query param
             print(f'{request.POST}')
-            form = DonationForm(request.POST)
-            if form.is_valid():
+            print("donation type is: ", request.POST["donation_type"])
+            if request.POST["donation_type"] == 'payment':
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
                     success_url= domain_url + "/donation/success/",
                     cancel_url= domain_url+ "/donation/",
                     payment_method_types=['card'],
-                    mode='payment',
+                    mode=request.POST["donation_type"],
                     customer_email= request.POST["mail"],
                     line_items=[
                         {
@@ -79,10 +79,26 @@ def create_checkout_session(request):
                         }
                     ]
                 )
+                print(checkout_session)
                 return JsonResponse({'sessionId': checkout_session['id']})
-            else:
-                return render(
-                    request, "stripe_app/donation_form.html", {'form': form})
+
+            elif request.POST["donation_type"] == "subscription":
+                checkout_session = stripe.checkout.Session.create(
+                    # Links need to be valid
+                    success_url= domain_url + "/donation/success/",
+                    cancel_url= domain_url+ "/donation/",
+                    payment_method_types=['card'],
+                    mode=request.POST["donation_type"],
+                    customer_email= request.POST["mail"],
+                    line_items=[
+                        {
+                            'quantity': 1,
+                            # Amount in cents
+                            'price': request.POST["subscription_amount"],
+                        }
+                    ]
+                )
+                return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as error_message:
             return JsonResponse({'error': str(error_message)})
 
@@ -123,10 +139,15 @@ def order_amount(items):
     # Computing the amount server side prevents user from manipulating datas.
     # Items should only contain a list of item that iterate through
     # to get a proper price.
-    if items["free_amount"] != "" and items['amount'] == "0":
+
+    # Either equal to "payment" or "subscription"
+    donation_type = items["donation_type"]
+
+    # "0" indicates that user selected "Montant libre"
+    if items[donation_type + "_amount"] == "0":
         return int(items["free_amount"])*100
     else:
-        return int(items["amount"])*100
+        return int(items[donation_type + "_amount"])*100
 
 
 @csrf_exempt
