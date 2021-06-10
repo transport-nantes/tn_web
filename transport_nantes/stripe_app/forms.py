@@ -13,8 +13,7 @@ class AmountForm(forms.Form):
                      ("payment", "Je donne une fois")]
     donation_type = forms.ChoiceField(  label="Type de don",
                                         choices=sub_or_donate,
-                                        widget=forms.RadioSelect,
-                                        initial="subscription")
+                                        widget=forms.RadioSelect)
 
     CHOICE_PAYMENT = [  (35, "35 euros"),
                         (55, "55 euros"),
