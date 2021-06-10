@@ -25,11 +25,23 @@
 <form id="amount_form" style='display: none;' action="" method="post">
 	{% csrf_token %}
 	<button type="button" id="toStep1">Retour à l'étape précédente</button>
-	{% for item in amount_form %}
-		<div>
-			{{item.label_tag}} {{item}}
-		</div>
-	{% endfor %}
+
+	<div id="donation_type_rb">
+		{{amount_form.donation_type.label_tag }}{{amount_form.donation_type }}
+	</div>
+
+	<div id="payment_amount_rb" style="display: none">
+		{{amount_form.payment_amount.label_tag}}{{amount_form.payment_amount}}
+	</div>
+
+	<div id="subscription_amount_rb" style="display: none">
+		{{amount_form.subscription_amount.label_tag}}{{amount_form.subscription_amount}}
+	</div>
+
+	<div id="free_amount" style="display: none">
+		{{amount_form.free_amount.label_tag}}{{amount_form.free_amount}}
+	</div>
+
 	<button id="supportButton">Soutenir</button>
 </form>
 
