@@ -104,7 +104,7 @@ class DownloadGeoJSONView(View):
         geojson = last_layer.geojson
 
         # File name
-        filename = "MOBILITAINS_" + last_layer.map_layer.layer_name + "_" \
+        filename = "MOBILITAINS_" + str(last_layer.map_layer.layer_name).replace(" ", "_") + "_" \
             + str(last_layer.timestamp).replace(":", "-")\
                 .replace(" ", "_")[:19] + ".geojson"
 
