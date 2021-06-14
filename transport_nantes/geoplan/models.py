@@ -36,10 +36,19 @@ class MapLayer(models.Model):
     # Depth = position on the stack
     layer_depth = models.SmallIntegerField()
 
+    layer_choices = [("BASE", "Base"),
+                    ("SATISFAIT", "Satisfait"),
+                    ("NON SATISFAIT", "Non Satisfait")]
+
+    layer_type = models.CharField(max_length=13,
+                                choices=layer_choices,
+                                default="BASE")
+
     def __str__(self):
         return str(self.layer_name)+ " " \
             + str(self.map_definition.city) + " " \
-            + str(self.map_definition.observatory_name)
+            + str(self.map_definition.observatory_name + " " \
+            + str(self.layer_type))
 
 
 class MapContent(models.Model):
