@@ -69,14 +69,15 @@ class MapView(TemplateView):
             # Adds a layer to the map
             geojson = map_content.geojson
             layer_name = map_content.map_layer.layer_name
-            if map_content.map_layer.layer_type == "Base":
+            if map_content.map_layer.layer_type == "BASE":
                 index = 0
-            elif map_content.map_layer.layer_type == "Satisfait":
+            elif map_content.map_layer.layer_type == "SATISFAIT":
                 index = 1
-            elif map_content.map_layer.layer_type == "Non Satisfait":
+            elif map_content.map_layer.layer_type == "NON SATISFAIT":
                 index = 2
             else: # Shouldn't happen but who knows
-                index = 0
+                raise Http404(f"Il y a un problème avec la couche {map_content.map_layer.layer_name}.\
+                            Veuillez contacter l'administreur.")
             folium.GeoJson(geojson, name=layer_name,
                 # This lambda function is mandatory to use the
                 # style_function argument. It passes a dict as argument
