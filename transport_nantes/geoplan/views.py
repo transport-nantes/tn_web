@@ -18,9 +18,8 @@ class MapView(TemplateView):
         context = super().get_context_data(**kwargs)
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
-        map_definition = MapDefinition.objects.filter(
-            city=city,
-            observatory_name=observatory_name)
+        map_definition = MapDefinition.objects.get(
+            observatory_name=observatory_name, city=city)
 
         # Gets all layers corresponding to a city and its observatory
         map_content_rows = MapContent.objects.filter(
@@ -56,11 +55,27 @@ class MapView(TemplateView):
             attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             name="CyclOSM").add_to(geomap)
 
+        # styles args : https://leafletjs.com/reference-1.6.0.html#path-option
+        styles=[{'color': '#000000', "dashArray": "1 10"},
+                {'color': '#9BBF85', 'weight': 7}, #006164, #9BBF85
+                {'color': '#B3589A', 'weight': 7},]#B3589A , #DB4325
+
+
         for map_content in map_content_rows:
             # Adds a layer to the map
             geojson = map_content.geojson
             layer_name = map_content.map_layer.layer_name
-            folium.GeoJson(geojson, name=layer_name).add_to(geomap)
+            if map_content.map_layer.layer_type == "Base":
+                index = 0
+            elif map_content.map_layer.layer_type == "Satisfait":
+                index = 1
+            elif map_content.map_layer.layer_type == "Non Satisfait":
+                index = 2
+            else: # Shouldn't happen but who knows
+                index = 0
+            folium.GeoJson(geojson, name=layer_name,
+                style_function=lambda _, ind=index, style=styles: style[ind])\
+                .add_to(geomap)
 
         # This is the Layer filter to enable / disable datas on map
         folium.LayerControl(hideSingleBase=True).add_to(geomap)
