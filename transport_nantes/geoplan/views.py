@@ -18,8 +18,12 @@ class MapView(TemplateView):
         context = super().get_context_data(**kwargs)
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
-        map_definition = MapDefinition.objects.get(
-            observatory_name=observatory_name, city=city)
+        try:
+            map_definition = MapDefinition.objects.get(
+                observatory_name=observatory_name, city=city)
+        except ObjectDoesNotExist:
+            raise Http404(f"{city} ou l'observatoire {observatory_name}\
+                n'existe(nt) pas")
 
         # Gets all layers corresponding to a city and its observatory
         map_content_rows = MapContent.objects.filter(
