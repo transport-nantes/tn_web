@@ -48,6 +48,13 @@ class MapView(TemplateView):
         lat = map_content_rows[0].map_layer.map_definition.latitude
         lon = map_content_rows[0].map_layer.map_definition.longitude
         geomap = folium.Map(location=[lat, lon], zoom_start=12)
+        # CartoDB is a Black and white map to highlight colors
+        folium.TileLayer('cartodb positron', attr="CartoDB").add_to(geomap)
+        # CyclOSM displays cyclist oriented information like parking, pathways.
+        folium.TileLayer(
+            tiles='https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+            attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            name="CyclOSM").add_to(geomap)
 
         for map_content in map_content_rows:
             # Adds a layer to the map
