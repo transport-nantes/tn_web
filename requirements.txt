@@ -17,6 +17,8 @@ distlib==0.3.0
 distro==1.4.0
 Django==3.0.7
 django-amazon-ses==3.0.2
+django-countries==7.2.1
+django-crispy-forms==1.12.0
 django-ranged-response==0.2.0
 django-simple-captcha==0.5.13
 dj-stripe==2.3.0
@@ -64,6 +66,7 @@ python-dateutil==2.8.1
 python-http-client==3.2.7
 pytoml==0.1.21
 pytz==2019.3
+pyuca==1.2
 PyYAML==5.4.1
 requests==2.22.0
 retrying==1.3.3
