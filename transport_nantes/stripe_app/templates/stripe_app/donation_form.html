@@ -1,5 +1,6 @@
 {% extends "asso_tn/base_mobilitain.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 {% comment %}
@@ -12,39 +13,17 @@
 <script src="{% static 'stripe_app/main.js' %}" defer></script>
 <script src="{% static 'stripe_app/form_flow.js' %}" defer></script>
 
-<form action="" id="donation_form" method="post">
-    {% csrf_token %}
-	{% for item in info_form %}
-		<div>
-			{{item.label_tag}} {{item}}
-		</div>
-	{% endfor %}
-	<button id="toStep2">Continuer</button>
-</form>
+<div class="form_wrapper">
+	<form id="donation_form">
+		{% crispy info_form %}
+	</form>
+</div>
 
-<form id="amount_form" style='display: none;' action="" method="post">
-	{% csrf_token %}
-	<button type="button" id="toStep1">Retour à l'étape précédente</button>
-
-	<div id="donation_type_rb">
-		{{amount_form.donation_type.label_tag }}{{amount_form.donation_type }}
-	</div>
-
-	<div id="payment_amount_rb" style="display: none">
-		{{amount_form.payment_amount.label_tag}}{{amount_form.payment_amount}}
-	</div>
-
-	<div id="subscription_amount_rb" style="display: none">
-		{{amount_form.subscription_amount.label_tag}}{{amount_form.subscription_amount}}
-	</div>
-
-	<div id="free_amount" style="display: none">
-		{{amount_form.free_amount.label_tag}}{{amount_form.free_amount}}
-	</div>
-
-	<button id="supportButton">Soutenir</button>
-</form>
-
+<div class="form_wrapper">
+	<form id="amount_form" style='display: none;' action="" method="post">
+		{% crispy amount_form %}
+	</form>
+</div>
 <!-- 
    <!- - Display a payment form - ->
      <form class="stripe" id="payment-form"> {% csrf_token %}
