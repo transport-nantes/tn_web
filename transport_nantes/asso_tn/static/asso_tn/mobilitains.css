@@ -161,6 +161,11 @@ a:hover:hover.cta-button {
     font-variant: all-small-caps;
     font-size: 150%;
 }
+.form_wrapper {
+    width: 50%;
+    margin:auto; 
+    margin-top: 1em;
+}
 .image-darken-50 {
     filter: brightness(50%);
 }
