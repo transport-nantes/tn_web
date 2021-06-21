@@ -1,3 +1,5 @@
+var completed_step_1 = false
+
 // jQuery function to prevent form from submitting
 // but allows Django's field validation
 $(function(){
@@ -9,8 +11,9 @@ $(function(){
 // This function inputs a form and returns if it valid or not
 // The listener_id is the id without #. ("id" instead of "#id")
 async function validation_check(listener_id) {
+    form_data = new FormData(document.getElementById(listener_id))
     var valid = await fetch('form-validation/', {
-        body: new FormData(document.getElementById(listener_id)),
+        body: form_data,
         method: "POST"
     })
     .then((result) => {
@@ -39,6 +42,7 @@ document.querySelector("#toStep2").addEventListener("click", async() => {
         console.log("validation in queryselector");
         document.getElementById("amount_form").style.display = "block"
         document.getElementById("donation_form").style.display = "none"
+        completed_step_1 = true
     }
     
 })
@@ -95,4 +99,16 @@ document.getElementsByName("donation_type").forEach(item => {
             MakeNotRequiredByName("subscription_amount", false) 
         }
     })
+})
+
+// This function detects if user tries to close the tab or browser,
+// and asks for confirmation
+window.addEventListener("beforeunload", function(event){
+    // Prevents the page from closing right away
+    event.preventDefault()
+})
+
+window.addEventListener("unload", function(event) {
+    // Code to run upon closure, will fetch a function on
+    // server and see how far the visitor went
 })
