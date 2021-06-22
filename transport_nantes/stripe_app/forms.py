@@ -7,7 +7,7 @@ from django_countries import widgets, countries
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (ButtonHolder, HTML, Submit,
                                 Layout, Row, Column, Field, Button)
-from crispy_forms.bootstrap import InlineRadios
+
 
 
 class DonationForm(forms.Form):
@@ -61,7 +61,7 @@ class DonationForm(forms.Form):
         self.helper.form_show_labels= False
 
         self.helper.layout = Layout(
-            InlineRadios("gender"),
+            Field("gender", template="stripe_app/inline_radio_custom.html"),
             Row(
                 Column("first_name"),
                 Column("last_name")
@@ -125,9 +125,14 @@ class AmountForm(forms.Form):
                     css_class="btn-outline-info",
                     style="margin-bottom: 1em"),
             ),
-            InlineRadios("donation_type"),
-            InlineRadios("subscription_amount", id="subscription_amount_rb", style="display: none"),
-            InlineRadios("payment_amount", id="payment_amount_rb", style="display: none"),
+            Field("donation_type",
+                    template="stripe_app/inline_radio_custom.html"),
+            Field("subscription_amount",
+                    template="stripe_app/inline_radio_custom.html",
+                    id="subscription_amount_rb", style="display: none"),
+            Field("payment_amount",
+                    template="stripe_app/inline_radio_custom.html",
+                    id="payment_amount_rb", style="display: none"),
             Field("free_amount", id="free_amount", style="display: none"),
             Button("supportButton", "Soutenir",
                     css_id="supportButton",
