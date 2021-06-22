@@ -87,12 +87,12 @@ document.getElementsByName("donation_type").forEach(item => {
         let selected = donation_selected()
         if (selected == "payment") {
             document.getElementById("subscription_amount_rb").style.display = "none"
-            document.getElementById("payment_amount_rb").style.display = "block"
-            document.getElementById("free_amount").style.display = "block"
+            document.getElementById("payment_amount_rb").style.display = "flex"
+            document.getElementById("free_amount").style.display = "flex"
             MakeNotRequiredByName("subscription_amount", true)
             MakeNotRequiredByName("payment_amount", false)
         } else {
-            document.getElementById("subscription_amount_rb").style.display = "block"
+            document.getElementById("subscription_amount_rb").style.display = "flex"
             document.getElementById("payment_amount_rb").style.display = "none"
             document.getElementById("free_amount").style.display = "none"
             MakeNotRequiredByName("payment_amount", true)
@@ -101,12 +101,6 @@ document.getElementsByName("donation_type").forEach(item => {
     })
 })
 
-// This function detects if user tries to close the tab or browser,
-// and asks for confirmation
-window.addEventListener("beforeunload", function(event){
-    // Prevents the page from closing right away
-    event.preventDefault()
-})
 
 window.addEventListener("unload", function(event) {
     // Code to run upon closure, will fetch a function on
