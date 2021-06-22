@@ -166,6 +166,25 @@ a:hover:hover.cta-button {
     margin:auto; 
     margin-top: 1em;
 }
+
+.form-like-radio {
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    display: inline-block;
+    position:relative;
+    width: 100%;
+    padding-left: 2em;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.form-like-radio-field {
+    display: flex;
+    flex-direction: row;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
 .image-darken-50 {
     filter: brightness(50%);
 }

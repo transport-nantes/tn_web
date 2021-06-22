@@ -1,0 +1,45 @@
+
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+    <div id="div_{{ field.auto_id }}" class="form-group{% if 'form-horizontal' in form_class %} row{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+
+        {% if field.label %}
+            <label {% if field.id_for_label %}for="{{ field.id_for_label }}" {% endif %}class="{{ label_class }}{% if not inline_class %} col-form-label{% endif %}{% if field.field.required %} requiredField{% endif %}">
+                {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+            </label>
+        {% endif %}
+
+        {% load crispy_forms_filters %}
+        {% load l10n %}
+
+        <div class="form-like-radio-field {% if field_class %} {{ field_class }}{% endif %}"{% if flat_attrs %} {{ flat_attrs|safe }}{% endif %}>
+
+            {% for group, options, index in field|optgroups %}
+            {% if group %}<strong>{{ group }}</strong>{% endif %}
+
+            {% for option in options %}
+                <div class="form-like-radio {%if use_custom_control%}custom-control custom-radio{% if inline_class %} form-control-inline{% endif %}{% else %}form-check{% if inline_class %} form-check-inline{% endif %}{% endif %} form-control">
+                    <input type="radio" class="{%if use_custom_control%}custom-control-input{% else %}form-check-input{% endif %}{% if field.errors %} is-invalid{% endif %}" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "bootstrap4/layout/attrs.html" with widget=option %}>
+                    <label class="{%if use_custom_control%}custom-control-label{% else %}form-check-label{% endif %}" for="{{ option.attrs.id }}">
+                        {{ option.label|unlocalize }}
+                        
+                    </label>
+                    {% if field.errors and forloop.last and not inline_class and forloop.parentloop.last %}
+                        {% include 'bootstrap4/layout/field_errors_block.html' %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% endfor %}
+            {% if field.errors and inline_class %}
+            <div class="w-100 {%if use_custom_control%}custom-control custom-radio{% if inline_class %} custom-control-inline{% endif %}{% else %}form-check{% if inline_class %} form-check-inline{% endif %}{% endif %}">
+                {# the following input is only meant to allow boostrap to render the error message as it has to be after an invalid input. As the input has no name, no data will be sent. #}
+                <input type="checkbox" class="custom-control-input {% if field.errors %}is-invalid{%endif%}">
+                {% include 'bootstrap4/layout/field_errors_block.html' %}
+            </div>
+            {% endif %}
+
+            {% include 'bootstrap4/layout/help_text.html' %}
+        </div>
+    </div>
+{% endif %}
