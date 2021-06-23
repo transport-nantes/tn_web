@@ -14,6 +14,7 @@ html {
     height: 100%;
     margin: 0;
     font-family: Montserrat, Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
 }
 /*Colours defined*/
 :root {
@@ -162,9 +163,9 @@ a:hover:hover.cta-button {
     font-size: 150%;
 }
 .form_wrapper {
-    width: 50%;
-    margin:auto; 
+    display: flex;
     margin-top: 1em;
+    justify-content: center;
 }
 
 .form-like-radio {
@@ -183,6 +184,11 @@ a:hover:hover.cta-button {
     flex-direction: row;
     margin-left: -5px;
     margin-right: -5px;
+    flex-wrap: wrap;
+}
+
+#gender {
+    flex-wrap: nowrap !important;
 }
 
 .image-darken-50 {

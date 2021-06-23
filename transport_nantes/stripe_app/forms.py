@@ -61,7 +61,7 @@ class DonationForm(forms.Form):
         self.helper.form_show_labels= False
 
         self.helper.layout = Layout(
-            Field("gender", template="stripe_app/inline_radio_custom.html"),
+            Field("gender", template="stripe_app/inline_radio_custom.html", id="gender"),
             Row(
                 Column("first_name"),
                 Column("last_name")

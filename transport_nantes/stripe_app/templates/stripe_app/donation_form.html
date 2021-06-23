@@ -13,13 +13,13 @@
 <script src="{% static 'stripe_app/main.js' %}" defer></script>
 <script src="{% static 'stripe_app/form_flow.js' %}" defer></script>
 
-<div class="form_wrapper">
+<div class="container-fluid d-flex-stretch col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-4">
 	<form id="donation_form">
 		{% crispy info_form %}
 	</form>
 </div>
 
-<div class="form_wrapper">
+<div class="container-fluid d-flex-stretch col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-4">
 	<form id="amount_form" style='display: none;' action="" method="post">
 		{% crispy amount_form %}
 	</form>
