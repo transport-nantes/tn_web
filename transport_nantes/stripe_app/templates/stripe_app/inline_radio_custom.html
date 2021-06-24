@@ -20,7 +20,7 @@
 
             {% for option in options %}
                 <div class="form-like-radio {%if use_custom_control%}custom-control custom-radio{% if inline_class %} form-control-inline{% endif %}{% else %}form-check{% if inline_class %} form-check-inline{% endif %}{% endif %} form-control">
-                    <input type="radio" class="{%if use_custom_control%}custom-control-input{% else %}form-check-input{% endif %}{% if field.errors %} is-invalid{% endif %}" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "bootstrap4/layout/attrs.html" with widget=option %}>
+                    <input style="" type="radio" class="{%if use_custom_control%}custom-control-input{% else %}form-check-input{% endif %}{% if field.errors %} is-invalid{% endif %}" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "bootstrap4/layout/attrs.html" with widget=option %}>
                     <label class="{%if use_custom_control%}custom-control-label{% else %}form-check-label{% endif %}" for="{{ option.attrs.id }}">
                         {{ option.label|unlocalize }}
                         
