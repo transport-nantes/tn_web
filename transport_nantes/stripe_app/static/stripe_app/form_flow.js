@@ -83,6 +83,7 @@ document.forms['amount_form'].addEventListener('submit', function() {
     if (valid_amount_form == true) {
         document.getElementById("amount_form").style.display = "none"
         document.getElementById("donation_form").style.display = "block"
+        document.getElementById("step1_text_2").classList.add("active")
     }
   }, false);
 
@@ -101,6 +102,7 @@ document.querySelector("#toStep1").addEventListener("click", () => {
     console.log("Return Button clicked !")
     document.getElementById("donation_form").style.display = "none"
     document.getElementById("amount_form").style.display = "block"
+    document.getElementById("step1_text_2").classList.remove("active")
 })
 
 // Get Stripe publishable key
@@ -114,6 +116,7 @@ fetch("/donation/config/")
   document.querySelector("#donation_form").addEventListener("submit", () => {
     
     if (valid_donation_form == true){
+        document.getElementById("step1_text_3").classList.add("active")
         // Get Checkout Session ID
         form_data = new FormData(document.getElementById("amount_form"))
         form_data.append("mail", document.getElementById("id_mail").value)
