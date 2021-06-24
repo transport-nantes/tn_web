@@ -1,3 +1,6 @@
+// Hides the navbar's content in this page
+nav = document.querySelector(".navbar-nav")
+nav.style = "display: none"
 
 /* 
 This places an even listener on each radio_button
