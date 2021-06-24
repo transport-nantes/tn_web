@@ -25,7 +25,7 @@ class DonationForm(forms.Form):
                                     attrs={'placeholder': 'Nom*'}))
 
     mail = forms.EmailField(label="Adresse mail",
-                            widget=forms.TextInput(
+                            widget=forms.EmailInput(
                                 attrs={'placeholder': 'Adresse e-mail*'}))
 
     address = forms.CharField(  label="Adresse",
@@ -61,6 +61,12 @@ class DonationForm(forms.Form):
         self.helper.form_show_labels= False
 
         self.helper.layout = Layout(
+            ButtonHolder(
+                Button("toStep1", "Revenir à l'étape précédente",
+                    css_id="toStep1",
+                    css_class="btn-outline-info",
+                    style="margin-bottom: 1em"),
+            ),
             Field("gender", template="stripe_app/inline_radio_custom.html", id="gender"),
             Row(
                 Column("first_name"),
@@ -78,10 +84,9 @@ class DonationForm(forms.Form):
                 Column("city"),
             ),
             "country",
-            ButtonHolder(
-                Submit('submit', 'Continuer',
-                        css_class='btn btn-primary', css_id="toStep2")
-            )
+            Submit("submit", "Soutenir",
+                    css_id="supportButton",
+                    css_class="btn-success"),
         )
 
 class AmountForm(forms.Form):
@@ -119,12 +124,6 @@ class AmountForm(forms.Form):
         self.helper.form_show_labels= False
 
         self.helper.layout = Layout(
-            ButtonHolder(
-                Button("toStep1", "Revenir à l'étape précédente",
-                    css_id="toStep1",
-                    css_class="btn-outline-info",
-                    style="margin-bottom: 1em"),
-            ),
             Field("donation_type",
                     template="stripe_app/inline_radio_custom.html"),
             Field("subscription_amount",
@@ -134,7 +133,8 @@ class AmountForm(forms.Form):
                     template="stripe_app/inline_radio_custom.html",
                     id="payment_amount_rb", style="display: none"),
             Field("free_amount", id="free_amount", style="display: none"),
-            Button("supportButton", "Soutenir",
-                    css_id="supportButton",
-                    css_class="btn-success"),
+            ButtonHolder(
+                Submit('submit', 'Continuer',
+                        css_class='btn btn-primary', css_id="toStep2")
+            )
         )
