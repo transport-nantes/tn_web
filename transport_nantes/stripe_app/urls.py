@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     StripeView, SuccessView, get_public_key, create_checkout_session,
-    stripe_webhook, create_payment_intent, form_validation)
+    stripe_webhook, create_payment_intent)
 
 app_name = "stripe_app"
 
@@ -14,5 +14,4 @@ urlpatterns = [
         template_name="stripe_app/cancel.html")),
     path('webhook/', stripe_webhook),
     path('create-payment-intent/', create_payment_intent, name="payment-intent"),
-    path('form-validation/', form_validation)
 ]

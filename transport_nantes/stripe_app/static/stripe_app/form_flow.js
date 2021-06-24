@@ -1,57 +1,24 @@
-var completed_step_1 = false
+// ############################################
+// ######### Prevent default submits ##########
+// ############################################
 
-// jQuery function to prevent form from submitting
-// but allows Django's field validation
+// Blocks the form from redirecting
+// Also allows browser to perform input validation
 $(function(){
     $("#donation_form").submit(function(){
         return false
     })
 })
 
-// This function inputs a form and returns if it valid or not
-// The listener_id is the id without #. ("id" instead of "#id")
-async function validation_check(listener_id) {
-    form_data = new FormData(document.getElementById(listener_id))
-    var valid = await fetch('form-validation/', {
-        body: form_data,
-        method: "POST"
+$(function(){
+    $("#amount_form").submit(function(){
+        return false
     })
-    .then((result) => {
-        return(result.json())
-    })
-    .then((data) => {
-        console.log("data are : ", data)
-        if (data.validity == true) {
-            console.log("The form is valid !")
-            console.log("data.validity =", data.validity)
-        }
-        else {
-            console.log("Invalid data !")
-            console.log(data.validity)
-        }
-        return data.validity
-    })
-    return valid
-}
+})
 
-// Button validating personnal informations step.
-document.querySelector("#toStep2").addEventListener("click", async() => {
-    console.log("Button clicked !");
-    let valid = await validation_check("donation_form")
-    if (valid == true) {
-        console.log("validation in queryselector");
-        document.getElementById("amount_form").style.display = "block"
-        document.getElementById("donation_form").style.display = "none"
-        completed_step_1 = true
-    }
-    
-})
-// This button allows you to go back to the first step
-document.querySelector("#toStep1").addEventListener("click", () => {
-    console.log("Return Button clicked !")
-    document.getElementById("donation_form").style.display = "block"
-    document.getElementById("amount_form").style.display = "none"
-})
+// ############################################
+// ######### AMOUNT FORM DISPLAY ##############
+// ############################################
 
 // This function will check what set of amount to display
 // depending on what option is selected.
@@ -72,7 +39,7 @@ function donation_selected() {
 function MakeNotRequiredByName(name, reverse) {
     document.getElementsByName(name).forEach(item => {
         if (reverse == true) {
-            item.setAttribute("required", "false")
+            item.removeAttribute("required")
         } else {
             item.setAttribute("required", "true")
         }
@@ -100,7 +67,71 @@ document.getElementsByName("donation_type").forEach(item => {
         }
     })
 })
+// ############################################
+// ######### Form validation part #############
+// ############################################
 
+/* 
+https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reportValidity
+Checks validity of a form from HTML5. 
+*/
+
+// Hides part 1 and displays part 2.
+var valid_amount_form = false
+document.forms['amount_form'].addEventListener('submit', function() {
+    valid_amount_form = document.forms['amount_form'].reportValidity();
+    if (valid_amount_form == true) {
+        document.getElementById("amount_form").style.display = "none"
+        document.getElementById("donation_form").style.display = "block"
+    }
+  }, false);
+
+// Performs validation. If the form is correct, datas can be sent to Stripe.
+var valid_donation_form = false
+document.forms['donation_form'].addEventListener('submit', function() {
+    valid_donation_form = document.forms['donation_form'].reportValidity();
+  }, false);
+
+// ############################################
+// ######### BUTTON MANAGEMENT PART ###########
+// ############################################
+
+// This button allows you to go back to the first step
+document.querySelector("#toStep1").addEventListener("click", () => {
+    console.log("Return Button clicked !")
+    document.getElementById("donation_form").style.display = "none"
+    document.getElementById("amount_form").style.display = "block"
+})
+
+// Get Stripe publishable key
+fetch("/donation/config/")
+.then((result) => { return result.json(); })
+.then((data) => {
+  // Initialize Stripe.js
+  const stripe = Stripe(data.publicKey);
+
+// Upon support button click, forms data will be sent
+  document.querySelector("#donation_form").addEventListener("submit", () => {
+    
+    if (valid_donation_form == true){
+        // Get Checkout Session ID
+        form_data = new FormData(document.getElementById("amount_form"))
+        form_data.append("mail", document.getElementById("id_mail").value)
+        fetch("/donation/create-checkout-session/", {
+            body: form_data,
+            method:"POST"})
+        .then((result) => { return result.json(); })
+        .then((data) => {
+        console.log("Session ID :", data);
+        // Redirect to Stripe Checkout
+        return stripe.redirectToCheckout({sessionId: data.sessionId})
+        })
+        .then((res) => {
+        console.log(res);
+        });
+    }
+  });
+});
 
 window.addEventListener("unload", function(event) {
     // Code to run upon closure, will fetch a function on

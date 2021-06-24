@@ -166,13 +166,3 @@ def create_payment_intent(request):
 
     except Exception as error_message:
         return JsonResponse({'error': str(error_message)})
-
-def form_validation(request):
-    form = DonationForm(request.POST)
-    print(f"{form=}")
-    if form.is_valid():
-        print("form is valid")
-        return JsonResponse({"validity": True})
-    else:
-        print("form is invalid")
-        return JsonResponse({"validity": False})
