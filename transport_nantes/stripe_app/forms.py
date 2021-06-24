@@ -102,8 +102,7 @@ class AmountForm(forms.Form):
                         (0, "Montant libre")]
     payment_amount = forms.ChoiceField( label="",
                                         choices=CHOICE_PAYMENT,
-                                        widget=forms.RadioSelect,
-                                        initial=0)
+                                        widget=forms.RadioSelect)
 
     CHOICE_SUSBCRIPTION = [ ("price_1J0of7ClnCBJWy551iIQ6ydg", "8 euros"),
                             ("price_1J0ogXClnCBJWy552i9Bs2bg", "12 euros"),

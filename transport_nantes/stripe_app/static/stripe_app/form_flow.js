@@ -67,6 +67,33 @@ document.getElementsByName("donation_type").forEach(item => {
         }
     })
 })
+// Returns what button is selected in the one-time payments.
+function payment_amount_selected() {
+    var payment_radios = document.getElementsByName("payment_amount")
+    let selected
+    for (const radio_button of payment_radios) {
+        if (radio_button.checked) {
+            selected = radio_button.value
+            break
+        }
+    }
+    return selected
+}
+// Handles requirements if user picks one time payments. 
+// This sets the free amount field to required / not required
+// depending if the user selected free amount or not in radios buttons.
+document.getElementsByName("payment_amount").forEach(item => {
+    item.addEventListener("click", event => {
+        let selected = payment_amount_selected()
+        if (selected == "0") {
+            document.getElementById("payment_amount_rb_3").setAttribute("checked", "true")
+            document.getElementById("free_amount").setAttribute("required", "true")
+        } else {
+            document.getElementById("payment_amount_rb_3").removeAttribute("checked")
+            document.getElementById("free_amount").removeAttribute("required")
+        }
+    })
+})
 // ############################################
 // ######### Form validation part #############
 // ############################################
