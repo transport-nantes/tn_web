@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
 import folium
+from folium import plugins
 
 from .models import MapContent, MapDefinition
 
@@ -71,14 +72,11 @@ class MapView(TemplateView):
             layer_name = map_content.map_layer.layer_name
             if map_content.map_layer.layer_type == "BASE":
                 index = 0
-            elif map_content.map_layer.layer_type == "SATISFAIT":
-                index = 1
-            elif map_content.map_layer.layer_type == "NON SATISFAIT":
-                index = 2
-            else: # Shouldn't happen but who knows
-                raise Http404(f"Il y a un problème avec la couche {map_content.map_layer.layer_name}.\
-                            Veuillez contacter l'administreur.")
-            folium.GeoJson(geojson, name=layer_name,
+                # Creates a group to hold all sublayers
+                # will allow toogle/untoggle
+                group = folium.FeatureGroup(name=map_content.map_layer.layer_name)
+                geomap.add_child(group)
+                folium.GeoJson(geojson, name=layer_name,
                 # This lambda function is mandatory to use the
                 # style_function argument. It passes a dict as argument
                 # which contains datas about the layer (like the coordinates)
@@ -87,7 +85,29 @@ class MapView(TemplateView):
                 # styles is a list of dict containing args to set various
                 # styles settings such as thickness, opacity, color...
                 style_function=lambda _, ind=index, style=styles: style[ind])\
-                .add_to(geomap)
+                .add_to(group)
+            elif map_content.map_layer.layer_type == "SATISFAIT":
+                index = 1
+                # Add a sub group that will be toggled when the
+                # main group is toggled. Layers are added to subgroups
+                # as long as no new main group is defined.
+                subgroup = plugins.FeatureGroupSubGroup(group,
+                                        name=map_content.map_layer.layer_name)
+                geomap.add_child(subgroup)
+                folium.GeoJson(geojson, name=layer_name,
+                style_function=lambda _, ind=index, style=styles: style[ind])\
+                .add_to(subgroup)
+            elif map_content.map_layer.layer_type == "NON SATISFAIT":
+                index = 2
+                subgroup = plugins.FeatureGroupSubGroup(group,
+                                        name=map_content.map_layer.layer_name)
+                geomap.add_child(subgroup)
+                folium.GeoJson(geojson, name=layer_name,
+                style_function=lambda _, ind=index, style=styles: style[ind])\
+                .add_to(subgroup)
+            else: # Raise 404 if the layer isn't set properly
+                raise Http404(f"Il y a un problème avec la couche {map_content.map_layer.layer_name}.\
+                            Veuillez contacter l'administreur.")
 
         # This is the Layer filter to enable / disable datas on map
         folium.LayerControl(hideSingleBase=True).add_to(geomap)
