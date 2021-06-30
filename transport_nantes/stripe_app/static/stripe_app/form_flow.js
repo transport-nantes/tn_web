@@ -103,6 +103,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reportValidity
 Checks validity of a form from HTML5. 
 */
 
+var step_1_completed = false
+var step_2_completed = false
 // Hides part 1 and displays part 2.
 var valid_amount_form = false
 document.forms['amount_form'].addEventListener('submit', function() {
@@ -111,6 +113,7 @@ document.forms['amount_form'].addEventListener('submit', function() {
         document.getElementById("amount_form").style.display = "none"
         document.getElementById("donation_form").style.display = "block"
         document.getElementById("step1_text_2").classList.add("active")
+        step_1_completed = true
     }
   }, false);
 
@@ -118,6 +121,9 @@ document.forms['amount_form'].addEventListener('submit', function() {
 var valid_donation_form = false
 document.forms['donation_form'].addEventListener('submit', function() {
     valid_donation_form = document.forms['donation_form'].reportValidity();
+    if (valid_donation_form) {
+        step_2_completed = true
+    }
   }, false);
 
 // ############################################
@@ -163,7 +169,22 @@ fetch("/donation/config/")
   });
 });
 
-window.addEventListener("unload", function(event) {
+window.addEventListener("beforeunload", function(event) {
     // Code to run upon closure, will fetch a function on
     // server and see how far the visitor went
+    csrftoken=document.getElementsByName("csrfmiddlewaretoken")[0].value
+    myHeaders = new Headers()
+    myHeaders.append("X-CSRFToken", csrftoken)
+    
+    var form_progression = new FormData();
+    form_progression.append("step_1_completed", step_1_completed)
+    form_progression.append("step_2_completed", step_2_completed)
+   
+    fetch("/donation/tracking/", {
+        headers: myHeaders,
+        body: form_progression, 
+        method:"POST",
+        mode: "same-origin"
+    })
+    return false;
 })
