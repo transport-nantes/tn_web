@@ -3,12 +3,16 @@
 
 {% block content %}
 
-<h2>{{ map_defn.public_title }}</h2>
+<div class="m-3">
+    <h2 >{{ map_defn.public_title }}</h2>
+</div>
 
 <div class="container-fluid col-10 h-75 pt-3 pb-3">
     {{ html_map|safe }}
 </div>
 
-{{ map_defn.public_description_md|markdown }}
+<div class="m-3">
+    {{ map_defn.public_description_md|markdown }}
+</div>
 
 {% endblock content %}
