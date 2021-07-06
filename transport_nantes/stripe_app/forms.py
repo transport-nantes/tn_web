@@ -13,7 +13,7 @@ from crispy_forms.layout import (ButtonHolder, HTML, Submit,
 class DonationForm(forms.Form):
 
     gender = forms.ChoiceField( label="",
-                                choices=[("H", "M"), ("F", "MME")],
+                                choices=[("M", "M"), ("MME", "MME")],
                                 widget=forms.RadioSelect)
 
     first_name = forms.CharField(label="Prénom",
@@ -54,6 +54,13 @@ class DonationForm(forms.Form):
     country = forms.ChoiceField(
         widget=widgets.CountrySelectWidget, choices=countries, initial="FR")
 
+    consent = forms.BooleanField(
+        label="J'accepte les règles de conditions générales \
+            et de la visite de la plateforme",)
+    data_collect = forms.BooleanField(label="J'accepte que mes données soient\
+            collectées à des fins d'analyse et dans le cadre d'une prise de\
+            contact de la part des Mobilitains")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -84,6 +91,8 @@ class DonationForm(forms.Form):
                 Column("city"),
             ),
             "country",
+            Field("consent", template="stripe_app/checkbox_custom.html"),
+            Field("data_collect", template="stripe_app/checkbox_custom.html"),
             Submit("submit", "Soutenir",
                     css_id="supportButton",
                     css_class="btn-success"),
