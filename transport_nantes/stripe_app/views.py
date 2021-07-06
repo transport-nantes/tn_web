@@ -11,7 +11,7 @@ import stripe
 from transport_nantes.settings import (
     STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
 from .forms import DonationForm, AmountForm
-from .models import TrackingProgression
+from .models import TrackingProgression, Donator, Donation
 
 
 class StripeView(TemplateView):
@@ -79,7 +79,8 @@ def create_checkout_session(request):
                             # Amount in cents
                             'amount': order_amount(request.POST),
                         }
-                    ]
+                    ],
+                    metadata=request.POST
                 )
                 print(checkout_session)
                 return JsonResponse({'sessionId': checkout_session['id']})
@@ -98,7 +99,8 @@ def create_checkout_session(request):
                             # Amount in cents
                             'price': request.POST["subscription_amount"],
                         }
-                    ]
+                    ],
+                    metadata=request.POST
                 )
                 return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as error_message:
@@ -129,8 +131,59 @@ def stripe_webhook(request):
     if event['type'] == 'checkout.session.completed':
         print("Payment was successful.")
         # TODO: run some custom code here
+        print("Details attached to event : \n\n", "="*30, "\n", event)
+        try:
+            make_donator_from_webhook(event)
+            make_donation_from_webhook(event)
+        except:
+            print("="*80, "\n", "Error while creating a new Donator or Donation")
 
     return HttpResponse(status=200)
+
+def make_donator_from_webhook(event):
+    """
+    Creates a new Donator entry in the database from 
+    informations in the event.
+    event is sent by Stripe in the validaiton process of
+    the payment.
+    Metadata originates from the form on donation page, 
+    and is sent using JavaScript to Stripe.
+    """
+    kwargs = {
+        "email" : event["data"]["object"]["customer_email"],
+        "first_name" : event["data"]["object"]["metadata"]["first_name"],
+        "last_name" : event["data"]["object"]["metadata"]["last_name"],
+        "telephone" : event["data"]["object"]["metadata"]["telephone"],
+        "gender" : event["data"]["object"]["metadata"]["gender"],
+        "address" : event["data"]["object"]["metadata"]["address"],
+        "more_adress" : event["data"]["object"]["metadata"]["more_adress"],
+        "postal_code" : event["data"]["object"]["metadata"]["postal_code"],
+        "city" : event["data"]["object"]["metadata"]["city"],
+        "country" : event["data"]["object"]["metadata"]["country"],
+    }
+    donator = Donator(**kwargs)
+    donator.save()
+    print("Donator created !")
+
+def make_donation_from_webhook(event):
+    """
+    Creates an entry in database from informations in the event.
+    event is sent by Stripe in the validation process of donation.
+    """
+    if event["data"]["object"]["mode"] == "subscription":
+        mode = "SUB"
+    else:
+        mode = "PAY"
+    
+    kwargs = {
+        "donator" : Donator.objects.get(email=event["data"]["object"]["customer_email"]),
+        "mode" : mode,
+        "amount": int(event["data"]["object"]["amount_total"]) / 100
+    }
+
+    donation = Donation(**kwargs)
+    donation.save()
+    print("Donation created !")
 
 @csrf_exempt
 def order_amount(items):

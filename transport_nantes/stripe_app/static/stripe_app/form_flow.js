@@ -152,7 +152,19 @@ fetch("/donation/config/")
         document.getElementById("step1_text_3").classList.add("active")
         // Get Checkout Session ID
         form_data = new FormData(document.getElementById("amount_form"))
+
         form_data.append("mail", document.getElementById("id_mail").value)
+        form_data.append("first_name", document.getElementById("id_first_name").value)
+        form_data.append("last_name", document.getElementById("id_last_name").value)
+        form_data.append("telephone", document.getElementById("id_cell_phone").value)
+        form_data.append("gender", document.querySelector('input[name="gender"]:checked').value)
+        form_data.append("address", document.getElementById("id_address").value)
+        form_data.append("more_adress", document.getElementById("id_more_address").value)
+        form_data.append("postal_code", document.getElementById("id_postal_code").value)
+        form_data.append("city", document.getElementById("id_city").value)
+        form_data.append("country", document.getElementById("id_country").value)
+
+
         fetch("/donation/create-checkout-session/", {
             body: form_data,
             method:"POST"})
