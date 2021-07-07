@@ -7,6 +7,45 @@
 <div class="row">
     <div class="col-md-3">
 	<div class="thumbnail">
+	    <a href="{% url "geoplan:map" "nantes" "velopolitain" %}">
+		<div class="shadow-md">
+		    <img class="rounded"
+			 src="{% static 'asso_tn/20210228-210131-9011_velorution-psm-667.jpg' %}"
+			 alt="La Vélorution de Nantes passe devant le pont Saint-Mihiel"
+			 style="width:100%">
+		</div>
+		<div class="caption pt-2">
+		    <h3 class="font-weight-light"
+			style="font-variant: all-small-caps;
+			       font-size: 150%;">Observatoire du Vélopolitain</h3>
+		    <p>
+			Agir pour que Nantes Métropole tienne ses promesses.
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">
+		<div class="shadow-md">
+		<img class="rounded"
+		     src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
+		     alt="Un TER et un tramway" style="width:100%">
+		</div>
+		<div class="caption pt-2">
+		    <h3 class="font-weight-light"
+			style="font-variant: all-small-caps;
+			       font-size: 150%;">Grande mobilité</h3>
+		    <p>
+			Obtenir plus de dessertes et mieux bouger.
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+    <div class="col-md-3">
+	<div class="thumbnail">
 	    <a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">
 		<div class="shadow-md">
 		    <img class="rounded"
@@ -62,6 +101,7 @@
 	</div>
     </div>
 {% endcomment %}
+{% comment %}
     <div class="col-md-3">
 	<div class="thumbnail">
 	    <a href="{% url 'topic_blog:view_topic' '2021-regionales' %}">
@@ -81,25 +121,7 @@
 	    </a>
 	</div>
     </div>
-    <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">
-		<div class="shadow-md">
-		<img class="rounded"
-		     src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
-		     alt="Un TER et un tramway" style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Grande mobilité</h3>
-		    <p>
-			Obtenir plus de dessertes et mieux bouger.
-		    </p>
-		</div>
-	    </a>
-	</div>
-    </div>
+{% endcomment %}
 {% comment %}
     <div class="col-md-3">
 	<div class="thumbnail">
