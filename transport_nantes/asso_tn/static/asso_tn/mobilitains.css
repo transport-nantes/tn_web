@@ -138,6 +138,10 @@ a:hover:hover.cta-button {
     background-color: #EAF3FC;
 }
 
+.font-weight-light {
+    font-variant: all-small-caps;
+    font-size: 150%;
+}
 
 .image-darken-50 {
     filter: brightness(50%);
