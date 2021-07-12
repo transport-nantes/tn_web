@@ -1,9 +1,6 @@
 {% load static %}
 {% load don %}
-
-<div class="row">
-    <h2 class="pl-3">Les projets de l'asso</h2>
-</div>
+<h2>Les projets de l'asso</h2>
 <div class="row">
     <div class="col-md-3">
 	<div class="thumbnail">
@@ -64,82 +61,62 @@
 	</div>
     </div>
     <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}"
-			 alt="La piste cyclable sur le Pont Anne de Bretagne a Nantes"
-			 style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Vélopolitain</h3>
-		    <p>
-			Agir pour des aménagements cyclables bien pensés.
-		    </p>
-		</div>
-	    </a>
-	</div>
+        <div class="thumbnail">
+            <a href="{% url 'topic_blog:view_topic' 'velopolitain' %}">
+            <div class="shadow-md">
+                <img class="rounded" src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}" alt="La piste cyclable sur le Pont Anne de Bretagne a Nantes" style="width:100%">
+            </div>
+            <div class="caption pt-2">
+                <h3 class="font-weight-light">Vélopolitain</h3>
+                <p>Agir pour des aménagements cyclables bien pensés.</p>
+            </div>
+            </a>
+        </div>
     </div>
 {% comment %}
     <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_topic' 'pont-saint-mihiel' %}">
-		<img src="{% static 'asso_tn/pont-saint-mihiel-carre.jpg' %}"
-		     alt="Le Pont Saint-Mihiel a Nantes" style="width:100%">
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Pont Saint-Mihiel</h3>
-		    <p>
-			Le symbole d'une métropole qui hésite&nbsp;!
-		    </p>
-		</div>
-	    </a>
-	</div>
+        <div class="thumbnail">
+            <a href="{% url 'topic_blog:view_topic' 'pont-saint-mihiel' %}">
+            <img src="{% static 'asso_tn/pont-saint-mihiel-carre.jpg' %}" alt="Le Pont Saint-Mihiel a Nantes" style="width:100%">
+            <div class="caption pt-2">
+                <h3 class="font-weight-light">Pont Saint-Mihiel</h3>
+                <p>
+                Le symbole d'une métropole qui hésite&nbsp;!
+                </p>
+            </div>
+            </a>
+        </div>
     </div>
 {% endcomment %}
 {% comment %}
     <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_topic' '2021-regionales' %}">
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{% static 'asso_tn/traffic-667.jpg' %}"
-			 alt="bouchon sur une route" style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Élections 2021</h3>
-		    <p>
-			Mobiliser, questionner et faire bouger les lignes.
-		    </p>
-		</div>
-	    </a>
-	</div>
+        <div class="thumbnail">
+            <a href="{% url 'topic_blog:view_topic' '2021-regionales' %}">
+            <div class="shadow-md">
+                <img class="rounded" src="{% static 'asso_tn/traffic-667.jpg' %}" alt="bouchon sur une route" style="width:100%">
+            </div>
+            <div class="caption pt-2">
+                <h3 class="font-weight-light">Élections 2021</h3>
+                <p>
+                Mobiliser, questionner et faire bouger les lignes.
+                </p>
+            </div>
+            </a>
+        </div>
+    </div>
     </div>
 {% endcomment %}
 {% comment %}
     <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
-		<img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}"
-		     alt="Un ambassadeur" style="width:100%">
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Ambassadeurs Mobilitains</h3>
-		    <p>
-			Vous avez envie d’être un.e porte parole,
-			de réfléchir et agir avec nous ?
-			{# Soutenez-nous dans votre commune #}
-		    </p>
-		</div>
-	    </a>
-	</div>
+        <div class="thumbnail">
+            <a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}">
+            <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}" alt="Un ambassadeur" style="width:100%">
+            <div class="caption pt-2">
+                <h3 class="font-weight-light" style="font-variant: all-small-caps; font-size: 150%;">Ambassadeurs Mobilitains</h3>
+                <p>Vous avez envie d’être un.e porte parole, de réfléchir et agir avec nous ? {# Soutenez-nous dans votre commune #}</p>
+            </div>
+            </a>
+        </div>
     </div>
 {% endcomment %}
 </div>
