@@ -11,6 +11,44 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/*Colours defined*/
+:root {
+    --mobilitains-gris:       #DDE5ED;
+    --mobilitains-rouge:      #7F6966; /* éviter avec bleu-foncé */
+    --mobilitains-bleu:       #5BC2E7; /* éviter avec orange     */
+    --mobilitains-orange:     #FA4616; /* éviter avec bleu       */
+    --mobilitains-bleu-fonce: #333F48; /* éviter avec rouge      */
+
+    --body-text: var(--mobilitains-bleu-fonce);
+    --body-text-muted: var(--mobilitains-rouge);
+}
+
+/*Global classes aligements*/
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*footer alignements*/
+footer {
+    min-height: 220px;
+}
+
+footer ul {
+    list-style: none;
+}
+
+footer ul li {
+    list-style: none;
+    list-style-position: inherit;
+    padding-left: 0;
+}
+
+.footer-text {
+    color: var(--mobilitains-bleu-fonce);
+}
 ul.no-bullet-list {
     list-style-type: none;
 }
@@ -32,16 +70,8 @@ ul.no-bullet-list {
     color: #FFFFFF;
     font-weight: 700;
 }
-:root {
-    --mobilitains-gris:       #DDE5ED;
-    --mobilitains-rouge:      #7F6966; /* éviter avec bleu-foncé */
-    --mobilitains-bleu:       #5BC2E7; /* éviter avec orange     */
-    --mobilitains-orange:     #FA4616; /* éviter avec bleu       */
-    --mobilitains-bleu-fonce: #333F48; /* éviter avec rouge      */
 
-    --body-text: var(--mobilitains-bleu-fonce);
-    --body-text-muted: var(--mobilitains-rouge);
-}
+
 p {
     color: var(--body-text);
 }
