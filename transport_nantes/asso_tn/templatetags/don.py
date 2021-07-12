@@ -10,7 +10,7 @@ hello_asso_don = """https://www.helloasso.com/associations/transport-nantes/form
 @register.simple_tag
 def bouton_don(link_text):
     return mark_safe(
-        """<a href="{url}" class="btn btn-primary" role="button" target="_blank">{text}</a>""".format(
+        """<a href="{url}" class="btn donation-button" role="button" target="_blank"">{text}</a>""".format(
             url=hello_asso_don,
             text=link_text)
     )
