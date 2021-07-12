@@ -125,7 +125,7 @@
 	<button class="navbar-toggler" data-toggle="collapse" data-target=".navbars">
 		<span class="navbar-toggler-icon"></span>
 	  </button>
-	
+
 		  <!-- NavLink Menu -->
 		  <div class="collapse navbar-collapse navbars" id="collapse_target1">
 			<ul class="navbar-nav ml-auto">
@@ -136,11 +136,10 @@
 					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="{% url_don %}">Adhérer</a>
+					<a class="nav-link pr-3" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
-				</li>
+
+				<li class="nav-item">{% bouton_don "Contribuer au projet" %}</li>
 			</ul>
 		</div>
 	</nav>
@@ -163,7 +162,8 @@
 			  </ul>
 			</div>
 	</nav>
-	
+
+
     {% endblock navbar %}
     {% block content %}
     <div class="hero-image">
@@ -298,7 +298,7 @@
     {# Popper JS #}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     {# Latest compiled JavaScript #}
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     {% endblock scripts %}
     {% block localscripts %}{% endblock localscripts %}
     {% endblock body %}
