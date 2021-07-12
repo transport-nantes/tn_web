@@ -217,3 +217,26 @@ span.centered {
     text-align: left;
     font-size: 150%;
 }
+
+.footer-social .social {
+    text-align:center;
+    padding-bottom:25px;
+  }
+  
+.footer-social .social > a {
+    font-size:24px;
+    width:40px;
+    height:40px;
+    line-height:40px;
+    display:inline-block;
+    text-align:center;
+    border-radius:50%;
+    border:1px solid #ccc;
+    margin:0 8px;
+    color:inherit;
+    opacity:0.75;
+  }
+  
+.footer-social .social > a:hover {
+    opacity:0.9;
+  }
