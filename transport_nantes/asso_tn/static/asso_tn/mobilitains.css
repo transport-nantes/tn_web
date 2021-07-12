@@ -91,15 +91,13 @@ a.active {
     background-color: var(--mobilitains-gris);
 }
 a:link.donation-button {
-    color: var(--body-text);
-    background-color: var(--mobilitains-gris);
-    border: var(--mobilitains-bleu-fonce);
-    border-style: solid;
-    border-width: 2px;
-}
-a:hover:hover.donation-button {
-    color: var(--mobilitains-bleu-fonce);
+    color: white;
+    font-weight: bold;
     background-color: var(--mobilitains-bleu);
+    border-radius: 0;
+}
+a:visited.donation-button {
+    color: white;
 }
 a:link.cta-button {
     color: var(--body-text);
