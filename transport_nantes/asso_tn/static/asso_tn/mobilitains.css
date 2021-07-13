@@ -114,8 +114,9 @@ a:hover.donation-button {
     color: white;
     font-weight: 600;
 }
-a:visited.navigation-button {
-    color: white;
+a.navigation-button{
+    color:white;
+    font-weight: bold;
 }
 a:visited:hover.navigation-button {
     color: black;
