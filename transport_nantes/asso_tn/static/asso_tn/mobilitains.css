@@ -103,6 +103,11 @@ a:visited.donation-button {
 a:hover.donation-button {
     color: white;
 }
+.donation-button {
+    background-color: var(--mobilitains-bleu);
+    color:white;
+    font-weight: bold;
+}
 .navigation-button {
     background-color: var(--mobilitains-bleu-marine);
     border: 1px solid var(--mobilitains-bleu-marine);
