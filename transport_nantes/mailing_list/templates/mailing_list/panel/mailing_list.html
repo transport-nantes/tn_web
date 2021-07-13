@@ -2,10 +2,10 @@
 
 <div class="container pt-3 pb-3">
     <div class="row">
-	<div class="col-sm-6">
-	    <h2>Restez en contact&nbsp;!</h2>
+	<div class="col-sm-12 justify-content-center">
+	    <h2 class="d-flex justify-content-center">Restez en contact&nbsp;!</h2>
 	</div>
-	<div class="col-sm-6">
+	<div class="d-flex col-sm-12 justify-content-center">
 	    <form method="post" action="{% url 'mailing_list:quick_list_signup' %}">{% csrf_token %}
 		{% if form.non_field_errors %}
 		<p>{{ form.non_field_errors }}</p>
@@ -23,7 +23,7 @@
 		{% endfor %}
 		{% endfor %}
 		
-		<button type="submit" class="btn btn-outline-primary">Je m'inscris</button>
+		<button type="submit" class="btn navigation-button">Je m'inscris</button>
 	    </form>
 	</div>
     </div>
