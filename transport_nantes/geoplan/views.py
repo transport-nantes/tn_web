@@ -117,9 +117,9 @@ class MapView(TemplateView):
         html = root.render()
         # Hack to prevent Boostrap 3.2 to load, causes style conflict.
         # PR is on the way to update folium as of 29/06/21
-        my_bs_link = "https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        # Deleting the extra bootstrap import solves style conflict.
         old_bs_link = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-        html = html.replace(old_bs_link, my_bs_link)
+        html = html.replace(old_bs_link, "")
         context["html_map"] = html
         context["map_defn"] = map_definition
 
