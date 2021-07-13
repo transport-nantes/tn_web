@@ -22,6 +22,7 @@ html {
     --mobilitains-bleu:       #5BC2E7; /* éviter avec orange     */
     --mobilitains-orange:     #FA4616; /* éviter avec bleu       */
     --mobilitains-bleu-fonce: #333F48; /* éviter avec rouge      */
+    --mobilitains-bleu-marine: #43526e;/* éviter avec orange et rouge */
 
     --body-text: var(--mobilitains-bleu-fonce);
     --body-text-muted: var(--mobilitains-rouge);
@@ -98,6 +99,25 @@ a:link.donation-button {
 }
 a:visited.donation-button {
     color: white;
+}
+a:hover.donation-button {
+    color: white;
+}
+.navigation-button {
+    background-color: var(--mobilitains-bleu-marine);
+    border: 1px solid var(--mobilitains-bleu-marine);
+    color: white;
+    font-weight: 600;
+}
+a:visited.navigation-button {
+    color: white;
+}
+a:visited:hover.navigation-button {
+    color: black;
+}
+.navigation-button:hover {
+    background-color: white;
+    color:black;
 }
 a:link.cta-button {
     color: var(--body-text);
