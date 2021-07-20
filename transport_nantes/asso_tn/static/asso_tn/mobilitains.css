@@ -108,6 +108,9 @@ a:hover.donation-button {
     color:white;
     font-weight: bold;
 }
+.btn.donation-button:hover {
+    color:white;
+}
 .navigation-button {
     background-color: var(--mobilitains-bleu-marine);
     border: 1px solid var(--mobilitains-bleu-marine);
@@ -118,7 +121,7 @@ a.navigation-button{
     color:white;
     font-weight: bold;
 }
-a:visited:hover.navigation-button {
+a.navigation-button:visited:hover {
     color: black;
 }
 .navigation-button:hover {
