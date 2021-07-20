@@ -17,7 +17,12 @@
 
 {% block app_content %}
 
-{{ page.body1_md|markdown }}
+<div id="body1_markdown" class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center">
+	<div class="col-md-12 col-lg-12 col-xl-6" style="line-height: 2">
+		{{ page.body1_md|markdown }}
+	</div>
+</div>
+
 
 {% show_projects %}
 
