@@ -94,7 +94,7 @@ a.active {
 }
 a:link.donation-button {
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     background-color: var(--mobilitains-bleu);
     border-radius: 0;
 }
@@ -107,7 +107,7 @@ a:hover.donation-button {
 .donation-button {
     background-color: var(--mobilitains-bleu);
     color:white;
-    font-weight: bold;
+    font-weight: 600;
 }
 .btn.donation-button:hover {
     color:white;
@@ -120,7 +120,7 @@ a:hover.donation-button {
 }
 a.navigation-button{
     color:white;
-    font-weight: bold;
+    font-weight: 600;
 }
 a.navigation-button:visited:hover {
     color: black;
