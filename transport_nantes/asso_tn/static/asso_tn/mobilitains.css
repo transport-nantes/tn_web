@@ -286,3 +286,12 @@ span.centered {
 .footer-social .social > a:hover {
     opacity:0.9;
   }
+@media (min-width: 992px) {
+    .navbar-logo {
+        max-width: 18%;
+    }
+    .navbar-logo-image {
+        width: 100% !important;
+        height: 100%;
+    }
+}
