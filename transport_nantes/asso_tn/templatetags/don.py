@@ -1,17 +1,19 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 register = template.Library()
 
-# hello_asso_2019 = """https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"""
-hello_asso_join = """https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/"""
-hello_asso_don = """https://www.helloasso.com/associations/transport-nantes/formulaires/2"""
+# hello_asso_2019 = """https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/""" # noqa
+hello_asso_join = """https://www.helloasso.com/associations/transport-nantes/adhesions/adhesion-transport-nantes-2019/""" # noqa
+hello_asso_don = """https://www.helloasso.com/associations/transport-nantes/formulaires/2""" # noqa
+page_donation = reverse("stripe_app:stripe")
 
 @register.simple_tag
 def bouton_don(link_text):
     return mark_safe(
         """<a href="{url}" class="btn donation-button" role="button" target="_blank"">{text}</a>""".format(
-            url=hello_asso_don,
+            url=page_donation,
             text=link_text)
     )
 
@@ -28,13 +30,13 @@ def bouton_don_lg(link_text):
     html_template = """<p class="pl-5"><a href="{link_url}" class="btn """ + \
         """donation-button btn-lg" target="_blank">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
-    return mark_safe(html_template.format(link_url=hello_asso_don, text=link_text))
+    return mark_safe(html_template.format(link_url=page_donation, text=link_text))
 
 @register.simple_tag
 def lien_don(link_text):
     return mark_safe(
         """<a href="{url}" target="_blank">{text}</a></p>""".format(
-            url=hello_asso_don,
+            url=page_donation,
             text=link_text)
     )
 
