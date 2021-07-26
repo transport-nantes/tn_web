@@ -54,9 +54,10 @@ class DonationForm(forms.Form):
     country = forms.ChoiceField(
         widget=widgets.CountrySelectWidget, choices=countries, initial="FR")
 
-    data_collect = forms.BooleanField(label="J'accepte que mes données soient\
-            collectées à des fins d'analyse et dans le cadre d'une prise de\
-            contact de la part des Mobilitains")
+    data_collect = forms.BooleanField(label="J'accepte que mes données soient \
+        collectées afin de traiter mon don et de communiquer avec moi à ce \
+        sujet par la suite.  Je comprends que je peux à tout moment demander \
+        à ne plus être contacté(e).")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
