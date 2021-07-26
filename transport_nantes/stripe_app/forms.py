@@ -95,8 +95,8 @@ class DonationForm(forms.Form):
         )
 
 class AmountForm(forms.Form):
-    sub_or_donate = [("subscription", "Je donne tous les mois"),
-                     ("payment", "Je donne une fois")]
+    sub_or_donate = [("payment", "Je donne une fois"),
+                     ("subscription", "Je donne tous les mois")]
     donation_type = forms.ChoiceField(  label="",
                                         choices=sub_or_donate,
                                         widget=forms.RadioSelect)
