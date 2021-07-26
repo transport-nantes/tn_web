@@ -54,9 +54,6 @@ class DonationForm(forms.Form):
     country = forms.ChoiceField(
         widget=widgets.CountrySelectWidget, choices=countries, initial="FR")
 
-    consent = forms.BooleanField(
-        label="J'accepte les règles de conditions générales \
-            et de la visite de la plateforme",)
     data_collect = forms.BooleanField(label="J'accepte que mes données soient\
             collectées à des fins d'analyse et dans le cadre d'une prise de\
             contact de la part des Mobilitains")
@@ -91,7 +88,6 @@ class DonationForm(forms.Form):
                 Column("city"),
             ),
             "country",
-            Field("consent", template="stripe_app/checkbox_custom.html"),
             Field("data_collect", template="stripe_app/checkbox_custom.html"),
             Submit("submit", "Soutenir",
                     css_id="supportButton",
