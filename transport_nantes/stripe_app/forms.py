@@ -101,9 +101,9 @@ class AmountForm(forms.Form):
                                         choices=sub_or_donate,
                                         widget=forms.RadioSelect)
 
-    CHOICE_PAYMENT = [  (35, "35 euros"),
-                        (55, "55 euros"),
-                        (95, "95 euros"),
+    CHOICE_PAYMENT = [  (5, "5 euros"),
+                        (10, "10 euros"),
+                        (25, "25 euros"),
                         (0, "Montant libre")]
     payment_amount = forms.ChoiceField( label="",
                                         choices=CHOICE_PAYMENT,
