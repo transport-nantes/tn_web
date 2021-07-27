@@ -27,8 +27,16 @@ class Donator(models.Model):
     city = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
+
 class Donation(models.Model):
     donator = models.ForeignKey(Donator, on_delete=models.CASCADE)
     mode = models.CharField(
         choices=[("SUB", "Subscription"), ("PAY", "One time donation")], max_length=50)
     amount = models.FloatField()
+
+    def __str__(self):
+        return str(self.donator) + " | " + str(self.amount) + " | " +\
+            str(self.mode) + " | " + str(self.timestamp)[:19]
