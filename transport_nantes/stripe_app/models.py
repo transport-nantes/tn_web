@@ -1,17 +1,18 @@
 from django.db import models
 
-# Create your models here.
+
 class TrackingProgression(models.Model):
     step_1 = models.BooleanField()
     step_2 = models.BooleanField()
-    timestamp =models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         if self.step_2 is True:
-            name  = "SUCCESS "
+            name = "SUCCESS "
         else:
             name = "ABANDON "
-        return name +  str(self.timestamp)[:19]
+        return name + str(self.timestamp)[:19]
+
 
 class Donator(models.Model):
     email = models.EmailField(primary_key=True)
@@ -34,7 +35,8 @@ class Donator(models.Model):
 class Donation(models.Model):
     donator = models.ForeignKey(Donator, on_delete=models.CASCADE)
     mode = models.CharField(
-        choices=[("SUB", "Subscription"), ("PAY", "One time donation")], max_length=50)
+        choices=[("SUB", "Subscription"), ("PAY", "One time donation")],
+        max_length=50)
     amount = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
