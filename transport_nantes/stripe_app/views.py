@@ -149,7 +149,10 @@ def stripe_webhook(request):
     stripe.api_key = STRIPE_SECRET_KEY
     endpoint_secret = STRIPE_ENDPOINT_SECRET
     payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    try:
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    except KeyError:
+        return HttpResponse(status=400)
     event = None
 
     try:
@@ -173,8 +176,9 @@ def stripe_webhook(request):
         try:
             make_donator_from_webhook(event)
             make_donation_from_webhook(event)
-        except:
-            print("="*80, "\n", "Error while creating a new Donator or Donation")
+        except Exception as error_message:
+            print("="*80, "\n", "Error while creating \
+            a new Donator or Donation. Details : ", error_message)
 
     return HttpResponse(status=200)
 
