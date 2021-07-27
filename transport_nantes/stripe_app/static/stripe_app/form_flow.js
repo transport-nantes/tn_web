@@ -180,7 +180,9 @@ fetch("/donation/config/")
         .then((result) => { return result.json(); })
         .then((data) => {
         console.log("Session ID :", data);
-        // Redirect to Stripe Checkout
+        // Redirect to Stripe Checkout once the checkout session is created
+        // Manually trigger before unload event to save success
+        window.dispatchEvent(new Event("beforeunload"))
         return stripe.redirectToCheckout({sessionId: data.sessionId})
         })
         .then((res) => {
