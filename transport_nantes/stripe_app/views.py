@@ -51,7 +51,7 @@ class SuccessView(TemplateView):
     """
     template_name = "stripe_app/success.html"
 
-@csrf_exempt
+
 def get_public_key(request):
     """
     Returns the public key of the stripe account.
@@ -60,7 +60,7 @@ def get_public_key(request):
         public_key = {"publicKey": STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(public_key, safe=False)
 
-@csrf_exempt
+
 def create_checkout_session(request):
     """
     Create new Checkout Session for the order
@@ -223,7 +223,7 @@ def make_donation_from_webhook(event):
     donation.save()
     print("Donation created !")
 
-@csrf_exempt
+
 def order_amount(items):
     # Here the formula to compute order amount.
     # We aim for one time donations and recurring donations.
@@ -243,7 +243,6 @@ def order_amount(items):
         return int(items[donation_type + "_amount"])*100
 
 
-@csrf_exempt
 def create_payment_intent(request):
     try:
         # request.body will be a dict containing items,
