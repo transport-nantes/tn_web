@@ -149,8 +149,15 @@ fetch("/donation/config/")
   document.querySelector("#donation_form").addEventListener("submit", () => {
     
     if (valid_donation_form == true){
+        // Update the progression bar
         document.getElementById("step1_text_3").classList.add("active")
-        // Get Checkout Session ID
+
+        // Add CFRS token to request Header
+        csrftoken=document.getElementsByName("csrfmiddlewaretoken")[0].value
+        myHeaders = new Headers()
+        myHeaders.append("X-CSRFToken", csrftoken)
+
+        // Add field informations to request body
         form_data = new FormData(document.getElementById("amount_form"))
 
         form_data.append("mail", document.getElementById("id_mail").value)
@@ -165,7 +172,9 @@ fetch("/donation/config/")
         form_data.append("country", document.getElementById("id_country").value)
 
 
+        // Send the request to server to create a checkout session
         fetch("/donation/create-checkout-session/", {
+            headers: myHeaders,
             body: form_data,
             method:"POST"})
         .then((result) => { return result.json(); })
