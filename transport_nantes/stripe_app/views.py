@@ -44,6 +44,7 @@ class StripeView(TemplateView):
 
         return render(request, self.template_name, {'form': form})
 
+
 class SuccessView(TemplateView):
     """
     Only used to display a static template.
@@ -90,12 +91,12 @@ def create_checkout_session(request):
             if request.POST["donation_type"] == 'payment':
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
-                    success_url= domain_url + "/donation/success/",
-                    cancel_url= domain_url+ "/donation/",
                     # Cant't use bare /donation, will raise an error.
+                    success_url=domain_url + "/donation/success/",
+                    cancel_url=domain_url + "/donation/",
                     payment_method_types=['card'],
                     mode=request.POST["donation_type"],
-                    customer_email= request.POST["mail"],
+                    customer_email=request.POST["mail"],
                     line_items=[
                         {
                             'name': 'Donation',
@@ -118,11 +119,11 @@ def create_checkout_session(request):
             elif request.POST["donation_type"] == "subscription":
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
-                    success_url= domain_url + "/donation/success/",
-                    cancel_url= domain_url+ "/donation/",
+                    success_url=domain_url + "/donation/success/",
+                    cancel_url=domain_url + "/donation/",
                     payment_method_types=['card'],
                     mode=request.POST["donation_type"],
-                    customer_email= request.POST["mail"],
+                    customer_email=request.POST["mail"],
                     line_items=[
                         {
                             'quantity': 1,
@@ -182,30 +183,32 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
+
 def make_donator_from_webhook(event):
     """
-    Creates a new Donator entry in the database from 
+    Creates a new Donator entry in the database from
     informations in the event.
     event is sent by Stripe in the validaiton process of
     the payment.
-    Metadata originates from the form on donation page, 
+    Metadata originates from the form on donation page,
     and is sent using JavaScript to Stripe.
     """
     kwargs = {
-        "email" : event["data"]["object"]["customer_email"],
-        "first_name" : event["data"]["object"]["metadata"]["first_name"],
-        "last_name" : event["data"]["object"]["metadata"]["last_name"],
-        "telephone" : event["data"]["object"]["metadata"]["telephone"],
-        "gender" : event["data"]["object"]["metadata"]["gender"],
-        "address" : event["data"]["object"]["metadata"]["address"],
-        "more_adress" : event["data"]["object"]["metadata"]["more_adress"],
-        "postal_code" : event["data"]["object"]["metadata"]["postal_code"],
-        "city" : event["data"]["object"]["metadata"]["city"],
-        "country" : event["data"]["object"]["metadata"]["country"],
+        "email": event["data"]["object"]["customer_email"],
+        "first_name": event["data"]["object"]["metadata"]["first_name"],
+        "last_name": event["data"]["object"]["metadata"]["last_name"],
+        "telephone": event["data"]["object"]["metadata"]["telephone"],
+        "gender": event["data"]["object"]["metadata"]["gender"],
+        "address": event["data"]["object"]["metadata"]["address"],
+        "more_adress": event["data"]["object"]["metadata"]["more_adress"],
+        "postal_code": event["data"]["object"]["metadata"]["postal_code"],
+        "city": event["data"]["object"]["metadata"]["city"],
+        "country": event["data"]["object"]["metadata"]["country"],
     }
     donator = Donator(**kwargs)
     donator.save()
     print("Donator created !")
+
 
 def make_donation_from_webhook(event):
     """
@@ -216,10 +219,11 @@ def make_donation_from_webhook(event):
         mode = "SUB"
     else:
         mode = "PAY"
-    
+
     kwargs = {
-        "donator" : Donator.objects.get(email=event["data"]["object"]["customer_email"]),
-        "mode" : mode,
+        "donator": Donator.objects.get(
+            email=event["data"]["object"]["customer_email"]),
+        "mode": mode,
         "amount": int(event["data"]["object"]["amount_total"]) / 100
     }
 
@@ -281,8 +285,8 @@ def tracking_progression(request):
                 data[key] = False
 
         data = TrackingProgression(step_1=data["step_1_completed"],
-                                    step_2=data["step_2_completed"],
-                                    timestamp=datetime.datetime.now)
+                                   step_2=data["step_2_completed"],
+                                   timestamp=datetime.datetime.now)
         data.save()
         return HttpResponse(status=200)
     except Exception as error_message:
