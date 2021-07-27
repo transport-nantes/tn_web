@@ -15,10 +15,16 @@ from .models import TrackingProgression, Donator, Donation
 
 
 class StripeView(TemplateView):
+    """
+    Displays the two forms required to make the donation page.
+    """
     template_name = "stripe_app/donation_form.html"
     form_class = DonationForm
 
     def get(self, request, *args, **kwargs):
+        """
+        Main function used, will pass the appropriate form to the template.
+        """
         info_form = DonationForm()
         amount_form = AmountForm()
         return render(request, self.template_name, {"info_form": info_form,
@@ -26,6 +32,10 @@ class StripeView(TemplateView):
                                                     })
 
     def post(self, request, *args, **kwargs):
+        """
+        Used for debug, not used in production.
+        The forms aren't POSTed using POST on this URL.
+        """
         form = self.form_class(request.POST)
         if form.is_valid():
             # <process form cleaned data>
@@ -35,39 +45,54 @@ class StripeView(TemplateView):
         return render(request, self.template_name, {'form': form})
 
 class SuccessView(TemplateView):
+    """
+    Only used to display a static template.
+    This template is displayed if the Stripe payment is completed.
+    """
     template_name = "stripe_app/success.html"
 
 @csrf_exempt
 def get_public_key(request):
+    """
+    Returns the public key of the stripe account.
+    """
     if request.method == "GET":
         public_key = {"publicKey": STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(public_key, safe=False)
 
 @csrf_exempt
 def create_checkout_session(request):
+    """
+    Create new Checkout Session for the order
+
+    Other optional params include:
+    [billing_address_collection] - to display
+    billing address details on the page
+    [customer] - if you have an existing Stripe Customer ID
+    [payment_intent_data] - capture the payment later
+    [customer_email] - prefill the email input in the form
+    For full details see
+    https://stripe.com/docs/api/checkout/sessions/create
+
+    ?session_id={CHECKOUT_SESSION_ID} means the redirect
+    will have the session ID set as a query param
+    """
     if request.method == "POST":
         domain_url = "http://" + str(request.get_host())
         stripe.api_key = STRIPE_SECRET_KEY
         try:
-            # Create new Checkout Session for the order
-            # Other optional params include:
-            # [billing_address_collection] - to display
-            # billing address details on the page
-            # [customer] - if you have an existing Stripe Customer ID
-            # [payment_intent_data] - capture the payment later
-            # [customer_email] - prefill the email input in the form
-            # For full details see
-            # https://stripe.com/docs/api/checkout/sessions/create
-
-            # ?session_id={CHECKOUT_SESSION_ID} means the redirect
-            # will have the session ID set as a query param
+            # DEBUG
             print(f'{request.POST}')
             print("donation type is: ", request.POST["donation_type"])
+
+            # request.POST["donation_type"] is given with JavaScript
+            # it can take two values : payment and subscription.
             if request.POST["donation_type"] == 'payment':
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
                     success_url= domain_url + "/donation/success/",
                     cancel_url= domain_url+ "/donation/",
+                    # Cant't use bare /donation, will raise an error.
                     payment_method_types=['card'],
                     mode=request.POST["donation_type"],
                     customer_email= request.POST["mail"],
@@ -80,11 +105,16 @@ def create_checkout_session(request):
                             'amount': order_amount(request.POST),
                         }
                     ],
+                    # Metadata is an optional field containing all personal
+                    # informations gathered in the form.
                     metadata=request.POST
                 )
                 print(checkout_session)
                 return JsonResponse({'sessionId': checkout_session['id']})
 
+            # There are fewer parameters for subscription because some of them
+            # are set on Stripe's Dashboard.
+            # Subscriptions are created in the dashboard only.
             elif request.POST["donation_type"] == "subscription":
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
@@ -106,8 +136,16 @@ def create_checkout_session(request):
         except Exception as error_message:
             return JsonResponse({'error': str(error_message)})
 
+
+# Can't let CSRF otherwise POST from Stripe are denied.
+# See https://stripe.com/docs/webhooks/best-practices#csrf-protection
 @csrf_exempt
 def stripe_webhook(request):
+    """
+    The webhook is triggered when a payment attempt is done.
+    POST request from Stripe contain a signature to authenticate the request.
+    The signature is generated with the secret key of the stripe account.
+    """
     stripe.api_key = STRIPE_SECRET_KEY
     endpoint_secret = STRIPE_ENDPOINT_SECRET
     payload = request.body
