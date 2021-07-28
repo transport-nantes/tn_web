@@ -11,7 +11,7 @@ import stripe
 from transport_nantes.settings import (
     STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
 from .forms import DonationForm, AmountForm
-from .models import TrackingProgression, Donator, Donation
+from .models import TrackingProgression, Donor, Donation
 
 
 class StripeView(TemplateView):
@@ -175,18 +175,18 @@ def stripe_webhook(request):
         # TODO: run some custom code here
         print("Details attached to event : \n\n", "="*30, "\n", event)
         try:
-            make_donator_from_webhook(event)
+            make_donor_from_webhook(event)
             make_donation_from_webhook(event)
         except Exception as error_message:
             print("="*80, "\n", "Error while creating \
-            a new Donator or Donation. Details : ", error_message)
+            a new Donor or Donation. Details : ", error_message)
 
     return HttpResponse(status=200)
 
 
-def make_donator_from_webhook(event):
+def make_donor_from_webhook(event):
     """
-    Creates a new Donator entry in the database from
+    Creates a new donor entry in the database from
     informations in the event.
     event is sent by Stripe in the validaiton process of
     the payment.
@@ -205,9 +205,9 @@ def make_donator_from_webhook(event):
         "city": event["data"]["object"]["metadata"]["city"],
         "country": event["data"]["object"]["metadata"]["country"],
     }
-    donator = Donator(**kwargs)
-    donator.save()
-    print("Donator created !")
+    donor = Donor(**kwargs)
+    donor.save()
+    print("Donor created !")
 
 
 def make_donation_from_webhook(event):
@@ -221,7 +221,7 @@ def make_donation_from_webhook(event):
         mode = "PAY"
 
     kwargs = {
-        "donator": Donator.objects.get(
+        "donor": Donor.objects.get(
             email=event["data"]["object"]["customer_email"]),
         "mode": mode,
         "amount": int(event["data"]["object"]["amount_total"])
@@ -284,8 +284,8 @@ def tracking_progression(request):
             else:
                 data[key] = False
 
-        data = TrackingProgression(step_1=data["step_1_completed"],
-                                   step_2=data["step_2_completed"],
+        data = TrackingProgression(amount_form_done=data["step_1_completed"],
+                                   donation_form_done=data["step_2_completed"],
                                    timestamp=datetime.datetime.now)
         data.save()
         return HttpResponse(status=200)

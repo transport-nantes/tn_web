@@ -15,7 +15,7 @@ class TrackingProgression(models.Model):
         return name + str(self.timestamp)[:19]
 
 
-class Donator(models.Model):
+class Donor(models.Model):
     email = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -36,7 +36,7 @@ class Donator(models.Model):
 
 
 class Donation(models.Model):
-    donator = models.ForeignKey(Donator, on_delete=models.CASCADE)
+    donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
     mode = models.CharField(
         choices=[("SUB", "Subscription"), ("PAY", "One time donation")],
         max_length=50)
@@ -44,5 +44,5 @@ class Donation(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return str(self.donator) + " | " + str(self.amount) + " | " +\
+        return str(self.donor) + " | " + str(self.amount) + " | " +\
             str(self.mode) + " | " + str(self.timestamp)[:19]
