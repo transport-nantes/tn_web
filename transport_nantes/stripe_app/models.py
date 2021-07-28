@@ -40,7 +40,7 @@ class Donation(models.Model):
     mode = models.CharField(
         choices=[("SUB", "Subscription"), ("PAY", "One time donation")],
         max_length=50)
-    amount = models.FloatField()
+    amount = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):

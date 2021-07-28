@@ -224,7 +224,7 @@ def make_donation_from_webhook(event):
         "donator": Donator.objects.get(
             email=event["data"]["object"]["customer_email"]),
         "mode": mode,
-        "amount": int(event["data"]["object"]["amount_total"]) / 100
+        "amount": int(event["data"]["object"]["amount_total"])
     }
 
     donation = Donation(**kwargs)
