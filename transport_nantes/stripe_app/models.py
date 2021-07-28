@@ -17,16 +17,18 @@ class TrackingProgression(models.Model):
 
 class Donator(models.Model):
     email = models.EmailField(primary_key=True)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     telephone = models.CharField(max_length=13)
     gender = models.CharField(choices=[
                                 ("M", "Monsieur"),
-                                ("MME", "Madame")], max_length=3)
-    address = models.CharField(max_length=50)
-    more_adress = models.CharField(blank=True, max_length=50)
-    postal_code = models.IntegerField()
-    city = models.CharField(max_length=50)
+                                ("MME", "Madame")],
+                              max_length=3,
+                              verbose_name="Title")
+    address = models.CharField(max_length=150)
+    more_adress = models.CharField(blank=True, max_length=150)
+    postal_code = models.CharField(max_length=50)
+    city = models.CharField(max_length=150)
     country = models.CharField(max_length=50)
 
     def __str__(self):
