@@ -2,12 +2,13 @@ from django.db import models
 
 
 class TrackingProgression(models.Model):
-    step_1 = models.BooleanField()
-    step_2 = models.BooleanField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    amount_form_done = models.BooleanField(verbose_name="Formulaire montant")
+    donation_form_done = models.BooleanField(
+        verbose_name="Formulaire informations personnelles")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
 
     def __str__(self):
-        if self.step_2 is True:
+        if self.donation_form_done is True:
             name = "SUCCESS "
         else:
             name = "ABANDON "

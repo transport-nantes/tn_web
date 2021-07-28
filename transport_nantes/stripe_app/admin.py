@@ -3,7 +3,7 @@ from .models import TrackingProgression, Donation, Donator
 
 
 class TrackingProgressionAdmin(admin.ModelAdmin):
-    readonly_fields = ("timestamp", "step_1", "step_2", )
+    readonly_fields = ("timestamp", "amount_form_done", "donation_form_done", )
 
 
 class DonatorAdmin(admin.ModelAdmin):
