@@ -41,9 +41,10 @@ class Donation(models.Model):
     mode = models.CharField(
         choices=[("SUB", "Subscription"), ("PAY", "One time donation")],
         max_length=50)
-    amount = models.IntegerField()
+    amount_centimes_euros = models.IntegerField(
+        verbose_name="Amount in centimes", default=0)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return str(self.donor) + " | " + str(self.amount) + " | " +\
-            str(self.mode) + " | " + str(self.timestamp)[:19]
+        return str(self.donor) + " | " + str(self.amount_centimes_euros)\
+             + " | " + str(self.mode) + " | " + str(self.timestamp)[:19]

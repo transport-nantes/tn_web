@@ -11,7 +11,7 @@ class DonorAdmin(admin.ModelAdmin):
 
 
 class DonationAdmin(admin.ModelAdmin):
-    readonly_fields = ("timestamp", "mode", "donor", "amount")
+    readonly_fields = ("timestamp", "mode", "donor", "amount_centimes_euros")
 
 
 admin.site.register(TrackingProgression, TrackingProgressionAdmin)
