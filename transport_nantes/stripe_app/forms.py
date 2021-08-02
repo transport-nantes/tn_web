@@ -12,9 +12,9 @@ from crispy_forms.layout import (ButtonHolder, HTML, Submit,
 
 class DonationForm(forms.Form):
 
-    title = forms.ChoiceField( label="",
-                                choices=[("M", "M"), ("MME", "MME")],
-                                widget=forms.RadioSelect)
+    title = forms.ChoiceField(label="",
+                              choices=[("M", "M"), ("MME", "MME"), ("MMM", "Autre")],
+                              widget=forms.RadioSelect)
 
     first_name = forms.CharField(label="Prénom",
                                 widget=forms.TextInput(

@@ -22,9 +22,10 @@ class Donor(models.Model):
     telephone = models.CharField(max_length=13)
     title = models.CharField(choices=[
                                 ("M", "Monsieur"),
-                                ("MME", "Madame")],
-                              max_length=3,
-                              verbose_name="Title")
+                                ("MME", "Madame"),
+                                ("MMM", "Autre")],
+                             max_length=3,
+                             verbose_name="Title")
     address = models.CharField(max_length=150)
     more_adress = models.CharField(blank=True, max_length=150)
     postal_code = models.CharField(max_length=50)
