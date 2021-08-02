@@ -19,7 +19,7 @@ class Donor(models.Model):
     email = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    telephone = models.CharField(max_length=13)
+    telephone = models.CharField(max_length=13, blank=True)
     title = models.CharField(choices=[
                                 ("M", "Monsieur"),
                                 ("MME", "Madame"),
