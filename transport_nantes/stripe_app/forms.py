@@ -12,7 +12,7 @@ from crispy_forms.layout import (ButtonHolder, HTML, Submit,
 
 class DonationForm(forms.Form):
 
-    gender = forms.ChoiceField( label="",
+    title = forms.ChoiceField( label="",
                                 choices=[("M", "M"), ("MME", "MME")],
                                 widget=forms.RadioSelect)
 
@@ -72,7 +72,7 @@ class DonationForm(forms.Form):
                     css_class="btn-outline-info",
                     style="margin-bottom: 1em"),
             ),
-            Field("gender", template="stripe_app/inline_radio_custom.html", id="gender"),
+            Field("title", template="stripe_app/inline_radio_custom.html", id="title"),
             Row(
                 Column("first_name"),
                 Column("last_name")

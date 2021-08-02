@@ -198,7 +198,7 @@ def make_donor_from_webhook(event):
         "first_name": event["data"]["object"]["metadata"]["first_name"],
         "last_name": event["data"]["object"]["metadata"]["last_name"],
         "telephone": event["data"]["object"]["metadata"]["telephone"],
-        "gender": event["data"]["object"]["metadata"]["gender"],
+        "title": event["data"]["object"]["metadata"]["title"],
         "address": event["data"]["object"]["metadata"]["address"],
         "more_adress": event["data"]["object"]["metadata"]["more_adress"],
         "postal_code": event["data"]["object"]["metadata"]["postal_code"],

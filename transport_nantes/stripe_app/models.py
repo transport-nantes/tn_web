@@ -20,7 +20,7 @@ class Donor(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     telephone = models.CharField(max_length=13)
-    gender = models.CharField(choices=[
+    title = models.CharField(choices=[
                                 ("M", "Monsieur"),
                                 ("MME", "Madame")],
                               max_length=3,
