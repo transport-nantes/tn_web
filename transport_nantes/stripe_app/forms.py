@@ -124,6 +124,7 @@ class AmountForm(forms.Form):
                   template="stripe_app/inline_radio_custom.html",
                   id="payment_amount_rb", style="display: none"),
             Field("free_amount", id="free_amount", style="display: none"),
+            HTML("<p id='real_cost'></p>"),
             ButtonHolder(
                 Submit('submit', 'Continuer',
                        css_class='btn btn-primary', css_id="toStep2")
