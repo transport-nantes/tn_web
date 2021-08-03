@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class TrackingProgression(models.Model):
@@ -15,36 +16,32 @@ class TrackingProgression(models.Model):
         return name + str(self.timestamp)[:19]
 
 
-class Donor(models.Model):
-    email = models.EmailField(primary_key=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    telephone = models.CharField(max_length=13, blank=True)
-    title = models.CharField(choices=[
-                                ("M", "Monsieur"),
-                                ("MME", "Madame"),
-                                ("MMM", "Autre")],
-                             max_length=3,
-                             verbose_name="Title")
-    address = models.CharField(max_length=150)
-    more_adress = models.CharField(blank=True, max_length=150)
-    postal_code = models.CharField(max_length=50)
-    city = models.CharField(max_length=150)
-    country = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.first_name + " " + self.last_name
-
-
 class Donation(models.Model):
-    donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
-    mode = models.CharField(
-        choices=[("SUB", "Subscription"), ("PAY", "One time donation")],
-        max_length=50)
+    # We should *never* delete users or donation records.
+    # Still, we model correctly for relational integrity.
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    email = models.EmailField(verbose_name="Email")
+    first_name = models.CharField(max_length=100, verbose_name="Prénom")
+    last_name = models.CharField(max_length=100, verbose_name="Nom")
+    address = models.CharField(max_length=200, verbose_name="Adresse")
+    more_address = models.CharField(max_length=200,
+                                    verbose_name="Complément d'adresse",
+                                    blank=True)
+    postal_code = models.CharField(max_length=10, verbose_name="Code postal")
+    city = models.CharField(max_length=100, verbose_name="Ville")
+    country = models.CharField(max_length=100, verbose_name="Pays")
+
+    # A period of 0 means a one-time gift.
+    # Any other value means repeat at N month intervals.
+    # We should limit this to 12 max.
+    periodicity_months = models.IntegerField(verbose_name="Période")
     amount_centimes_euros = models.IntegerField(
-        verbose_name="Amount in centimes", default=0)
-    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+        verbose_name="Montant (Centimes €)", default=0)
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
 
     def __str__(self):
-        return str(self.donor) + " | " + str(self.amount_centimes_euros)\
-             + " | " + str(self.mode) + " | " + str(self.timestamp)[:19]
+        return self.first_name + " " + self.last_name + \
+            " ({}) ".format(self.email) +\
+            str(round(float(self.amount_centimes_euros/100), 2)) \
+            + "€ " + str(self.timestamp)[:19]

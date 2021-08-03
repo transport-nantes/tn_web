@@ -11,7 +11,7 @@ import stripe
 from transport_nantes.settings import (
     STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_ENDPOINT_SECRET)
 from .forms import DonationForm, AmountForm
-from .models import TrackingProgression, Donor, Donation
+from .models import TrackingProgression, Donation
 
 
 class StripeView(TemplateView):
@@ -175,8 +175,9 @@ def stripe_webhook(request):
         # TODO: run some custom code here
         print("Details attached to event : \n\n", "="*30, "\n", event)
         try:
-            make_donor_from_webhook(event)
-            make_donation_from_webhook(event)
+            pass
+            # make_donor_from_webhook(event)
+            # make_donation_from_webhook(event)
         except Exception as error_message:
             print("="*80, "\n", "Error while creating \
             a new Donor or Donation. Details : ", error_message)
@@ -184,52 +185,52 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
-def make_donor_from_webhook(event):
-    """
-    Creates a new donor entry in the database from
-    informations in the event.
-    event is sent by Stripe in the validaiton process of
-    the payment.
-    Metadata originates from the form on donation page,
-    and is sent using JavaScript to Stripe.
-    """
-    kwargs = {
-        "email": event["data"]["object"]["customer_email"],
-        "first_name": event["data"]["object"]["metadata"]["first_name"],
-        "last_name": event["data"]["object"]["metadata"]["last_name"],
-        "telephone": event["data"]["object"]["metadata"]["telephone"],
-        "title": event["data"]["object"]["metadata"]["title"],
-        "address": event["data"]["object"]["metadata"]["address"],
-        "more_adress": event["data"]["object"]["metadata"]["more_adress"],
-        "postal_code": event["data"]["object"]["metadata"]["postal_code"],
-        "city": event["data"]["object"]["metadata"]["city"],
-        "country": event["data"]["object"]["metadata"]["country"],
-    }
-    donor = Donor(**kwargs)
-    donor.save()
-    print("Donor created !")
+# def make_donor_from_webhook(event):
+#     """
+#     Creates a new donor entry in the database from
+#     informations in the event.
+#     event is sent by Stripe in the validaiton process of
+#     the payment.
+#     Metadata originates from the form on donation page,
+#     and is sent using JavaScript to Stripe.
+#     """
+#     kwargs = {
+#         "email": event["data"]["object"]["customer_email"],
+#         "first_name": event["data"]["object"]["metadata"]["first_name"],
+#         "last_name": event["data"]["object"]["metadata"]["last_name"],
+#         "telephone": event["data"]["object"]["metadata"]["telephone"],
+#         "title": event["data"]["object"]["metadata"]["title"],
+#         "address": event["data"]["object"]["metadata"]["address"],
+#         "more_adress": event["data"]["object"]["metadata"]["more_adress"],
+#         "postal_code": event["data"]["object"]["metadata"]["postal_code"],
+#         "city": event["data"]["object"]["metadata"]["city"],
+#         "country": event["data"]["object"]["metadata"]["country"],
+#     }
+#     donor = Donor(**kwargs)
+#     donor.save()
+#     print("Donor created !")
 
 
-def make_donation_from_webhook(event):
-    """
-    Creates an entry in database from informations in the event.
-    event is sent by Stripe in the validation process of donation.
-    """
-    if event["data"]["object"]["mode"] == "subscription":
-        mode = "SUB"
-    else:
-        mode = "PAY"
+# def make_donation_from_webhook(event):
+#     """
+#     Creates an entry in database from informations in the event.
+#     event is sent by Stripe in the validation process of donation.
+#     """
+#     if event["data"]["object"]["mode"] == "subscription":
+#         mode = "SUB"
+#     else:
+#         mode = "PAY"
 
-    kwargs = {
-        "donor": Donor.objects.get(
-            email=event["data"]["object"]["customer_email"]),
-        "mode": mode,
-        "amount": int(event["data"]["object"]["amount_total"])
-    }
+#     kwargs = {
+#         "donor": Donor.objects.get(
+#             email=event["data"]["object"]["customer_email"]),
+#         "mode": mode,
+#         "amount": int(event["data"]["object"]["amount_total"])
+#     }
 
-    donation = Donation(**kwargs)
-    donation.save()
-    print("Donation created !")
+#     donation = Donation(**kwargs)
+#     donation.save()
+#     print("Donation created !")
 
 
 def order_amount(items):
