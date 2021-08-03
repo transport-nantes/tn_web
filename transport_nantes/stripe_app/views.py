@@ -1,10 +1,14 @@
 import json
 import datetime
+import string
+import random
 
 from django.views.generic.base import TemplateView
+from django.http.response import HttpResponseServerError
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.contrib.auth.models import User
 
 import stripe
 
@@ -127,7 +131,9 @@ def create_checkout_session(request):
                     line_items=[
                         {
                             'quantity': 1,
-                            # Amount in cents
+                            # product id from Stripe's Dashboard.
+                            # Exemple : price_1J0of7ClnCBJWy551iIQ6ydg
+                            # Hardcoded in forms.py
                             'price': request.POST["subscription_amount"],
                         }
                     ],
@@ -172,65 +178,84 @@ def stripe_webhook(request):
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         print("Payment was successful.")
-        # TODO: run some custom code here
         print("Details attached to event : \n\n", "="*30, "\n", event)
         try:
-            pass
-            # make_donor_from_webhook(event)
-            # make_donation_from_webhook(event)
+            make_donation_from_webhook(event)
         except Exception as error_message:
             print("="*80, "\n", "Error while creating \
-            a new Donor or Donation. Details : ", error_message)
+            a new Donation. Details : ", error_message)
 
     return HttpResponse(status=200)
 
 
-# def make_donor_from_webhook(event):
-#     """
-#     Creates a new donor entry in the database from
-#     informations in the event.
-#     event is sent by Stripe in the validaiton process of
-#     the payment.
-#     Metadata originates from the form on donation page,
-#     and is sent using JavaScript to Stripe.
-#     """
-#     kwargs = {
-#         "email": event["data"]["object"]["customer_email"],
-#         "first_name": event["data"]["object"]["metadata"]["first_name"],
-#         "last_name": event["data"]["object"]["metadata"]["last_name"],
-#         "telephone": event["data"]["object"]["metadata"]["telephone"],
-#         "title": event["data"]["object"]["metadata"]["title"],
-#         "address": event["data"]["object"]["metadata"]["address"],
-#         "more_adress": event["data"]["object"]["metadata"]["more_adress"],
-#         "postal_code": event["data"]["object"]["metadata"]["postal_code"],
-#         "city": event["data"]["object"]["metadata"]["city"],
-#         "country": event["data"]["object"]["metadata"]["country"],
-#     }
-#     donor = Donor(**kwargs)
-#     donor.save()
-#     print("Donor created !")
+def get_random_string(length=20):
+    """
+    Returns a random string of length "length"
+    """
+    random_string = ''.join(random.choice(string.ascii_letters +
+                                          string.digits) for _ in range(length)) # noqa
+    print("Random string is : {}".format(random_string))
+    return random_string
 
 
-# def make_donation_from_webhook(event):
-#     """
-#     Creates an entry in database from informations in the event.
-#     event is sent by Stripe in the validation process of donation.
-#     """
-#     if event["data"]["object"]["mode"] == "subscription":
-#         mode = "SUB"
-#     else:
-#         mode = "PAY"
+def get_user(email: str) -> User:
+    """
+    Use email adress to lookup if a user exists.
+    """
 
-#     kwargs = {
-#         "donor": Donor.objects.get(
-#             email=event["data"]["object"]["customer_email"]),
-#         "mode": mode,
-#         "amount": int(event["data"]["object"]["amount_total"])
-#     }
+    existing_users = User.objects.filter(email=email)
+    print("existing users filter result :", existing_users)
 
-#     donation = Donation(**kwargs)
-#     donation.save()
-#     print("Donation created !")
+    if len(existing_users) > 1:
+        return HttpResponseServerError("Too many users with that email.")
+
+    if len(existing_users) == 1:
+        print("user already exists")
+        return existing_users[0]
+
+    else:
+        user = User()
+        user.email = email
+        user.username = get_random_string()
+        user.is_active = False
+        user.save()
+        print("User created !")
+        return user
+
+
+def make_donation_from_webhook(event: dict) -> None:
+    """
+    Creates a new donation entry in the database from
+    informations in the event.
+    event is sent by Stripe in the validaiton process of
+    the payment.
+    Metadata originates from the form on donation page,
+    and is sent using JavaScript to Stripe.
+    """
+    if event["data"]["object"]["mode"] == "subscription":
+        # Subscription
+        mode = "1"
+    else:
+        # Payment
+        mode = "0"
+
+    kwargs = {
+        "user": get_user(event["data"]["object"]["customer_email"]),
+        "email": event["data"]["object"]["customer_email"],
+        "first_name": event["data"]["object"]["metadata"]["first_name"],
+        "last_name": event["data"]["object"]["metadata"]["last_name"],
+        "address": event["data"]["object"]["metadata"]["address"],
+        "more_address": event["data"]["object"]["metadata"]["more_adress"],
+        "postal_code": event["data"]["object"]["metadata"]["postal_code"],
+        "city": event["data"]["object"]["metadata"]["city"],
+        "country": event["data"]["object"]["metadata"]["country"],
+        "periodicity_months": mode,
+        "amount_centimes_euros": int(event["data"]["object"]["amount_total"]),
+    }
+    print("Creation of donation...")
+    donation = Donation(**kwargs)
+    donation.save()
+    print("Donation entry created !")
 
 
 def order_amount(items):
