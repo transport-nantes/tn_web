@@ -8,6 +8,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (ButtonHolder, HTML, Submit,
                                  Layout, Row, Column, Field, Button)
 
+from transport_nantes.settings_local import (SUBSCRIPTION_CHOICES,
+                                             AMOUNT_CHOICES)
+
 
 class DonationForm(forms.Form):
 
@@ -88,17 +91,14 @@ class AmountForm(forms.Form):
                                       choices=sub_or_donate,
                                       widget=forms.RadioSelect)
 
-    CHOICE_PAYMENT = [(5, "5 euros"),
-                      (10, "10 euros"),
-                      (25, "25 euros"),
-                      (0, "Montant libre")]
+    # Ideally, the choices should be set by a function
+    CHOICE_PAYMENT = AMOUNT_CHOICES
     payment_amount = forms.ChoiceField(label="",
                                        choices=CHOICE_PAYMENT,
                                        widget=forms.RadioSelect)
 
-    CHOICE_SUSBCRIPTION = [("price_1J0of7ClnCBJWy551iIQ6ydg", "8 euros"),
-                           ("price_1J0ogXClnCBJWy552i9Bs2bg", "12 euros"),
-                           ("price_1J0ohVClnCBJWy55dAJxHjXE", "20 euros")]
+    # Ideally, the choices should be set by a function
+    CHOICE_SUSBCRIPTION = SUBSCRIPTION_CHOICES
     subscription_amount = forms.ChoiceField(label="",
                                             choices=CHOICE_SUSBCRIPTION,
                                             widget=forms.RadioSelect)
