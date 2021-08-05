@@ -8,6 +8,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (ButtonHolder, HTML, Submit,
                                  Layout, Row, Column, Field, Button)
 
+# These forms are used to collect donors data.
+# The overall look is handled by the Crispy forms framework.
+# Documentation available here:
+# https://django-crispy-forms.readthedocs.io/en/latest/
+
 
 class DonationForm(forms.Form):
 
@@ -54,6 +59,8 @@ class DonationForm(forms.Form):
         self.helper.form_method = "post"
         self.helper.form_show_labels = False
 
+        # Layout class handles the layout of the form.
+        # Documentation: https://django-crispy-forms.readthedocs.io/en/latest/api_layout.html # noqa
         self.helper.layout = Layout(
             ButtonHolder(
                 Button("toStep1", "Revenir à l'étape précédente",

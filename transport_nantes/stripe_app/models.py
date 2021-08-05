@@ -3,6 +3,14 @@ from django.contrib.auth.models import User
 
 
 class TrackingProgression(models.Model):
+    """
+    Stores a user progress through the donation form
+
+    amount_form_done: The user completed a valid amount form.
+    donation_form_done: The user completed a valid donation form and
+    redirected to Stripe.
+    timestamp: The time user left the page (completed or not)
+    """
     amount_form_done = models.BooleanField(verbose_name="Formulaire montant")
     donation_form_done = models.BooleanField(
         verbose_name="Formulaire informations personnelles")
@@ -17,6 +25,14 @@ class TrackingProgression(models.Model):
 
 
 class Donation(models.Model):
+    """
+    Stores information about a donation made to Mobilitains.
+
+    Data are collected from the donation form.
+
+    Triggered by the reception of a "checkout.session.completed" event
+    from Stripe to our website's webhook.
+    """
     # We should *never* delete users or donation records.
     # Still, we model correctly for relational integrity.
     user = models.ForeignKey(User, on_delete=models.CASCADE)

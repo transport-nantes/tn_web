@@ -129,6 +129,8 @@ def create_checkout_session(request):
 
 # Can't let CSRF otherwise POST from Stripe are denied.
 # See https://stripe.com/docs/webhooks/best-practices#csrf-protection
+# Protection is done by signature verification, no one without the
+# endpoint secret key can trigger an entry creation.
 @csrf_exempt
 def stripe_webhook(request):
     """
@@ -171,9 +173,11 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
-def get_random_string(length=20):
+def get_random_string(length=20) -> str:
     """
     Returns a random string of length "length"
+    This random string will be used as username value to
+    create a new user in get_user(email) function.
     """
     random_string = ''.join(random.choice(string.ascii_letters +
                                           string.digits) for _ in range(length)) # noqa
@@ -184,6 +188,10 @@ def get_random_string(length=20):
 def get_user(email: str) -> User:
     """
     Use email adress to lookup if a user exists.
+
+    If user doesn't exist, create one with a random username.
+
+    Returns an instance of User class.
     """
 
     existing_users = User.objects.filter(email=email)
@@ -214,6 +222,7 @@ def make_donation_from_webhook(event: dict) -> None:
     Metadata originates from the form on donation page,
     and is sent using JavaScript to Stripe.
     """
+    # Determine if the user did a single time donation or a subcription.
     if event["data"]["object"]["mode"] == "subscription":
         # Subscription
         mode = "1"
@@ -221,6 +230,7 @@ def make_donation_from_webhook(event: dict) -> None:
         # Payment
         mode = "0"
 
+    # kwargs to be used to create a Donation object.
     kwargs = {
         "user": get_user(event["data"]["object"]["customer_email"]),
         "email": event["data"]["object"]["customer_email"],
@@ -240,26 +250,26 @@ def make_donation_from_webhook(event: dict) -> None:
     print("Donation entry created !")
 
 
-def order_amount(items):
-    # Here the formula to compute order amount.
-    # We aim for one time donations and recurring donations.
-    # Order amount will depend on the form we will implement later on.
-    # Amount is in cents. 1000 = 10¤
-    # Computing the amount server side prevents user from manipulating datas.
-    # Items should only contain a list of item that iterate through
-    # to get a proper price.
+def order_amount(items: dict) -> int:
+    """
+    Take the donation amount (in euros) in returns it in centimes.
+
+    items: content of request.POST
+    """
 
     # Either equal to "payment" or "subscription"
     donation_type = items["donation_type"]
 
     # "0" indicates that user selected "Montant libre"
     if items[donation_type + "_amount"] == "0":
+        # "Free amount" field is a string input by user in the form.
+        # The form wont let non numeric values be entered.
         return int(items["free_amount"])*100
     else:
         return int(items[donation_type + "_amount"])*100
 
 
-def tracking_progression(request):
+def tracking_progression(request: dict) -> TrackingProgression:
     """
     Creates a TrackingProgression instance and saves it into DB
     request contains 2 bool representing each step of donation form.
