@@ -40,4 +40,5 @@ urlpatterns = [
     ## The misnamed VO app has a few fragments that will be useful for
     ## the OGM project.  Cf. also the benjamin-ajax-exercise branch.
     # path('??', include('velopolitain_observatoire.urls')),
+    path("donation/", include('stripe_app.urls')),
 ]
