@@ -8,9 +8,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (ButtonHolder, HTML, Submit,
                                  Layout, Row, Column, Field, Button)
 
-from transport_nantes.settings_local import (SUBSCRIPTION_CHOICES,
-                                             AMOUNT_CHOICES)
-
 
 class DonationForm(forms.Form):
 
@@ -91,22 +88,20 @@ class AmountForm(forms.Form):
                                       choices=sub_or_donate,
                                       widget=forms.RadioSelect)
 
-    # Ideally, the choices should be set by a function
-    CHOICE_PAYMENT = AMOUNT_CHOICES
+    # Initialized in views.py by get_amount_choices()
     payment_amount = forms.ChoiceField(label="",
-                                       choices=CHOICE_PAYMENT,
+                                       choices=[],
                                        widget=forms.RadioSelect)
 
-    # Ideally, the choices should be set by a function
-    CHOICE_SUSBCRIPTION = SUBSCRIPTION_CHOICES
+    # initialized in views.py by get_subscription_amounts()
     subscription_amount = forms.ChoiceField(label="",
-                                            choices=CHOICE_SUSBCRIPTION,
+                                            choices=[],
                                             widget=forms.RadioSelect)
 
     free_amount = forms.IntegerField(label="Montant libre",
                                      min_value=1, required=False,
                                      widget=forms.TextInput(
-                                         attrs={'placeholder': 'Montant libre'}),)
+                                         attrs={'placeholder': 'Montant libre'}),) # noqa
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
