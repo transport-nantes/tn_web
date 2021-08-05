@@ -1,0 +1,27 @@
+{% extends "asso_tn/base_mobilitain.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div id="progress-bar" class="col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-4 pb-1">
+	<ul class="progressbar">
+		<li id="progress_bar_step_1" class="active">Le don</li>
+		<li id="progress_bar_step_2">Informations personnelles</li>
+		<li id="progress_bar_step_3">Paiement</li>
+	</ul>
+</div>
+
+<div class="container-fluid d-flex-stretch col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-1">
+	<form id="amount_form" action="" method="post">
+		{% crispy amount_form %}
+	</form>
+</div>
+
+<div class="container-fluid d-flex-stretch col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-1">
+	<form id="donation_form", style="display: none">
+		{% crispy info_form %}
+	</form>
+</div>
+
+{% endblock content %} 
