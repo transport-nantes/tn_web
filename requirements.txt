@@ -17,6 +17,8 @@ distlib==0.3.0
 distro==1.4.0
 Django==3.0.7
 django-amazon-ses==3.0.2
+django-countries==7.2.1
+django-crispy-forms==1.12.0
 django-ranged-response==0.2.0
 django-simple-captcha==0.5.13
 dj-stripe==2.3.0
