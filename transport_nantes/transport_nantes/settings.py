@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'captcha',
-    'geoplan'
+    'geoplan',
+    'stripe_app',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
