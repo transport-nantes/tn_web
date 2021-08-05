@@ -2,6 +2,28 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class TrackingProgression(models.Model):
+    """
+    Stores a user progress through the donation form
+
+    amount_form_done: The user completed a valid amount form.
+    donation_form_done: The user completed a valid donation form and
+    redirected to Stripe.
+    timestamp: The time user left the page (completed or not)
+    """
+    amount_form_done = models.BooleanField(verbose_name="Formulaire montant")
+    donation_form_done = models.BooleanField(
+        verbose_name="Formulaire informations personnelles")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+
+    def __str__(self):
+        if self.donation_form_done is True:
+            name = "SUCCESS "
+        else:
+            name = "ABANDON "
+        return name + str(self.timestamp)[:19]
+
+
 class Donation(models.Model):
     """
     Stores information about a donation made to Mobilitains.
