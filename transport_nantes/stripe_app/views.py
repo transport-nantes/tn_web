@@ -1,4 +1,3 @@
-import json
 import datetime
 import string
 import random
@@ -36,19 +35,6 @@ class StripeView(TemplateView):
         return render(request, self.template_name, {"info_form": info_form,
                                                     "amount_form": amount_form
                                                     })
-
-    def post(self, request, *args, **kwargs):
-        """
-        Used for debug, not used in production.
-        The forms aren't POSTed using POST on this URL.
-        """
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            # <process form cleaned data>
-            print(form.cleaned_data)
-            print(type(form.cleaned_data))
-
-        return render(request, self.template_name, {'form': form})
 
 
 class SuccessView(TemplateView):
@@ -88,10 +74,6 @@ def create_checkout_session(request):
         domain_url = "http://" + str(request.get_host())
         stripe.api_key = STRIPE_SECRET_KEY
         try:
-            # DEBUG
-            print(f'{request.POST}')
-            print("donation type is: ", request.POST["donation_type"])
-
             # request.POST["donation_type"] is given with JavaScript
             # it can take two values : payment and subscription.
             if request.POST["donation_type"] == 'payment':
@@ -116,7 +98,6 @@ def create_checkout_session(request):
                     # informations gathered in the form.
                     metadata=request.POST
                 )
-                print(checkout_session)
                 return JsonResponse({'sessionId': checkout_session['id']})
 
             # There are fewer parameters for subscription because some of them
@@ -206,7 +187,6 @@ def get_user(email: str) -> User:
     """
 
     existing_users = User.objects.filter(email=email)
-    print("existing users filter result :", existing_users)
 
     if len(existing_users) > 1:
         return HttpResponseServerError("Too many users with that email.")
@@ -277,23 +257,6 @@ def order_amount(items):
         return int(items["free_amount"])*100
     else:
         return int(items[donation_type + "_amount"])*100
-
-
-def create_payment_intent(request):
-    try:
-        # request.body will be a dict containing items,
-        # retrieved in the browser's JS.
-        data = json.loads(request.body)
-        intent = stripe.PaymentIntent.create(
-            amount=order_amount(data['items']),
-            currency="eur",
-            api_key=STRIPE_SECRET_KEY
-        )
-        print("client secret :", intent["client_secret"])
-        return JsonResponse({'clientSecret': intent['client_secret']})
-
-    except Exception as error_message:
-        return JsonResponse({'error': str(error_message)})
 
 
 def tracking_progression(request):
