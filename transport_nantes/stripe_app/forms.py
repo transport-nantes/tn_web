@@ -86,3 +86,49 @@ class DonationForm(forms.Form):
                    css_id="supportButton",
                    css_class="btn-success"),
         )
+
+
+class AmountForm(forms.Form):
+    sub_or_donate = [("payment", "Je donne une fois"),
+                     ("subscription", "Je donne tous les mois")]
+    donation_type = forms.ChoiceField(label="",
+                                      choices=sub_or_donate,
+                                      widget=forms.RadioSelect)
+
+    # Initialized in views.py by get_amount_choices()
+    payment_amount = forms.ChoiceField(label="",
+                                       choices=[],
+                                       widget=forms.RadioSelect)
+
+    # initialized in views.py by get_subscription_amounts()
+    subscription_amount = forms.ChoiceField(label="",
+                                            choices=[],
+                                            widget=forms.RadioSelect)
+
+    free_amount = forms.IntegerField(label="Montant libre",
+                                     min_value=1, required=False,
+                                     widget=forms.TextInput(
+                                         attrs={'placeholder': 'Montant libre'}),) # noqa
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_show_labels = False
+
+        self.helper.layout = Layout(
+            Field("donation_type",
+                  template="stripe_app/inline_radio_custom.html"),
+            Field("subscription_amount",
+                  template="stripe_app/inline_radio_custom.html",
+                  id="subscription_amount_rb", style="display: none"),
+            Field("payment_amount",
+                  template="stripe_app/inline_radio_custom.html",
+                  id="payment_amount_rb", style="display: none"),
+            Field("free_amount", id="free_amount", style="display: none"),
+            HTML("<p id='real_cost'></p>"),
+            ButtonHolder(
+                Submit('submit', 'Continuer',
+                       css_class='btn btn-primary', css_id="toStep2")
+            )
+        )
