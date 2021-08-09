@@ -126,3 +126,35 @@ $('#free_amount').on('input', function() {
         real_cost_message(free_amount)
     }
 })
+
+// ############################################
+// ######### Form validation part #############
+// ############################################
+
+/* 
+https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reportValidity
+Checks validity of a form from HTML5. 
+*/
+
+var step_1_completed = false
+var step_2_completed = false
+// Hides part 1 and displays part 2.
+var valid_amount_form = false
+document.forms['amount_form'].addEventListener('submit', function() {
+    valid_amount_form = document.forms['amount_form'].reportValidity();
+    if (valid_amount_form == true) {
+        document.getElementById("amount_form").style.display = "none"
+        document.getElementById("donation_form").style.display = "block"
+        document.getElementById("progress_bar_step_2").classList.add("active")
+        step_1_completed = true
+    }
+  }, false);
+
+// Performs validation. If the form is correct, datas can be sent to Stripe.
+var valid_donation_form = false
+document.forms['donation_form'].addEventListener('submit', function() {
+    valid_donation_form = document.forms['donation_form'].reportValidity();
+    if (valid_donation_form) {
+        step_2_completed = true
+    }
+  }, false);
