@@ -97,3 +97,32 @@ document.getElementsByName("payment_amount").forEach(item => {
         }
     })
 })
+
+// Add a message calculating actual cost of donation.
+function real_cost_message(amount) {
+    real_cost = document.getElementById("real_cost")
+    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount/3).toFixed(2) + "€ après déduction d'impôts !"
+}
+
+// Event to trigger calculation and update the message when an amount is selected.
+document.querySelectorAll("input[id*='payment_amount_rb']").forEach(item => {
+    item.addEventListener("click", event => {
+        // Clear message 
+        document.getElementById("real_cost").innerHTML = ""
+        if (event.target.value != 0) {
+            // Generate a new message
+            real_cost_message(event.target.value)
+            // Clear the free amount field if not selected
+            document.getElementById('free_amount').value = ""
+        }
+    })
+})
+// Compute the actual cost at the same time as user inputs in the free amount field
+$('#free_amount').on('input', function() {
+    // "Montant Libre" button
+    checked_button = document.getElementById("payment_amount_rb_3")
+    if (checked_button.checked) {
+        free_amount = document.getElementById("free_amount").value
+        real_cost_message(free_amount)
+    }
+})
