@@ -158,3 +158,14 @@ document.forms['donation_form'].addEventListener('submit', function() {
         step_2_completed = true
     }
   }, false);
+
+// ############################################
+// ######### BUTTON MANAGEMENT PART ###########
+// ############################################
+
+// This button allows you to go back to the first step
+document.querySelector("#toStep1").addEventListener("click", () => {
+    document.getElementById("donation_form").style.display = "none"
+    document.getElementById("amount_form").style.display = "block"
+    document.getElementById("progress_bar_step_2").classList.remove("active")
+})
