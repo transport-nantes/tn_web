@@ -1,9 +1,10 @@
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
+from django.http import JsonResponse
 
 from .forms import DonationForm, AmountForm
 
-from transport_nantes.settings import (ROLE)
+from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY)
 
 
 class StripeView(TemplateView):
@@ -73,3 +74,12 @@ def get_amount_choices():
                       (25, "25 euros"),
                       (0, "Montant libre")]
     return amount_choices
+
+
+def get_public_key(request):
+    """
+    Returns the public key of the stripe account.
+    """
+    if request.method == "GET":
+        public_key = {"publicKey": STRIPE_PUBLISHABLE_KEY}
+        return JsonResponse(public_key, safe=False)
