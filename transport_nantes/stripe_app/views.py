@@ -1,15 +1,21 @@
 import datetime
+import random
+import string
 
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from django.http.response import HttpResponseServerError
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 import stripe
 
-from .models import TrackingProgression
+from .models import TrackingProgression, Donation
 from .forms import DonationForm, AmountForm
 from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
-                                       STRIPE_SECRET_KEY)
+                                       STRIPE_SECRET_KEY,
+                                       STRIPE_ENDPOINT_SECRET)
 
 
 class StripeView(TemplateView):
@@ -216,3 +222,125 @@ def tracking_progression(request: dict) -> TrackingProgression:
     except Exception as error_message:
         print("error message: ", error_message)
         return JsonResponse({'error': str(error_message)})
+
+
+# Can't let CSRF otherwise POST from Stripe are denied.
+# See https://stripe.com/docs/webhooks/best-practices#csrf-protection
+# Protection is done by signature verification, no one without the
+# endpoint secret key can trigger an entry creation.
+@csrf_exempt
+def stripe_webhook(request):
+    """
+    The webhook is triggered when a payment attempt is done.
+    POST request from Stripe contain a signature to authenticate the request.
+    The signature is generated with the secret key of the stripe account.
+    """
+    stripe.api_key = STRIPE_SECRET_KEY
+    endpoint_secret = STRIPE_ENDPOINT_SECRET
+    payload = request.body
+    try:
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    except KeyError:
+        return HttpResponse(status=400)
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError:
+        # Invalid payload
+        print("==== Payload ====")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Invalid signature
+        print("==== Signature ====")
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        print("Payment was successful.")
+        print("Details attached to event : \n\n", "="*30, "\n", event)
+        try:
+            make_donation_from_webhook(event)
+        except Exception as error_message:
+            print("="*80, "\n", "Error while creating \
+            a new Donation. Details : ", error_message)
+
+    return HttpResponse(status=200)
+
+
+def get_random_string(length=20) -> str:
+    """
+    Returns a random string of length "length"
+    This random string will be used as username value to
+    create a new user in get_user(email) function.
+    """
+    random_string = ''.join(random.choice(string.ascii_letters +
+                                          string.digits) for _ in range(length)) # noqa
+    return random_string
+
+
+def get_user(email: str) -> User:
+    """
+    Use email adress to lookup if a user exists.
+
+    If user doesn't exist, create one with a random username.
+
+    Returns an instance of User class.
+    """
+
+    existing_users = User.objects.filter(email=email)
+
+    if len(existing_users) > 1:
+        return HttpResponseServerError("Too many users with that email.")
+
+    if len(existing_users) == 1:
+        print("user already exists")
+        return existing_users[0]
+
+    else:
+        user = User()
+        user.email = email
+        user.username = get_random_string()
+        user.is_active = False
+        user.save()
+        print("User created !")
+        return user
+
+
+def make_donation_from_webhook(event: dict) -> None:
+    """
+    Creates a new donation entry in the database from
+    informations in the event.
+    event is sent by Stripe in the validaiton process of
+    the payment.
+    Metadata originates from the form on donation page,
+    and is sent using JavaScript to Stripe.
+    """
+    # Determine if the user did a single time donation or a subcription.
+    if event["data"]["object"]["mode"] == "subscription":
+        # Subscription
+        mode = "1"
+    else:
+        # Payment
+        mode = "0"
+
+    # kwargs to be used to create a Donation object.
+    kwargs = {
+        "user": get_user(event["data"]["object"]["customer_email"]),
+        "email": event["data"]["object"]["customer_email"],
+        "first_name": event["data"]["object"]["metadata"]["first_name"],
+        "last_name": event["data"]["object"]["metadata"]["last_name"],
+        "address": event["data"]["object"]["metadata"]["address"],
+        "more_address": event["data"]["object"]["metadata"]["more_adress"],
+        "postal_code": event["data"]["object"]["metadata"]["postal_code"],
+        "city": event["data"]["object"]["metadata"]["city"],
+        "country": event["data"]["object"]["metadata"]["country"],
+        "periodicity_months": mode,
+        "amount_centimes_euros": int(event["data"]["object"]["amount_total"]),
+    }
+    print("Creation of donation...")
+    donation = Donation(**kwargs)
+    donation.save()
+    print("Donation entry created !")
