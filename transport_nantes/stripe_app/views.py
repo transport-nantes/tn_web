@@ -2,9 +2,11 @@ from django.views.generic.base import TemplateView
 from django.shortcuts import render
 from django.http import JsonResponse
 
-from .forms import DonationForm, AmountForm
+import stripe
 
-from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY)
+from .forms import DonationForm, AmountForm
+from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
+                                       STRIPE_SECRET_KEY)
 
 
 class StripeView(TemplateView):
@@ -83,3 +85,97 @@ def get_public_key(request):
     if request.method == "GET":
         public_key = {"publicKey": STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(public_key, safe=False)
+
+
+def create_checkout_session(request: dict) -> dict:
+    """
+    Create new Checkout Session for the order
+
+    Other optional params include:
+    [billing_address_collection] - to display
+    billing address details on the page
+    [customer] - if you have an existing Stripe Customer ID
+    [payment_intent_data] - capture the payment later
+    [customer_email] - prefill the email input in the form
+    For full details see
+    https://stripe.com/docs/api/checkout/sessions/create
+
+    ?session_id={CHECKOUT_SESSION_ID} means the redirect
+    will have the session ID set as a query param
+    """
+    if request.method == "POST":
+        # We're forced to give a full URL, even if the request is local
+        # Stripe uses HTTPS on live but tolerate http for test purpose.
+        if ROLE == "dev":
+            domain_url = "http://" + str(request.get_host())
+        else:
+            domain_url = "https://" + str(request.get_host())
+        stripe.api_key = STRIPE_SECRET_KEY
+        try:
+            # request.POST["donation_type"] is given with JavaScript
+            # it can take two values : payment and subscription.
+            if request.POST["donation_type"] == 'payment':
+                checkout_session = stripe.checkout.Session.create(
+                    # Links need to be valid
+                    # Cant't use bare /donation, will raise an error.
+                    success_url=domain_url + "/donation/success/",
+                    cancel_url=domain_url + "/donation/",
+                    payment_method_types=['card'],
+                    mode=request.POST["donation_type"],
+                    customer_email=request.POST["mail"],
+                    line_items=[
+                        {
+                            'name': 'Donation',
+                            'quantity': 1,
+                            'currency': 'eur',
+                            # Amount in cents
+                            'amount': order_amount(request.POST),
+                        }
+                    ],
+                    # Metadata is an optional field containing all personal
+                    # informations gathered in the form.
+                    metadata=request.POST
+                )
+                return JsonResponse({'sessionId': checkout_session['id']})
+
+            # There are fewer parameters for subscription because some of them
+            # are set on Stripe's Dashboard.
+            # Subscriptions are created in the dashboard only.
+            elif request.POST["donation_type"] == "subscription":
+                checkout_session = stripe.checkout.Session.create(
+                    # Links need to be valid
+                    success_url=domain_url + "/donation/success/",
+                    cancel_url=domain_url + "/donation/",
+                    payment_method_types=['card'],
+                    mode=request.POST["donation_type"],
+                    customer_email=request.POST["mail"],
+                    line_items=[
+                        {
+                            'quantity': 1,
+                            # product id from Stripe's Dashboard.
+                            # Exemple : price_1J0of7ClnCBJWy551iIQ6ydg
+                            # Hardcoded in get_subscription_amounts()
+                            'price': request.POST["subscription_amount"],
+                        }
+                    ],
+                    metadata=request.POST
+                )
+                return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as error_message:
+            return JsonResponse({'error': str(error_message)})
+
+
+def order_amount(items: dict) -> int:
+    """
+    Take the donation amount (in euros) in returns it in centimes.
+
+    items: content of request.POST
+    """
+
+    # "0" indicates that user selected "Montant libre"
+    if items["payment_amount"] == "0":
+        # "Free amount" field is a string input by user in the form.
+        # The form wont let non numeric values be entered.
+        return int(items["free_amount"])*100
+    else:
+        return int(items["payment_amount"])*100
