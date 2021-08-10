@@ -193,3 +193,60 @@ window.addEventListener("beforeunload", function(event) {
     })
     return false;
 })
+
+// ############################################
+// ######### STRIPE CHECKOUT SESSION ##########
+// ############################################
+
+// Get Stripe publishable key
+fetch("/donation/config/")
+.then((result) => { return result.json(); })
+.then((data) => {
+  // Initialize Stripe.js
+  const stripe = Stripe(data.publicKey);
+
+// Upon support button click, forms data will be sent
+  document.querySelector("#donation_form").addEventListener("submit", () => {
+    
+    if (valid_donation_form == true){
+        // Update the progression bar
+        document.getElementById("progress_bar_step_3").classList.add("active")
+
+        // Add CFRS token to request Header
+        csrftoken=document.getElementsByName("csrfmiddlewaretoken")[0].value
+        myHeaders = new Headers()
+        myHeaders.append("X-CSRFToken", csrftoken)
+
+        // Add field informations to request body
+        form_data = new FormData(document.getElementById("amount_form"))
+
+        form_data.append("mail", document.getElementById("id_mail").value)
+        form_data.append("first_name", document.getElementById("id_first_name").value)
+        form_data.append("last_name", document.getElementById("id_last_name").value)
+        form_data.append("address", document.getElementById("id_address").value)
+        form_data.append("more_adress", document.getElementById("id_more_address").value)
+        form_data.append("postal_code", document.getElementById("id_postal_code").value)
+        form_data.append("city", document.getElementById("id_city").value)
+        form_data.append("country", document.getElementById("id_country").value)
+
+
+        // Send the request to server to create a checkout session
+        fetch("/donation/create-checkout-session/", {
+            headers: myHeaders,
+            body: form_data,
+            method:"POST"})
+        .then((result) => { return result.json(); })
+        .then((data) => {
+        console.log("Session ID :", data);
+        // Manually trigger before unload event to save success
+        // redirection doesn't seem to trigger it otherwise
+        window.dispatchEvent(new Event("beforeunload"))
+        // Redirect to Stripe Checkout once the checkout session is created
+        return stripe.redirectToCheckout({sessionId: data.sessionId})
+        })
+        .then((res) => {
+        console.log(res);
+        });
+    }
+  });
+});
