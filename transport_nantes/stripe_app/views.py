@@ -1,9 +1,12 @@
+import datetime
+
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 import stripe
 
+from .models import TrackingProgression
 from .forms import DonationForm, AmountForm
 from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
                                        STRIPE_SECRET_KEY)
@@ -187,3 +190,29 @@ class SuccessView(TemplateView):
     This template is displayed if the Stripe payment is completed.
     """
     template_name = "stripe_app/success.html"
+
+
+def tracking_progression(request: dict) -> TrackingProgression:
+    """
+    Creates a TrackingProgression instance and saves it into DB
+    request contains 2 bool representing each step of donation form.
+    bool are in JS format 'true'/'false' and not read by Python as bool
+    and as a consequence it needs to be transformed into Python bool.
+    """
+    try:
+        data = request.POST
+        data = data.dict()
+        for key, _ in data.items():
+            if data[key] == "true":
+                data[key] = True
+            else:
+                data[key] = False
+
+        data = TrackingProgression(amount_form_done=data["step_1_completed"],
+                                   donation_form_done=data["step_2_completed"],
+                                   timestamp=datetime.datetime.now)
+        data.save()
+        return HttpResponse(status=200)
+    except Exception as error_message:
+        print("error message: ", error_message)
+        return JsonResponse({'error': str(error_message)})
