@@ -179,3 +179,11 @@ def order_amount(items: dict) -> int:
         return int(items["free_amount"])*100
     else:
         return int(items["payment_amount"])*100
+
+
+class SuccessView(TemplateView):
+    """
+    Only used to display a static template.
+    This template is displayed if the Stripe payment is completed.
+    """
+    template_name = "stripe_app/success.html"
