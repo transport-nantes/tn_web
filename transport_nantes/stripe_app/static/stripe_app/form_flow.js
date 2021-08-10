@@ -169,3 +169,27 @@ document.querySelector("#toStep1").addEventListener("click", () => {
     document.getElementById("amount_form").style.display = "block"
     document.getElementById("progress_bar_step_2").classList.remove("active")
 })
+
+// ############################################
+// ######### TRACKING PROGRESSION #############
+// ############################################
+
+window.addEventListener("beforeunload", function(event) {
+    // Code to run upon closure, will fetch a function on
+    // server and see how far the visitor went
+    csrftoken=document.getElementsByName("csrfmiddlewaretoken")[0].value
+    myHeaders = new Headers()
+    myHeaders.append("X-CSRFToken", csrftoken)
+    
+    var form_progression = new FormData();
+    form_progression.append("step_1_completed", step_1_completed)
+    form_progression.append("step_2_completed", step_2_completed)
+   
+    fetch("/donation/tracking/", {
+        headers: myHeaders,
+        body: form_progression, 
+        method:"POST",
+        mode: "same-origin"
+    })
+    return false;
+})
