@@ -1,6 +1,7 @@
 from django.db import models
 from random import randint
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class TopicBlogPageManager(models.Manager):
@@ -306,3 +307,31 @@ class TopicBlogItem(models.Model):
 
         context['social'] = social
         return context
+
+    def __str__(self):
+        if self.slug:
+            return f'{str(self.slug)} - {str(self.title)} - \
+                    ISK : {str(self.item_sort_key)} - ID : {str(self.id)}'
+        else:
+            return f'{str(self.title)} - ISK : {str(self.item_sort_key)} \
+                    - ID : {str(self.id)} (NO SLUG)'
+
+    def get_absolute_url(self):
+        """This function is called on creation of the item"""
+        if self.slug:
+            return reverse("topicblog:view_item_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "item_slug": self.slug})
+        else:
+            return self.get_edit_url()
+
+    def get_edit_url(self):
+        """This function returns a link leading to
+        the edition page of an item."""
+        if not self.slug:
+            return reverse("topicblog:edit_item_no_slug",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_item",
+                           kwargs={"pkid": self.pk,
+                                   "item_slug": self.slug})
