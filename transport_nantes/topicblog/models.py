@@ -1,5 +1,6 @@
 from django.db import models
 from random import randint
+from django.contrib.auth.models import User
 
 
 class TopicBlogPageManager(models.Manager):
@@ -195,3 +196,96 @@ class TopicBlogTemplate(models.Model):
 
     def __str__(self):
         return str(self.template_name) + " - " + str(self.comment)
+
+
+class TopicBlogItem(models.Model):
+    """Represent an item in the TopicBlog.
+
+    An item is the central user-visible element of a TopicBlog (TB)
+    entry.
+
+    """
+    # I think I saw problems with unicode URLs, though.
+    slug = models.SlugField(allow_unicode=True, blank=True)
+    item_sort_key = models.IntegerField()
+    servable = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    # Presentation ##################################################
+    #
+    # Encode the basic structure of a TBItem's presentation.
+    template = models.ForeignKey(TopicBlogTemplate, on_delete=models.PROTECT)
+    # The HTML document <title>.
+    title = models.CharField(max_length=100)
+    # The header is the (optional) large full-width image, possibly
+    # with some overlaying text, that appears at the top of many
+    # pages.
+    header_image = models.ImageField(blank=True)
+    header_title = models.CharField(max_length=80, blank=True)
+    header_description = models.CharField(max_length=120, blank=True)
+    # The header_slug points to an existing TBItem slug and will
+    # render as a link to that page.  That is, it is a way to encode
+    # "what happens if a user clicks on this header?".
+    header_slug = models.CharField(max_length=100, blank=True)
+
+    # Content Type ##################################################
+    #
+    # Encode what type of object we mean to be displaying.
+    #
+    # Examples are blog articles, newsletters (mailed or web viewed),
+    # and petitions.
+    #
+    # This should assuredly be based on an enum.  For the moment,
+    # let's assume everything is an article.  Types we expect
+    # eventually are article, project (square), press release,
+    # newsletter, newsletter web (the "if you want to display this in
+    # your browser" version), petitions, mailing list signup pages.
+    content_choices = [("article", "article"),
+                       ("project", "project"),
+                       ("press_release", "press_release"),
+                       ("newsletter", "newsletter"),
+                       ("newsletter_web", "newsletter_web"),
+                       ("petition", "petition"),
+                       ("mailing_list_signup",
+                       "mailing_list_signup"),
+                       ]
+    item_type = models.CharField(max_length=100, choices=content_choices,
+                                 default="article")
+    # Content #######################################################
+    #
+    # Encode the editorial content of a TBItem.
+    #
+    # We are encoding that content is some text and a CTA (and maybe
+    # the same again), an image, and then maybe another bit of text
+    # with a CTA.
+    body_text_1_md = models.TextField(blank=True)
+    cta_1_slug = models.SlugField(blank=True)
+    cta_1_label = models.CharField(max_length=100, blank=True)
+    body_text_2_md = models.TextField(blank=True)
+    cta_2_slug = models.SlugField(blank=True)
+    cta_2_label = models.CharField(max_length=100, blank=True)
+
+    body_image = models.ImageField(blank=True)
+    body_image_alt_text = models.CharField(max_length=100, blank=True)
+
+    body_text_3_md = models.TextField(blank=True)
+    cta_3_slug = models.SlugField(blank=True)
+    cta_3_label = models.CharField(max_length=100, blank=True)
+
+    # Social media ##################################################
+    #
+    # We'll want to encode somewhere the recommended image sizes for
+    # different social media.  And if the user only specs one social
+    # network, we should do our best to provide data for the others.
+
+    # Optional editor notes about what this social data is trying to do.
+    social_description = models.TextField(blank=True)
+
+    twitter_title = models.CharField(max_length=80, blank=True)
+    twitter_description = models.TextField(blank=True)
+    twitter_image = models.CharField(max_length=100, blank=True)
+
+    og_title = models.CharField(max_length=80, blank=True)
+    og_description = models.TextField(blank=True)
+    og_image = models.CharField(max_length=100, blank=True)
