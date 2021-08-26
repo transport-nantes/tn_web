@@ -1,4 +1,5 @@
 import datetime
+import logging
 import random
 import string
 
@@ -17,6 +18,7 @@ from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
                                        STRIPE_SECRET_KEY,
                                        STRIPE_ENDPOINT_SECRET)
 
+logger = logging.getLogger(__name__)
 
 class StripeView(TemplateView):
     """
@@ -241,6 +243,7 @@ def stripe_webhook(request):
     try:
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     except KeyError:
+        logger.info("HTTP_STRIPE_SIGNATURE not present in request")
         return HttpResponse(status=400)
     event = None
 
@@ -249,17 +252,14 @@ def stripe_webhook(request):
             payload, sig_header, endpoint_secret
         )
     except ValueError:
-        # Invalid payload
-        print("==== Payload ====")
+        logger.info("Invalid payload in strip webhook")
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError:
-        # Invalid signature
-        print("==== Signature ====")
+        logger.info("Invalid signature in stripe webhook")
         return HttpResponse(status=400)
 
-    # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
-        print("Payment was successful.")
+        logger.info("Stripe payment webhook succeeded.")
         print("Details attached to event : \n\n", "="*30, "\n", event)
         try:
             make_donation_from_webhook(event)
