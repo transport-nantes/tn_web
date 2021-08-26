@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models import Count
 from random import randint
+
 
 class TopicBlogPageManager(models.Manager):
     """Manager to help us query for records at random.
@@ -116,3 +116,86 @@ class TopicBlogPage(models.Model):
 
     def __str__(self):
         return '{topic} / {slug}'.format(topic=self.topic, slug=self.slug)
+
+######################################################################
+# topic blog, v2
+
+
+class TopicBlogTemplate(models.Model):
+    """Encode template metadata for displaying TB content.
+
+    More precisely, we want to encode data useful for content editing
+    so that we know what fields to display.  So this just provides a
+    map of what fields are active for a given template.
+
+    It's initially intended that TBTemplates will only be created by
+    admins in the admin interface.  They are rather sensitive, in the
+    sense that borking a template will bork all content that depends
+    on the template.
+
+    Note that creating the html template is a standard git action:
+    create, edit, commit, PR.  So designers can do that part with no
+    worry.  This model provides an interface between the html template
+    and the TB editors so that users re asked for the fields that
+    matter to the actions they are performing.
+
+    At some point we might want to make this more publicly accessible,
+    but probably we'll so seldom make new templates that the burden on
+    devs will be light and not worth the development cost of making
+    instances of this model safe to edit.
+
+    With the exception of the template_name field, this model is
+    largely a placeholder for now to remind us of what we want to
+    happen eventually.  The first iteration of TBv2 will ask users for
+    all fields possible.  We'll make it more use friendly once it
+    works.
+
+    I think we will want to have content be inserted via templatetags
+    in order to facilitate automated content serving.  But for now,
+    we'll assume we have a template file that defines an entire page.
+    (We'll therefore need a single record in the database to represent
+    that.)
+
+    """
+    # The template_name must be a valid html template name to pass to
+    # django's render() function.
+    template_name = models.CharField(max_length=80)
+    # Provide a field for free-form comments from humans, who can note
+    # their intent on creating the model.
+    comment = models.TextField()
+
+    # And now somehow we need to specify the fields.  Either we do
+    # that with an explicit list of fields or, probably better, a
+    # one-to-many relationship to TBTemplateFields.  And that model
+    # will just have field name and a link back here.
+    #
+    # We could someday want to be fancy and provide field type and
+    # such here so that content editors can build themselves instead
+    # of just switching on and off preset fields.
+
+    # Not yet functional. ##
+
+# The way to think of TopicBlog (TB) is as a collection of TBItem's,
+# which encodes a name, servability (whether or not we propose the
+# item for serving), and satellite information (which is embedded in
+# TBItem, because that seems easier with django than creating
+# satellite classes for presentation, social media, content, etc.).
+#
+# Thus, a modification of a TBItem is simply a new TBItem that
+# contains some of the things the old one did as well as something
+# new.  For example, to make a variant of a TBItem with new social
+# media info, we would duplicate the TBItem, replace the social media
+# fields, and persist the new TBItem with the one changed data.
+#
+# All servable items with the same slug are potentially servable when
+# a user requests that slug.  More specifically, they should be
+# considered not just close or related but legitimately
+# interchangeable.  In fact, we use the TBItem's item_sort_key to
+# simplify serving.  Rather than doing multiple queries to learn how
+# many items have the same slug and choosing one at random, we let a
+# periodic process set the item_sort_key's to new random values.  On
+# requesting a slug, we select the slug with the maximum
+# item_sort_key.
+
+    def __str__(self):
+        return str(self.template_name) + " - " + str(self.comment)
