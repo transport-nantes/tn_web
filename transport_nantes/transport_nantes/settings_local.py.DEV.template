@@ -24,6 +24,9 @@ DATABASES = {
     }
 }
 
+LOG_DIR = '/tmp/django-tn-log'
+STATIC_ROOT = 'static'
+
 ## Not needed in development, but maybe need to be set.
 AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
