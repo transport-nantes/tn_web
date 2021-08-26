@@ -130,7 +130,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
         },
@@ -143,19 +143,25 @@ LOGGING = {
         #    'level': 'ERROR',
         #    'filters': ['require_debug_false'],
         #    'class': 'django.utils.log.AdminEmailHandler'
-        #}
+        #},
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': settings_local.LOG_DIR,
+        }
     },
     'loggers': {
         'app': {
             # 'handlers': ['console', 'mail_admins'],
             'handlers': ['django.server'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         },
         'django': {
             # 'handlers': ['console', 'mail_admins'],
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
+            'propagate': True,
         },
         'django.server': {
             'handlers': ['django.server'],
