@@ -24,7 +24,7 @@ DATABASES = {
     }
 }
 
-LOG_DIR = '/tmp/django-tn-log'
+LOG_DIR = '/tmp/django-tn-log/'
 STATIC_ROOT = 'static'
 
 ## Not needed in development, but maybe need to be set.
