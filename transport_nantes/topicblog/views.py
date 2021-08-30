@@ -30,7 +30,8 @@ class TopicBlogLegacyView(TemplateView):
             [page.bullet_image_2, page.bullet_text_2_md],
             [page.bullet_image_3, page.bullet_text_3_md],
             [page.bullet_image_4, page.bullet_text_4_md],
-            [page.bullet_image_5, page.bullet_text_5_md],]
+            [page.bullet_image_5, page.bullet_text_5_md],
+            ]
         page.set_context(context)
         return context
 
