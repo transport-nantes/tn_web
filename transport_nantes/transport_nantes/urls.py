@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from topicblog.views import TopicBlogLegacyView
+from django.conf import settings
+from django.conf.urls.static import static
+from transport_nantes.settings import ROLE
 
 urlpatterns = [
     path('', TopicBlogLegacyView.as_view(), {'topic_slug': 'index'},
@@ -42,3 +45,7 @@ urlpatterns = [
     # path('??', include('velopolitain_observatoire.urls')),
     path("donation/", include('stripe_app.urls')),
 ]
+
+if ROLE != 'production':
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

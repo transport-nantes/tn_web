@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'asso_tn.context_processors.role',
+                'django.template.context_processors.media'
             ],
         },
     },
@@ -187,6 +188,12 @@ LOGIN_REDIRECT_URL = 'index'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Prefix for uploaded files. Must be different from static_url
+MEDIA_URL = settings_local.MEDIA_URL
+# Directory where uploaded files are stored
+MEDIA_ROOT = settings_local.MEDIA_ROOT
+
 # Define this for nginx contexts.
 if 'STATIC_ROOT' in dir(settings_local):
     STATIC_ROOT = settings_local.STATIC_ROOT

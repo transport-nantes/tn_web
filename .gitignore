@@ -19,4 +19,8 @@ aws_config
 #Vagrant 
 .vagrant
 
+# MacOS
 .DS_Store
+
+# User content
+transport_nantes/asso_tn/user_content/*
