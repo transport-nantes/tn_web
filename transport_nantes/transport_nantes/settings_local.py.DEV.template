@@ -4,6 +4,7 @@
 # In production, the settings_local.py is provided by saltstack.
 
 import os
+from pathlib import Path
 
 SECRET_KEY = your-secret-here
 DEBUG = True
@@ -32,3 +33,6 @@ AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
 AWS_DEFAULT_REGION = ''
 DEFAULT_FROM_EMAIL = ''
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = Path(__file__).resolve().parent.parent / "asso_tn/user_content"
