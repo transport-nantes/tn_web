@@ -1,7 +1,7 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import TopicBlogLegacyView
-from .views import TopicBlogItemEdit
+from .views import TopicBlogItemEdit, TopicBlogItemView
 from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
@@ -24,6 +24,15 @@ if ROLE != 'production':
         path('admin/edit/<slug:item_slug>/',
              TopicBlogItemEdit.as_view(),
              name='edit_item_slug'),
+        path('s/<slug:item_slug>/',
+             TopicBlogItemView.as_view(),
+             name='view_item_by_slug'),
+        path('admin/view/<int:pkid>/',
+             TopicBlogItemView.as_view(),
+             name='view_item_by_pkid_only'),
+        path('admin/view/<int:pkid>/<slug:item_slug>/',
+             TopicBlogItemView.as_view(),
+             name='view_item_by_pkid'),
         ]
 
 # Need topic creation.

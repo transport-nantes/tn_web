@@ -289,3 +289,20 @@ class TopicBlogItem(models.Model):
     og_title = models.CharField(max_length=80, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.CharField(max_length=100, blank=True)
+
+    def set_context(self, context):
+        """
+        inherited from original TB, it adds socials related
+        fields to the context["social"] entry of the context dict.
+        """
+        social = {}
+        social['twitter_title'] = self.twitter_title
+        social['twitter_description'] = self.twitter_description
+        social['twitter_image'] = self.twitter_image
+
+        social['og_title'] = self.og_title
+        social['og_description'] = self.og_description
+        social['og_image'] = self.og_image
+
+        context['social'] = social
+        return context

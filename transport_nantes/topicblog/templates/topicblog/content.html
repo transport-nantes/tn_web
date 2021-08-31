@@ -1,0 +1,82 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% comment %}
+     Base template for TopicBlogItems
+     Displays header, 1 body text, 1 optional image, a 2nd body text,
+     and a footer
+     Can be adjusted to display every fields at the same time, you
+     only need to add the missing fields in the template using page.field
+{% endcomment %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+
+     {{ block.super }}
+
+     {% comment %}
+       This is mostly a copy pasted version of the block.super, adapted to TBv2
+       Inline styles should be avoided because they can be hard to edit for front
+       but we need the template engine to work on the background-image attribute.
+     {% endcomment %}
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+     {% endif %}
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 style="color: white;">{{ page.header_title }}</h1>
+          <p style="color: white;" class="hero-description">{{ page.header_description }}</p>
+     </div>
+</div>
+
+<!-- Main container with the content of the article -->
+<div class="container-fluid pt-5">
+     {% block app_content %}
+
+          {{ page.body_text_1_md|markdown }}
+          {% if page.body_image|length > 0 %}
+               <img src="{{ page.body_image.url }}"
+                         alt="{{ page.body_image_alt_text }}"
+                    style="width:100%;">
+          {% endif %}
+          <p class="pt-1"></p>
+          {{ page.body_text_2_md|markdown }}
+
+          {% show_projects %}
+
+          {% show_mailing_list %}
+          {% show_qui_sommes_nous %}
+          {% show_donate %}
+          {% show_volunteer %}
+
+     {% endblock app_content%}
+</div>
+{% endblock content %}
