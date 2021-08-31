@@ -360,3 +360,59 @@ class TBIViewStatusCodeTests(TestCase):
                          "correct id associated with the item but the item "
                          "does not have a slug."
                          f"\nitem with slug : {self.item_without_slug}")
+
+
+class TBIListStatusCodeTests(TestCase):
+    """
+    Test the status code of the TopicBlogItemList view
+    """
+    def setUp(self):
+        TBIEditStatusCodeTest.setUp(self)
+
+    def test_full_list_display(self):
+        """
+        Test the status code of the TopicBlogItemList view
+        when the list is displayed with all items.
+        """
+        response = self.client.get(reverse("topicblog:list_items"))
+        self.assertEqual(response.status_code, 200,
+                         msg="The page should return 200 if we provide no "
+                         "parameters.")
+
+        number_of_items = TopicBlogItem.objects.all().count()
+        self.assertEqual(len(response.context["object_list"]),
+                         number_of_items,
+                         msg="The list of items should be the same length as "
+                         "the number of items in the database."
+                         f"\nnumber of items : {number_of_items}"
+                         "\nnumber of items in the list : "
+                         f"{len(response.context['object_list'])}")
+
+    def test_full_list_display_with_slug(self):
+        """
+        Test the status code of the TopicBlogItemList view
+        when the list is displayed with all items corresponding to
+        a given slug.
+        """
+        response = self.client.get(
+            reverse("topicblog:list_items_by_slug",
+                    kwargs={
+                        "item_slug": self.item_with_slug.slug
+                    })
+            )
+        self.assertEqual(response.status_code, 200,
+                         msg="The page should return 200 if we provide a "
+                         "slug attached to an existing item.")
+
+        number_of_items = TopicBlogItem.objects.filter(
+            slug=self.item_with_slug.slug
+            ).count()
+
+        self.assertEqual(len(response.context["object_list"]),
+                         number_of_items,
+                         msg="The list of items should be the same length as "
+                         "the number of items with the corresponding slug "
+                         "in the database."
+                         f"\nnumber of items : {number_of_items}"
+                         "\nnumber of items in the list : "
+                         f'{len(response.context["object_list"])}')
