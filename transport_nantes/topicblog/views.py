@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
 # from django.shortcuts import render
 from .models import TopicBlogPage, TopicBlogItem
@@ -230,3 +231,20 @@ class TopicBlogItemView(TemplateView):
         tb_item: TopicBlogItem  # Type hint for linter
         context = tb_item.set_context(context)
         return context
+
+
+class TopicBlogItemList(ListView):
+    """
+    Returns a queryset containing all matches for a given
+    item_slug.
+    It's then displayed in the topicblogitem_list template.
+    """
+    model = TopicBlogItem
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(ListView, self).get_queryset(*args, **kwargs)
+        if 'item_slug' in self.kwargs:
+            # If item_slug exists, we use it to filter the view.
+            item_slug = self.kwargs['item_slug']
+            qs = qs.filter(slug=item_slug)
+        return qs
