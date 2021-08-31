@@ -194,3 +194,169 @@ class TBIEditStatusCodeTest(TestCase):
         self.assertEqual(response.status_code, 200,
                          msg="The page should return 200 if we don't provide "
                          "any arg")
+
+
+class TBIViewStatusCodeTests(TestCase):
+    """
+    Test the status code of the TopicBlogItemView
+    """
+
+    def setUp(self):
+        TBIEditStatusCodeTest.setUp(self)
+
+    def test_item_with_slug_view_status_code(self):
+        """
+        Test the status code of items with a slug in
+        the TopicBlogItemView.
+        """
+        # ##### view_item_by_pkid ######
+
+        # View with correct slug and correct id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "item_slug": self.item_with_slug.slug
+                    })
+            )
+        self.assertEqual(response.status_code, 200,
+                         msg="The page should return 200 if we provide the "
+                         "correct slug and id associated with the item.")
+
+        # View with wrong slug and correct id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "item_slug": "wrong-slug"
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "wrong slug and correct id associated with the item.")
+
+        # View with correct slug and wrong id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": 999999,
+                        "item_slug": self.item_with_slug.slug
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "correct slug but wrong id associated with the item.")
+
+        # View with wrong slug and wrong id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": 999999,
+                        "item_slug": "wrong-slug"
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "wrong slug and wrong id associated with the item.")
+
+        # ###### view_item_by_pkid_only ######
+
+        # View with correct id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid_only",
+                    kwargs={
+                        "pkid": self.item_with_slug.id
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "correct id associated with the item but the item "
+                         "does have a slug."
+                         f"\nitem with slug : {self.item_with_slug}")
+
+        # View with wrong id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid_only",
+                    kwargs={
+                        "pkid": 999999,
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "wrong id associated with the item but the item "
+                         "does have a slug."
+                         f"\nitem with slug : {self.item_with_slug}")
+
+        # ##### view_item_by_slug ######
+
+        # View with correct slug
+        response = self.client.get(
+            reverse("topicblog:view_item_by_slug",
+                    kwargs={
+                        "item_slug": self.item_with_slug.slug
+                    })
+            )
+        self.assertEqual(response.status_code, 200,
+                         msg="The page should return 200 if we provide the "
+                         "correct slug associated with the item."
+                         f"\nitem with slug : {self.item_with_slug}")
+
+        highest_item_sort_key = TopicBlogItem.objects.filter(
+            slug=self.item_with_slug.slug
+            ).order_by("item_sort_key").last()
+
+        self.assertEqual(response.context["page"],
+                         highest_item_sort_key,
+                         msg="The page should load the item with the highest "
+                         "item_sort_key."
+                         f"\nitem with slug : {self.item_with_slug}"
+                         f"\nhighest item_sort_key : {highest_item_sort_key}")
+
+        # View with wrong slug
+        response = self.client.get(
+            reverse("topicblog:view_item_by_slug",
+                    kwargs={
+                        "item_slug": "wrong-slug"
+                    })
+            )
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide a "
+                         "wrong slug not related to any item.")
+
+    def test_item_without_slug_view_status_code(self):
+        """
+        Test the status code of items without a slug in
+        the TopicBlogItemView.
+        """
+
+        # #### view_item_by_pkid ######
+
+        # View with correct id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_without_slug.id,
+                        "item_slug": "a-slug"
+                    })
+            )
+
+        self.assertEqual(response.status_code, 404,
+                         msg="The page should return 404 if we provide the "
+                         "correct id associated with the item but the item "
+                         "does not have a slug."
+                         f"\nitem with slug : {self.item_without_slug}")
+
+        # #### view_item_by_pkid_only ######
+
+        # View with correct id
+        response = self.client.get(
+            reverse("topicblog:view_item_by_pkid_only",
+                    kwargs={
+                        "pkid": self.item_without_slug.id
+                    })
+            )
+        self.assertEqual(response.status_code, 200,
+                         msg="The page should return 200 if we provide the "
+                         "correct id associated with the item but the item "
+                         "does not have a slug."
+                         f"\nitem with slug : {self.item_without_slug}")
