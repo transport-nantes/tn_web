@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from topicblog.views import TopicBlogView
+from topicblog.views import TopicBlogLegacyView
 
 urlpatterns = [
-    path('', TopicBlogView.as_view(), {'topic_slug': 'index'},
+    path('', TopicBlogLegacyView.as_view(), {'topic_slug': 'index'},
          name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
