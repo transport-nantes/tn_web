@@ -35,6 +35,7 @@ class TopicBlogLegacyView(TemplateView):
         return context
 
 
+# TOPICBLOG V2 ################################################################
 class TopicBlogItemEdit(FormView):
     """Create a new TBItem or modify an existing one.
 
@@ -159,3 +160,72 @@ class TopicBlogItemEdit(FormView):
             self.form_valid(form)
 
         return super().form_valid(form)
+
+
+class TopicBlogItemView(TemplateView):
+    """
+    This view allows to display Items on their respective templates.
+
+    A user may view the item using its slug when using the
+    view_item_by_slug url. In this case, if several items are attached to the
+    same slug, the item with the highest item_sort_key is displayed.
+
+    Authorised users may consult specific version of the item using the
+    view_item_by_pkid url. The login constraint is not implemented yet.
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # There are two ways to access this view : either by
+        # providing a pkid AND a item_slug, or by providing a
+        # item_slug only.
+        # Providing the pkid allows to access a specific version
+        # of the item, while the slug alone serves the latest version.
+        if 'pkid' in kwargs:
+            # if we give both item_slug and pkid, we fetch the item
+            if 'item_slug' in kwargs:
+                try:
+                    tb_item = TopicBlogItem.objects.get(
+                        id=kwargs['pkid'],
+                        slug=kwargs['item_slug'])
+                # We need to handle the case where the inputs are wrong
+                # or it would raise a 500 error.
+                except ObjectDoesNotExist:
+                    raise Http404("L'id ou le slug "
+                                  "(la partie lisible de l'URL ex : "
+                                  "/tb/admin/view/id/slug-du-contenu )"
+                                  " est / sont incorrect(s)")
+            # if we only give the pkid
+            else:
+                try:
+                    tb_item = TopicBlogItem.objects.get(id=kwargs['pkid'])
+                except ObjectDoesNotExist:
+                    raise Http404("Aucun item ne correspond à cet ID")
+                if tb_item.slug != "":
+                    raise Http404("Le slug (la partie lisible de l'URL ex : "
+                                  "/admin/view/slug-du-contenu ) de cet objet"
+                                  " est requis")
+        # if we only give the item_slug
+        else:
+            try:
+                tb_item = TopicBlogItem.objects.filter(
+                    slug=kwargs['item_slug']
+                    ).order_by("item_sort_key").last()
+            # If no item with this slug exists, we raise an error.
+            except ObjectDoesNotExist:
+                raise Http404("Le slug (la partie lisible de l'URL ex : "
+                              "/tb/s/slug-du-contenu ) de cet objet est "
+                              "incorrect")
+            # The filter is empty if no item with this slug exists.
+            if tb_item is None:
+                raise Http404("Aucun item ne correspond à cet ID")
+
+        # The template is set in the model, it's a str referring to
+        # an existing template in the app.
+        self.template_name = tb_item.template.template_name
+        context['page'] = tb_item
+        # set_context adds the socials into the context
+        tb_item: TopicBlogItem  # Type hint for linter
+        context = tb_item.set_context(context)
+        return context
