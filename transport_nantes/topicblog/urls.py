@@ -1,7 +1,7 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import TopicBlogLegacyView
-from .views import TopicBlogItemEdit, TopicBlogItemView
+from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemList
 from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
@@ -33,7 +33,13 @@ if ROLE != 'production':
         path('admin/view/<int:pkid>/<slug:item_slug>/',
              TopicBlogItemView.as_view(),
              name='view_item_by_pkid'),
-        ]
+        path('admin/list/',
+             TopicBlogItemList.as_view(),
+             name='list_items'),
+        path('admin/list/<slug:item_slug>/',
+             TopicBlogItemList.as_view(),
+             name='list_items_by_slug'),
+    ]
 
 # Need topic creation.
 # Need markdown translator.
