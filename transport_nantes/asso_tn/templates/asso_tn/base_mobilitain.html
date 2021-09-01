@@ -3,310 +3,315 @@
 <!DOCTYPE html>
 <html lang="fr">
 {% block html %}
-  <head>
-      <!--
-	  Tu trouves que le site pourrait être plus beau, plus ergonomique ?
-	  Tu te demandes pourquoi, ce qui nous empêche ?
+  	<head>
+		<!--
+		Tu trouves que le site pourrait être plus beau, plus ergonomique ?
+		Tu te demandes pourquoi, ce qui nous empêche ?
 
-	  C'est clair :  C'est toi qui nous manques.
+		C'est clair :  C'est toi qui nous manques.
 
-	  Nous sommes en sous-effectif permanent.
-	  Nos compétences ne sont pas concentrées sur les technologies web,
-	  et encore moins côté front.
+		Nous sommes en sous-effectif permanent.
+		Nos compétences ne sont pas concentrées sur les technologies web,
+		et encore moins côté front.
 
-	  Si tu aurais un intérêt de t'impliquer encore plus,
-	  tu seras clairement le bienvenu-e.
+		Si tu aurais un intérêt de t'impliquer encore plus,
+		tu seras clairement le bienvenu-e.
 
-	  Et si tu n'as pas de temps, si tu veux simplement jeter un coup d'oeil,
-	  peut-être offrir un coup de main ponctuel, ce serait également le bienvenu.
-	  N'hésite pas à envoyer un PR.
+		Et si tu n'as pas de temps, si tu veux simplement jeter un coup d'oeil,
+		peut-être offrir un coup de main ponctuel, ce serait également le bienvenu.
+		N'hésite pas à envoyer un PR.
 
-	    https://github.com/transport-nantes/tn_web
+			https://github.com/transport-nantes/tn_web
 
-       -->
-    {% block head %}
-    <title>{{ page.title|default:"Mobilitains - Pour une mobilité multimodale" }}</title>
-    {% block metas %}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="author" content="Les Mobilitains" />
-    {% block meta_descr %}{% endblock meta_descr %}
-    {{ page.meta_descr|safe|default:"" }}
-    {% endblock metas %}
+		-->
+		{% block head %}
+			<title>{{ page.title|default:"Mobilitains - Pour une mobilité multimodale" }}</title>
+			{% block metas %}
+				<meta charset="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+				<meta name="author" content="Les Mobilitains" />
+				{% block meta_descr %}{% endblock meta_descr %}
+				{{ page.meta_descr|safe|default:"" }}
+			{% endblock metas %}
 
-    {% block styles %}
-    {# Bootstrap #}
-    {# Latest compiled and minified CSS #}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    {# Font Awesome #}
-    <script src="https://kit.fontawesome.com/46b82563d9.js" crossorigin="anonymous"></script>
-	{# fonts #}
-	<style>
-		@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-	</style>
-	{# Favico #}
-	<link rel="icon" type="image/png" href="{% static 'asso_tn/favico.png' %}" />
-    {# Mobilitains #}
-    <link rel="stylesheet" href="{% static 'asso_tn/mobilitains.css' %}">
-    {# Matomo #}
-    <!-- Matomo -->
-    <script type="text/javascript">
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(["setDomains", ["*.www.mobilitains.fr","*.www.transport-nantes.com"]]);
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-	var u="//wa.mobilitains.fr/";
-	_paq.push(['setTrackerUrl', u+'matomo.php']);
-	_paq.push(['setSiteId', '3']);
-	var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-	g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-      })();
-    </script>
-    <noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
-    <!-- End Matomo Code -->
+			{% block styles %}
+				{# Bootstrap #}
+				{# Latest compiled and minified CSS #}
+				<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+				{# Font Awesome #}
+				<script src="https://kit.fontawesome.com/46b82563d9.js" crossorigin="anonymous"></script>
+				{# fonts #}
+				<style>
+					@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+				</style>
+				{# Favico #}
+				<link rel="icon" type="image/png" href="{% static 'asso_tn/favico.png' %}" />
+				{# Mobilitains #}
+				<link rel="stylesheet" href="{% static 'asso_tn/mobilitains.css' %}">
+				{# Matomo #}
+				<!-- Matomo -->
+				<script type="text/javascript">
+					var _paq = window._paq = window._paq || [];
+					/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+					_paq.push(["setDomains", ["*.www.mobilitains.fr","*.www.transport-nantes.com"]]);
+					_paq.push(['trackPageView']);
+					_paq.push(['enableLinkTracking']);
+					(function() {
+					var u="//wa.mobilitains.fr/";
+					_paq.push(['setTrackerUrl', u+'matomo.php']);
+					_paq.push(['setSiteId', '3']);
+					var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+					g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+					})();
+				</script>
+				<noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+				<!-- End Matomo Code -->
 
-    {% if page.hero_image %}
-    <style>
-.hero-image {
-    /*
-      Use "linear-gradient" to add a darken background effect to the
-      image (photographer.jpg). This will make the text easier to read
-   */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-     url("{% static page.hero_image %}");
+				{% if page.hero_image %}
+					<style>
+						.hero-image {
+							/*
+							Use "linear-gradient" to add a darken background effect to the
+							image (photographer.jpg). This will make the text easier to read
+						*/
+							background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+							url("{% static page.hero_image %}");
 
-    /* Set a specific height */
-    height: 40%;
+							/* Set a specific height */
+							height: 40%;
 
-    /* Position and center the image to scale nicely on all screens */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-	}
-    </style>
-    {% endif %}
+							/* Position and center the image to scale nicely on all screens */
+							background-position: center;
+							background-repeat: no-repeat;
+							background-size: cover;
+							position: relative;
+							}
+					</style>
+				{% endif %}
 
-    {% endblock styles %}
-    <meta property="og:title" content="{{ social.twitter_title }}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:description" content="{{ social.twitter_description }}" />
-    <meta property="og:image" content="https://{{ request.get_host }}{% static social.og_image %}" />
-    <meta property="og:image:alt" content="{{ social.og_image_alt }}" />
-    {% if social.og_image_type %}
-    <meta property="og:image:type" content="{{ social.og_image_type }}" />
-    <meta property="og:image:width" content="{{ social.og_image_width }}" />
-    <meta property="og:image:height" content="{{social.og_image_height }}" />
-    {% endif %}
-    <meta property="og:locale" content="fr_FR" />
-    <meta property="og:site_name" content="Mobilitains" />
-    {# https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started #}
-    <meta name="twitter:card" content="{{ social.twitter_card }}" />
-    <meta name="twitter:site" content="{{ social.twitter_site }}" />
-    <meta name="twitter:creator" content="{{ social.twitter_creator }}" />
-    <meta name="twitter:image" content="https://{{ request.get_host }}{% static social.twitter_image %}" />
-    <meta name="twitter:title" content="{{ social.twitter_title }}" />
-    <meta name="twitter:description" content="{{ social.twitter_description }}" />
-    {% comment %}
-    https://cards-dev.twitter.com/validator
-    {% endcomment %}
+			{% endblock styles %}
 
-    {% endblock head %}
-  </head>
-  <body{% block body_attribs %}{% endblock body_attribs %}>
-    {% block body %}
-    {% block navbar %}
-       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	<!-- Brand -->
-	   <a class="navbar-brand navbar-logo" href="{% url 'index' %}"><img class="navbar-logo-image" src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
-	  {% if role == 'dev' %} {% comment %} <span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span> {% endcomment %}
-	  {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
-	  {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
-	  {% endif %}
+			<meta property="og:title" content="{{ social.twitter_title }}" />
+			<meta property="og:type" content="website" />
+			<meta property="og:url" content="{{ request.build_absolute_uri }}" />
+			<meta property="og:description" content="{{ social.twitter_description }}" />
+			<meta property="og:image" content="https://{{ request.get_host }}{% static social.og_image %}" />
+			<meta property="og:image:alt" content="{{ social.og_image_alt }}" />
+			{% if social.og_image_type %}
+				<meta property="og:image:type" content="{{ social.og_image_type }}" />
+				<meta property="og:image:width" content="{{ social.og_image_width }}" />
+				<meta property="og:image:height" content="{{social.og_image_height }}" />
+			{% endif %}
+			<meta property="og:locale" content="fr_FR" />
+			<meta property="og:site_name" content="Mobilitains" />
+			{# https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started #}
+			<meta name="twitter:card" content="{{ social.twitter_card }}" />
+			<meta name="twitter:site" content="{{ social.twitter_site }}" />
+			<meta name="twitter:creator" content="{{ social.twitter_creator }}" />
+			<meta name="twitter:image" content="https://{{ request.get_host }}{% static social.twitter_image %}" />
+			<meta name="twitter:title" content="{{ social.twitter_title }}" />
+			<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{% comment %}
+				https://cards-dev.twitter.com/validator
+			{% endcomment %}
 
-	<!-- Toggler/collapsibe Button -->
-	<button class="navbar-toggler" data-toggle="collapse" data-target=".navbars">
-		<span class="navbar-toggler-icon"></span>
-	  </button>
+    	{% endblock head %}
+  	</head>
+  	<body{% block body_attribs %}{% endblock body_attribs %}>
+		{% block body %}
+			{% block navbar %}
+				<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+					<!-- Brand -->
+					<a class="navbar-brand navbar-logo" href="{% url 'index' %}"><img class="navbar-logo-image" src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
+					{% if role == 'dev' %} {% comment %} <span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span> {% endcomment %}
+					{% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
+					{% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
+					{% endif %}
 
-		  <!-- NavLink Menu -->
-		  <div class="collapse navbar-collapse navbars" id="collapse_target1">
-			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link pr-5" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
-				</li>
+					<!-- Toggler/collapsibe Button -->
+					<button class="navbar-toggler" data-toggle="collapse" data-target=".navbars">
+						<span class="navbar-toggler-icon"></span>
+					</button>
 
-				<li class="nav-item">{% bouton_don "CONTRIBUER AU PROJET" %}</li>
-			</ul>
-		</div>
-	</nav>
+					<!-- NavLink Menu -->
+					<div class="collapse navbar-collapse navbars" id="collapse_target1">
+						<ul class="navbar-nav ml-auto">
+							<li class="nav-item">
+								<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link pr-5" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
+							</li>
 
-		<div>
-			<ul>
-		{% comment %}
-				<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
-				  <div class="dropdown-menu">
-				  {% if user.is_authenticated %}
-				  <a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
-				  <form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
-				  {% else %}{% if not is_production %}
-				  <a class="dropdown-item" href="{% url 'authentication:login' %}"><i class="fa fa-sign-in" style="color:gray" aria-hidden="true"></i> Connexion</a>{% endif %}
-				  {% endif %}
-				  </div>
-				</li>
-		{% endcomment %}
-			  </ul>
-			</div>
-	</nav>
+							<li class="nav-item">{% bouton_don "CONTRIBUER AU PROJET" %}</li>
+						</ul>
+					</div>
+				</nav>
 
-
-    {% endblock navbar %}
-    {% block content %}
-    <div class="hero-image mt-n3">
-      <div class="hero-text">
-	<h1 style="color: white;">{{ page.hero_title }}</h1>
-	<p style="color: white;" class="hero-description">{{ page.hero_description }}</p>
-      </div>
-    </div>
-
-    <div class="container-fluid pt-5">
-    {% block app_content %}{% endblock %}
-   </div>
-   {% endblock content %}
-
-    {% block bottom_appeal %}
-    {% comment %}
-    Support The Guardian
-    Our model is different
-
-    Your support means the Guardian remains open to all. With a digital
-    subscription you can also enjoy our reporting without ads, at the pace
-    that suits the moments of your day.
-    {% endcomment %}
-
-    <div class="pt-5">
-	<div class="jumbotron">
-	    <div class="row mx-2">
-		<div class="col-lg-12">
-		    <p>
-			<strong>Nous avons choisi une approche différente.
-			    Voulez-vous nous soutenir ?</strong>
-			À la différence de beaucoup d'associations
-			militantes, nous avons volontairement choisi
-			de ne pas fixer d'adhésion minimum.  La
-			transition écologique est au cœur des enjeux
-			et les mobilités actives et douces font partie
-			de la solution. Aidez-nous à faire en sorte
-			que les promesses, les engagements se
-			transforment en action. Toutes les
-			contributions sont importantes, nous ne
-			pouvons pas agir seuls. Soutenez-nous dés
-			maintenant et faites avancer la mobilité.</p>
+				<div>
+					<ul>
+						{% comment %}
+								<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i></a>
+								<div class="dropdown-menu">
+								{% if user.is_authenticated %}
+								<a class="dropdown-item" href="{% url 'authentication:mod' %}"><i class="fa fa-user" style="color:gray" aria-hidden="true"></i> Profile</a>
+								<form method="POST" action="{% url 'authentication:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-link"><i class="fa fa-sign-out" style="color:gray" aria-hidden="true"></i> Déconnexion</button></form>
+								{% else %}{% if not is_production %}
+								<a class="dropdown-item" href="{% url 'authentication:login' %}"><i class="fa fa-sign-in" style="color:gray" aria-hidden="true"></i> Connexion</a>{% endif %}
+								{% endif %}
+								</div>
+								</li>
+						{% endcomment %}
+					</ul>
+				</div>
 
 
+			{% endblock navbar %}
+			{% block content %}
+				<div class="hero-image mt-n3">
+					<div class="hero-text">
+						<h1 style="color: white;">{{ page.hero_title }}</h1>
+						<p style="color: white;" class="hero-description">{{ page.hero_description }}</p>
+					</div>
+				</div>
 
-			<span class="center py-3">{% bouton_don "J'adhère" %}</span>
-			<p class="small center pt-1"><i>Votre adhésion ou don donne droit
-				à un crédit d'impôt de 67 % selon votre situation fiscale.</i></p>
+				<div class="container-fluid pt-5">
+					{% block app_content %}
 
-		</div>
-	    </div>
-	</div>
-    </div>
-    {% endblock bottom_appeal %}
+					{% endblock app_content%}
+				</div>
+			{% endblock content %}
 
-	<footer class="text-center text-lg-start mb-5">
-		<!-- réseaux sociaux-->
-		<div class="footer-social">
-				<div class="social">
-					<a href="https://www.linkedin.com/company/transport-nantes/?originalSubdomain=fr"><i class="fab fa-linkedin"></i></a>
-					<a href="https://www.instagram.com/mobilitains/"><i class="fab fa-instagram"></i></a>
-					<a href="https://twitter.com/mobilitains"><i class="fab fa-twitter"></i></a>
-					<a href="https://www.facebook.com/Mobilitains"><i class="fab fa-facebook"></i></a></div>
-		</div>
-		<!--Fin réseaux sociaux-->
-		<div class="container pt-2">
-		  <div class="row justify-content-center">
-			<!--s'engager-->
-			<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-			  <h5 class="text-uppercase">S'engager</h5>
+			{% block bottom_appeal %}
+				{% comment %}
+				Support The Guardian
+				Our model is different
 
-			  <ul class="list-unstyled mb-0">
-				<li>
-				  <a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}" class="footer-text">Faire un don</a>
-				</li>
-				<li>
-				  <a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
-				</li>
-				<li>
-					<a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
-				</li>
-				<li>
-					<a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">Entreprises</a>
-				</li>
-			  </ul>
-			</div>
-			<!--Fin s'engager-->
+				Your support means the Guardian remains open to all. With a digital
+				subscription you can also enjoy our reporting without ads, at the pace
+				that suits the moments of your day.
+				{% endcomment %}
 
-			<!--s'informer-->
-			<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-			  <h5 class="text-uppercase">S'informer</h5>
+				<div class="pt-5">
+					<div class="jumbotron">
+						<div class="row mx-2">
+							<div class="col-lg-12">
+								<p>
+									<strong>Nous avons choisi une approche différente.
+										Voulez-vous nous soutenir ?</strong>
+									À la différence de beaucoup d'associations
+									militantes, nous avons volontairement choisi
+									de ne pas fixer d'adhésion minimum.  La
+									transition écologique est au cœur des enjeux
+									et les mobilités actives et douces font partie
+									de la solution. Aidez-nous à faire en sorte
+									que les promesses, les engagements se
+									transforment en action. Toutes les
+									contributions sont importantes, nous ne
+									pouvons pas agir seuls. Soutenez-nous dés
+									maintenant et faites avancer la mobilité.</p>
 
-			  <ul class="list-unstyled mb-0">
-				<li>
-					<a href="{% url 'topic_blog:view_topic' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
-				</li>
-				<li>
-					<a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
-				</li>
-			  </ul>
-			</div>
-			<!--Fin s'informer-->
 
-			<!--Echanger-->
-			<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-			  <h5 class="text-uppercase">Échanger</h5>
 
-			  <ul class="list-unstyled mb-0">
-				<li>
-					{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
-					<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
-				</li>
-				<li>
-					<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
-				</li>
-				<li>
-					<a href="{% url 'asso_m:TC' %}" class="footer-text">
-					Mentions Légales
-					</a>
-				</li>
-			  </ul>
-			</div>
-			<!--End echanger-->
+								<span class="center py-3">{% bouton_don "J'adhère" %}</span>
+								<p class="small center pt-1"><i>Votre adhésion ou don donne droit
+									à un crédit d'impôt de 67 % selon votre situation fiscale.</i></p>
 
-		  </div>
-		</div>
-	  </footer>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endblock bottom_appeal %}
 
-    {% block scripts %} {# jQuery library #}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {# Popper JS #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    {# Latest compiled JavaScript #}
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    {% endblock scripts %}
-    {% block localscripts %}{% endblock localscripts %}
-    {% endblock body %}
-  </body>
+			<footer class="text-center text-lg-start mb-5">
+				<!-- réseaux sociaux-->
+				<div class="footer-social">
+					<div class="social">
+						<a href="https://www.linkedin.com/company/transport-nantes/?originalSubdomain=fr"><i class="fab fa-linkedin"></i></a>
+						<a href="https://www.instagram.com/mobilitains/"><i class="fab fa-instagram"></i></a>
+						<a href="https://twitter.com/mobilitains"><i class="fab fa-twitter"></i></a>
+						<a href="https://www.facebook.com/Mobilitains"><i class="fab fa-facebook"></i></a>
+					</div>
+				</div>
+				<!--Fin réseaux sociaux-->
+				<div class="container pt-2">
+					<div class="row justify-content-center">
+						<!--s'engager-->
+						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+							<h5 class="text-uppercase">S'engager</h5>
+
+							<ul class="list-unstyled mb-0">
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}" class="footer-text">Faire un don</a>
+								</li>
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
+								</li>
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
+								</li>
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">Entreprises</a>
+								</li>
+							</ul>
+						</div>
+						<!--Fin s'engager-->
+
+						<!--s'informer-->
+						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+							<h5 class="text-uppercase">S'informer</h5>
+
+							<ul class="list-unstyled mb-0">
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
+								</li>
+								<li>
+									<a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
+								</li>
+							</ul>
+						</div>
+						<!--Fin s'informer-->
+
+						<!--Echanger-->
+						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+							<h5 class="text-uppercase">Échanger</h5>
+
+							<ul class="list-unstyled mb-0">
+								<li>
+									{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
+									<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
+								</li>
+								<li>
+									<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
+								</li>
+								<li>
+									<a href="{% url 'asso_m:TC' %}" class="footer-text">
+									Mentions Légales
+									</a>
+								</li>
+							</ul>
+						</div>
+						<!--End echanger-->
+
+					</div>
+				</div>
+			</footer>
+
+			{% block scripts %} {# jQuery library #}
+				<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+				{# Popper JS #}
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+				{# Latest compiled JavaScript #}
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+			{% endblock scripts %}
+			{% block localscripts %}
+
+			{% endblock localscripts %}
+		{% endblock body %}
+  	</body>
 {% endblock html %}
 </html>
