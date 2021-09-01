@@ -149,6 +149,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': settings_local.LOG_DIR + "tn_web.log",
+            'formatter': 'django.server',
         }
     },
     'loggers': {
