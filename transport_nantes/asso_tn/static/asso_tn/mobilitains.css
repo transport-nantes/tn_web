@@ -61,8 +61,13 @@ ul.no-bullet-list {
     transform: translate(-50%, -50%);
     color: white;
 }
+.hero-title {
+    font-size: 4.5vh;
+    color: white;
+}
 .hero-description {
-    font-size: 150%;
+    font-size: 3vh;
+    color: white;
 }
 .hero-link {
     background: #253030;
