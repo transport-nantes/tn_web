@@ -123,11 +123,11 @@ a.navigation-button{
     font-weight: 600;
 }
 a.navigation-button:visited:hover {
-    color: black;
+    color: var(--mobilitains-bleu-marine);
 }
 .navigation-button:hover {
     background-color: white;
-    color:black;
+    color:var(--mobilitains-bleu-marine);
 }
 a:link.cta-button {
     color: var(--body-text);
