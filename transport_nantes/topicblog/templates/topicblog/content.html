@@ -61,14 +61,26 @@
 <div class="container-fluid pt-5">
      {% block app_content %}
 
-          {{ page.body_text_1_md|markdown }}
+          <!--First paragraph of text-->
+          <div class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center mb-5">
+	          <div class="col-md-12 col-lg-12 col-xl-8" style="line-height: 2">
+                    {{ page.body_text_1_md|markdown }}
+               </div>
+          </div>
+          
+          <!--First image, if any-->
           {% if page.body_image|length > 0 %}
                <img src="{{ page.body_image.url }}"
-                         alt="{{ page.body_image_alt_text }}"
+                    alt="{{ page.body_image_alt_text }}"
                     style="width:100%;">
           {% endif %}
-          <p class="pt-1"></p>
-          {{ page.body_text_2_md|markdown }}
+
+          <!--Second paragraph-->
+          <div class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center mt-5">
+	          <div class="col-md-12 col-lg-12 col-xl-8" style="line-height: 2">
+                    {{ page.body_text_2_md|markdown }}
+               </div>
+          </div>
 
           {% show_projects %}
 
