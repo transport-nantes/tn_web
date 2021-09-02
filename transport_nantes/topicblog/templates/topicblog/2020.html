@@ -15,6 +15,43 @@
 {% block twitter_title %}Mobilitains - Pour une mobilité multimodale{% endblock twitter_title %}
 {% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
 
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+
+     {{ block.super }}
+
+     {% comment %}
+       This is mostly a copy pasted version of the block.super, adapted to TBv2
+       Inline styles should be avoided because they can be hard to edit for front
+       but we need the template engine to work on the background-image attribute.
+     {% endcomment %}
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+     {% endif %}
+{% endblock styles %}
+
+
 {% block content %}
 
 <div class="hero-image mt-n3">
