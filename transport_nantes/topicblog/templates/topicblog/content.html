@@ -58,7 +58,7 @@
 </div>
 
 <!-- Main container with the content of the article -->
-<div class="container-fluid pt-5">
+<div class="container-fluid py-5">
      {% block app_content %}
 
           <!--First paragraph of text-->
@@ -82,13 +82,19 @@
                </div>
           </div>
 
-          {% show_projects %}
 
-          {% show_mailing_list %}
-          {% show_qui_sommes_nous %}
-          {% show_donate %}
-          {% show_volunteer %}
+          
 
      {% endblock app_content%}
 </div>
+     <div class="background-ad-hoc-blue">
+          <div class="p-3">
+               {% show_projects %}
+               {% show_mailing_list %}
+               {% show_qui_sommes_nous %}
+          </div>
+     </div>
+
+     {% show_donate %}
+     {% show_volunteer %}
 {% endblock content %}

@@ -163,6 +163,12 @@ a:hover:hover.cta-button {
 .background-mobilitains-bleu-clair {
     background-color: var(--mobilitains-bleu);
 }
+.background-ad-hoc-blue {
+    background-color: #EAF3FC;
+    width:100vw;
+    padding-left: 0;
+    padding-right: 0;
+}
 .font-weight-light {
     font-variant: all-small-caps;
     font-size: 150%;
