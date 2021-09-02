@@ -42,7 +42,7 @@ def lien_don(link_text):
 
 @register.simple_tag
 def url_don():
-    return mark_safe(hello_asso_don)
+    return mark_safe(page_donation)
 
 @register.simple_tag
 def external_url(url, label):
