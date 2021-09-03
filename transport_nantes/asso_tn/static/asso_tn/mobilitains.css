@@ -398,3 +398,9 @@ span.centered {
         text-align: center;
     }
 }
+@media (max-width: 765px) {
+    #qui-sommes-nous-image {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+}
