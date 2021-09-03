@@ -393,3 +393,8 @@ span.centered {
         height: 100%;
     }
 }
+@media (max-width: 576px) {
+    #volunteer {
+        text-align: center;
+    }
+}
