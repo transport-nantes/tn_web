@@ -22,6 +22,8 @@ class TBIEditStatusCodeTest(TestCase):
         # Create a user
         self.user = User.objects.create_user(username='test-user',
                                              password='test-pass')
+        self.user.save()
+        self.client.login(username='test-user', password='test-pass')
         # Create a base template
         self.template = TopicBlogTemplate.objects.create(
             template_name="topicblog/content.html")
