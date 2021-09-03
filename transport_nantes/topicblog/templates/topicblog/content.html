@@ -54,7 +54,19 @@
                position: relative;
                }
           </style>
+
      {% endif %}
+     <style>
+          ol, li {
+          list-style:none;
+          margin-left: 0;
+          padding-left: 0;
+          }
+          li {
+          padding-bottom: 0.2rem;
+          }
+     </style>
+
 {% endblock styles %}
 
 {% block content %}
@@ -70,34 +82,26 @@
 <div class="container-fluid py-5">
      {% block app_content %}
 
-          <!--First paragraph of text-->
-          <div class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center mb-5">
-	          <div class="col-md-12 col-lg-12 col-xl-8" style="line-height: 2">
-                    {{ page.body_text_1_md|markdown }}
-               </div>
-          </div>
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-8 m-auto">
           
+          <!--First paragraph of text-->
+          {{ page.body_text_1_md|markdown }} 
           <!--First image, if any-->
           {% if page.body_image|length > 0 %}
                <img src="{{ page.body_image.url }}"
                     alt="{{ page.body_image_alt_text }}"
-                    style="width:100%;">
+                    class="w-100 my-4">
           {% endif %}
 
           <!--Second paragraph-->
-          <div class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center mt-5">
-	          <div class="col-md-12 col-lg-12 col-xl-8" style="line-height: 2">
-                    {{ page.body_text_2_md|markdown }}
-               </div>
-          </div>
+          {{ page.body_text_2_md|markdown }}
 
-
-          
+     </div>
 
      {% endblock app_content%}
 </div>
      <div class="background-ad-hoc-blue">
-          <div class="p-3">
+          <div class="d-flex flex-column p-4">
                {% show_projects %}
                {% show_mailing_list %}
                {% show_qui_sommes_nous %}
