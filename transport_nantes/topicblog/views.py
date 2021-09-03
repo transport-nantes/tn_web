@@ -6,6 +6,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.shortcuts import render
 from .models import TopicBlogPage, TopicBlogItem
 from .forms import TopicBlogItemForm
@@ -38,7 +39,7 @@ class TopicBlogLegacyView(TemplateView):
 
 
 # TOPICBLOG V2 ################################################################
-class TopicBlogItemEdit(FormView):
+class TopicBlogItemEdit(LoginRequiredMixin, FormView):
     """Create a new TBItem or modify an existing one.
 
     It uses the fields of TopicBlogItem model to generate a form
@@ -66,6 +67,7 @@ class TopicBlogItemEdit(FormView):
     form_class = TopicBlogItemForm
     # success_url = (view on this thing we just made/modified)
     success_url = '#'
+    login_url = "/admin/login/"
 
     # This should (eventually) present a page with four sections:
     # slug, social, presentaiton, content_type, and content.  For now,
@@ -233,13 +235,14 @@ class TopicBlogItemView(TemplateView):
         return context
 
 
-class TopicBlogItemList(ListView):
+class TopicBlogItemList(LoginRequiredMixin, ListView):
     """
     Returns a queryset containing all matches for a given
     item_slug.
     It's then displayed in the topicblogitem_list template.
     """
     model = TopicBlogItem
+    login_url = "/admin/login/"
 
     def get_queryset(self, *args, **kwargs):
         qs = super(ListView, self).get_queryset(*args, **kwargs)
