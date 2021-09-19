@@ -222,7 +222,7 @@ def tracking_progression(request: dict) -> TrackingProgression:
         data.save()
         return HttpResponse(status=200)
     except Exception as error_message:
-        print("error message: ", error_message)
+        logger.debug("error message: ", error_message)
         return JsonResponse({'error': str(error_message)})
 
 
@@ -260,11 +260,11 @@ def stripe_webhook(request):
 
     if event['type'] == 'checkout.session.completed':
         logger.info("Stripe payment webhook succeeded.")
-        print("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
         try:
             make_donation_from_webhook(event)
         except Exception as error_message:
-            print("="*80, "\n", "Error while creating \
+            logger.debug("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
 
     return HttpResponse(status=200)
@@ -296,7 +296,7 @@ def get_user(email: str) -> User:
         return HttpResponseServerError("Too many users with that email.")
 
     if len(existing_users) == 1:
-        print("user already exists")
+        logger.debug("User already exists: " + str(existing_users))
         return existing_users[0]
 
     else:
@@ -305,7 +305,6 @@ def get_user(email: str) -> User:
         user.username = get_random_string()
         user.is_active = False
         user.save()
-        print("User created !")
         return user
 
 
@@ -340,7 +339,7 @@ def make_donation_from_webhook(event: dict) -> None:
         "periodicity_months": mode,
         "amount_centimes_euros": int(event["data"]["object"]["amount_total"]),
     }
-    print("Creation of donation...")
+    logger.debug("Creating of donation...")
     donation = Donation(**kwargs)
     donation.save()
-    print("Donation entry created !")
+    logger.debug("Donation entry created.")
