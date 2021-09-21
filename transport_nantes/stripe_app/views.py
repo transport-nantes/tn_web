@@ -13,12 +13,13 @@ from django.contrib.auth.models import User
 import stripe
 
 from .models import TrackingProgression, Donation
-from .forms import DonationForm, AmountForm
+from .forms import DonationForm, AmountForm, QuickDonationForm
 from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
                                        STRIPE_SECRET_KEY,
                                        STRIPE_ENDPOINT_SECRET)
 
 logger = logging.getLogger(__name__)
+
 
 class StripeView(TemplateView):
     """
@@ -114,6 +115,7 @@ def create_checkout_session(request: dict) -> dict:
     ?session_id={CHECKOUT_SESSION_ID} means the redirect
     will have the session ID set as a query param
     """
+    print(request.POST)
     if request.method == "POST":
         # We're forced to give a full URL, even if the request is local
         # Stripe uses HTTPS on live but tolerate http for test purpose.
@@ -187,9 +189,13 @@ def order_amount(items: dict) -> int:
     if items["payment_amount"] == "0":
         # "Free amount" field is a string input by user in the form.
         # The form wont let non numeric values be entered.
-        return int(items["free_amount"])*100
+        free_amount = float(items["free_amount"])
+        free_amount_in_cents = int(free_amount * 100)
+        return free_amount_in_cents
     else:
-        return int(items["payment_amount"])*100
+        selected_payment_amount = float(items["payment_amount"])
+        selected_payment_amount_in_cents = int(selected_payment_amount * 100)
+        return selected_payment_amount_in_cents
 
 
 class SuccessView(TemplateView):
@@ -343,3 +349,23 @@ def make_donation_from_webhook(event: dict) -> None:
     donation = Donation(**kwargs)
     donation.save()
     logger.debug("Donation entry created.")
+
+
+class QuickDonationView(TemplateView):
+    """
+    Displays a simplified Donation form with a given
+    amount in Euros.
+    """
+    template_name = "stripe_app/donation_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # The amount is set in the URL.
+        # If no amount is set, StripeView is fired instead.
+        context["amount_form"] = QuickDonationForm(
+            initial={
+                "amount": self.kwargs["amount"]
+                }
+            )
+        context["info_form"] = DonationForm()
+        return context
