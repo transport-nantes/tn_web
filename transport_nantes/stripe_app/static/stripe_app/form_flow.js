@@ -48,28 +48,6 @@ function MakeNotRequiredByName(name, reverse) {
     })
 }
 
-// Adds an event listener to each html object with name="donation_type"
-// The value is then evaluated to display appropriate amounts.
-document.getElementsByName("donation_type").forEach(item => {
-    item.addEventListener('click', event => {
-        let selected = donation_selected()
-        if (selected == "payment") {
-            document.getElementById("subscription_amount_rb").style.display = "none"
-            document.getElementById("payment_amount_rb").style.display = "flex"
-            document.getElementById("free_amount").style.display = "flex"
-            MakeNotRequiredByName("subscription_amount", true)
-            MakeNotRequiredByName("payment_amount", false)
-        } else {
-            document.getElementById("subscription_amount_rb").style.display = "flex"
-            document.getElementById("payment_amount_rb").style.display = "none"
-            document.getElementById("free_amount").style.display = "none"
-            document.getElementById("free_amount").removeAttribute("required")
-            document.getElementById("real_cost").innerHTML = ""
-            MakeNotRequiredByName("payment_amount", true)
-            MakeNotRequiredByName("subscription_amount", false) 
-        }
-    })
-})
 // Returns what button is selected in the one-time payments.
 function payment_amount_selected() {
     var payment_radios = document.getElementsByName("payment_amount")
@@ -82,50 +60,90 @@ function payment_amount_selected() {
     }
     return selected
 }
-// Handles requirements if user picks one time payments. 
-// This sets the free amount field to required / not required
-// depending if the user selected free amount or not in radios buttons.
-document.getElementsByName("payment_amount").forEach(item => {
-    item.addEventListener("click", event => {
-        let selected = payment_amount_selected()
-        if (selected == "0") {
-            document.getElementById("payment_amount_rb_3").setAttribute("checked", "true")
-            document.getElementById("free_amount").setAttribute("required", "true")
-        } else {
-            document.getElementById("payment_amount_rb_3").removeAttribute("checked")
-            document.getElementById("free_amount").removeAttribute("required")
-        }
-    })
-})
 
 // Add a message calculating actual cost of donation.
 function real_cost_message(amount) {
     real_cost = document.getElementById("real_cost")
-    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount/3).toFixed(2) + "€ après déduction d'impôts !"
+    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount*0.66).toFixed(2) + "€ après réduction d'impôts !"
 }
 
-// Event to trigger calculation and update the message when an amount is selected.
-document.querySelectorAll("input[id*='payment_amount_rb']").forEach(item => {
-    item.addEventListener("click", event => {
-        // Clear message 
-        document.getElementById("real_cost").innerHTML = ""
-        if (event.target.value != 0) {
-            // Generate a new message
-            real_cost_message(event.target.value)
-            // Clear the free amount field if not selected
-            document.getElementById('free_amount').value = ""
+// QuickDonation field is present only for quick donations
+var isQuickDonation = document.getElementById("QuickDonation")
+if (isQuickDonation) {
+    amount = parseFloat(document.getElementById("amount").value)
+    real_cost_message(amount)
+    document.getElementById("extra_amount").addEventListener("input", function() {
+        if (this.value == "") {
+            this.value = 0
+        }
+        real_cost_message(amount + parseFloat(this.value))
+        document.getElementById("montant_total").innerHTML = "Montant total de votre don : " 
+        + parseFloat(amount + parseFloat(this.value)).toFixed(2)
+        + "€"
+        document.getElementById("payment_amount").value = parseFloat(amount + parseFloat(this.value)).toFixed(2)
+    })
+} else {
+    // STANDARD DONATION
+    // Adds an event listener to each html object with name="donation_type"
+    // The value is then evaluated to display appropriate amounts.
+    document.getElementsByName("donation_type").forEach(item => {
+        item.addEventListener('click', event => {
+            let selected = donation_selected()
+            if (selected == "payment") {
+                document.getElementById("subscription_amount_rb").style.display = "none"
+                document.getElementById("payment_amount_rb").style.display = "flex"
+                document.getElementById("free_amount").style.display = "flex"
+                MakeNotRequiredByName("subscription_amount", true)
+                MakeNotRequiredByName("payment_amount", false)
+            } else {
+                document.getElementById("subscription_amount_rb").style.display = "flex"
+                document.getElementById("payment_amount_rb").style.display = "none"
+                document.getElementById("free_amount").style.display = "none"
+                document.getElementById("free_amount").removeAttribute("required")
+                document.getElementById("real_cost").innerHTML = ""
+                MakeNotRequiredByName("payment_amount", true)
+                MakeNotRequiredByName("subscription_amount", false)
+            }
+        })
+    })
+    // Handles requirements if user picks one time payments.
+    // This sets the free amount field to required / not required
+    // depending if the user selected free amount or not in radios buttons.
+    document.getElementsByName("payment_amount").forEach(item => {
+        item.addEventListener("click", event => {
+            let selected = payment_amount_selected()
+            if (selected == "0") {
+                document.getElementById("payment_amount_rb_3").setAttribute("checked", "true")
+                document.getElementById("free_amount").setAttribute("required", "true")
+            } else {
+                document.getElementById("payment_amount_rb_3").removeAttribute("checked")
+                document.getElementById("free_amount").removeAttribute("required")
+            }
+        })
+    })
+    // Event to trigger calculation and update the message when an amount is selected.
+    document.querySelectorAll("input[id*='payment_amount_rb']").forEach(item => {
+        item.addEventListener("click", event => {
+            // Clear message
+            document.getElementById("real_cost").innerHTML = ""
+            if (event.target.value != 0) {
+                // Generate a new message
+                real_cost_message(event.target.value)
+                // Clear the free amount field if not selected
+                document.getElementById('free_amount').value = ""
+            }
+        })
+    })
+    // Compute the actual cost at the same time as user inputs in the free amount field
+    $('#free_amount').on('input', function() {
+        // "Montant Libre" button
+        checked_button = document.getElementById("payment_amount_rb_3")
+        if (checked_button.checked) {
+            free_amount = document.getElementById("free_amount").value
+            real_cost_message(free_amount)
         }
     })
-})
-// Compute the actual cost at the same time as user inputs in the free amount field
-$('#free_amount').on('input', function() {
-    // "Montant Libre" button
-    checked_button = document.getElementById("payment_amount_rb_3")
-    if (checked_button.checked) {
-        free_amount = document.getElementById("free_amount").value
-        real_cost_message(free_amount)
-    }
-})
+}
 
 // ############################################
 // ######### Form validation part #############
