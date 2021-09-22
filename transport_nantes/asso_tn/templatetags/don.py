@@ -73,3 +73,29 @@ def contact_button(button_text, email_subject):
 	"""class="btn donation-button btn-lg">{text} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
     return mark_safe(html_template.format(subj=email_subject, text=button_text))
+
+
+@register.simple_tag
+def donation_banner(message=None, amount=1, cta_message="Soutenir"):
+    """Creates a banner with a message"""
+    if message is None:
+        message = "Soutenez les Mobilitains pour une meilleure mobilité." +\
+            " Faites un don !"
+    html_template = """<div id="donation-banner" class="d-flex flex-column justify-content-center background-ad-hoc-blue mb-3">""" + \
+        """<div class="d-flex flex-column justify-content-center m-auto p-2">""" + \
+        f"""<p>{message}</p>""" + \
+        f"""{simplified_donation_button(amount, cta_message)}""" + \
+        """</div>""" + \
+        """</div>"""  # noqa
+    return mark_safe(html_template)
+
+
+@register.simple_tag
+def simplified_donation_button(amount=1, cta_message="Soutenir"):
+    """Creates a donationn button leading to a simplified donation form."""
+    html_template = """<a href="{url}" class="btn donation-button">""" + \
+        f"""{cta_message}</a>"""
+    return mark_safe(html_template.format(
+        url=reverse("stripe_app:quick_donation", args=[amount])
+        )
+    )
