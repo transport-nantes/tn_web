@@ -27,4 +27,26 @@
 	</form>
 </div>
 
+	{% if role != "production" %}
+		<div class="d-flex background-ad-hoc-blue mt-5 col-xl-3 col-sm-12 col-m-10 p-2 mx-auto justify-content-center flex-column">
+			<h2> Mode test </h2>
+			<p> Stripe est en mode test. Vos actions n'auront pas d'effet ni sur l'asso ni sur vos finances. </p><br/>
+			<strong># LES N° DE CARTES BLEUES DE TEST :</strong><br/>
+			<ol>
+				<li><a href="https://stripe.com/docs/testing#cards">Liste des cartes de paiement</a></li>
+				<li>4242 4242 4242 4242 va accepter le paiement</li>
+				<li>4000 0000 0000 0002 va refuser le paiement</li>
+				<li>La date d'expiration doit être dans le futur</li>
+				<li>Le code de sécurité (CVC/CVV) peut être n'importe quel nombre à 3 chiffres</li>
+			</ol>
+			<strong># (DEV) COMMENT TESTER STRIPE LOCALEMENT</strong><br/>
+			Il faut d'abord utiliser le l'interface en ligne de commandes Stripe :<br/>
+			<ol>
+				<li><a href="https://stripe.com/docs/stripe-cli">Télécharger la CLI</a></li>
+				<li><a href="https://stripe.com/docs/stripe-cli/webhooks">Utiliser le webhook</a></li>
+				<li>Utiliser la commande "./stripe listen --forward-to "localhost:8000/donation/webhook/" "</li>
+			</ol>
+			<br/>
+		</div>
+	{% endif %}
 {% endblock content %} 
