@@ -16,7 +16,7 @@ contextlib2==0.6.0
 decorator==4.4.1
 distlib==0.3.0
 distro==1.4.0
-Django==3.2
+Django==3.2.5
 django-amazon-ses==4.0.0
 django-countries==7.2.1
 django-crispy-forms==1.12.0
