@@ -78,11 +78,12 @@
      </div>
 </div>
 
+
 <!-- Main container with the content of the article -->
-<div class="container-fluid py-5">
+<div class="container-fluid py-5 px-0">
      {% block app_content %}
 
-     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-8 m-auto">
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
           
           <!--First paragraph of text-->
           {{ page.body_text_1_md|markdown }} 
@@ -101,7 +102,7 @@
      {% endblock app_content%}
 </div>
      <div class="background-ad-hoc-blue">
-          <div class="d-flex flex-column p-4">
+          <div class="d-flex flex-column p-4 p-xl-5">
                {% show_projects %}
                {% show_mailing_list %}
                {% show_qui_sommes_nous %}
