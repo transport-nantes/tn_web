@@ -65,7 +65,7 @@ class DonationForm(forms.Form):
             ButtonHolder(
                 Button("toStep1", "Revenir à l'étape précédente",
                        css_id="toStep1",
-                       css_class="btn-outline-info",
+                       css_class="btn navigation-button",
                        style="margin-bottom: 1em"),
             ),
             Row(
@@ -84,7 +84,7 @@ class DonationForm(forms.Form):
             Field("data_collect", template="stripe_app/checkbox_custom.html"),
             Submit("submit", "Soutenir",
                    css_id="supportButton",
-                   css_class="btn-success"),
+                   css_class="btn donation-button"),
         )
 
 
@@ -129,6 +129,68 @@ class AmountForm(forms.Form):
             HTML("<p id='real_cost'></p>"),
             ButtonHolder(
                 Submit('submit', 'Continuer',
-                       css_class='btn btn-primary', css_id="toStep2")
+                       css_class='btn navigation-button',
+                       css_id="toStep2")
+            )
+        )
+
+
+class QuickDonationForm(forms.Form):
+    # Taken from the URL args
+    amount = forms.IntegerField(
+        label="Montant en Euros",
+        min_value=1,
+        widget=forms.TextInput(
+            attrs={'placeholder': 'Montant en Euros*',
+                   'readonly': 'readonly'}),
+        required=True,
+    )
+
+    motivation_html = """Merci de votre don ! C'est grâce à des
+         personnes comme vous que les Mobilitains pourront continuer
+         de défendre une mobilité multimodale sûre et militer pour
+         son amélioration.<br/>
+         <p> </p>
+         <i>Si vous souhaitez soutenir plus
+         généreusement les Mobilitains, c'est possible, vous pouvez entrer un montant
+         supplémentaire ci-dessous.</i>""" # noqa
+
+    extra_amount = forms.FloatField(
+        label="Montant supplémentaire (Optionnel)",
+        required=False,
+        min_value=0,
+        )
+
+    # Hidden fields, required for StripeView to work
+    # donation_type informs stripe this is a one time donation
+    # payment_amount is the amount to be charged (amount + extra_amount)
+    # it's calculated by the order_amount function in views.py
+    donation_type = forms.CharField(max_length=20, initial="payment", label="",
+                                    required=False)
+    payment_amount = forms.CharField(max_length=20, initial="", label="",
+                                     required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_show_labels = True
+
+        self.helper.layout = Layout(
+            # Checked in JS to see if this is a quick donation
+            HTML("<div id='QuickDonation' style='display:None;'>1</div>"),
+            # Hidden fields to be sent to Stripe
+            Field("donation_type", style="display: none"),
+            Field("payment_amount", id="payment_amount",
+                  style="display: none"),
+            # Displayed in the form
+            Field("amount", id="amount"),
+            HTML(f"<p class='my-3'> {self.motivation_html} </p>"),
+            Field("extra_amount", id="extra_amount"),
+            HTML("<p id='montant_total'></p>"),
+            HTML("<strong><p id='real_cost'></p></strong>"),
+            ButtonHolder(
+                Submit('submit', 'Continuer',
+                       css_class='btn navigation-button', css_id="toStep2")
             )
         )
