@@ -36,6 +36,7 @@ Some examples:
     [[don:]]((text))           equivalent to {% bouton_don "text" %}
     [[don:large]]((text))      equivalent to {% bouton_don_lg "text" %}
     [[don:adhésion]]((text))   equivalent to {% bouton_join "text" %}
+    [[don:fixed|1]]((text))    equivalent to {% fixed_amount_donation_button 1 "text" %}
 
     [[news:name]]((text))      equivalent to {% show_mailing_list %}
 
@@ -190,6 +191,16 @@ class TNLinkParser(object):
                 self.out_string += don.bouton_don_lg(self.paren_string)
             elif 'adhésion' == self.bracket_label_string:
                 self.out_string += don.bouton_join(self.paren_string)
+            elif self.bracket_label_string.startswith('fixed|'):
+                donation_args = self.bracket_label_string.split("|", 1)
+                # The first element must be "fixed" by construction.
+                # The second should be the donation amount, default=1.
+                if len(donation_args) > 1:
+                    donation_amount = donation_args[1]
+                else:
+                    donation_amount = 1
+                self.out_string += don.fixed_amount_donation_button(
+                    donation_amount, self.paren_string)
             else:
                 self.out_string += self.bracket_class_string + ':' + \
                     self.bracket_label_string + '(' + self.paren_string + ')'

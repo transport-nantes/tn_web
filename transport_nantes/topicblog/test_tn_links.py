@@ -46,6 +46,10 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform(
             '[[contact:Hello, World!]]((Je veux être bénévole))'), \
                          don.contact_button('Hello, World!', 'Je veux être bénévole'))
+        self.assertEqual(self.parser.transform('[[don:fixed|1]]((give!))'), \
+                         don.fixed_amount_donation_button(1, 'give!'))
+        self.assertEqual(self.parser.transform('[[don:fixed|5]]((give!))'), \
+                         don.fixed_amount_donation_button(5, 'give!'))
 
     def test_news(self):
         settings.csrf_token = 'some text that must exist'
