@@ -145,6 +145,10 @@ a:hover:hover.cta-button {
     color: var(--body-text);
     background-color: var(--mobilitains-gris);
 }
+.centered-inline-button {
+    width: 40%;
+    margin: auto;
+}
 .background-gray {
     background-color: #7F6966;
 }
