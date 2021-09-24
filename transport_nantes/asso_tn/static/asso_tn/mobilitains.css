@@ -408,3 +408,15 @@ span.centered {
         padding-right: 3rem;
     }
 }
+#card_velorution_1 {
+    box-shadow: 7px 1px 16px -1px rgba(212, 212, 212, 0.20);
+}
+#card_velorution_1:hover {
+    box-shadow: 7px 1px 16px -1px rgba(212, 212, 212, 0.35);
+}
+#card_velorution_2 {
+    box-shadow: 7px 1px 16px -1px rgba(212, 212, 212, 0.15);
+}
+#card_velorution_2:hover {
+    box-shadow: 7px 1px 16px -1px rgba(212, 212, 212, 0.30);
+}

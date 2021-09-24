@@ -17,18 +17,23 @@
 
 {% block app_content %}
 
-
-<div id="double-tag" class="d-flex justify-content-center">
-    <div class="col-md-6 col-lg-6 col-xl-6" style="line-height: 2">
-	<p>Soutenir les Mobilitains à partir de 1 € !<br>
-	    {% fixed_amount_donation_button 1 "Yes !" %}
-	</p>
+<div id="CTA_velorution" class="container d-flex justify-content-around flex-wrap ">
+	<div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+		<img class="card-img-top" src="{% static 'asso_tn/v4.jpg' %}" alt="Card image cap">
+		<div class="card-body">
+			<h5 class="card-title">Soutenez-nous à partir de 1€</h5>
+			<p class="card-text">C'est grâce à vous que les Mobilitain.e.s agissent et continueront d'agir pour une meilleure mobilité</p>
+			{% fixed_amount_donation_button 1 "Je fais un don" %}
+		</div>
 	</div>
-	<div class="col-md-6 col-lg-6 col-xl-6" style="line-height: 2">
-	    <p>...ou même à partir de 0 €<br>
-		je reste en contact, j'agis plus tard<br>
-		{% inline_mailing_list %}
-	    </p>
+
+	<div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+		<img class="card-img-top" src="{% static 'asso_tn/Box-velorution.jpg' %}" alt="Card image cap">
+		<div class="card-body">
+			<h5 class="card-title">Rejoignez-nous c'est gratuit !</h5>
+			<p class="card-text">Transformez votre soutien en action, venez agir au côté des Mobilitain.e.s pour une meilleure mobilité</p>
+			<a href='ml/inscrire-captcha' class="btn donation-button">Je participe</a>
+		</div>
 	</div>
 </div>
 
