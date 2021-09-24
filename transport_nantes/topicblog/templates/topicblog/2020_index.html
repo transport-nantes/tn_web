@@ -17,6 +17,21 @@
 
 {% block app_content %}
 
+
+<div id="double-tag" class="d-flex justify-content-center">
+    <div class="col-md-6 col-lg-6 col-xl-6" style="line-height: 2">
+	<p>Soutenir les Mobilitains à partir de 1 € !<br>
+	    {% fixed_amount_donation_button 1 "Yes !" %}
+	</p>
+	</div>
+	<div class="col-md-6 col-lg-6 col-xl-6" style="line-height: 2">
+	    <p>...ou même à partir de 0 €<br>
+		je reste en contact, j'agis plus tard<br>
+		{% inline_mailing_list %}
+	    </p>
+	</div>
+</div>
+
 <div id="body1_markdown" class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center">
 	<div class="col-md-12 col-lg-12 col-xl-6" style="line-height: 2">
 		{{ page.body1_md|markdown }}
@@ -29,7 +44,11 @@
 	</div>
 </div>
 
-{{ page.body2_md|markdown }}
+<div id="body1_markdown" class="d-flex col-sm-6 col-md-12 col-lg-12 col-xl-12 justify-content-center">
+	<div class="col-md-12 col-lg-12 col-xl-6" style="line-height: 2">
+	    {{ page.body2_md|markdown }}
+	</div>
+</div>
 
 <div class="background-ad-hoc-blue">
 	<div class="d-flex flex-column p-4 p-xl-5">

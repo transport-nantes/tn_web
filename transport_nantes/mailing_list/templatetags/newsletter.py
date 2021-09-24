@@ -16,6 +16,15 @@ def show_mailing_list(context):
     context['form'] = form
     return context
 
+@register.inclusion_tag('mailing_list/panel/inline_mailing_list.html', takes_context=True)
+def inline_mailing_list(context):
+    """Offer to join the mailing list.
+
+    """
+    form = QuickMailingListSignupForm
+    context['form'] = form
+    return context
+
 @register.inclusion_tag('mailing_list/panel/petition.html')
 def show_petition_signup(petition_name):
     """Offer to sign a petition.
