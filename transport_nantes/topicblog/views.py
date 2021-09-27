@@ -40,24 +40,24 @@ class TopicBlogLegacyView(TemplateView):
 
 # TOPICBLOG V2 ################################################################
 class TopicBlogItemEdit(LoginRequiredMixin, FormView):
-    """Create a new TBItem or modify an existing one.
+    """Create or modify a TBItem.
 
     It uses the fields of TopicBlogItem model to generate a form
-    displayed inside the template set on template_name.
-    The form exludes some fields that should not be accessible by the user.
-    However admins can still edit those fields, for example the author.
+    displayed inside the template set on template_name.  The form
+    exludes some fields that should not be accessible by the user.
+    However admins can still edit those fields, for example the
+    author.
 
     To create a new TopicBlogItem, the user must go on the url
     /tb/admin/new where the form is displayed with empty fields.
 
-    If an existing item doesn't have a slug yet, it's possible to edit it
-    by going to /tb/admin/edit/<PKid> however if it does already have a slug
-    then you must also provide the slug to edit it.
-    For example :
-    /tb/admin/edit/15/la-grande-mobilite/ would return a 200 status code
-    if the item with PK 15 has the slug la-grande-mobilite.
-    However it would return a 404 status code you try to edit it from
-    /tb/admin/edit/15/.
+    If an existing item doesn't have a slug yet, it's possible to edit
+    it by going to /tb/admin/edit/<PKid> however if it does already
+    have a slug then you must also provide the slug to edit it.  For
+    example : /tb/admin/edit/15/la-grande-mobilite/ would return a 200
+    status code if the item with PK 15 has the slug
+    la-grande-mobilite.  However it would return a 404 status code you
+    try to edit it from /tb/admin/edit/15/.
 
     It's possible to edit an item by its slug, the form will load the
     instance of the item with the slug and the highest item_sort_key.
@@ -79,20 +79,20 @@ class TopicBlogItemEdit(LoginRequiredMixin, FormView):
         # accidents).  Then we are editing that record.  Else we are
         # building a new TBItem.
 
-        # In FormView, we must use the self.kwargs to retrieve the
-        # URL parameters. This stems from the View class that
-        # transfers the URL parameters to the View instance and
-        # assigns kwargs to self.kwargs.
+        # In FormView, we must use the self.kwargs to retrieve the URL
+        # parameters. This stems from the View class that transfers
+        # the URL parameters to the View instance and assigns kwargs
+        # to self.kwargs.
         if 'pkid' in self.kwargs:
             if 'item_slug' in self.kwargs:
-                # if both pkid and item_slug are provided, we
-                # fetch the corresponding item
+                # if both pkid and item_slug are provided, we fetch
+                # the corresponding item
                 try:
                     tb_item = get_object_or_404(TopicBlogItem,
                                                 id=self.kwargs['pkid'],
                                                 slug=self.kwargs['item_slug'])
-                # We need to handle the case where the inputs are wrong
-                # or it would raise a 500 error.
+                # We need to handle the case where the inputs are
+                # wrong or it would raise a 500 error.
                 except ObjectDoesNotExist:
                     raise Http404("L'id ou le slug "
                                   "(la partie lisible de l'URL ex : "
@@ -109,8 +109,8 @@ class TopicBlogItemEdit(LoginRequiredMixin, FormView):
                     raise Http404("Veuillez renseigner le slug du contenu "
                                   "(la partie lisible de l'URL ex : "
                                   "/tb/s/slug-du-contenu )")
-        # If we only provide the slug, we load the one with the highest
-        # item_sort_key
+        # If we only provide the slug, we load the one with the
+        # highest item_sort_key
         else:
             if 'item_slug' in kwargs:
                 try:
@@ -167,25 +167,25 @@ class TopicBlogItemEdit(LoginRequiredMixin, FormView):
 
 
 class TopicBlogItemView(TemplateView):
-    """
-    This view allows to display Items on their respective templates.
+    """Render a TopicBlogItem.
 
     A user may view the item using its slug when using the
-    view_item_by_slug url. In this case, if several items are attached to the
-    same slug, the item with the highest item_sort_key is displayed.
+    view_item_by_slug url. In this case, if several items are attached
+    to the same slug, the item with the highest item_sort_key is
+    displayed.
 
     Authorised users may consult specific version of the item using the
     view_item_by_pkid url. The login constraint is not implemented yet.
+
     """
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # There are two ways to access this view : either by
-        # providing a pkid AND a item_slug, or by providing a
-        # item_slug only.
-        # Providing the pkid allows to access a specific version
-        # of the item, while the slug alone serves the latest version.
+        # There are two ways to access this view : either by providing
+        # a pkid AND a item_slug, or by providing a item_slug only.
+        # Providing the pkid allows to access a specific version of
+        # the item, while the slug alone serves the latest version.
         if 'pkid' in kwargs:
             # if we give both item_slug and pkid, we fetch the item
             if 'item_slug' in kwargs:
@@ -225,8 +225,8 @@ class TopicBlogItemView(TemplateView):
             if tb_item is None:
                 raise Http404("Aucun item ne correspond à cet ID")
 
-        # The template is set in the model, it's a str referring to
-        # an existing template in the app.
+        # The template is set in the model, it's a str referring to an
+        # existing template in the app.
         self.template_name = tb_item.template.template_name
         context['page'] = tb_item
         # set_context adds the socials into the context
@@ -236,15 +236,17 @@ class TopicBlogItemView(TemplateView):
 
 
 class TopicBlogItemList(LoginRequiredMixin, ListView):
-    """
-    Returns a queryset containing all matches for a given
-    item_slug.
+    """Render a list of TopicBlogItems.
+
     It's then displayed in the topicblogitem_list template.
+
     """
     model = TopicBlogItem
     login_url = "/admin/login/"
 
     def get_queryset(self, *args, **kwargs):
+        """Return a queryset of matches for a given item_slug.
+        """
         qs = super(ListView, self).get_queryset(*args, **kwargs)
         if 'item_slug' in self.kwargs:
             # If item_slug exists, we use it to filter the view.
