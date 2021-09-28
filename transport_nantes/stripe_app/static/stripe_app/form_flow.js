@@ -147,6 +147,9 @@ if (originating_view == "QuickDonationView") {
             real_cost_message(free_amount)
         }
     })
+} else {
+    // The originating view is not recognized.
+    alert("Problème de configuration. Veuillez contacter l'administrateur.")
 }
 
 // ############################################
