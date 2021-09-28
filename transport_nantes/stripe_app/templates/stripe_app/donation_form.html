@@ -2,6 +2,11 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block metas %}
+	{{ block.super }}
+	<meta name="originating-view" data-originating-view="{{ originating_view }}">
+{% endblock metas %}
+
 {% block content %}
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'stripe_app/form_flow.js' %}" defer></script>

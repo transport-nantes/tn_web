@@ -177,8 +177,6 @@ class QuickDonationForm(forms.Form):
         self.helper.form_show_labels = True
 
         self.helper.layout = Layout(
-            # Checked in JS to see if this is a quick donation
-            HTML("<div id='QuickDonation' style='display:None;'>1</div>"),
             # Hidden fields to be sent to Stripe
             Field("donation_type", style="display: none"),
             Field("payment_amount", id="payment_amount",
