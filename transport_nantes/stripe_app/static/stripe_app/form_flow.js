@@ -68,10 +68,14 @@ function real_cost_message(amount) {
 }
 
 // QuickDonation field is present only for quick donations
-var isQuickDonation = document.getElementById("QuickDonation")
-if (isQuickDonation) {
+var originating_view = document.querySelector('meta[name="originating-view"]').getAttribute("data-originating-view")
+if (originating_view == "QuickDonationView") {
     amount = parseFloat(document.getElementById("amount").value)
     real_cost_message(amount)
+    extra_amount = document.getElementById("extra_amount")
+    payment_amount = document.getElementById("payment_amount")
+    payment_amount.value = Number(amount)
+    extra_amount.value = 0
     document.getElementById("extra_amount").addEventListener("input", function() {
         if (this.value == "") {
             this.value = 0
@@ -80,9 +84,9 @@ if (isQuickDonation) {
         document.getElementById("montant_total").innerHTML = "Montant total de votre don : " 
         + parseFloat(amount + parseFloat(this.value)).toFixed(2)
         + "€"
-        document.getElementById("payment_amount").value = parseFloat(amount + parseFloat(this.value)).toFixed(2)
+        document.getElementById("payment_amount").value = Number(parseFloat(Number(amount) + Number(extra_amount.value)).toFixed(2))
     })
-} else {
+} else if(originating_view == "StripeView") {
     // STANDARD DONATION
     // Adds an event listener to each html object with name="donation_type"
     // The value is then evaluated to display appropriate amounts.
@@ -247,6 +251,14 @@ fetch("/donation/config/")
         form_data.append("city", document.getElementById("id_city").value)
         form_data.append("country", document.getElementById("id_country").value)
 
+        // Tracks the originating_view and originating_parameters to build the model.
+        form_data.append("originating_view", originating_view)
+
+        if (originating_view == "QuickDonationView") {
+            form_data.append("originating_parameters", document.getElementById("amount").value)
+        } else if (originating_view == "StripeView") {
+            form_data.append("originating_parameters", null)
+        }
 
         // Send the request to server to create a checkout session
         fetch("/donation/create-checkout-session/", {

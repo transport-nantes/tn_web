@@ -7,10 +7,9 @@ class TrackingProgressionAdmin(admin.ModelAdmin):
 
 
 class DonationAdmin(admin.ModelAdmin):
-    readonly_fields = ("user", "email", "first_name", "last_name", "address",
-                       "more_address", "postal_code", "city", "country",
-                       "periodicity_months", "amount_centimes_euros",
-                       "timestamp")
+    def has_change_permission(self, request, obj=None):
+        """Makes read only all fields of the model."""
+        return False
 
 
 admin.site.register(TrackingProgression, TrackingProgressionAdmin)

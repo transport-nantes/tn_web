@@ -55,6 +55,10 @@ class Donation(models.Model):
     amount_centimes_euros = models.IntegerField(
         verbose_name="Montant (Centimes €)", default=0)
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    originating_view = models.CharField(max_length=100,
+                                        default=None, null=True)
+    originating_parameters = models.CharField(max_length=100,
+                                              default=None, null=True)
 
     def __str__(self):
         return self.first_name + " " + self.last_name + \

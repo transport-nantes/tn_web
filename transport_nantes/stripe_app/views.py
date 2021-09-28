@@ -32,13 +32,15 @@ class StripeView(TemplateView):
         """
         Main function used, will pass the appropriate form to the template.
         """
-        info_form = DonationForm()
         amount_form = AmountForm()
         amount_form.fields["payment_amount"].choices = get_amount_choices()
         amount_form.fields["subscription_amount"].choices = get_subscription_amounts() # noqa
-        return render(request, self.template_name, {"info_form": info_form,
-                                                    "amount_form": amount_form
-                                                    })
+        context = {}
+        context["info_form"] = DonationForm()
+        context["amount_form"] = amount_form
+        context["originating_view"] = "StripeView"
+
+        return render(request, self.template_name, context)
 
 
 def get_subscription_amounts():
@@ -345,6 +347,8 @@ def make_donation_from_webhook(event: dict) -> None:
         "country": metadata["country"],
         "periodicity_months": mode,
         "amount_centimes_euros": int(event["data"]["object"]["amount_total"]),
+        "originating_view": metadata["originating_view"],
+        "originating_parameters": metadata["originating_parameters"],
     }
     logger.debug("Creating of donation...")
     donation = Donation(**kwargs)
@@ -369,4 +373,5 @@ class QuickDonationView(TemplateView):
                 }
             )
         context["info_form"] = DonationForm()
+        context["originating_view"] = "QuickDonationView"
         return context
