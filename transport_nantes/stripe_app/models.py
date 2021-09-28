@@ -61,7 +61,13 @@ class Donation(models.Model):
                                               default=None, null=True)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name + \
-            " ({}) ".format(self.email) +\
-            str(round(float(self.amount_centimes_euros/100), 2)) \
-            + "€ " + str(self.timestamp)[:19]
+        if self.periodicity_months == 0:
+            return self.first_name + " " + self.last_name + \
+                " ({}) ".format(self.email) +\
+                str(round(float(self.amount_centimes_euros/100), 2)) \
+                + "€ ONE-TIME" + str(self.timestamp)[:19]
+        else:
+            return self.first_name + " " + self.last_name + \
+                " ({}) ".format(self.email) +\
+                str(round(float(self.amount_centimes_euros/100), 2)) \
+                + "€ SUBSCRIPTION" + str(self.timestamp)[:19]
