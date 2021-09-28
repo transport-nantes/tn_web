@@ -219,12 +219,13 @@ def tracking_progression(request: dict) -> TrackingProgression:
         for key, _ in data.items():
             if data[key] == "true":
                 data[key] = True
-            else:
+            elif data[key] == "false":
                 data[key] = False
 
         data = TrackingProgression(amount_form_done=data["step_1_completed"],
                                    donation_form_done=data["step_2_completed"],
-                                   timestamp=datetime.datetime.now)
+                                   timestamp=datetime.datetime.now,
+                                   user_agent=data["user_agent"])
         data.save()
         return HttpResponse(status=200)
     except Exception as error_message:
