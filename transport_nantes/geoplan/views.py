@@ -119,7 +119,12 @@ class MapView(TemplateView):
         # PR is on the way to update folium as of 29/06/21
         # Deleting the extra bootstrap import solves style conflict.
         old_bs_link = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-        html = html.replace(old_bs_link, "")
+
+        html: str
+        expressions_to_delete = [old_bs_link, '<head>', '</head>', "<!DOCTYPE html>"]
+        for expression in expressions_to_delete:
+            html = html.replace(expression, "")
+
         context["html_map"] = html
         context["map_defn"] = map_definition
 
