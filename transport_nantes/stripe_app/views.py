@@ -331,19 +331,22 @@ def make_donation_from_webhook(event: dict) -> None:
         # Payment
         mode = "0"
 
+    metadata = event["data"]["object"]["metadata"]
     # kwargs to be used to create a Donation object.
     kwargs = {
         "user": get_user(event["data"]["object"]["customer_email"]),
         "email": event["data"]["object"]["customer_email"],
-        "first_name": event["data"]["object"]["metadata"]["first_name"],
-        "last_name": event["data"]["object"]["metadata"]["last_name"],
-        "address": event["data"]["object"]["metadata"]["address"],
-        "more_address": event["data"]["object"]["metadata"]["more_adress"],
-        "postal_code": event["data"]["object"]["metadata"]["postal_code"],
-        "city": event["data"]["object"]["metadata"]["city"],
-        "country": event["data"]["object"]["metadata"]["country"],
+        "first_name": metadata["first_name"],
+        "last_name": metadata["last_name"],
+        "address": metadata["address"],
+        "more_address": metadata["more_adress"],
+        "postal_code": metadata["postal_code"],
+        "city": metadata["city"],
+        "country": metadata["country"],
         "periodicity_months": mode,
         "amount_centimes_euros": int(event["data"]["object"]["amount_total"]),
+        "originating_view": metadata["originating_view"],
+        "originating_parameters": metadata["originating_parameters"],
     }
     logger.debug("Creating of donation...")
     donation = Donation(**kwargs)
