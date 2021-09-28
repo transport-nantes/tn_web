@@ -209,6 +209,7 @@ window.addEventListener("beforeunload", function(event) {
     var form_progression = new FormData();
     form_progression.append("step_1_completed", step_1_completed)
     form_progression.append("step_2_completed", step_2_completed)
+    form_progression.append("user_agent", navigator.userAgent)
    
     fetch("/donation/tracking/", {
         headers: myHeaders,
@@ -283,3 +284,5 @@ fetch("/donation/config/")
     }
   });
 });
+
+console.log("user agent :", navigator.userAgent)

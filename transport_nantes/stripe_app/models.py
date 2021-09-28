@@ -15,6 +15,8 @@ class TrackingProgression(models.Model):
     donation_form_done = models.BooleanField(
         verbose_name="Formulaire informations personnelles")
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    user_agent = models.CharField(
+        max_length=255, verbose_name="User agent", null=True)
 
     def __str__(self):
         if self.donation_form_done is True:

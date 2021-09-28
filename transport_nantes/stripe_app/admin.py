@@ -3,7 +3,9 @@ from .models import TrackingProgression, Donation
 
 
 class TrackingProgressionAdmin(admin.ModelAdmin):
-    readonly_fields = ("timestamp", "amount_form_done", "donation_form_done", )
+    def has_change_permission(self, request, obj=None):
+        """Makes read only all fields of the model."""
+        return False
 
 
 class DonationAdmin(admin.ModelAdmin):
