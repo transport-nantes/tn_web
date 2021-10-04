@@ -80,7 +80,8 @@ if (originating_view == "QuickDonationView") {
         if (this.value == "") {
             this.value = 0
         }
-        real_cost_message(amount + parseFloat(this.value))
+        amount = parseFloat(document.getElementById("amount").value)
+        real_cost_message(Number(amount) + parseFloat(this.value))
         document.getElementById("montant_total").innerHTML = "Montant total de votre don : " 
         + parseFloat(amount + parseFloat(this.value)).toFixed(2)
         + "€"
@@ -151,6 +152,48 @@ if (originating_view == "QuickDonationView") {
     // The originating view is not recognized.
     alert("Problème de configuration. Veuillez contacter l'administrateur.")
 }
+// ############################################
+// ########### INFO FORM DISPLAY ##############
+// ############################################
+
+// Reminds the user the donation amount it's giving.
+function update_recall_message(amount) {
+    recall = document.getElementById("donation_recall")
+    recall.innerHTML = "Votre donation de <span id='recall_amount'>" + parseFloat(amount).toFixed(2) + "€</span>"
+}
+
+function get_subscription_amount() {
+    // select the checked subscription_amount radio button.
+    let subscription_amount_label = $('input[id*="subscription_amount_rb_"]:radio:checked').parent().text().trim()
+    let number_regex = /\d+/g
+    let subscription_amount = Number(subscription_amount_label.match(number_regex)[0])
+
+    return subscription_amount
+}
+
+// triggers when the user clicks on the "Continuer" button.
+$("#toStep2").on("click", function() {
+    recall = document.getElementById("donation_recall")
+
+    if (originating_view == "QuickDonationView") {
+        amount = document.getElementById("payment_amount").value
+        update_recall_message(amount)
+        recall.innerHTML += " au total"
+
+    } else if (originating_view == "StripeView") {
+        // Checks what sort of donation is selected (one time or subscription)
+        let selected = donation_selected()
+        if (selected == "subscription") {
+            update_recall_message(get_subscription_amount())
+            recall.innerHTML += " par mois"
+        } else if (selected == "payment") {
+            update_recall_message(payment_amount_selected())
+            recall.innerHTML += " au total"
+        }
+        
+    }
+    
+})
 
 // ############################################
 // ######### Form validation part #############

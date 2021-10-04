@@ -420,3 +420,10 @@ span.centered {
 #card_velorution_2:hover {
     box-shadow: 7px 1px 16px -1px rgba(212, 212, 212, 0.30);
 }
+#recall_amount {
+    font-weight: bold;
+    background-color: var(--mobilitains-bleu);
+    color: white;
+    margin: 2px;
+    padding: 4px;
+}
