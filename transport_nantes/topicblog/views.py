@@ -1,15 +1,14 @@
 from random import randint
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from asso_tn.utils import StaffRequiredMixin
-from .models import TopicBlogPage, TopicBlogItem
+from .models import TopicBlogPage, TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
 
@@ -165,6 +164,15 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             self.form_valid(form)
 
         return super().form_valid(form)
+
+
+def update_template_list(request):
+    content_type = request.GET.get('content_type')
+    templates = TopicBlogTemplate.objects.filter(
+        content_type=content_type)
+    print("Templates value : ", templates)
+    return render(request, 'topicblog/template_dropdown.html',
+                  {'templates': templates})
 
 
 class TopicBlogItemView(TemplateView):

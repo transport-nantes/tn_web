@@ -1,7 +1,7 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import TopicBlogLegacyView
-from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemList
+from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemList, update_template_list
 from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
@@ -39,6 +39,9 @@ if ROLE != 'production':
         path('admin/list/<slug:item_slug>/',
              TopicBlogItemList.as_view(),
              name='list_items_by_slug'),
+        path('ajax/update-template-list/',
+             update_template_list,
+             name="update_template_list")
     ]
 
 # Need topic creation.
