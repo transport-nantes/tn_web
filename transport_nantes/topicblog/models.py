@@ -162,6 +162,20 @@ class TopicBlogTemplate(models.Model):
     # their intent on creating the model.
     comment = models.TextField()
 
+    # Indicates in what sort of content this template is used.
+    # Ex: 'article', 'petition', 'newsletter' ...
+    content_choices = [("article", "article"),
+                       ("project", "project"),
+                       ("press_release", "press_release"),
+                       ("newsletter", "newsletter"),
+                       ("newsletter_web", "newsletter_web"),
+                       ("petition", "petition"),
+                       ("mailing_list_signup",
+                       "mailing_list_signup"),
+                       ]
+    content_type = models.CharField(max_length=100, choices=content_choices,
+                                    default="article")
+
     # And now somehow we need to specify the fields.  Either we do
     # that with an explicit list of fields or, probably better, a
     # one-to-many relationship to TBTemplateFields.  And that model
@@ -242,7 +256,8 @@ class TopicBlogItem(models.Model):
     # eventually are article, project (square), press release,
     # newsletter, newsletter web (the "if you want to display this in
     # your browser" version), petitions, mailing list signup pages.
-    content_choices = [("article", "article"),
+    content_choices = [("---------", "---------"),
+                       ("article", "article"),
                        ("project", "project"),
                        ("press_release", "press_release"),
                        ("newsletter", "newsletter"),
@@ -252,7 +267,7 @@ class TopicBlogItem(models.Model):
                        "mailing_list_signup"),
                        ]
     item_type = models.CharField(max_length=100, choices=content_choices,
-                                 default="article")
+                                 default="---------")
     # Content #######################################################
     #
     # Encode the editorial content of a TBItem.
