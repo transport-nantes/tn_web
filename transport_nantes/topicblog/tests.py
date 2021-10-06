@@ -90,7 +90,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Edit wihout slug given
         # Should return 404
         response = self.client.get(
-            reverse("topicblog:edit_item_no_slug",
+            reverse("topicblog:edit_item_by_pkid",
                     kwargs={
                         "pkid": self.item_with_slug.id
                     })
@@ -165,7 +165,7 @@ class TBIEditStatusCodeTest(TestCase):
             ).order_by("item_sort_key").last().item_sort_key
 
         response = self.client.get(
-            reverse("topicblog:edit_item_slug",
+            reverse("topicblog:edit_item_by_slug",
                     kwargs={
                         "item_slug": self.item_with_slug.slug
                     })
@@ -210,7 +210,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Edit wihout slug given
         # Should return 200
         response = self.client.get(
-            reverse("topicblog:edit_item_no_slug",
+            reverse("topicblog:edit_item_by_pkid",
                     kwargs={
                         "pkid": self.item_without_slug.id
                     })

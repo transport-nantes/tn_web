@@ -329,7 +329,7 @@ class TopicBlogItem(models.Model):
         """This function returns a link leading to
         the edition page of an item."""
         if not self.slug:
-            return reverse("topicblog:edit_item_no_slug",
+            return reverse("topicblog:edit_item_by_pkid",
                            kwargs={"pkid": self.pk})
         else:
             return reverse("topicblog:edit_item",
