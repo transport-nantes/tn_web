@@ -55,9 +55,36 @@ class TBIEditStatusCodeTest(TestCase):
             template=self.template,
             title="Test-title")
 
-    def test_item_with_slug_edit_status_code(self):
+    def test_item_with_slug_edit(self):
         """
         Test status codes for the edit page of an item with a slug
+        The edition page is accessed through the TopicBlogItemEdit view.
+
+        In this test we will use these items from the setUp :
+            - An item with a slug, ID = 1, item_sort_key = 1
+            - An item with a slug and higher sort key, ID = 3,
+            item_sort_key = 3
+
+        We aim to check that we get the correct status codes on the edition
+        page in various situations involving items with a slug.
+
+        For Items which have a saved slug edition page must only
+        return 200 if :
+
+            - An existing slug is provided. In this case it loads the
+            item with the highest sort key.
+            OR
+            - The provided slug and ID are matching the pair of slug and ID
+            of an item. In this case it loads the item corresponding to
+            this slug/id pair.
+
+        Edition page must return 404 if :
+            - The slug provided doesn't match any existing item's slug.
+            In this case it raises a 404.
+            - The slug / id pair provided doesn't match any existing item.
+            In this case it raises a 404.
+            - No slug is provided.
+
         """
 
         # Edit wihout slug given
@@ -155,9 +182,29 @@ class TBIEditStatusCodeTest(TestCase):
                          f"\nitem with slug : {self.item_with_slug}"
                          f"\nHighest item sort key: {highest_item_sort_key}")
 
-    def test_item_without_slug_edit_status_code(self):
+    def test_item_without_slug_edit(self):
         """
         Test status code of edit page of items without slug
+        The edition page is accessed through the TopicBlogItemEdit view.
+
+        In this test we will use these items from the setUp :
+            - An item without a slug, ID = 2, item_sort_key = 0
+
+        We aim to check that we get the correct status codes on the edition
+        page in various situations involving items without a slug.
+
+        For Items which don't have a saved slug edition page must only
+        return 200 if :
+
+            - Only an existing PK ID is provided, and the item corresponding
+            to that ID doesn't have a slug, or an empty one. In this case it
+            loads the item with the corresponding PK ID.
+
+        Edition page must NOT return 200 if :
+            - The PK ID provided doesn't match any existing item's PK ID.
+            In this case it raises a 404.
+            - Only a PK ID is provided and matches an item with a slug.
+            In this case it raises a 404.
         """
 
         # Edit wihout slug given
@@ -206,10 +253,34 @@ class TBIViewStatusCodeTests(TestCase):
     def setUp(self):
         TBIEditStatusCodeTest.setUp(self)
 
-    def test_item_with_slug_view_status_code(self):
+    def test_item_with_slug_view(self):
         """
         Test the status code of items with a slug in
         the TopicBlogItemView.
+
+        In this test we will use these items from the setUp :
+            - An item with a slug, ID = 1, item_sort_key = 1
+            - An item with a slug and higher sort key, ID = 3,
+            item_sort_key = 3
+
+        We aim to check that we get the correct status codes on the view
+        page in various situations involving items with a slug.
+
+        For items which have a slug view page must only return 200 if :
+            - You provide a slug and an item corresponding to that slug exists.
+            In this case it loads the item with the corresponding slug and
+            highest sort key.
+            - You're connected and provide both an ID/slug pair corresponding
+            to an existing item. In this case it loads the corresponding item.
+
+        View page must NOT return 200 if :
+            - You provide a slug but no item corresponding to that slug exists.
+            In this case it raises a 404.
+            - You provide an ID but you're not logged in.
+            - You provide an ID but no item corresponding to that ID exists.
+            In this case it raises a 404.
+            - You provide only the ID while the item does have a slug.
+
         """
         # ##### view_item_by_pkid ######
 
@@ -325,10 +396,24 @@ class TBIViewStatusCodeTests(TestCase):
                          msg="The page should return 404 if we provide a "
                          "wrong slug not related to any item.")
 
-    def test_item_without_slug_view_status_code(self):
+    def test_item_without_slug_view(self):
         """
         Test the status code of items without a slug in
         the TopicBlogItemView.
+
+        In this test we will use this item from the setUp :
+            - An item without a slug, ID = 2, item_sort_key = 0
+
+        We aim to check that we get the correct status codes on the view
+        page in various situations involving items without a slug.
+
+        For items which do not have a slug view page must only return 200 if :
+            - You're connected and only provide an existing ID. In this case
+            it loads the corresponding item.
+
+        View page must NOT return 200 if :
+            - You're not connected. Non logged users can't see items without
+            slugs.
         """
 
         # #### view_item_by_pkid ######
@@ -346,7 +431,7 @@ class TBIViewStatusCodeTests(TestCase):
                          msg="The page should return 404 if we provide the "
                          "correct id associated with the item but the item "
                          "does not have a slug."
-                         f"\nitem with slug : {self.item_without_slug}")
+                         f"\nitem without slug : {self.item_without_slug}")
 
         # #### view_item_by_pkid_only ######
 
@@ -359,9 +444,9 @@ class TBIViewStatusCodeTests(TestCase):
             )
         self.assertEqual(response.status_code, 200,
                          msg="The page should return 200 if we provide the "
-                         "correct id associated with the item but the item "
+                         "correct id associated with the item and the item "
                          "does not have a slug."
-                         f"\nitem with slug : {self.item_without_slug}")
+                         f"\nitem without slug : {self.item_without_slug}")
 
 
 class TBIListStatusCodeTests(TestCase):
@@ -381,6 +466,8 @@ class TBIListStatusCodeTests(TestCase):
                          msg="The page should return 200 if we provide no "
                          "parameters.")
 
+        # Checks that the number of items displayed is correct
+        # All items must be in the context
         number_of_items = TopicBlogItem.objects.all().count()
         self.assertEqual(len(response.context["object_list"]),
                          number_of_items,
@@ -406,6 +493,8 @@ class TBIListStatusCodeTests(TestCase):
                          msg="The page should return 200 if we provide a "
                          "slug attached to an existing item.")
 
+        # Checks that the number of items displayed is correct
+        # All items with the given slug must be in the context
         number_of_items = TopicBlogItem.objects.filter(
             slug=self.item_with_slug.slug
             ).count()
