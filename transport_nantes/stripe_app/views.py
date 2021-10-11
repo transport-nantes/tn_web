@@ -224,10 +224,14 @@ def tracking_progression(request: dict) -> TrackingProgression:
             elif data[key] == "false":
                 data[key] = False
 
-        data = TrackingProgression(amount_form_done=data["step_1_completed"],
-                                   donation_form_done=data["step_2_completed"],
-                                   timestamp=datetime.datetime.now,
-                                   user_agent=data["user_agent"])
+        data = TrackingProgression(
+            amount_form_done=data["step_1_completed"],
+            donation_form_done=data["step_2_completed"],
+            timestamp=datetime.datetime.now,
+            user_agent=data["user_agent"],
+            tn_session=request.session.get("tn_session"),
+            )
+
         data.save()
         return HttpResponse(status=200)
     except Exception as error_message:
@@ -311,7 +315,7 @@ def get_user(email: str) -> User:
     else:
         user = User()
         user.email = email
-        user.username = get_random_string()
+        user.username = get_random_string(20)
         user.is_active = False
         user.save()
         return user

@@ -10,6 +10,8 @@ class TrackingProgression(models.Model):
     donation_form_done: The user completed a valid donation form and
     redirected to Stripe.
     timestamp: The time user left the page (completed or not)
+    tn_session : Random 20 long string stored in cookies to identify
+    the browser.
     """
     amount_form_done = models.BooleanField(verbose_name="Formulaire montant")
     donation_form_done = models.BooleanField(
@@ -17,6 +19,8 @@ class TrackingProgression(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
     user_agent = models.CharField(
         max_length=255, verbose_name="User agent", null=True)
+    tn_session = models.CharField(max_length=50, verbose_name="Session",
+                                  null=True)
 
     def __str__(self):
         if self.donation_form_done is True:
