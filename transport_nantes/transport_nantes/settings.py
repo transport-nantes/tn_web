@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
+    'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
 ]
 
 ROOT_URLCONF = 'transport_nantes.urls'
