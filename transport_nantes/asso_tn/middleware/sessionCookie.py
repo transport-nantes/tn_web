@@ -11,7 +11,6 @@ class SessionCookieMiddleWare:
 
     def __call__(self, request):
         response = self.get_response(request)
-        print(response)
         request = self.process_request(request)
         response = self.process_response(request, response)
         return response

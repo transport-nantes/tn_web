@@ -17,10 +17,28 @@ class TrackingProgression(models.Model):
     donation_form_done = models.BooleanField(
         verbose_name="Formulaire informations personnelles")
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
-    user_agent = models.CharField(
-        max_length=255, verbose_name="User agent", null=True)
     tn_session = models.CharField(max_length=50, verbose_name="Session",
                                   null=True)
+    browser = models.CharField(
+        max_length=50, verbose_name="Navigateur", null=True)
+    browser_version = models.CharField(
+        max_length=50, verbose_name="Version du navigateur", null=True)
+    os = models.CharField(max_length=50, verbose_name="OS", null=True)
+    os_version = models.CharField(
+        max_length=50, verbose_name="Version de l'OS", null=True)
+    device_family = models.CharField(
+        max_length=50, verbose_name="Famille d'appareils", null=True)
+    device_brand = models.CharField(
+        max_length=50, verbose_name="Marque", null=True, default="Unknown")
+    device_model = models.CharField(
+        max_length=50, verbose_name="Modèle", null=True, default="Unknown")
+    is_mobile = models.BooleanField(verbose_name="Est un mobile", null=True)
+    is_tablet = models.BooleanField(
+        verbose_name="Est une tablette", null=True)
+    is_touch_capable = models.BooleanField(
+        verbose_name="Est tactile", null=True)
+    is_pc = models.BooleanField(verbose_name="Est PC", null=True)
+    is_bot = models.BooleanField(verbose_name="Est un bot", null=True)
 
     def __str__(self):
         if self.donation_form_done is True:

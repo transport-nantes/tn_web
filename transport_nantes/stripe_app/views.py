@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
 import stripe
+import user_agents
 
 from .models import TrackingProgression, Donation
 from .forms import DonationForm, AmountForm, QuickDonationForm
@@ -214,6 +215,8 @@ def tracking_progression(request: dict) -> TrackingProgression:
     request contains 2 bool representing each step of donation form.
     bool are in JS format 'true'/'false' and not read by Python as bool
     and as a consequence it needs to be transformed into Python bool.
+
+    Also saves the user agent information for eventual analysis.
     """
     try:
         data = request.POST
@@ -224,15 +227,34 @@ def tracking_progression(request: dict) -> TrackingProgression:
             elif data[key] == "false":
                 data[key] = False
 
-        data = TrackingProgression(
-            amount_form_done=data["step_1_completed"],
-            donation_form_done=data["step_2_completed"],
-            timestamp=datetime.datetime.now,
-            user_agent=data["user_agent"],
-            tn_session=request.session.get("tn_session"),
-            )
+        user_agent = user_agents.parse(request.META.get('HTTP_USER_AGENT'))
 
-        data.save()
+        kwargs = {
+            "amount_form_done": data["step_1_completed"],
+            "donation_form_done": data["step_2_completed"],
+            "tn_session": request.session.get("tn_session"),
+            "browser": user_agent.browser.family,
+            "browser_version": user_agent.browser.version_string,
+            "os": user_agent.os.family,
+            "os_version": user_agent.os.version_string,
+            "device_family": user_agent.device.family,
+            "device_brand": user_agent.device.brand,
+            "device_model": user_agent.device.model,
+            "is_mobile": user_agent.is_mobile,
+            "is_tablet": user_agent.is_tablet,
+            "is_touch_capable": user_agent.is_touch_capable,
+            "is_pc": user_agent.is_pc,
+            "is_bot": user_agent.is_bot,
+        }
+
+        try:
+            data = TrackingProgression(**kwargs)
+            data.save()
+        except Exception as error_message:
+            logger.debug(
+                "Error while creating TrackingProgression instance : ",
+                error_message)
+
         return HttpResponse(status=200)
     except Exception as error_message:
         logger.debug("error message: ", error_message)
