@@ -1,17 +1,27 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import TopicBlogLegacyView
-from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemList, update_template_list
+from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne, TopicBlogItemList
+from .views import TopicBlogItemEdit, update_template_list
 from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
 urlpatterns = [
     path('t/<slug:topic_slug>/', TopicBlogLegacyView.as_view(),
          name='view_topic'),
+    path('s/<slug:item_slug>/', TopicBlogItemView.as_view(),
+         name='view_item_by_slug'),
 ]
 if ROLE != 'production':
     # beta and dev
     urlpatterns += [
+        path('admin/view/<int:pkid>/',
+             TopicBlogItemViewOne.as_view(),
+             name='view_item_by_pkid_only'),
+        path('admin/view/<int:pkid>/<slug:item_slug>/',
+             TopicBlogItemViewOne.as_view(),
+             name='view_item_by_pkid'),
+
         path('admin/new/',
              TopicBlogItemEdit.as_view(),
              name='new_item'),
@@ -24,15 +34,7 @@ if ROLE != 'production':
         path('admin/edit/<slug:item_slug>/',
              TopicBlogItemEdit.as_view(),
              name='edit_item_by_slug'),
-        path('s/<slug:item_slug>/',
-             TopicBlogItemView.as_view(),
-             name='view_item_by_slug'),
-        path('admin/view/<int:pkid>/',
-             TopicBlogItemView.as_view(),
-             name='view_item_by_pkid_only'),
-        path('admin/view/<int:pkid>/<slug:item_slug>/',
-             TopicBlogItemView.as_view(),
-             name='view_item_by_pkid'),
+
         path('admin/list/',
              TopicBlogItemList.as_view(),
              name='list_items'),
