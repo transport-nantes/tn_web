@@ -4,6 +4,8 @@ from django.conf import settings
 from django.utils.crypto import salted_hmac
 from django.utils.crypto import secrets
 from django.utils.http import base36_to_int, int_to_base36
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
 
 def make_timed_token(user_id, minutes):
     """Make a URL-safe timed token that's valid for minutes minutes.
@@ -25,6 +27,7 @@ def make_timed_token(user_id, minutes):
         t=soon,
         h=hmac)
 
+
 def token_valid(timed_token):
     """Validate a timed token.
 
@@ -41,3 +44,10 @@ def token_valid(timed_token):
     if now > base36_to_int(the_soon):
         return -1
     return int(the_user_id)
+
+
+class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Require staff status for all views."""
+
+    def test_func(self):
+        return self.request.user.is_staff

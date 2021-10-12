@@ -7,7 +7,8 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.shortcuts import render
+
+from asso_tn.utils import StaffRequiredMixin
 from .models import TopicBlogPage, TopicBlogItem
 from .forms import TopicBlogItemForm
 
@@ -39,7 +40,7 @@ class TopicBlogLegacyView(TemplateView):
 
 
 # TOPICBLOG V2 ################################################################
-class TopicBlogItemEdit(LoginRequiredMixin, FormView):
+class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     """Create or modify a TBItem.
 
     It uses the fields of TopicBlogItem model to generate a form
@@ -235,7 +236,7 @@ class TopicBlogItemView(TemplateView):
         return context
 
 
-class TopicBlogItemList(LoginRequiredMixin, ListView):
+class TopicBlogItemList(StaffRequiredMixin, ListView):
     """Render a list of TopicBlogItems.
 
     It's then displayed in the topicblogitem_list template.
