@@ -3,6 +3,7 @@ from .models import TopicBlogPage, TopicBlogItem, TopicBlogTemplate
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+
 class Test(TestCase):
 
     def test_main_page_status_code(self):
@@ -59,49 +60,25 @@ class TBIEditStatusCodeTest(TestCase):
         """Test status codes for the edit page of an item with a slug
         The edition page is accessed through the TopicBlogItemEdit view.
 
-        In this test we will use these items from the setUp :
-            - An item with a slug, ID = 1, item_sort_key = 1
-            - An item with a slug and higher sort key, ID = 3,
-              item_sort_key = 3
-
-        We aim to check that we get the correct status codes on the edition
-        page in various situations involving items with a slug.
-
-        For Items which have a saved slug edition page must only
-        return 200 if :
-
-            - An existing slug is provided. In this case it loads the
-              item with the highest sort key.
-            OR
-            - The provided slug and ID are matching the pair of slug
-              and ID of an item. In this case it loads the item
-              corresponding to this slug/id pair.
-
-        Edition page must return 404 if :
-            - The slug provided doesn't match any existing item's slug.
-              In this case it raises a 404.
-            - The slug / id pair provided doesn't match any existing item.
-              In this case it raises a 404.
-            - No slug is provided.
+        Normal users can't acces edition pages.
 
         """
 
         # Edit wihout slug given
-        # Should return 404
+        # Should return 403
         response = self.client.get(
             reverse("topicblog:edit_item_by_pkid",
                     kwargs={
                         "pkid": self.item_with_slug.id
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we don't provide "
-                         "the slug associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't access this page."
                          f"\nitem with slug : {self.item_with_slug}"
                          f"\nkwargs : {self.item_with_slug.id}")
 
         # Edit with correct slug and id
-        # Should return 200
+        # Should return 203
         response = self.client.get(
             reverse("topicblog:edit_item",
                     kwargs={
@@ -109,13 +86,12 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we provide the "
-                         "slug associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items."
                          f"\nitem with slug : {self.item_with_slug}")
 
         # Edit with wrong slug and wrong id
-        # Must return 404
+        # Must return 403
         response = self.client.get(
             reverse("topicblog:edit_item",
                     kwargs={
@@ -123,13 +99,12 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": "wrong-slug"
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page must return 404 if we provide the "
-                         "wrong slug and id associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items."
                          f"\nitem with slug : {self.item_with_slug}")
 
         # Edit with correct slug and wrong id
-        # Must return 404
+        # Must return 403
         response = self.client.get(
             reverse("topicblog:edit_item",
                     kwargs={
@@ -137,13 +112,12 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page must return 404 if we provide the "
-                         "correct slug but wrong id associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items."
                          f"\nitem with slug : {self.item_with_slug}")
 
         # Edit with wrong slug and correct id
-        # Must return 404
+        # Must return 403
         response = self.client.get(
             reverse("topicblog:edit_item",
                     kwargs={
@@ -151,14 +125,13 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": "wrong-slug"
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page must return 404 if we provide the "
-                         "wrong slug and correct id associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items."
                          f"\nitem with slug : {self.item_with_slug}")
 
         # Edit with only the correct slug.
         # Checks it loads the highest sort key
-        # Must return 200
+        # Must return 403
         highest_item_sort_key = TopicBlogItem.objects.filter(
             slug=self.item_with_slug.slug
             ).order_by("item_sort_key").last().item_sort_key
@@ -169,9 +142,8 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we provide the "
-                         "correct slug associated with the item."
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items."
                          f"\nitem with slug : {self.item_with_slug}")
 
         self.assertEqual(highest_item_sort_key,
@@ -186,24 +158,7 @@ class TBIEditStatusCodeTest(TestCase):
         Test status code of edit page of items without slug
         The edition page is accessed through the TopicBlogItemEdit view.
 
-        In this test we will use these items from the setUp :
-            - An item without a slug, ID = 2, item_sort_key = 0
-
-        We aim to check that we get the correct status codes on the edition
-        page in various situations involving items without a slug.
-
-        For Items which don't have a saved slug edition page must only
-        return 200 if :
-
-            - Only an existing PK ID is provided, and the item corresponding
-            to that ID doesn't have a slug, or an empty one. In this case it
-            loads the item with the corresponding PK ID.
-
-        Edition page must NOT return 200 if :
-            - The PK ID provided doesn't match any existing item's PK ID.
-            In this case it raises a 404.
-            - Only a PK ID is provided and matches an item with a slug.
-            In this case it raises a 404.
+        Normal users can't acces edition pages.
         """
 
         # Edit wihout slug given
@@ -214,9 +169,8 @@ class TBIEditStatusCodeTest(TestCase):
                         "pkid": self.item_without_slug.id
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we don't provide "
-                         "a slug and the item does not have one.")
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items.")
 
         # Edit with correct id and a slug
         # Must return 404
@@ -227,9 +181,8 @@ class TBIEditStatusCodeTest(TestCase):
                         "item_slug": "test-slug"
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page must return 404 if we provide the "
-                         "correct id but the item does not have a slug.")
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't edit items.")
 
     def test_item_creation_status_code(self):
         """
@@ -239,9 +192,8 @@ class TBIEditStatusCodeTest(TestCase):
         response = self.client.get(
             reverse("topicblog:new_item")
         )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we don't provide "
-                         "any arg")
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't create items.")
 
 
 class TBIViewStatusCodeTests(TestCase):
@@ -451,6 +403,8 @@ class TBIViewStatusCodeTests(TestCase):
 class TBIListStatusCodeTests(TestCase):
     """
     Test the status code of the TopicBlogItemList view
+
+    Normal users can't acces list pages.
     """
     def setUp(self):
         TBIEditStatusCodeTest.setUp(self)
@@ -461,20 +415,8 @@ class TBIListStatusCodeTests(TestCase):
         when the list is displayed with all items.
         """
         response = self.client.get(reverse("topicblog:list_items"))
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we provide no "
-                         "parameters.")
-
-        # Checks that the number of items displayed is correct
-        # All items must be in the context
-        number_of_items = TopicBlogItem.objects.all().count()
-        self.assertEqual(len(response.context["object_list"]),
-                         number_of_items,
-                         msg="The list of items must be the same length as "
-                         "the number of items in the database."
-                         f"\nnumber of items : {number_of_items}"
-                         "\nnumber of items in the list : "
-                         f"{len(response.context['object_list'])}")
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't view the list of items")
 
     def test_full_list_display_with_slug(self):
         """
@@ -488,21 +430,5 @@ class TBIListStatusCodeTests(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page must return 200 if we provide a "
-                         "slug attached to an existing item.")
-
-        # Checks that the number of items displayed is correct
-        # All items with the given slug must be in the context
-        number_of_items = TopicBlogItem.objects.filter(
-            slug=self.item_with_slug.slug
-            ).count()
-
-        self.assertEqual(len(response.context["object_list"]),
-                         number_of_items,
-                         msg="The list of items must be the same length as "
-                         "the number of items with the corresponding slug "
-                         "in the database."
-                         f"\nnumber of items : {number_of_items}"
-                         "\nnumber of items in the list : "
-                         f'{len(response.context["object_list"])}')
+        self.assertEqual(response.status_code, 403,
+                         msg="Normal users can't see the list of items.")
