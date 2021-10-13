@@ -277,9 +277,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page should return 200 if we provide the "
-                         "correct slug and id associated with the item.")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # View with wrong slug and correct id
         response = self.client.get(
@@ -289,9 +288,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "item_slug": "wrong-slug"
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "wrong slug and correct id associated with the item.")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # View with correct slug and wrong id
         response = self.client.get(
@@ -301,9 +299,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "item_slug": self.item_with_slug.slug
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "correct slug but wrong id associated with the item.")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # View with wrong slug and wrong id
         response = self.client.get(
@@ -313,9 +310,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "item_slug": "wrong-slug"
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "wrong slug and wrong id associated with the item.")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # ###### view_item_by_pkid_only ######
 
@@ -326,11 +322,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "pkid": self.item_with_slug.id
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "correct id associated with the item but the item "
-                         "does have a slug."
-                         f"\nitem with slug : {self.item_with_slug}")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # View with wrong id
         response = self.client.get(
@@ -339,11 +332,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "pkid": 999999,
                     })
             )
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "wrong id associated with the item but the item "
-                         "does have a slug."
-                         f"\nitem with slug : {self.item_with_slug}")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # ##### view_item_by_slug ######
 
@@ -412,11 +402,8 @@ class TBIViewStatusCodeTests(TestCase):
                     })
             )
 
-        self.assertEqual(response.status_code, 404,
-                         msg="The page should return 404 if we provide the "
-                         "correct id associated with the item but the item "
-                         "does not have a slug."
-                         f"\nitem without slug : {self.item_without_slug}")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
         # #### view_item_by_pkid_only ######
 
@@ -427,11 +414,8 @@ class TBIViewStatusCodeTests(TestCase):
                         "pkid": self.item_without_slug.id
                     })
             )
-        self.assertEqual(response.status_code, 200,
-                         msg="The page should return 200 if we provide the "
-                         "correct id associated with the item and the item "
-                         "does not have a slug."
-                         f"\nitem without slug : {self.item_without_slug}")
+        self.assertEqual(response.status_code, 302,
+                         msg="This page redirects to login for unauth users")
 
 
 class TBIListStatusCodeTests(TestCase):
