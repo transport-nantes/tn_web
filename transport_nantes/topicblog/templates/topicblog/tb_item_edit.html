@@ -5,6 +5,7 @@
 {% load don %}
 {% load mpanels %}
 {% load newsletter %}
+{% load crispy_forms_tags %}
 
 {% block meta_descr %}
 <meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
@@ -21,7 +22,79 @@
 <div class="d-flex col-6 flex-column justify-content-center mx-auto">
     <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" data-template-update-url="{% url 'topicblog:update_template_list' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form }}
+	<div class="container">
+	  <ul class="nav nav-tabs" role="tablist">
+	    <li class="nav-item">
+	      <a class="nav-link active" data-toggle="tab" href="#form_admin">Admin</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_content_a">Contenu (1)</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_content_b">Contenu (2)</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_social">Social</a>
+	    </li>
+	  </ul>
+
+	  <!-- Tab panes -->
+	  <div class="tab-content">
+	    <div id="form_admin" class="container tab-pane active"><br>
+			{% for field in form %}
+				{% if field.name in form_admin %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	    <div id="form_content_a" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_content_a %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	    <div id="form_content_b" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_content_b %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	    <div id="form_social" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_social %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	  </div>
+	</div>
+
         <input class="mt-3" type="submit" value="Submit">
     </form>
 </div>

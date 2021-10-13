@@ -76,6 +76,15 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             tb_item = None
 
         context["form"] = TopicBlogItemForm(instance=tb_item)
+        context["form_admin"] = ["slug", "template", "title", "header_image",
+                                 "header_title", "header_description",
+                                 "header_slug", "item_type"]
+        context["form_content_a"] = ["body_text_1_md", "cta_1_slug", "cta_1_label",
+                                     "body_text_2_md", "cta_2_slug", "cta_2_label", ]
+        context["form_content_b"] = ["body_image", "body_image_alt_text", "body_text_3_md",
+                                     "cta_3_slug", "cta_3_label", ]
+        context["form_social"] = ["social_description", "twitter_title", "twitter_description",
+                                  "twitter_image", "og_title", "og_description", "og_image", ]
         return context
 
     def form_valid(self, form):
@@ -91,6 +100,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         # the only instance of its slug in which case no one knows
         # about it anyway.  This gives us a bit of time to realise
         # we've made an error.
+        print(1)
         tb_item = form.save(commit=False)
         tb_item.item_sort_key = 0
         tb_item.user = User.objects.get(username=self.request.user)
