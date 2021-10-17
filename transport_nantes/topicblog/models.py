@@ -118,6 +118,17 @@ class TopicBlogPage(models.Model):
 ######################################################################
 # topic blog, v2
 
+class TopicBlogContentType(models.Model):
+    """Provide a list of valid content types.
+
+    Examples are article, petition, etc.
+    """
+    # Provide a (relatively) short name because this will appear in
+    # dropdown lists in the TopicBlogItem editor.
+    content_type = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.content_type
 
 class TopicBlogTemplate(models.Model):
     """Encode template metadata for displaying TB content.
@@ -155,26 +166,16 @@ class TopicBlogTemplate(models.Model):
     that.)
 
     """
-    # The template_name must be a valid html template name to pass to
-    # django's render() function.
-    template_name = models.CharField(max_length=80)
+    # The template_name must be a valid filename of an html template
+    # template to pass to django's render() function.
+    template_name = models.CharField(max_length=80, unique=True)
+
     # Provide a field for free-form comments from humans, who can note
     # their intent on creating the model.
     comment = models.TextField()
 
-    # Indicates in what sort of content this template is used.
-    # Ex: 'article', 'petition', 'newsletter' ...
-    content_choices = [("article", "article"),
-                       ("project", "project"),
-                       ("press_release", "press_release"),
-                       ("newsletter", "newsletter"),
-                       ("newsletter_web", "newsletter_web"),
-                       ("petition", "petition"),
-                       ("mailing_list_signup",
-                       "mailing_list_signup"),
-                       ]
-    content_type = models.CharField(max_length=100, choices=content_choices,
-                                    default="article")
+    content_type = models.ForeignKey(TopicBlogContentType,
+                                     on_delete=models.CASCADE)
 
     # And now somehow we need to specify the fields.  Either we do
     # that with an explicit list of fields or, probably better, a
@@ -186,6 +187,9 @@ class TopicBlogTemplate(models.Model):
     # of just switching on and off preset fields.
 
     # Not yet functional. ##
+
+    def __str__(self):
+        return self.template_name
 
 # The way to think of TopicBlog (TB) is as a collection of TBItem's,
 # which encodes a name, servability (whether or not we propose the
@@ -209,10 +213,6 @@ class TopicBlogTemplate(models.Model):
 # requesting a slug, we select the slug with the maximum
 # item_sort_key.
 
-    def __str__(self):
-        return str(self.template_name) + " - " + str(self.comment)
-
-
 class TopicBlogItem(models.Model):
     """Represent an item in the TopicBlog.
 
@@ -226,6 +226,15 @@ class TopicBlogItem(models.Model):
     servable = models.BooleanField(default=True)
     published = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    # Content Type ##################################################
+    #
+    # Encode what type of object we mean to be displaying.
+    #
+    # Examples are blog articles, newsletters (mailed or web viewed),
+    # and petitions.
+    content_type = models.ForeignKey(TopicBlogContentType,
+                                     on_delete=models.CASCADE)
 
     # Presentation ##################################################
     #
@@ -244,30 +253,6 @@ class TopicBlogItem(models.Model):
     # "what happens if a user clicks on this header?".
     header_slug = models.CharField(max_length=100, blank=True)
 
-    # Content Type ##################################################
-    #
-    # Encode what type of object we mean to be displaying.
-    #
-    # Examples are blog articles, newsletters (mailed or web viewed),
-    # and petitions.
-    #
-    # This should assuredly be based on an enum.  For the moment,
-    # let's assume everything is an article.  Types we expect
-    # eventually are article, project (square), press release,
-    # newsletter, newsletter web (the "if you want to display this in
-    # your browser" version), petitions, mailing list signup pages.
-    content_choices = [("---------", "---------"),
-                       ("article", "article"),
-                       ("project", "project"),
-                       ("press_release", "press_release"),
-                       ("newsletter", "newsletter"),
-                       ("newsletter_web", "newsletter_web"),
-                       ("petition", "petition"),
-                       ("mailing_list_signup",
-                       "mailing_list_signup"),
-                       ]
-    item_type = models.CharField(max_length=100, choices=content_choices,
-                                 default="---------")
     # Content #######################################################
     #
     # Encode the editorial content of a TBItem.
