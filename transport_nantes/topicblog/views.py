@@ -78,7 +78,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         context["form"] = TopicBlogItemForm(instance=tb_item)
         context["form_admin"] = ["slug", "template", "title", "header_image",
                                  "header_title", "header_description",
-                                 "header_slug", "item_type"]
+                                 "header_slug", "content_type"]
         context["form_content_a"] = ["body_text_1_md", "cta_1_slug", "cta_1_label",
                                      "body_text_2_md", "cta_2_slug", "cta_2_label", ]
         context["form_content_b"] = ["body_image", "body_image_alt_text", "body_text_3_md",
