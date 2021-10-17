@@ -232,7 +232,7 @@ class TopicBlogItem(models.Model):
     # Encode the basic structure of a TBItem's presentation.
     template = models.ForeignKey(TopicBlogTemplate, on_delete=models.PROTECT)
     # The HTML document <title>.
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True)
     # The header is the (optional) large full-width image, possibly
     # with some overlaying text, that appears at the top of many
     # pages.
