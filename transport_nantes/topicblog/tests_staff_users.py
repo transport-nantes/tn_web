@@ -1,5 +1,6 @@
 from django.test import TestCase
-from .models import TopicBlogPage, TopicBlogItem, TopicBlogTemplate
+from .models import (TopicBlogPage, TopicBlogItem, TopicBlogTemplate,
+                     TopicBlogContentType)
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -26,9 +27,13 @@ class TBIEditStatusCodeTest(TestCase):
         self.user.is_staff = True
         self.user.save()
         self.client.login(username='test-user', password='test-pass')
+        # Creates a base content type for FKs
+        self.content_type = TopicBlogContentType.objects.create(
+            content_type="test_type")
         # Create a base template
         self.template = TopicBlogTemplate.objects.create(
-            template_name="topicblog/content.html")
+            template_name="topicblog/content.html",
+            content_type=self.content_type)
         # Create an Item with a slug, ID = 1
         self.item_with_slug = TopicBlogItem.objects.create(
             slug="test-slug",
@@ -36,6 +41,7 @@ class TBIEditStatusCodeTest(TestCase):
             servable=True,
             published=True,
             user=self.user,
+            content_type=self.content_type,
             template=self.template,
             title="Test-title")
         # Create an Item with no slug, ID = 2
@@ -45,6 +51,7 @@ class TBIEditStatusCodeTest(TestCase):
             servable=False,
             published=False,
             user=self.user,
+            content_type=self.content_type,
             template=self.template,
             title="Test-title")
         # Create an Item with a slug and higher sort key, ID = 3
@@ -54,6 +61,7 @@ class TBIEditStatusCodeTest(TestCase):
             servable=True,
             published=True,
             user=self.user,
+            content_type=self.content_type,
             template=self.template,
             title="Test-title")
 
