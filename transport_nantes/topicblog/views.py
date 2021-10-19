@@ -21,7 +21,7 @@ class TopicBlogLegacyView(TemplateView):
         #     print(page.id, ' - ', page.topic)
         try:
             page = TopicBlogPage.objects.random_topic_member(topic_slug)
-        except:
+        except: # noqa
             raise Http404("Page non trouvé (topic inconnu).")
 
         self.template_name = page.template
@@ -79,12 +79,15 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         context["form_admin"] = ["slug", "template", "title", "header_image",
                                  "header_title", "header_description",
                                  "header_slug", "content_type"]
-        context["form_content_a"] = ["body_text_1_md", "cta_1_slug", "cta_1_label",
-                                     "body_text_2_md", "cta_2_slug", "cta_2_label", ]
-        context["form_content_b"] = ["body_image", "body_image_alt_text", "body_text_3_md",
-                                     "cta_3_slug", "cta_3_label", ]
-        context["form_social"] = ["social_description", "twitter_title", "twitter_description",
-                                  "twitter_image", "og_title", "og_description", "og_image", ]
+        context["form_content_a"] = ["body_text_1_md", "cta_1_slug",
+                                     "cta_1_label", "body_text_2_md",
+                                     "cta_2_slug", "cta_2_label", ]
+        context["form_content_b"] = ["body_image", "body_image_alt_text",
+                                     "body_text_3_md", "cta_3_slug",
+                                     "cta_3_label", ]
+        context["form_social"] = ["social_description", "twitter_title",
+                                  "twitter_description", "twitter_image",
+                                  "og_title", "og_description", "og_image", ]
         return context
 
     def form_valid(self, form):
