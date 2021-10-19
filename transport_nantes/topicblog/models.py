@@ -245,7 +245,8 @@ class TopicBlogItem(models.Model):
     # The header is the (optional) large full-width image, possibly
     # with some overlaying text, that appears at the top of many
     # pages.
-    header_image = models.ImageField(blank=True)
+    header_image = models.ImageField(upload_to='header/', blank=True,
+                                   help_text='résolution recommandée : 1600x500')
     header_title = models.CharField(max_length=80, blank=True)
     header_description = models.CharField(max_length=120, blank=True)
     # The header_slug points to an existing TBItem slug and will
@@ -267,7 +268,8 @@ class TopicBlogItem(models.Model):
     cta_2_slug = models.SlugField(blank=True)
     cta_2_label = models.CharField(max_length=100, blank=True)
 
-    body_image = models.ImageField(blank=True)
+    body_image = models.ImageField(upload_to='body/', blank=True,
+                                   help_text='résolution recommandée : 1600x500')
     body_image_alt_text = models.CharField(max_length=100, blank=True)
 
     body_text_3_md = models.TextField(blank=True)
@@ -285,11 +287,17 @@ class TopicBlogItem(models.Model):
 
     twitter_title = models.CharField(max_length=80, blank=True)
     twitter_description = models.TextField(blank=True)
-    twitter_image = models.CharField(max_length=100, blank=True)
+    twitter_image = models.ImageField(upload_to='twitter/', blank=True,
+                                   help_text='2:1, résolution minimum : 300x157, max 4096x4096')
+    # Cf. https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image
 
     og_title = models.CharField(max_length=80, blank=True)
     og_description = models.TextField(blank=True)
-    og_image = models.CharField(max_length=100, blank=True)
+    og_image = models.ImageField(upload_to='opengraph/', blank=True,
+                                   help_text='résolution recommandée : 1200x630')
+    # Cf. https://iamturns.com/open-graph-image-size/
+    # Cf. https://developers.facebook.com/docs/sharing/best-practices/
+    # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064
 
     def set_context(self, context):
         """

@@ -46,9 +46,9 @@
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% if field.help_text %}
+						{% comment %}{% if field.help_text %}
 							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}
+						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -59,9 +59,9 @@
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% if field.help_text %}
+						{% comment %}{% if field.help_text %}
 							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}
+						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -72,9 +72,9 @@
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% if field.help_text %}
+						{% comment %}{% if field.help_text %}
 							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}
+						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -85,9 +85,9 @@
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% if field.help_text %}
+						{% comment %}{% if field.help_text %}
 							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}
+						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
