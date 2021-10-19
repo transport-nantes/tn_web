@@ -283,7 +283,9 @@ class TopicBlogItem(models.Model):
     # network, we should do our best to provide data for the others.
 
     # Optional editor notes about what this social data is trying to do.
-    social_description = models.TextField(blank=True)
+    social_description = models.TextField(
+        blank=True,
+        help_text='Notes pour humains des objectifs (marketing) de la page')
 
     twitter_title = models.CharField(max_length=80, blank=True)
     twitter_description = models.TextField(blank=True)
