@@ -103,11 +103,11 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         # the only instance of its slug in which case no one knows
         # about it anyway.  This gives us a bit of time to realise
         # we've made an error.
-        print(1)
         tb_item = form.save(commit=False)
         tb_item.item_sort_key = 0
         tb_item.user = User.objects.get(username=self.request.user)
         tb_item.save()
+        return tb_item
 
     def post(self, request, *args, **kwargs):
         try:
@@ -120,7 +120,16 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         if form.is_valid():
             # Create a new TBItem and save it.
             # The form_valid function overwrites the FormView one.
-            self.form_valid(form)
+            tb_item = self.form_valid(form)
+            # Type hint
+            tb_item: TopicBlogItem
+            context = self.get_context_data()
+            success = True
+            context['success'] = success
+            context['created_item_view_URL'] = tb_item.get_absolute_url()
+            context['created_item_edit_URL'] = tb_item.get_edit_url()
+
+            return render(request, 'topicblog/tb_item_edit.html', context)
 
         return super().form_valid(form)
 
