@@ -26,8 +26,8 @@ DATABASES = {
 }
 
 LOG_DIR = '/tmp/django-tn-log/'
-STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 ## Not needed in development, but maybe need to be set.
 AWS_ACCESS_KEY_ID = ''
@@ -35,5 +35,9 @@ AWS_SECRET_ACCESS_KEY = ''
 AWS_DEFAULT_REGION = ''
 DEFAULT_FROM_EMAIL = ''
 
+STRIPE_PUBLISHABLE_KEY = 'pk_test_...'
+STRIPE_SECRET_KEY = 'sk_test_...'
+STRIPE_ENDPOINT_SECRET = 'whsec_...'
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = Path(__file__).resolve().parent.parent / "asso_tn/user_content"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
