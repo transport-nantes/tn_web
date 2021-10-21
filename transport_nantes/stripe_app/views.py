@@ -118,7 +118,6 @@ def create_checkout_session(request: dict) -> dict:
     ?session_id={CHECKOUT_SESSION_ID} means the redirect
     will have the session ID set as a query param
     """
-    print(request.POST)
     if request.method == "POST":
         # We're forced to give a full URL, even if the request is local
         # Stripe uses HTTPS on live but tolerate http for test purpose.
@@ -293,6 +292,8 @@ def stripe_webhook(request):
         logger.info("Invalid signature in stripe webhook")
         return HttpResponse(status=400)
 
+    # Event when a donor completes a checkout session
+    # whether it's a one-time payment or a subscription.
     if event['type'] == 'checkout.session.completed':
         logger.info("Stripe payment webhook succeeded.")
         logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
@@ -301,6 +302,19 @@ def stripe_webhook(request):
         except Exception as error_message:
             logger.debug("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
+
+    # Event for subscription payments (initial or recurring)
+    # cf https://stripe.com/docs/billing/subscriptions/webhooks#tracking
+    if event['type'] == 'invoice.payment_succeeded':
+        # subscription_cycle is the reason invoked for subscription payments
+        # that are not the first one.
+        if event["data"]["object"]["billing_reason"] == "subscription_cycle":
+            logger.info("Stripe subscription payment webhook called.")
+            logger.debug("Details attached to event : \n\n", "="*30, "\n",
+                         event)
+            customer_id = event["data"]["object"]['customer']
+            amount = int(event["data"]["object"]['amount_due'])
+            save_recurring_payment_details(customer_id, amount)
 
     return HttpResponse(status=200)
 
@@ -363,6 +377,7 @@ def make_donation_from_webhook(event: dict) -> None:
     metadata = event["data"]["object"]["metadata"]
     # kwargs to be used to create a Donation object.
     kwargs = {
+        "stripe_customer_id": event["data"]["object"]["customer"],
         "user": get_user(event["data"]["object"]["customer_email"]),
         "email": event["data"]["object"]["customer_email"],
         "first_name": metadata["first_name"],
@@ -378,9 +393,63 @@ def make_donation_from_webhook(event: dict) -> None:
         "originating_parameters": metadata["originating_parameters"],
     }
     logger.debug("Creating of donation...")
-    donation = Donation(**kwargs)
-    donation.save()
-    logger.debug("Donation entry created.")
+    try:
+        donation = Donation(**kwargs)
+        donation.save()
+        logger.debug("Donation entry created.")
+    except Exception as e:
+        logger.info("Error while creating a new donation : ", e)
+        return False
+
+
+def save_recurring_payment_details(customer_id: str, amount: int) -> None:
+    """
+    Save a donation entry for recurring payments.
+    We use the data of the last donation associated with the
+    stripe_customer_id to create a new one.
+    This happens when a donor did subscribe to a monthly donation
+    and the next payments are successful.
+    """
+    logger.debug("Saving recurring payment details...")
+    # We're getting the last record of a subscription to have
+    # the proper amount and periodicity.
+    customer = Donation.objects.filter(
+        stripe_customer_id=customer_id,
+        # __gte is greater than or equal to
+        periodicity_months__gte=1).last()
+
+    if customer is None:
+        logger.info("No subscriptions found for this customer_id.")
+        return False
+
+    last_donation_kwargs = customer.__dict__
+
+    kwargs = {
+        "stripe_customer_id": last_donation_kwargs["stripe_customer_id"],
+        "user_id": last_donation_kwargs["user_id"],
+        "email": last_donation_kwargs["email"],
+        "first_name": last_donation_kwargs["first_name"],
+        "last_name": last_donation_kwargs["last_name"],
+        "address": last_donation_kwargs["address"],
+        "more_address": last_donation_kwargs["more_address"],
+        "postal_code": last_donation_kwargs["postal_code"],
+        "city": last_donation_kwargs["city"],
+        "country": last_donation_kwargs["country"],
+        "periodicity_months": last_donation_kwargs["periodicity_months"],
+        "amount_centimes_euros": amount,
+        "originating_view": last_donation_kwargs["originating_view"],
+        "originating_parameters":
+            last_donation_kwargs["originating_parameters"],
+        "timestamp": datetime.datetime.now
+    }
+
+    try:
+        new_donation = Donation(**kwargs)
+        new_donation.save()
+        logger.info("Donation entry created.")
+    except Exception as e:
+        logger.info("Error while creating a new donation : ", e)
+        return False
 
 
 class QuickDonationView(TemplateView):
