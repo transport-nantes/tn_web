@@ -57,6 +57,8 @@ class Donation(models.Model):
     Triggered by the reception of a "checkout.session.completed" event
     from Stripe to our website's webhook.
     """
+
+    stripe_customer_id = models.CharField(max_length=50, null=True)
     # We should *never* delete users or donation records.
     # Still, we model correctly for relational integrity.
     user = models.ForeignKey(User, on_delete=models.CASCADE)
