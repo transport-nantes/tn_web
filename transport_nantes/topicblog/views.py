@@ -124,8 +124,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             # Type hint
             tb_item: TopicBlogItem
             context = self.get_context_data()
-            success = True
-            context['success'] = success
+            context['success'] = True
             context['created_item_view_URL'] = tb_item.get_absolute_url()
             context['created_item_edit_URL'] = tb_item.get_edit_url()
 
@@ -135,8 +134,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             # The form is invalid.  Re-render the form with error
             # messages.
             context = self.get_context_data()
-            success = False
-            context['success'] = success
+            context['success'] = False
             context['form'] = form
 
             return render(request, 'topicblog/tb_item_edit.html', context)
