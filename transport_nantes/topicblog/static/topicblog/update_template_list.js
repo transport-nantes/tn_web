@@ -28,7 +28,7 @@ async function update_template_list() {
 }
 
 function select_first_item() {
-  $('#id_template option[value="1"]').attr('selected', 'selected');
+  $("#id_template")[0].selectedIndex = 1;
 }
 
 $("#id_content_type").change(async () => {

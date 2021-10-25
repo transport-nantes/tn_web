@@ -32,7 +32,6 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     # we'll just present one big page with all the sections joined.
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         # In FormView, we must use the self.kwargs to retrieve the URL
         # parameters. This stems from the View class that transfers
         # the URL parameters to the View instance and assigns kwargs
@@ -43,12 +42,15 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         if pk_id > 0:
             try:
                 tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=slug)
+                kwargs["form"] = TopicBlogItemForm(instance=tb_item)
+                context = super().get_context_data(**kwargs)
             except ObjectDoesNotExist:
                 raise Http404("Page non trouvée")
         else:
             tb_item = None
+            # context["form"] is set by the FormView
+            context = super().get_context_data(**kwargs)
 
-        context["form"] = TopicBlogItemForm(instance=tb_item)
         context["form_admin"] = ["slug", "template", "title", "header_image",
                                  "header_title", "header_description",
                                  "header_slug", "content_type"]
