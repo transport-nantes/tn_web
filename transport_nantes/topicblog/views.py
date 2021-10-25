@@ -70,10 +70,12 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         if pk_id > 0:
             try:
                 tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=slug)
+                context['is_editing_item'] = True
             except ObjectDoesNotExist:
                 raise Http404("Page non trouvée")
         else:
             tb_item = None
+            context['is_new_item'] = True
 
         context["form"] = TopicBlogItemForm(instance=tb_item)
         context["form_admin"] = ["slug", "template", "title", "header_image",

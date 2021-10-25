@@ -49,6 +49,23 @@
 	  <!-- Tab panes -->
 	  <div class="tab-content">
 	    <div id="form_admin" class="container tab-pane active"><br>
+			<div id="to_list_button" class="my-2">
+				{% if is_new_item %}
+					<a href="{% url 'topicblog:list_items' %}">
+						<button type="button" class="btn navigation-button">
+								Consulter la liste des contenus
+						</button>
+					</a>
+
+				{% elif is_editing_item %}
+					<a href="{% url 'topicblog:list_items_by_slug' form.slug.value %}">
+						<button type="button" class="btn navigation-button">
+								Consulter la liste des contenus avec le même slug
+						</button>
+					</a>
+				{% endif %}
+			</div>
+
 			{% for field in form %}
 				{% if field.name in form_admin %}
 					<div class="fieldWrapper">
