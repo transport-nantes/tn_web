@@ -2,9 +2,8 @@
 $('#id_slug').on('input', () => {
     var slug = $('#id_slug').val();
     slug = slug.toLowerCase()
-               .replace(/ /g,'-')
-               .replace(/[-]+/g, '-')
-               .replace(/[^\w-]+/g,'')
-               .replace("_", "-");
+               .replace(/^[-_\s]+/g, '')
+               .replace(/[-_\s]+/g, '-')
+	           .replace(/[^\w-]/g, '');
     $('#id_slug').val(slug);
 });
