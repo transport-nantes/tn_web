@@ -131,7 +131,15 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
 
             return render(request, 'topicblog/tb_item_edit.html', context)
 
-        return super().form_valid(form)
+        else:
+            # The form is invalid.  Re-render the form with error
+            # messages.
+            context = self.get_context_data()
+            success = False
+            context['success'] = success
+            context['form'] = form
+
+            return render(request, 'topicblog/tb_item_edit.html', context)
 
 
 def update_template_list(request):
