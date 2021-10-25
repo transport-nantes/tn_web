@@ -1,9 +1,12 @@
 from django.forms import ModelForm
-from django.forms.models import ModelChoiceField, ModelMultipleChoiceField
+from django.forms.models import ModelChoiceField
 from .models import TopicBlogItem, TopicBlogTemplate
 
 
 class TopicBlogItemForm(ModelForm):
+    """
+    Generates a form to create and edit TopicsBlogItem objects.
+    """
 
     class Meta:
         model = TopicBlogItem
@@ -12,8 +15,9 @@ class TopicBlogItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['template'] = ModelChoiceField(
-            queryset=TopicBlogTemplate.objects.none())
+        if self.fields["content_type"] is None:
+            self.fields['template'] = ModelChoiceField(
+                queryset=TopicBlogTemplate.objects.none())
 
         # self.data is the POST data
         if 'template' in self.data:
