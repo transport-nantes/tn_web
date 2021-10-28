@@ -15,13 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from topicblog.views import TopicBlogLegacyView
+from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
 
 urlpatterns = [
-    path('', TopicBlogLegacyView.as_view(), {'topic_slug': 'index'},
+    path('', TopicBlogItemView.as_view(), {'item_slug': 'index'},
          name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
