@@ -40,8 +40,8 @@ Some examples:
 
     [[news:name]]((text))      equivalent to {% show_mailing_list %}
 
-    [[action:text]]((topic_slug))
-                               equivalent to [text](/tb/t/topic_slug/)
+    [[action:text]]((item_slug))
+                               equivalent to [text](/tb/t/item_slug/)
     [[contact:button-label]]((email-subject-label))
                                button that opens an email
 
@@ -212,7 +212,7 @@ class TNLinkParser(object):
             # requested or the label we request.
         elif 'action' == self.bracket_class_string:
             try:
-                url = reverse('topic_blog:view_topic', args=[self.paren_string])
+                url = reverse('topic_blog:view_item_by_slug', args=[self.paren_string])
             except NoReverseMatch:
                 url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
             self.out_string += don.action_button(url, self.bracket_label_string)

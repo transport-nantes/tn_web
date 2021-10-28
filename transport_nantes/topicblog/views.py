@@ -11,33 +11,6 @@ from .models import TopicBlogPage, TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
 
-class TopicBlogLegacyView(TemplateView):
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        topic_slug = kwargs['topic_slug']
-        # print('topic_slug=', topic_slug)
-        # for page in TopicBlogPage.objects.all():
-        #     print(page.id, ' - ', page.topic)
-        try:
-            page = TopicBlogPage.objects.random_topic_member(topic_slug)
-        except: # noqa
-            raise Http404("Page non trouvé (topic inconnu).")
-
-        self.template_name = page.template
-        context['page'] = page
-        context['bullets'] = [
-            [page.bullet_image_1, page.bullet_text_1_md],
-            [page.bullet_image_2, page.bullet_text_2_md],
-            [page.bullet_image_3, page.bullet_text_3_md],
-            [page.bullet_image_4, page.bullet_text_4_md],
-            [page.bullet_image_5, page.bullet_text_5_md],
-            ]
-        page.set_context(context)
-        return context
-
-
-# TOPICBLOG V2 ################################################################
 class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     """Create or modify a TBItem.
 

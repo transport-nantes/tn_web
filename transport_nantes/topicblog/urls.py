@@ -1,15 +1,12 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
-from .views import TopicBlogLegacyView
 from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne, TopicBlogItemList
 from .views import TopicBlogItemEdit, update_template_list
 from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
 urlpatterns = [
-    path('t/<slug:topic_slug>/', TopicBlogLegacyView.as_view(),
-         name='view_topic'),
-    path('s/<slug:item_slug>/', TopicBlogItemView.as_view(),
+    path('t/<slug:item_slug>/', TopicBlogItemView.as_view(),
          name='view_item_by_slug'),
 ]
 if ROLE != 'production':

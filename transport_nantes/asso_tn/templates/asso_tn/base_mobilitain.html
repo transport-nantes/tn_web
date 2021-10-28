@@ -137,13 +137,13 @@
 					<div class="collapse navbar-collapse navbars" id="collapse_target1">
 						<ul class="navbar-nav ml-auto">
 							<li class="nav-item">
-								<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'velopolitain' %}">Vélopolitain</a>
+								<a class="nav-link pr-4" href="{% url 'topic_blog:view_item_by_slug' 'velopolitain' %}">Vélopolitain</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link pr-4" href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}">La Grande Mobilité</a>
+								<a class="nav-link pr-4" href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link pr-5" href="{% url 'topic_blog:view_topic' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
+								<a class="nav-link pr-5" href="{% url 'topic_blog:view_item_by_slug' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
 							</li>
 
 							<li class="nav-item">{% bouton_don "CONTRIBUER AU PROJET" %}</li>
@@ -246,16 +246,16 @@
 
 							<ul class="list-unstyled mb-0">
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'faire-un-don' %}" class="footer-text">Faire un don</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'faire-un-don' %}" class="footer-text">Faire un don</a>
 								</li>
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
 								</li>
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
 								</li>
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'agir-avec-les-entreprises' %}">Entreprises</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'agir-avec-les-entreprises' %}">Entreprises</a>
 								</li>
 							</ul>
 						</div>
@@ -267,10 +267,10 @@
 
 							<ul class="list-unstyled mb-0">
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
 								</li>
 								<li>
-									<a href="{% url 'topic_blog:view_topic' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
+									<a href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
 								</li>
 							</ul>
 						</div>
