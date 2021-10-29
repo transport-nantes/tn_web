@@ -1,0 +1,121 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% block meta_descr %}
+<meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
+{% endblock meta_descr %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+{% block og_image_alt %}{% endblock og_image_alt %}
+{% block og_image_type %}{% endblock og_image_type %}
+{% block og_image_image %}{% endblock og_image_image %}
+{% block twitter_title %}Mobilitains - Pour une mobilité multimodale{% endblock twitter_title %}
+{% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
+
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+
+     {{ block.super }}
+
+     {% comment %}
+       This is mostly a copy pasted version of the block.super, adapted to TBv2
+       Inline styles should be avoided because they can be hard to edit for front
+       but we need the template engine to work on the background-image attribute.
+     {% endcomment %}
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+
+     {% endif %}
+     <style>
+          ol, li {
+          list-style:none;
+          margin-left: 0;
+          padding-left: 0;
+          }
+          li {
+          padding-bottom: 0.2rem;
+          }
+     </style>
+
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 class="hero-title">{{ page.header_title }}</h1>
+          <p class="hero-description">{{ page.header_description }}</p>
+     </div>
+</div>
+
+<!-- Main container with the content of the article -->
+<div class="container-fluid py-5 px-0">
+     {% block app_content %}
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+         <p class="font-weight-bold">Communiqué de presse</p>
+
+          {# First paragraph of text #}
+          {{ page.body_text_1_md|markdown }}
+          {# First CTA, if any #}
+          {% if page.cta_1_slug|length > 0 %}
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
+               class="btn donation-button my-3 centered-inline-button">{{ page.cta_1_label }}</a>
+          {% endif %}
+
+          {# Second paragraph #}
+          {{ page.body_text_2_md|markdown }}
+          {# Second CTA, if any #}
+          {% if page.cta_2_slug|length > 0 %}
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}"
+               class="btn donation-button my-3 centered-inline-button">{{ page.cta_2_label }}</a>
+          {% endif %}
+
+          {# Body image, if any #}
+          {% if page.body_image|length > 0 %}
+               <img src="{{ page.body_image.url }}"
+                    alt="{{ page.body_image_alt_text }}"
+                    class="w-100 my-4">
+          {% endif %}
+
+          {# Third paragraph #}
+          {{ page.body_text_3_md|markdown }}
+          {# Third CTA, if any #}
+          {% if page.cta_3_slug|length > 0 %}
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}"
+               class="btn donation-button my-3 centered-inline-button ">{{ page.cta_3_label }}</a>
+          {% endif %}
+     </div>
+     <div id="contact" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+	 <p>Contact presse : presse@mobilitains.fr</p>
+	 <p class="font-weight-lighter">Depuis 2018, l’association Les Mobilitains milite en
+	 faveur d'une évolution importante de la mobilité multimodale
+	 ligérienne et au-delà afin d'améliorer nos déplacements.</p>
+     </div>
+
+     {% endblock app_content%}
+</div>
+
+{% endblock content %}
