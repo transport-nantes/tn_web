@@ -1,6 +1,8 @@
 import datetime
+from functools import wraps
 
 from django.conf import settings
+from django.http.response import HttpResponseForbidden
 from django.utils.crypto import salted_hmac
 from django.utils.crypto import secrets
 from django.utils.http import base36_to_int, int_to_base36
@@ -51,3 +53,15 @@ class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         return self.request.user.is_staff
+
+
+def StaffRequired(func):
+    """Decorator that checks for Staff status to access the function"""
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_staff:
+            return func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("""Vous n'avez pas l'autorisation
+            d'accéder à cette page.""")
+    return wrapper
