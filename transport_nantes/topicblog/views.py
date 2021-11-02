@@ -1,10 +1,15 @@
+from collections import Counter
+
 from django.http import Http404
+from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+
 
 from asso_tn.utils import StaffRequiredMixin, StaffRequired
 from .models import TopicBlogItem, TopicBlogTemplate
@@ -210,3 +215,21 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             item_slug = self.kwargs['item_slug']
             qs = qs.filter(slug=item_slug)
         return qs
+
+
+@StaffRequired
+def get_slug_dict(request):
+    """Return a list of all existing slugs"""
+    qs = TopicBlogItem.objects.order_by('slug').values('slug')
+    dict_of_slugs = Counter([item['slug'] for item in qs])
+    return JsonResponse(dict_of_slugs, safe=False)
+
+
+@StaffRequired
+def get_url_list(request):
+    """Return an url directing to a list of items
+    given a slug.
+    """
+    slug = request.GET.get('slug')
+    url = reverse("topicblog:list_items_by_slug", args=[slug])
+    return JsonResponse({'url': url})
