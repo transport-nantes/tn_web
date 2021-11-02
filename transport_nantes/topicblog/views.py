@@ -6,8 +6,8 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
 
-from asso_tn.utils import StaffRequiredMixin
-from .models import TopicBlogPage, TopicBlogItem, TopicBlogTemplate
+from asso_tn.utils import StaffRequiredMixin, StaffRequired
+from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
 
@@ -113,11 +113,16 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             return render(request, 'topicblog/tb_item_edit.html', context)
 
 
+@StaffRequired
 def update_template_list(request):
+    """
+    Uses a content type passed through Ajax to render
+    a dropdown list of templates associated with this
+    content type for the user to choose from.
+    """
     content_type = request.GET.get('content_type')
     templates = TopicBlogTemplate.objects.filter(
         content_type=content_type)
-    print("Templates value : ", templates)
     return render(request, 'topicblog/template_dropdown.html',
                   {'templates': templates})
 
