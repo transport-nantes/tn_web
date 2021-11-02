@@ -1,8 +1,9 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
-from .views import TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne, TopicBlogItemList
-from .views import TopicBlogItemEdit, update_template_list
-from transport_nantes.settings import ROLE
+from .views import (TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne,
+                    TopicBlogItemList)
+from .views import (update_template_list, get_slug_dict, get_url_list)
+# from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
 urlpatterns = [
@@ -29,8 +30,13 @@ urlpatterns = [
          name='list_items'),
     path('admin/list/<slug:item_slug>/', TopicBlogItemList.as_view(),
          name='list_items_by_slug'),
+
     path('ajax/update-template-list/', update_template_list,
-         name="update_template_list")
+         name="update_template_list"),
+    path('ajax/get-slug-dict/', get_slug_dict,
+         name="get_slug_dict"),
+    path('ajax/get-url-list/', get_url_list,
+         name="get_url_list"),
 ]
 
 # Need topic creation.
