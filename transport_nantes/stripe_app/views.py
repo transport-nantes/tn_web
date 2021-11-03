@@ -302,6 +302,7 @@ def stripe_webhook(request):
         except Exception as error_message:
             logger.debug("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
+        update_user_name(event)
 
     # Event for subscription payments (initial or recurring)
     # cf https://stripe.com/docs/billing/subscriptions/webhooks#tracking
@@ -355,6 +356,30 @@ def get_user(email: str) -> User:
         user.is_active = False
         user.save()
         return user
+
+
+def update_user_name(event: dict) -> None:
+    """
+
+    Name user if unnamed.
+
+    If the user has no first or last name, provide them.
+    If either exists, however, we should respect them.
+
+    This is for instances where the user provides a name without
+    meaning to edit her/his user profile.  For example, if the user
+    intends to be called "Joe", we shouldn't take a legal name
+    attached to a bank card and start saying "Hello, Joseph".
+    """
+    try:
+        user = get_user(event["data"]["object"]["customer_email"])
+        if user.first_name == "" and user.last_name == "":
+            metadata = event["data"]["object"]["metadata"]
+            user.first_name = metadata["first_name"]
+            user.last_name = metadata["last_name"]
+            user.save()
+    except Exception as error_message:
+        logger.debug("Error while updating user name : ", error_message)
 
 
 def make_donation_from_webhook(event: dict) -> None:
