@@ -88,7 +88,7 @@
           {# First CTA, if any #}
           {% if page.cta_1_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}" 
-               class="btn donation-button my-3 centered-inline-button">{{ page.cta_1_label }}</a>
+               class="btn donation-button my-3 centered-inline-button">{{ page.cta_1_label|safe }}</a>
           {% endif %}
 
           {# Second paragraph #}
@@ -96,7 +96,7 @@
           {# Second CTA, if any #}
           {% if page.cta_2_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}" 
-               class="btn donation-button my-3 centered-inline-button">{{ page.cta_2_label }}</a>
+               class="btn donation-button my-3 centered-inline-button">{{ page.cta_2_label|safe }}</a>
           {% endif %}
 
           {# Body image, if any #}
@@ -111,7 +111,7 @@
           {# Third CTA, if any #}
           {% if page.cta_3_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}" 
-               class="btn donation-button my-3 centered-inline-button ">{{ page.cta_3_label }}</a>
+               class="btn donation-button my-3 centered-inline-button ">{{ page.cta_3_label|safe }}</a>
           {% endif %}
 
      </div>
