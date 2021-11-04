@@ -64,7 +64,7 @@ function payment_amount_selected() {
 // Add a message calculating actual cost of donation.
 function real_cost_message(amount) {
     real_cost = document.getElementById("real_cost")
-    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount*0.66).toFixed(2) + "€ après réduction d'impôts !"
+    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount*0.34).toFixed(2) + "€ après réduction d'impôts !"
 }
 
 // QuickDonation field is present only for quick donations
