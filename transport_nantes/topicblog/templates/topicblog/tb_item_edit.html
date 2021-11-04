@@ -105,9 +105,16 @@
 	    </div>
 	  </div>
 		<div id="button-container" class="d-flex container justify-content-around">
-			<input class="mt-3" type="submit" value="Confirmer">
 			<input class="mt-3" type="button" value="Annuler" onclick="window.location.href=window.location.href">
+			{% if is_editable %}
+				<input class="mt-3" type="submit" value="Sauvegarder" name="sauvegarder">
+			{% endif %}
+
+			{% if variant_available %}
+				<input class="mt-3" type="submit" value="Créer un variant" name="create_variant">
+			{% endif %}
 		</div>
+
 	</div>
     </form>
 </div>
