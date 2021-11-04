@@ -41,3 +41,5 @@ STRIPE_ENDPOINT_SECRET = 'whsec_...'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+TOPIC_BLOG_EDIT_WINDOW_SECONDS = 12 * 3600
