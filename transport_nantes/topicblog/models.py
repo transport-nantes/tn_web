@@ -228,6 +228,7 @@ class TopicBlogItem(models.Model):
     item_sort_key = models.IntegerField()
     servable = models.BooleanField(default=True)
     published = models.BooleanField(default=False)
+    publication_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     # Content Type ##################################################
