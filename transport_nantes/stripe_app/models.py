@@ -78,6 +78,7 @@ class Donation(models.Model):
     # Any other value means repeat at N month intervals.
     # We should limit this to 12 max.
     periodicity_months = models.IntegerField(verbose_name="Période")
+    # A 0 cts amount is considered to be a cancellation.
     amount_centimes_euros = models.IntegerField(
         verbose_name="Montant (Centimes €)", default=0)
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Date")
@@ -87,13 +88,21 @@ class Donation(models.Model):
                                               default=None, null=True)
 
     def __str__(self):
-        if self.periodicity_months == 0:
-            return self.first_name + " " + self.last_name + \
-                " ({}) ".format(self.email) +\
-                str(round(float(self.amount_centimes_euros/100), 2)) \
-                + "€ ONE-TIME" + str(self.timestamp)[:19]
+
+        display_name = ""
+        amount_given = str(
+            round(float(self.amount_centimes_euros/100), 2)) + "€"
+
+        if self.amount_centimes_euros == 0:
+            periodicity = "CANCELLED"
+        elif self.periodicity_months == 0:
+            periodicity = "ONE-TIME"
         else:
-            return self.first_name + " " + self.last_name + \
-                " ({}) ".format(self.email) +\
-                str(round(float(self.amount_centimes_euros/100), 2)) \
-                + "€ SUBSCRIPTION" + str(self.timestamp)[:19]
+            periodicity = "SUBSCRIPTION"
+
+        timestamp = str(self.timestamp)[:19]
+
+        display_name = f"""{self.first_name} {self.last_name} |
+            {self.email} | {amount_given} | {periodicity} | {timestamp}"""
+
+        return display_name

@@ -298,7 +298,8 @@ def stripe_webhook(request):
         logger.info("Stripe payment webhook succeeded.")
         logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
         try:
-            make_donation_from_webhook(event)
+            donation = make_donation_from_webhook(event)
+            donation.save()
         except Exception as error_message:
             logger.debug("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
@@ -316,6 +317,18 @@ def stripe_webhook(request):
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             save_recurring_payment_details(customer_id, amount)
+
+    if event["type"] == 'checkout.session.expired':
+        logger.info("Stripe checkout session expired")
+        logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
+        try:
+            donation = make_donation_from_webhook(event)
+            donation.amount_centimes_euros = 0
+            donation.save()
+        except Exception as error_message:
+            logger.debug("="*80, "\n", "Error while creating \
+            a new Donation. Details : ", error_message)
+        update_user_name(event)
 
     return HttpResponse(status=200)
 
@@ -382,7 +395,7 @@ def update_user_name(event: dict) -> None:
         logger.debug("Error while updating user name : ", error_message)
 
 
-def make_donation_from_webhook(event: dict) -> None:
+def make_donation_from_webhook(event: dict) -> Donation:
     """
     Creates a new donation entry in the database from
     informations in the event.
@@ -420,8 +433,8 @@ def make_donation_from_webhook(event: dict) -> None:
     logger.debug("Creating of donation...")
     try:
         donation = Donation(**kwargs)
-        donation.save()
         logger.debug("Donation entry created.")
+        return donation
     except Exception as e:
         logger.info("Error while creating a new donation : ", e)
         return False
