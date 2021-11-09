@@ -1,5 +1,6 @@
+import datetime
+import re
 from random import randint
-from datetime import datetime, timezone
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -183,19 +184,65 @@ class TopicBlogTemplate(models.Model):
     content_type = models.ForeignKey(TopicBlogContentType,
                                      on_delete=models.CASCADE)
 
-    # And now somehow we need to specify the fields.  Either we do
-    # that with an explicit list of fields or, probably better, a
-    # one-to-many relationship to TBTemplateFields.  And that model
-    # will just have field name and a link back here.
+    # These flags indicate which fields are involved in a
+    # TopicBlogItem using this template instance.
     #
-    # We could someday want to be fancy and provide field type and
-    # such here so that content editors can build themselves instead
-    # of just switching on and off preset fields.
+    # The fields are also required for publishing the TopicBlogItem
+    # instance unless they are provided by the
+    # optional_fields_for_publication() function.
+    slug = models.BooleanField(default=False)
+    title = models.BooleanField(default=False)
+    header = models.BooleanField(default=False)
+    body_text_1_md = models.BooleanField(default=False)
+    cta_1 = models.BooleanField(default=False)
+    body_text_2_md = models.BooleanField(default=False)
+    cta_2 = models.BooleanField(default=False)
+    body_image = models.BooleanField(default=False)
+    body_text_3_md = models.BooleanField(default=False)
+    cta_3 = models.BooleanField(default=False)
+    social_media = models.BooleanField(default=False)
 
-    # Not yet functional. ##
+    # Flags not provided because not user-editable or that otherwise
+    # make no sense to include.
+    #
+    #   item_sort_key
+    #   servable
+    #   published
+    #   publication_date
+    #   template
+    #   user
+
+    # Provide the names of fields that the user may set but that do
+    # not impede publication.
+    optional_fields_for_publication = set().union(
+        ['header_description', 'header_slug',
+         'cta_1_slug', 'cta_1_label',
+         'cta_2_slug', 'cta_2_label',
+         'cta_3_slug', 'cta_3_label',
+         'body_image', 'body_image_alt_text',
+         'twitter_title', 'twitter_description',
+         'twitter_image', 'og_title',
+         'og_description', 'og_image'])
+
+    # Fields that, if required for publication, the requirement is
+    # satisfied by providing any one of them.
+    one_of_fields_for_publication = [
+        ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
+        ['header_title', 'header_description'],
+    ]
+
+    # Dependent fields: if one in a group is provided, the others must
+    # be as well before we can publish.
+    dependent_field_names = [
+        ['cta_1_slug', 'cta_1_label'],
+        ['cta_2_slug', 'cta_2_label'],
+        ['cta_3_slug', 'cta_3_label'],
+        ['body_image', 'body_image_alt_text'],
+    ]
 
     def __str__(self):
         return self.template_name
+
 
 # The way to think of TopicBlog (TB) is as a collection of TBItem's,
 # which encodes a name, servability (whether or not we propose the
@@ -221,6 +268,7 @@ class TopicBlogTemplate(models.Model):
 
 
 class TopicBlogItem(models.Model):
+
     """Represent an item in the TopicBlog.
 
     An item is the central user-visible element of a TopicBlog (TB)
@@ -375,8 +423,8 @@ class TopicBlogItem(models.Model):
         is_editable = True
         if self.publication_date:
             # Checks to allow the user to edit the item or not
-            time_since_publication = datetime.now(timezone.utc) - \
-                self.publication_date
+            time_since_publication = datetime.datetime.now(
+                dateime.timezone.utc) - self.publication_date
 
             # Beyond X seconds, the user can't edit the item anymore
             # and only has the possibility to create a variant.
@@ -385,3 +433,126 @@ class TopicBlogItem(models.Model):
                 is_editable = False
 
         return is_editable
+
+    def is_publishable(self) -> bool:
+        """
+        Return True if the item may be published.
+
+        An item may be published if it has no missing required fields,
+        as defined by the related TopicBlogTemplate.
+        """
+        if self.get_missing_publication_field_names():
+            return False
+        return True
+
+    def publish(self):
+        """
+        If publishable, set item publication and return True.
+        Else do nothing and return False.
+        """
+        if self.is_publishable():
+            self.published = True
+            self.publication_date = datetime.datetime.now()
+            return True
+        else:
+            return False
+
+    def get_missing_publication_field_names(self) -> set:
+        """
+        This function returns a list of all missing fields
+        for publication.
+
+        If no content is present in any of the content dedicated
+        fields (eg. 'body_text_1_md', 'body_text_2_md', 'body_text_3_md',
+        'body_image'), 'content' is also added to the list.
+        """
+        template = self.template
+        missing_field_names = set()
+        required_field_names = self.get_participating_field_names().\
+            difference(template.optional_fields_for_publication)
+
+        for field_name in required_field_names:
+            if not getattr(self, field_name):
+                missing_field_names.add(field_name)
+
+        # This will mark all fields in each set as missing if the set
+        # constraint isn't satisfied.  This is something to signal to
+        # users.  Getting this feedback perfect requires some thought
+        # and experience using the tool.
+        #
+        # Of course, for now we aren't even providing feedback, so
+        # this comment is ahead of its time.
+        for field_name_set in template.one_of_fields_for_publication:
+            one_provided = False
+            for field_name in field_name_set:
+                if field_name not in missing_field_names:
+                    one_provided = True
+            if one_provided:
+                missing_field_names = missing_field_names.difference(field_name_set)
+            else:
+                missing_field_names = missing_field_names.union(field_name_set)
+
+        # This checks that dependent fields are either provided or not
+        # together.  If a user provides some but not others, we'll
+        # indicate that the entire set is missing, which isn't perfect
+        # but is something we can sort later if it becomes confusing
+        # for users.  Initially, we should just make sure that our
+        # user instructions note that we do this.
+        for dependent_field_name_set in template.dependent_field_names:
+            all_provided = True
+            all_missing = True
+            for field_name in dependent_field_name_set:
+                if getattr(self, field_name):
+                    all_missing = False
+                else:
+                    all_provided = False
+            if not (all_provided or all_missing):
+                missing_field_names = missing_field_names.union(
+                    dependent_field_name_set)
+
+        return missing_field_names
+
+    def get_participating_field_names(self) -> set:
+        """
+        Return the names of fields that participate in this TopicBlogItem
+        based on the Template it uses.
+
+        This only provides user-settable fields.
+        """
+        template = self.template
+        fields = set()
+        if template.slug:
+            fields.add('slug')
+        if template.title:
+            fields.add('title')
+        if template.header:
+            fields.add('header_image')
+            fields.add('header_title')
+            fields.add('header_description')
+            fields.add('header_slug')
+        if template.body_text_1_md:
+            fields.add('body_text_1_md')
+        if template.body_text_2_md:
+            fields.add('body_text_2_md')
+        if template.body_text_3_md:
+            fields.add('body_text_3_md')
+        if template.cta_1:
+            fields.add('cta_1_slug')
+            fields.add('cta_1_label')
+        if template.cta_2:
+            fields.add('cta_2_slug')
+            fields.add('cta_2_label')
+        if template.cta_3:
+            fields.add('cta_3_slug')
+            fields.add('cta_3_label')
+        if template.body_image:
+            fields.add('body_image')
+            fields.add('body_image_alt_text')
+        if template.social_media:
+            fields.add('twitter_title')
+            fields.add('twitter_description')
+            fields.add('twitter_image')
+            fields.add('og_title')
+            fields.add('og_description')
+            fields.add('og_image')
+        return fields

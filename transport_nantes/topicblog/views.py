@@ -1,6 +1,7 @@
 from collections import Counter
+import logging
 
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
@@ -11,10 +12,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
 
-from asso_tn.utils import StaffRequiredMixin, StaffRequired
+from asso_tn.utils import StaffRequiredMixin, StaffRequired, AdminRequiredMixin
 from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
+logger = logging.getLogger(__name__)
 
 class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     """Create or modify a TBItem.
@@ -257,3 +259,52 @@ def get_url_list(request):
     slug = request.GET.get('slug')
     url = reverse("topicblog:list_items_by_slug", args=[slug])
     return JsonResponse({'url': url})
+
+
+class TopicBlogItemPublishView(AdminRequiredMixin, TemplateView):
+    """
+    Renders an item and list missing information if any to
+    make an item publishable.
+
+    Examples :
+    - A missing slug would prevent publication.
+    - A missing title would prevent publication.
+    - Missing socials informations would prevent publication.
+    """
+
+    template_name = 'topicblog/tb_item_publish.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        tb_item = get_object_or_404(TopicBlogItem,
+                                    id=kwargs['pkid'],
+                                    slug=kwargs['item_slug'])
+
+        tb_item: TopicBlogItem
+        context["missing_fields"] = \
+            tb_item.get_missing_publication_field_names()
+
+        context['tb_item'] = tb_item
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Publishes the given item.
+        """
+        context = super().get_context_data(**kwargs)
+        pk_id = kwargs.get('pkid', -1)
+        item_slug = kwargs.get('item_slug', '')
+        tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=item_slug)
+
+        try:
+            tb_item: TopicBlogItem
+            if tb_item.publish():
+                tb_item.save()
+                context["publication_succeeded"] = True
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Failed to publish article {pk_id} with slug \"{item_slug}\"")
+            return HttpResponseServerError("Failed to publish item")
+
+        return render(request, 'topicblog/tb_item_publish.html', context)
