@@ -65,3 +65,10 @@ def StaffRequired(func):
             return HttpResponseForbidden("""Vous n'avez pas l'autorisation
             d'accéder à cette page.""")
     return wrapper
+
+
+class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Require Superuser (Admin) status for all views."""
+
+    def test_func(self):
+        return self.request.user.is_superuser
