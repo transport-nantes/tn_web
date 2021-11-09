@@ -126,7 +126,16 @@ class AmountForm(forms.Form):
                   template="stripe_app/inline_radio_custom.html",
                   id="payment_amount_rb", style="display: none"),
             Field("free_amount", id="free_amount", style="display: none"),
-            HTML("<p id='real_cost'></p>"),
+            HTML("""
+            <div id="real_cost_message" style="display: none">
+                <p>
+                Votre don ne vous revient qu'à
+                <span id='real_cost'></span>€
+                après réduction d'impôts !
+                </p>
+            </div>
+            """
+                 ),
             ButtonHolder(
                 Submit('submit', 'Continuer',
                        css_class='btn navigation-button',
@@ -185,10 +194,18 @@ class QuickDonationForm(forms.Form):
             Field("amount", id="amount"),
             HTML(f"<p class='my-3'> {self.motivation_html} </p>"),
             Field("extra_amount", id="extra_amount"),
-            HTML("<p id='montant_total'></p>"),
-            HTML("<strong><p id='real_cost'></p></strong>"),
+            HTML("""
+            <p id='montant_total_message'>
+            Montant total de votre don :
+            <span id='montant_total'>{{amount}},00</span>€
+            </p>"""),
+            HTML("""<strong>
+            Ce don ne vous revient qu'à
+            <span id='real_cost'></span>€
+            après réduction d'impôts !
+            </strong>"""),
             ButtonHolder(
                 Submit('submit', 'Continuer',
-                       css_class='btn navigation-button', css_id="toStep2")
+                       css_class='btn navigation-button mt-2', css_id="toStep2")
             )
         )
