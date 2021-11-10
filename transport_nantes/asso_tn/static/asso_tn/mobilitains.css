@@ -427,3 +427,11 @@ span.centered {
     margin: 2px;
     padding: 4px;
 }
+
+.higlighted-blue {
+    font-weight: bold;
+    background-color: var(--mobilitains-bleu);
+    color: white;
+    margin: 2px;
+    padding: 4px;
+}

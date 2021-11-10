@@ -61,10 +61,10 @@ function payment_amount_selected() {
     return selected
 }
 
-// Add a message calculating actual cost of donation.
+// Add a message showing actual cost of donation after tax reduction.
 function real_cost_message(amount) {
-    real_cost = document.getElementById("real_cost")
-    real_cost.innerHTML = "Votre don ne vous revient qu'à " + parseFloat(amount*0.34).toFixed(2) + "€ après réduction d'impôts !"
+    document.getElementById("fisc").style.display = "block";
+    document.getElementById("fisc-amount").innerHTML = parseFloat(amount*0.34).toFixed(2)
 }
 
 // QuickDonation field is present only for quick donations
@@ -100,12 +100,19 @@ if (originating_view == "QuickDonationView") {
                 document.getElementById("free_amount").style.display = "flex"
                 MakeNotRequiredByName("subscription_amount", true)
                 MakeNotRequiredByName("payment_amount", false)
+                let amount_selected = payment_amount_selected()
+                if (amount_selected == null) {
+                    document.getElementById("fisc").style.display = "none";
+                } else {
+                    document.getElementById("fisc").style.display = "block";
+                };
+
             } else {
                 document.getElementById("subscription_amount_rb").style.display = "flex"
                 document.getElementById("payment_amount_rb").style.display = "none"
                 document.getElementById("free_amount").style.display = "none"
                 document.getElementById("free_amount").removeAttribute("required")
-                document.getElementById("real_cost").innerHTML = ""
+                document.getElementById("fisc").style.display = "none";
                 MakeNotRequiredByName("payment_amount", true)
                 MakeNotRequiredByName("subscription_amount", false)
             }
@@ -129,8 +136,7 @@ if (originating_view == "QuickDonationView") {
     // Event to trigger calculation and update the message when an amount is selected.
     document.querySelectorAll("input[id*='payment_amount_rb']").forEach(item => {
         item.addEventListener("click", event => {
-            // Clear message
-            document.getElementById("real_cost").innerHTML = ""
+            document.getElementById("fisc").style.display = "none";
             if (event.target.value != 0) {
                 // Generate a new message
                 real_cost_message(event.target.value)
@@ -174,6 +180,7 @@ function get_subscription_amount() {
 // triggers when the user clicks on the "Continuer" button.
 $("#toStep2").on("click", function() {
     recall = document.getElementById("donation_recall")
+    document.getElementById("fisc").style.display = "none";
 
     if (originating_view == "QuickDonationView") {
         amount = document.getElementById("payment_amount").value
@@ -187,7 +194,11 @@ $("#toStep2").on("click", function() {
             update_recall_message(get_subscription_amount())
             recall.innerHTML += " par mois"
         } else if (selected == "payment") {
-            update_recall_message(payment_amount_selected())
+            amount_selected = payment_amount_selected()
+            if (amount_selected == "0") {
+                amount_selected = document.getElementById("free_amount").value
+            }
+            update_recall_message(amount_selected)
             recall.innerHTML += " au total"
         }
         
