@@ -14,6 +14,10 @@ document.querySelectorAll("input[type='radio']").forEach((item, index) => {
     })
 })
 
+$('#free_amount').on('click', function() {
+    update_style()
+});
+
 radio_buttons = document.querySelectorAll("input[type='radio']")
 
 function update_style() {

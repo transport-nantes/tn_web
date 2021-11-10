@@ -24,6 +24,13 @@
 	<form id="amount_form" action="" method="post">
 		{% crispy amount_form %}
 	</form>
+	<div id="fisc" class="mt-2" style="display:none">
+		<p>
+		Votre don ne vous revient qu'à
+	    <span id="fisc-amount" class="higlighted-blue"></span>€
+	    après réduction d'impôts !
+		</p>
+	</div>
 </div>
 
 <div class="container-fluid d-flex-stretch col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-1">
