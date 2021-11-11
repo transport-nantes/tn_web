@@ -3,6 +3,7 @@ from functools import wraps
 
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.utils.crypto import salted_hmac
 from django.utils.crypto import secrets
 from django.utils.http import base36_to_int, int_to_base36
@@ -67,8 +68,10 @@ def StaffRequired(func):
     return wrapper
 
 
-class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Require Superuser (Admin) status for all views."""
+class SuperUserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Require Superuser status for all views."""
+
+    login_url = reverse_lazy('authentication:login')
 
     def test_func(self):
         return self.request.user.is_superuser

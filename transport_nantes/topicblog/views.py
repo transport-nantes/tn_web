@@ -8,11 +8,11 @@ from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
+from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
-
-from asso_tn.utils import StaffRequiredMixin, StaffRequired, AdminRequiredMixin
+from asso_tn.utils import StaffRequiredMixin, StaffRequired, SuperUserRequiredMixin
 from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
@@ -261,7 +261,7 @@ def get_url_list(request):
     return JsonResponse({'url': url})
 
 
-class TopicBlogItemPublishView(AdminRequiredMixin, TemplateView):
+class TopicBlogItemPublishView(SuperUserRequiredMixin, TemplateView):
     """
     Renders an item and list missing information if any to
     make an item publishable.
