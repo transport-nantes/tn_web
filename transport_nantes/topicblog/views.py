@@ -55,7 +55,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             except ObjectDoesNotExist:
                 raise Http404("Page non trouvée")
         else:
-            tb_item = None
+            tb_item = TopicBlogItem()
             # context["form"] is set by the FormView
             context = super().get_context_data(**kwargs)
 
@@ -76,6 +76,8 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         context["form_social"] = ["social_description", "twitter_title",
                                   "twitter_description", "twitter_image",
                                   "og_title", "og_description", "og_image", ]
+
+        context["slug_fields"] = tb_item.get_slug_fields()
 
         return context
 
