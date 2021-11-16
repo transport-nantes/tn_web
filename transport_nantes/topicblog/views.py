@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from collections import Counter
 import logging
 
@@ -196,12 +197,19 @@ class TopicBlogItemView(TemplateView):
 
         try:
             tb_item = TopicBlogItem.objects.filter(
-                slug=kwargs['item_slug']
+                slug=kwargs['item_slug'],
+                publication_date__isnull=False,
+                servable=True
                 ).order_by("item_sort_key").last()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_item is None:
             raise Http404("Page non trouvée")
+
+        servable = tb_item.get_servable_status()
+        if not servable:
+            logger.info("TopicBlogItemView: %s is not servable", tb_item)
+            raise HttpResponseServerError("Le serveur a rencontré un problème")
 
         # The template is set in the model, it's a str referring to an
         # existing template in the app.
