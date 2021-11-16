@@ -8,15 +8,16 @@ from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
-from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
-from asso_tn.utils import StaffRequiredMixin, StaffRequired, SuperUserRequiredMixin
+from asso_tn.utils import StaffRequiredMixin, StaffRequired
+from asso_tn.utils import SuperUserRequiredMixin
 from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger(__name__)
+
 
 class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     """Create or modify a TBItem.
@@ -304,7 +305,8 @@ class TopicBlogItemPublishView(SuperUserRequiredMixin, TemplateView):
                 context["publication_succeeded"] = True
         except Exception as e:
             logger.error(e)
-            logger.error(f"Failed to publish article {pk_id} with slug \"{item_slug}\"")
+            logger.error(f"Failed to publish article {pk_id} with" +
+                         "slug \"{item_slug}\"")
             return HttpResponseServerError("Failed to publish item")
 
         return render(request, 'topicblog/tb_item_publish.html', context)
