@@ -21,6 +21,8 @@
 <script src="{% static 'topicblog/clean_slug_field.js' %}" defer></script>
 <script src="{% static 'topicblog/clear_file_inputs.js' %}" defer></script>
 <script src="{% static 'topicblog/same_slug_warning.js' %}" defer></script>
+<script src="{% static 'topicblog/get_slug_suggestions.js' %}" defer></script>
+{{slug_fields|json_script:"slug_fields"}}
 
 {% if success %}
 <div class="alert alert-success center flex-column">
@@ -54,13 +56,30 @@
 	    <div id="form_admin" class="container tab-pane active"><br>
 			{% for field in form %}
 				{% if field.name in form_admin %}
-					<div class="fieldWrapper">
-						{{ field.errors }}
-						{{ field|as_crispy_field }}
-						{% comment %}{% if field.help_text %}
-							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}{% endcomment %}
-					</div>
+					{% if field.name == "slug" %}
+					{% comment %}
+					The slug field is a special case : because |as_crispy doesn't render
+					the input field with a datalist, we manually render it here.
+					The classes used are the same Crispy uses, for now.
+					The datalist is dynamically generated, and the list of suggestions
+					come from an AJAX call to the server. 
+					{% endcomment %}
+						<div class="fieldWrapper">
+							<div id="div_id_slug" class="form-group">
+								<label for="id_slug" class="">Slug</label>
+								<input list="slug_list" type="text" id="id_slug" class="textinput textInput form-control">
+								<datalist id="slug_list"></datalist>
+							</div>
+						</div>
+					{% else %}
+						<div class="fieldWrapper">
+							{{ field.errors }}
+							{{ field|as_crispy_field }}
+							{% comment %}{% if field.help_text %}
+								<p class="help">{{ field.help_text|safe }}</p>
+							{% endif %}{% endcomment %}
+						</div>
+					{% endif %}
 				{% endif %}
 			{% endfor %}
 	    </div>
@@ -114,7 +133,6 @@
 				<input class="mt-3" type="submit" value="Créer un variant" name="create_variant">
 			{% endif %}
 		</div>
-
 	</div>
     </form>
 </div>

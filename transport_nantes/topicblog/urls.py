@@ -2,7 +2,8 @@ from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import (TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne,
                     TopicBlogItemList, TopicBlogItemPublishView)
-from .views import (update_template_list, get_slug_dict, get_url_list)
+from .views import (update_template_list, get_slug_dict, get_url_list,
+                    get_slug_suggestions)
 # from transport_nantes.settings import ROLE
 
 app_name = 'topic_blog'
@@ -41,6 +42,8 @@ urlpatterns = [
          name="get_slug_dict"),
     path('ajax/get-url-list/', get_url_list,
          name="get_url_list"),
+    path('ajax/get-slug-suggestions/', get_slug_suggestions,
+         name="get_slug_suggestions"),
 ]
 
 # Need topic creation.
