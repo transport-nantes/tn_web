@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from random import randint
 
 from django.contrib.auth.models import User
@@ -277,8 +277,17 @@ class TopicBlogItem(models.Model):
     # I think I saw problems with unicode URLs, though.
     slug = models.SlugField(allow_unicode=True, blank=True)
     item_sort_key = models.IntegerField()
-    servable = models.BooleanField(default=True)
-    published = models.BooleanField(default=False)
+    # Servable items are those who are published and still reachable.
+    # An item starts as unservable, and becomes servable when it is
+    # published. If servable, it will be able to be reached from
+    # the public.
+    # If a published item is set to unservable, trying to access it
+    # will result in a 404 .
+    servable = models.BooleanField(default=False)
+    # An item isn't considered published until it has a publication
+    # date. Once published, it can't be unpublished.
+    # An item to be both published and servable to be accessible to
+    # the public.
     publication_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
@@ -422,8 +431,8 @@ class TopicBlogItem(models.Model):
         is_editable = True
         if self.publication_date:
             # Checks to allow the user to edit the item or not
-            time_since_publication = datetime.datetime.now(
-                datetime.timezone.utc) - self.publication_date
+            time_since_publication = datetime.now(
+                timezone.utc) - self.publication_date
 
             # Beyond X seconds, the user can't edit the item anymore
             # and only has the possibility to create a variant.
@@ -450,8 +459,8 @@ class TopicBlogItem(models.Model):
         Else do nothing and return False.
         """
         if self.is_publishable():
-            self.published = True
-            self.publication_date = datetime.datetime.now()
+            self.servable = True
+            self.publication_date = datetime.now()
             return True
         else:
             return False
@@ -568,3 +577,14 @@ class TopicBlogItem(models.Model):
                 slug_fields.append(field.name)
 
         return slug_fields
+
+    def get_servable_status(self):
+        """Return True if page is user visible, False otherwise."""
+        if not self.servable:
+            return False
+
+        if self.publication_date is None or \
+                datetime.now(timezone.utc) < self.publication_date:
+            return False
+
+        return True
