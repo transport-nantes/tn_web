@@ -379,11 +379,11 @@ class TopicBlogItem(models.Model):
 
     def __str__(self):
         if self.slug:
-            return f'{str(self.slug)} - {str(self.title)} - \
-                    ISK : {str(self.item_sort_key)} - ID : {str(self.id)}'
+            return f'{str(self.slug)} - {str(self.title)} - ' + \
+                f'ISK : {str(self.item_sort_key)} - ID : {str(self.id)}'
         else:
-            return f'{str(self.title)} - ISK : {str(self.item_sort_key)} \
-                    - ID : {str(self.id)} (NO SLUG)'
+            return f'{str(self.title)} - ISK : {str(self.item_sort_key)} ' + \
+                f'- ID : {str(self.id)} (NO SLUG)'
 
     def get_absolute_url(self):
         """This function is called on creation of the item"""
