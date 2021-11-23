@@ -33,7 +33,10 @@ urlpatterns = [
             twitter_descr="Les Mobilitains font un Crowdfunding pour ceux qui veulent faire de la mobilité plus sécurisée, plus fluide et plus vertueuse.",
             template_name='asso_tn/crowdfunding.html',
             hero_image="asso_tn/crowdfunding_2021/00-heroimage-crowdfunding.jpg",
-            hero_title="Les Mobilitains font un Crowdfunding !",
+            hero_title="Les Mobilitains font un crowdfunding !",
+            # hero_description="et comment c'est chouette !",
+            # hero_description="et comment c'est chouette !",
+            # hero_description="tout le monde est avec !",
         ),
         name='crowdfunding',
         )
