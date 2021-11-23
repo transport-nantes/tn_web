@@ -25,4 +25,16 @@ urlpatterns = [
     path('jobs', AssoView.as_view(title="Jobs",
                                   template_name='asso_tn/jobs.html',),
          name='jobs'),
+
+    path('crowdfunding-2021', AssoView.as_view(
+            title="Les Mobilitains font un Crowdfunding !",
+            meta_descr="""<meta name="description" content="Les Mobilitains font un Crowdfunding pour ceux qui veulent faire de la mobilité plus sécurisée, plus fluide et plus vertueuse."/>""",
+            twitter_title="Crowdfunding | Mobilitains",
+            twitter_descr="Les Mobilitains font un Crowdfunding pour ceux qui veulent faire de la mobilité plus sécurisée, plus fluide et plus vertueuse.",
+            template_name='asso_tn/crowdfunding.html',
+            hero_image="asso_tn/crowdfunding_2021/00-heroimage-crowdfunding.jpg",
+            hero_title="Les Mobilitains font un Crowdfunding !",
+        ),
+        name='crowdfunding',
+        )
 ]

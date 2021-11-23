@@ -1,0 +1,240 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load mpanels %}
+{% load newsletter %}
+{% load markdown %}
+{% load don %}
+
+{% block styles %}
+
+    {{ block.super}}
+
+    {% if hero_image %}
+        <style>
+            .hero-image {
+                /*
+                Use "linear-gradient" to add a darken background effect to the
+                image (photographer.jpg). This will make the text easier to read
+            */
+                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url("{% static hero_image %}");
+
+                /* Set a specific height */
+                height: 40%;
+
+                /* Position and center the image to scale nicely on all screens */
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                position: relative;
+                }
+        </style>
+    {% endif %}
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 class="hero-title">{{ hero_title }}</h1>
+          <p class="hero-description">{{ hero_description }}</p>
+     </div>
+</div>
+
+<div class="container-fluid py-5 px-0 col-10">
+    {% block app_content %}
+
+        <p><em>24 Novembre 2021,</em></p>
+
+        <h1 id="CF_title">Agir tous ensemble pour une mobilité vertueuse, adaptée à chacun.</h1>
+
+        <p>
+        ⏰ C’est l’heure … nous lançons notre collecte de fonds d’hiver pour une meilleure mobilité !
+        Investir dans cette campagne, c’est œuvrer collectivement pour améliorer nos conditions de déplacements
+        tout en réduisant ses impôts ! Véritable pouvoir d’action, l’argent récolté servira à financer l’opération
+        piéton, la Grande Mobilité, l’observatoire du Vélopolitain, les ateliers citoyens et d’autres projets portés
+        par l’organisation à but non lucratif Les Mobilitains.
+        </p>
+
+        <p><b>Ce don est éligible à une réduction d'impôts allant jusqu'à 66% du montant !
+        <a href="https://www.economie.gouv.fr/particuliers/prelevement-a-la-source-reductions-fiscales-dons-associations"> En savoir plus.</a>
+        </b></p>
+
+        <h2> Une meilleure mobilité, qu’est-ce que c’est ? </h2>
+
+        <p>
+        Selon nous, une meilleure mobilité c’est se déplacer en utilisant plusieurs modes de transport. Les amateurs de l'intermodalité
+         vous le diront, coupler par exemple le train et le vélo, c’est se déplacer plus loin, plus confortablement et plus sereinement.
+        <br />
+        Néanmoins, nous sommes obligés de constater qu’aujourd’hui les territoires n’arrivent pas à suivre. C’est à nous, en notre
+        qualité de citoyen et citoyenne d’encourager le mouvement en changeant nos modes de transports, en communiquant plus brutalement
+        sur nos souhaits
+        </p>
+
+        <h2>Donner pour la mobilité c’est :</h2>
+        <ul>
+            <li>faire un geste pour notre planète, avec un meilleur environnement urbain</li>
+            <li>agir sur la réduction importante de nos embouteillages</li>
+            <li>se sentir en sécurité lors de nos déplacements en vélo, en overboard, en trottinette ou à pied !</li>
+            <li>agir sur la diminution de notre stress lors de nos trajets quotidiens pour aller au travail.</li>
+            <li>bâtir un meilleur avenir pour nos jeunes et nos enfants.</li>
+        </ul>
+        <br />
+
+        <p><b>C'est grâce à vous que nous pouvons continuer à militer en toute indépendance !</b></p>
+
+        <p>Cette campagne est hébergée chez MyMoneyHelp.  On les adore.  Dans un instant on vous donne le lien.
+        En attendant, voilà toutes les belles possibilités de soutien et de récompense qu'on vous propose !
+        Les liens marchent, allez-y, essayez-les !</p>
+
+        <div id="cards_holder" class="row justify-content-around">
+            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-1.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 10€</h5>
+                    <p class="card-text">Un remerciement digne de ce
+                    nom en pixels trois couleurs !
+                    L’inscription à notre newsletter.
+                    Bon... si vous l’aviez demandé
+                    gentiment, nous vous aurions
+                    inscrit gratuitement, mais c'est
+                    plus sympa avec un petit geste,
+                    non ?</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 10 "Je participe pour 10€" %}</span>
+                </div>
+	        </div>
+
+            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-2.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 20€</h5>
+                    <p class="card-text">En plus des récompenses
+                    citées avant, recevez votre
+                    bannière “Je soutiens la
+                    mobilité avec les Mobilitains”
+                    pour personnaliser votre
+                    réseau social préféré. • En
+                    cadeau, une carte postale
+                    éditée par la team Mobilitains !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 20 "Je participe pour 20€" %}</span>
+                </div>
+            </div>
+
+            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-3.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 50€</h5>
+                    <p class="card-text">En plus des récompenses déjà
+                    énoncées, vous serez cité en
+                    tant que donateur Mobilitains
+                    sur notre site mobilitains.fr. •
+                    Des post-its personnalisés pour
+                    noter toutes vos idées !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 50 "Je participe pour 50€" %}</span>
+                </div>
+	        </div>
+
+            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-4.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 100€</h5>
+                    <p class="card-text">C’est officiel, vous êtes
+                    cordialement invité à participer
+                    à un atelier citoyen organisé
+                    par les Mobilitains et apprenez
+                    à reconnaître une bonne
+                    infrastructure cyclable.
+                    • Votre t-shirt Mobilitains taillé
+                    pour vous !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 100 "Je participe pour 100€" %}</span>
+                </div>
+            </div>
+
+            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-5.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 200€</h5>
+                    <p class="card-text">Waouh, devenez Mobilitain et
+                    recevez notre guide des
+                    aménagements cyclables
+                    préféré • Des gilets de sécurité
+                    pour toute la famille !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 200 "Je participe pour 200€" %}</span>
+                </div>
+	        </div>
+
+            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-6.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 500€</h5>
+                    <p class="card-text">Profitez de cette occasion pour
+                    sortir de l’anonymat : faites
+                    vous dresser votre portrait de
+                    donateur ambassadeur par un
+                    membre de l’équipe • Le
+                    portrait sera visible sur le site
+                    Mobilitains.fr !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 500 "Je participe pour 500€" %}</span>
+                </div>
+            </div>
+
+            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+                <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-7.jpg' %}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">À partir de 1000€</h5>
+                    <p class="card-text">🎊 Cette fois, vous avez la palme
+                    d’or. Déjeunez avec notre
+                    président dans l’une des tables
+                    de Nantes et entrez dans
+                    l’univers des Mobilitains. Vous
+                    serez au centre de l’attention à
+                    votre prochaine soirée avec
+                    toutes les histoires que vous
+                    aurez à raconter. • Recevez tout
+                    ou une partie des récompenses
+                    déjà citées !</p>
+                    <div class="spacer"></div>
+                    <span class="bottom-button">{% fixed_amount_donation_button 1000 "Je participe pour 1000€" %}</span>
+                </div>
+	        </div>
+        </div>
+
+        <p> Pour voir le crowdfunding dans toute sa gloire ? Cliquez sur le logo de MyMoneyHelp pour voir la page !</p>
+
+        <p>Une campagne portée par :</p>
+        <div id="partners_icons" class="container mb-5 mt-2 mx-0">
+            <div class="row">
+                <a class="d-flex col-5 col-sm-3" href="https://www.mymoneyhelp.fr/projet/meilleure-mobilite/">
+                    <img class="d-flex col-12" src="{% static 'asso_tn/crowdfunding_2021/logo-mmh.png' %}" alt="MyMoneyHelp" style="object-fit: cover" />
+                </a>
+                <img class="d-flex col-7 col-sm-4" src="{% static 'asso_tn/crowdfunding_2021/logo-transway-v2.png' %}" alt="Transway" />
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center my-3">
+            <a href='https://www.mymoneyhelp.fr/projet/meilleure-mobilite/' class="btn donation-button">Voir la page de la campagne</a>
+        </div>
+
+    {% endblock app_content %}
+</div>
+
+<div class="background-ad-hoc-blue">
+    <div class="d-flex flex-column p-4 p-xl-5">
+        {% show_projects %}
+        {% show_mailing_list %}
+        {% show_qui_sommes_nous %}
+    </div>
+</div>
+
+{% show_donate %}
+<div id="volunteer">
+    {% show_volunteer %}
+</div>
+
+{% endblock content %}

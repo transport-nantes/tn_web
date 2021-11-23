@@ -435,3 +435,10 @@ span.centered {
     margin: 2px;
     padding: 4px;
 }
+.bottom-button {
+    position:absolute; 
+    bottom:10px;
+}
+.spacer {
+    margin-bottom: 2rem;
+}
