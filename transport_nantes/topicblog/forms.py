@@ -11,7 +11,7 @@ class TopicBlogItemForm(ModelForm):
     class Meta:
         model = TopicBlogItem
         # Admins can still edit those values
-        exclude = ('item_sort_key', 'servable', 'user', 'published',
+        exclude = ('item_sort_key', 'servable', 'user',
                    'publication_date')
 
     def __init__(self, *args, **kwargs):
