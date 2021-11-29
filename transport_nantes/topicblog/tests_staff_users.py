@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from django.test import TestCase
 from .models import (TopicBlogPage, TopicBlogItem, TopicBlogTemplate,
                      TopicBlogContentType)
@@ -26,7 +28,7 @@ class Test(TestCase):
             slug="index",
             item_sort_key=1,
             servable=True,
-            published=True,
+            publication_date=datetime.now(timezone.utc),
             user=self.user,
             content_type=self.content_type,
             template=self.template,
@@ -56,7 +58,7 @@ class TBIEditStatusCodeTest(TestCase):
             slug="test-slug",
             item_sort_key=1,
             servable=True,
-            published=True,
+            publication_date=datetime.now(timezone.utc),
             user=self.user,
             content_type=self.content_type,
             template=self.template,
@@ -66,7 +68,7 @@ class TBIEditStatusCodeTest(TestCase):
             slug="",
             item_sort_key=0,
             servable=False,
-            published=False,
+            publication_date=datetime.now(timezone.utc),
             user=self.user,
             content_type=self.content_type,
             template=self.template,
@@ -76,7 +78,7 @@ class TBIEditStatusCodeTest(TestCase):
             slug="test-slug",
             item_sort_key=3,
             servable=True,
-            published=True,
+            publication_date=datetime.now(timezone.utc),
             user=self.user,
             content_type=self.content_type,
             template=self.template,
