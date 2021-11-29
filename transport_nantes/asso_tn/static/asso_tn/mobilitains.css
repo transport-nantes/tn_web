@@ -442,3 +442,29 @@ span.centered {
 .spacer {
     margin-bottom: 2rem;
 }
+.page-holder {
+    min-height: 33vh;
+    color: white;
+    background-color: #DBE3EB;
+    box-shadow: 1px 0px 64px -17px rgba(0,0,0,0.51) inset;
+    -webkit-box-shadow: 1px 0px 64px -17px rgba(0,0,0,0.51) inset;
+    -moz-box-shadow: 1px 0px 64px -17px rgba(0,0,0,0.51) inset;
+}
+.page-holder .p, .page-holder .h1 {
+    color: var(--mobilitains-bleu-fonce)
+}
+.bg-cover {
+    background-size: cover !important;
+}
+.cf_text {
+    color: var(--mobilitains-bleu-fonce);
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+}
+#close {
+    float:right;
+    padding:2px 5px;
+    background:var(--mobilitains-bleu-fonce);
+    cursor:auto;
+}
