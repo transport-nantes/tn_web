@@ -206,7 +206,6 @@ class TopicBlogTemplate(models.Model):
     #
     #   item_sort_key
     #   servable
-    #   published
     #   publication_date
     #   template
     #   user
