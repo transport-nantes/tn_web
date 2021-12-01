@@ -42,62 +42,260 @@
      </div>
 </div>
 
-<div class="container-fluid py-5 px-0 col-10">
+<div class="container-fluid py-5 px-0 col-12 col-md-10 d-flex flex-wrap">
     {% block app_content %}
 
-        <p><em>24 Novembre 2021,</em></p>
+        <div id="main_body_cf" class="d-flex flex-column col-12 col-xl-8 ">
+            <section id="introduction_cf">
+                <p><em>1er Décembre 2021,</em></p>
 
-        <h2 id="CF_title">Agir tous ensemble pour une mobilité vertueuse, adaptée à chacun.</h2>
+                <h2 id="CF_title" class="mb-3">
+                    ⏰ C’est l’heure … Nous lançons notre collecte de fonds d’hiver pour une meilleure mobilité !
+                </h2>
 
-        <p>
-        ⏰ C’est l’heure … nous lançons notre collecte de fonds
-        d’hiver pour une meilleure mobilité !  Investir dans cette
-        campagne, c’est œuvrer collectivement pour améliorer nos
-        conditions de déplacements tout en réduisant ses impôts !
-        Véritable pouvoir d’action, l’argent récolté servira à
-        financer l’opération piéton, la Grande Mobilité,
-        l’observatoire du Vélopolitain, les ateliers citoyens et
-        d’autres projets portés par l’organisation à but non lucratif
-        Les Mobilitains.
-        </p>
+                <p>
+                Investir dans cette campagne, c’est œuvrer collectivement pour améliorer nos
+                conditions de déplacements tout en réduisant ses impôts !
+                Véritable pouvoir d’action, l’argent récolté servira à
+                financer l’opération piéton, la Grande Mobilité,
+                l’observatoire du Vélopolitain, les ateliers citoyens et
+                d’autres projets portés par l’organisation à but non lucratif
+                Les Mobilitains.
+                </p>
 
-        <p><b>Votre don est éligible à une réduction d'impôts allant jusqu'à 66% du montant !
-        </b></p>
+                <p><b>Votre don est éligible à une réduction d'impôts allant jusqu'à 66% du montant !</b></p>
 
-        <h3> Une meilleure mobilité, qu’est-ce que c’est ? </h3>
+                <div class="iframe_container my-5">
+                    <iframe
+                    src="https://www.youtube.com/embed/GBQAMc0opEQ"
+                    title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    class="youtube-video"
+                    allowfullscreen></iframe>
+                </div>
 
-        <p>
-        Une meilleure mobilité c’est se déplacer en
-         utilisant plusieurs modes de transport. Les amateurs de
-         l'intermodalité vous le diront, coupler par exemple le train
-         et le vélo, c’est se déplacer plus loin, plus confortablement
-         et plus sereinement.
-        <br />
-        Aujourd’hui les territoires n’arrivent pas à suivre. C’est à
-        nous toutes et tous,
-	en notre qualité de citoyen et citoyenne d’encourager le
-        mouvement en changeant nos modes de transports, en
-        communiquant plus brutalement sur nos souhaits
-        </p>
+                <span class="d-flex my-5">
+                    <a href="{% url 'stripe_app:stripe' %}" class="d-block mx-auto btn donation-button">
+                        <span>Soutenir le projet</span>
+                        <i class="fa fa-arrow-right" area-hidden="true"></i>
+                    </a>
+                </span>
 
-        <h3>Donner pour la mobilité c’est :</h3>
-        <ul>
-            <li>faire un geste pour notre planète, avec un meilleur
-		environnement urbain</li>
-            <li>agir sur la réduction importante de nos embouteillages</li>
-            <li>se sentir en sécurité lors de nos déplacements en vélo, en overboard,
-		en trottinette ou à pied !</li>
-            <li>agir sur la diminution de notre stress lors de nos trajets quotidiens
-		pour aller au travail.</li>
-            <li>bâtir un meilleur avenir pour nos jeunes et nos enfants.</li>
-        </ul>
-        <br />
+                <h3> Une meilleure mobilité, qu’est-ce que c’est ? </h3>
 
-        <p><b>C'est grâce à vous que nous pouvons continuer à militer
-        en toute indépendance !</b></p>
+                <p>
+                Une meilleure mobilité c’est se déplacer en
+                utilisant plusieurs modes de transport. Les amateurs de
+                l'intermodalité vous le diront, coupler par exemple le train
+                et le vélo, c’est se déplacer plus loin, plus confortablement
+                et plus sereinement.
+                <br />
+                Aujourd’hui les territoires n’arrivent pas à suivre. C’est à
+                nous toutes et tous,
+                en notre qualité de citoyen et citoyenne d’encourager le
+                mouvement en changeant nos modes de transports, en
+                communiquant plus brutalement sur nos souhaits
+                </p>
+            </section>
 
-        <div id="cards_holder" class="row justify-content-around">
-            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <section id="constat_mobilité_cf">
+                <h3>Le constat de notre mobilité actuelle</h3>
+
+                <p>La voiture, en France, a la part belle. Nous lui avons même offert la majorité de notre infrastructure urbaine.</p>
+                <p>La conséquence → des embouteillages ! 🤬💥🤬 Et qu’en est-il des autres mobilités ?</p>
+                <p>Nous ne vous apprenons rien, l’ensemble de notre réseau de mobilité est saturé… Pour préserver notre santé, notre liberté et notre planète, il existe bon nombre d’alternatives à vos déplacements.</p>
+                <p>La solution des Mobilitains → optez pour la mobilité multimodale ! 🤩</p>
+                <img src="{% static 'asso_tn/crowdfunding_2021/03-IMG-crowdfunding-mobilitains.jpg' %}"
+                alt="Ensemble, agissons pour une meilleure mobilité"
+                class="img-fluid d-flex mx-auto my-4" />
+                <i>
+                    La mobilité intermodale, c’est l’acte de se déplacer en
+                    utilisant plusieurs modes de transport, qu’ils soient doux
+                    ou actifs. <small>Ex.→ vélo + marche, piéton + tramway , vélo + train, voiture + bus !</small>
+                </i>
+            </section>
+
+            <section id="agir_pour_vous_cf" class="mt-3">
+                <h3>
+                    Agir pour et avec vous
+                </h3>
+                <p>Nous ne pourrons modifier nos infrastructures urbaines qu’en démontrant les besoins de mobilité de la grande majorité des usagers. 🚴🏿‍♀️</p>
+                <p>
+                    Fédérer une communauté de donateur et de donatrice nous permettrait de réunir nos voix pour un impact politique plus fort.
+                    <strong>Financer la possibilité de choisir notre mode de transport, c’est agir ensemble pour NOTRE MOBILITÉ.</strong>
+                </p>
+                <img src="{% static 'asso_tn/crowdfunding_2021/01-IMG-crowdfunding-mobilitains.jpg' %}"
+                alt="Ensemble, sensibilisons les citoyens à appréhender les dangers"
+                class="img-fluid d-flex mx-auto my-4" />
+            </section>
+
+            <section id="donner_pour_la_mobilité_cf" class="mt-3">
+                <h3>Donner pour la mobilité c’est :</h3>
+                <ul>
+                    <li>faire un geste pour notre planète, avec un meilleur
+                environnement urbain</li>
+                    <li>agir sur la réduction importante de nos embouteillages</li>
+                    <li>se sentir en sécurité lors de nos déplacements en vélo, en overboard,
+                en trottinette ou à pied !</li>
+                    <li>agir sur la diminution de notre stress lors de nos trajets quotidiens
+                pour aller au travail.</li>
+                    <li>bâtir un meilleur avenir pour nos jeunes et nos enfants.</li>
+                </ul>
+                <br />
+
+                <p><b>C'est grâce à vous que nous pouvons continuer à militer
+                en toute indépendance&nbsp;!</b></p>
+            </section>
+
+            <section id="collapses_cf">
+                <div class="accordion my-3" id="accordionExample">
+
+                    <div class="card no-border">
+                        <div class="mb-1" id="headingThree">
+                        <h2 class="mb-0">
+                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Le projet
+                            </button>
+                        </h2>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <p>
+                            Indépendants, nous militons pour une meilleure mobilité. Une mobilité plus sûre,
+                            vertueuse et agréable, en harmonie avec les espaces qui nous entourent.
+                            </p>
+                            <p>3 concepts majeurs pour 2022 :</p>
+                            <ul>
+                                <li>
+                                    <p>
+                                        🚄 <strong>La grande Mobilité</strong>, me déplacer comme je veux quand je veux
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        🤸🏽‍♂️ <strong>La Petite Mobilité</strong>, me garantir un dernier kilomètre agréable et sécuritaire
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        🚴🏿‍♂️ <strong>Le Vélopolitain,</strong>, mon réseau cyclable fluide dans toute la métropole nantaise
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="card no-border">
+                        <div class="mb-1" id="headingFour">
+                        <h2 class="mb-0">
+                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Qui sommes-nous ?
+                            </button>
+                        </h2>
+                        </div>
+                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center flex-wrap">
+                                <img src="{% static 'asso_tn/crowdfunding_2021/04-IMG-crowdfunding-mobilitains.png' %}"
+                                alt="timeline mobilitains"
+                                class="d-flex col-8 col-sm-5 col-md-4 col-lg-4 mb-2" />
+                                <div class="d-flex flex-column col-10 col-lg-5">
+                                    <p>
+                                        Transport Nantes a été créée en 2018 à l’initiative de 3 fondateurs militants avec la ferme intention
+                                        d’améliorer la vie des citoyens et citoyennes en déplacement.
+                                    </p>
+                                    <p>Post Covid-19, l’association prend un tournant majeur et devient Les Mobilitains !</p>
+                                </div>
+                            </div>
+
+                            <p class="mt-3">L’équipe :</p>
+                            <img src="{% static 'asso_tn/crowdfunding_2021/00-IMG-crowdfunding-mobilitains.png' %}"
+                            class="d-flex mx-auto">
+
+
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="card no-border">
+                        <div class="mb-1" id="headingFive">
+                        <h2 class="mb-0">
+                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                À quoi serviront les fonds ?
+                            </button>
+                        </h2>
+                        </div>
+                        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <p>Principalement à :</p>
+                            <ul>
+                                <li>
+                                    <p>
+                                        👉  Mettre en œuvre et optimiser la plateforme numérique citoyenne pour améliorer la fluidité urbaine
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        👉 Activer les programmes de communication autour de la sécurité des mobilités douces et actives
+                                        (vélos, piétons, trottinettes, PMR, overboard ! etc. )
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        💥 fédérer une communauté de bénévoles autour du projet Les Mobilitains
+                                    </p>
+                                </li>
+                            </ul>
+
+                            <p>
+                                🤸🏿‍♂️ <b>Avec 5 000 €, un projet piéton inédit</b> dans le quartier des Hauts Pavés Saint Félix.
+                                Une action publicitaire avec un concours photo citoyen programmé autour de la vie et des
+                                infrastructures piétonnes. Poussons la métropole nantaise à prendre au sérieux et à améliorer
+                                la qualité de notre dernier kilomètre.
+                            </p>
+                            <p>
+                                <b>🚴‍♀️ Avec 10 000 €, lançons l’observatoire du Vélopolitain,</b>
+                                un projet participatif qui aura 2 objectifs : pousser les territoires à adopter un réseau
+                                cyclable sécurisé, sans discontinuité, et apprendre au citoyen-usager à reconnaître un
+                                bon ou mauvais aménagement cyclable !
+                            </p>
+                            <p>
+                                <b>🔝  Avec 20 000€, l’observatoire de la Grande Mobilité</b>
+                                sortira de l’ombre. Ce grand projet soulignera que nos déplacements dans la région nantaise
+                                ne sont pas toujours réalisés en voiture, même dans les zones où la voiture est omniprésente.
+                                Il servira de base pour militer sur le  rééquilibrage urgent de nos systèmes de déplacement.
+                            </p>
+                            <p>
+                                <b>🚀 Avec 40 000€, tous ces projets verront la lumière du jour</b>
+                                d’ici à fin 2022. Ce sera grâce à vos soutiens que tout cela sera possible !
+                            </p>
+
+                        </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <span class="d-flex my-5">
+                <a href="{% url 'stripe_app:stripe' %}" class="d-block mx-auto btn donation-button">
+                    <span>Soutenir le projet</span>
+                    <i class="fa fa-arrow-right" area-hidden="true"></i>
+                </a>
+            </span>
+
+            <section id="supports_cf">
+                <p>Soutenu par</p>
+                <div id="partners_icons" class="container mb-5 mt-2 mx-0">
+                    <div class="row">
+                        <img class="d-flex col-7 col-sm-4" src="{% static 'asso_tn/crowdfunding_2021/logo-transway-v2.png' %}" alt="Transway" />
+                    </div>
+                </div>
+            </section>
+        </div>
+        <aside id="cards_holder" class="d-flex flex-column col-12 col-sm-7 col-xl-3 mx-auto justify-content-center">
+            <div id="card_velorution_1" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-1.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 10€</h5>
@@ -112,9 +310,9 @@
                     <div class="spacer"></div>
                     <span class="bottom-button">{% fixed_amount_donation_button 10 "Je donne 10€ !" %}</span>
                 </div>
-	        </div>
+            </div>
 
-            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_2" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-2.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 20€</h5>
@@ -131,7 +329,7 @@
                 </div>
             </div>
 
-            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_1" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-3.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 50€</h5>
@@ -144,9 +342,9 @@
                     <div class="spacer"></div>
                     <span class="bottom-button">{% fixed_amount_donation_button 50 "Je donne 50€ !" %}</span>
                 </div>
-	        </div>
+            </div>
 
-            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_2" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-4.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 100€</h5>
@@ -163,7 +361,7 @@
                 </div>
             </div>
 
-            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_1" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-5.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 200€</h5>
@@ -175,9 +373,9 @@
                     <div class="spacer"></div>
                     <span class="bottom-button">{% fixed_amount_donation_button 200 "Je donne 200€ !" %}</span>
                 </div>
-	        </div>
+            </div>
 
-            <div id="card_velorution_2" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_2" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-6.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 500€</h5>
@@ -193,7 +391,7 @@
                 </div>
             </div>
 
-            <div id="card_velorution_1" class="card mb-4 velorution-cards" style="width: 24rem;">
+            <div id="card_velorution_1" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-7.jpg' %}" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title">À partir de 1000€</h5>
@@ -211,15 +409,8 @@
                     <div class="spacer"></div>
                     <span class="bottom-button">{% fixed_amount_donation_button 1000 "Je donne 1000€ !" %}</span>
                 </div>
-	        </div>
-        </div>
-
-        <p>Soutenu par</p>
-        <div id="partners_icons" class="container mb-5 mt-2 mx-0">
-            <div class="row">
-                <img class="d-flex col-7 col-sm-4" src="{% static 'asso_tn/crowdfunding_2021/logo-transway-v2.png' %}" alt="Transway" />
             </div>
-        </div>
+        </aside>
 
     {% endblock app_content %}
 </div>

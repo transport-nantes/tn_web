@@ -468,3 +468,30 @@ span.centered {
     background:var(--mobilitains-bleu-fonce);
     cursor:auto;
 }
+.iframe_container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+}
+.iframe_container .youtube-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;   
+}
+.cf_collapse {
+	padding: .75rem 1.25rem;
+	margin-bottom: 0;
+	background-color: var(--mobilitains-bleu-marine);
+	border-bottom: 1px solid rgba(0,0,0,.125);
+    border: 1px solid var(--mobilitains-bleu-marine);
+    color: white;
+    font-weight: 600;
+}
+.no-border {
+    border: none;
+}
