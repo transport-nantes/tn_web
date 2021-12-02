@@ -95,7 +95,18 @@
 			<meta property="og:type" content="website" />
 			<meta property="og:url" content="{{ request.build_absolute_uri }}" />
 			<meta property="og:description" content="{{ social.twitter_description }}" />
-			<meta property="og:image" content="{{ social.og_image.url }}" />
+			{% comment "About is_static" %}
+			On views that use static images and not ImageFields, the .url property doesn't
+			exist (e.g. AssoView uses a string to designate the image to use).
+			Trying to use the .url would lead to the image not being displayed at all.
+			Passing is_static=True to the template tag allows us to display the images
+			if they are designated with a string.
+			{% endcomment %}
+			{% if is_static %}
+				<meta name="og:image" content="{% static social.og_image %}" />
+			{% else %}
+				<meta property="og:image" content="{{ social.og_image.url }}" />
+			{% endif %}
 			<meta property="og:image:alt" content="{{ social.og_image_alt }}" />
 			{% if social.og_image_type %}
 				<meta property="og:image:type" content="{{ social.og_image_type }}" />
@@ -108,7 +119,12 @@
 			<meta name="twitter:card" content="{{ social.twitter_card }}" />
 			<meta name="twitter:site" content="{{ social.twitter_site }}" />
 			<meta name="twitter:creator" content="{{ social.twitter_creator }}" />
-			<meta name="twitter:image" content="{{ social.twitter_image.url }}" />
+			{% if is_static %}
+				<meta name="twitter:image" content="{% static social.twitter_image %}" />
+			{% else %}
+				<meta name="twitter:image" content="{{ social.twitter_image.url }}" />
+			{% endif %}
+
 			<meta name="twitter:title" content="{{ social.twitter_title }}" />
 			<meta name="twitter:description" content="{{ social.twitter_description }}" />
 			{% comment %}
