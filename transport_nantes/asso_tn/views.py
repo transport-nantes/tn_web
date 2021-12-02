@@ -26,15 +26,20 @@ class AssoView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(context['view'].request.GET.get('dog'))
-        print(context['view'].request.GET.keys())
+        social = {}
+        social["twitter_title"] = self.twitter_title
+        social["twitter_description"] = self.twitter_descr
+        social["twitter_image"] = self.hero_image
+        social["og_image"] = self.hero_image
+        page = {}
+        page["meta_descr"] = self.meta_descr
         context['title'] = self.title
-        context['meta_descr'] = self.meta_descr
-        context['twitter_title'] = self.twitter_title
-        context['twitter_description'] = self.twitter_descr
+        context["page"] = page
+        context["social"] = social
         if self.hero_image is not None:
             context['hero'] = True
             context['hero_image'] = self.hero_image
             context['hero_title'] = self.hero_title or ""
             context['hero_description'] = self.hero_description or ""
+            context["is_static"] = True
         return context
