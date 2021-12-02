@@ -5,6 +5,10 @@
 {% load markdown %}
 {% load don %}
 
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'asso_tn/crowdfunding_2021/js/mobile-menu.js' %}" defer></script>
+{% endblock scripts %}
 
 {% block styles %}
 
@@ -44,6 +48,11 @@
 
 <div class="container-fluid py-5 px-0 col-12 col-md-10 d-flex flex-wrap">
     {% block app_content %}
+
+        <ul id="mobile-nav" class="cf-panels d-flex col-12">
+            <li class="cf-panel-item d-flex flex-grow-1"><a id="Projet" class="d-flex w-100 justify-content-center bot-border" href="#">Projet</a></li>
+            <li class="cf-panel-item d-flex flex-grow-1 "><a id="Contreparties" class="d-flex w-100 justify-content-center" href="#">Contreparties</a></li>
+        </ul>
 
         <div id="main_body_cf" class="d-flex flex-column col-12 col-xl-8 ">
             <section id="introduction_cf">
@@ -210,9 +219,9 @@
                             </div>
 
                             <p class="mt-3">L’équipe :</p>
-                            <img src="{% static 'asso_tn/crowdfunding_2021/00-IMG-crowdfunding-mobilitains.png' %}"
-                            class="d-flex mx-auto">
-
+                            <div class="d-flex col-10 mx-auto">
+                                <img src="{% static 'asso_tn/crowdfunding_2021/00-IMG-crowdfunding-mobilitains.png' %}">
+                            </div>
 
                         </div>
                         </div>
@@ -294,7 +303,7 @@
                 </div>
             </section>
         </div>
-        <aside id="cards_holder" class="d-flex flex-column col-12 col-sm-7 col-xl-3 mx-auto justify-content-center">
+        <aside id="cards_holder_cf" class="d-flex flex-column col-12 col-sm-7 col-xl-3 mx-auto justify-content-center">
             <div id="card_velorution_1" class="card mb-4 velorution-cards mx-auto" >
                 <img class="card-img-top" src="{% static 'asso_tn/crowdfunding_2021/contrepartie-crowdfunding_Contrepartie-1.jpg' %}" alt="Card image cap">
                 <div class="card-body">
