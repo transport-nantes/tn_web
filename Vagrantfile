@@ -85,6 +85,9 @@ Vagrant.configure("2") do |config|
     virtualenv --python=python3 venv.vagrant
     . venv.vagrant/bin/activate
     pip install -r requirements.txt
+    sudo mkdir /tmp/django-tn-log/
+    sudo touch /tmp/django-tn-log/tn_web.log
+    sudo chmod 777 /tmp/django-tn-log/tn_web.log
 SETUP
   # To run in vagrant:
   #  ROOT_URLCONF=transport_nantes.urls_m DEFAULT_SITE_ID=1 \

@@ -6,7 +6,7 @@
 import os
 from pathlib import Path
 
-SECRET_KEY = your-secret-here
+SECRET_KEY = "your-secret-here"
 DEBUG = True
 ROLE = 'dev'
 
@@ -41,5 +41,9 @@ STRIPE_ENDPOINT_SECRET = 'whsec_...'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# LOCAL AND BETA SETTINGS, SAFE TO PUBLISH
+STRIPE_PUBLISHABLE_KEY = "pk_test_gVh6nSOJh19KHLsPepK35JzE00CkdNB1nR"
+STRIPE_SECRET_KEY = "sk_test_JA5eW82rv6lp61vNAwRUFIrr00rhzXUsLW"
 
 TOPIC_BLOG_EDIT_WINDOW_SECONDS = 12 * 3600
