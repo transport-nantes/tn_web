@@ -217,17 +217,9 @@ class TopicBlogItemView(TemplateView):
         tb_item: TopicBlogItem  # Type hint for linter
         context = tb_item.set_context(context)
         context["banner_is_present"] = True
-        context["banner_title"] = "SOUTENEZ NOUS"
-        context["banner_subtext"] = \
-            """
-            ⏰ C’est l’heure … nous lançons notre collecte de fonds d’hiver pour
-            une meilleure mobilité ! Investir dans cette campagne, c’est œuvrer
-            collectivement pour améliorer nos conditions de déplacements tout
-            en réduisant ses impôts ! <br/> C'est grâce à vous que nous pouvons
-            continuer à militer en toute indépendance !
-            """
+        context["banner_text"] = "C’est grâce à votre soutien que nous pouvons agir en toute indépendance."
         context["banner_button_text"] = "Je participe"
-        context["banner_button_link"] = reverse('asso_m:crowdfunding-2021')
+        context["banner_button_link"] = reverse('stripe_app:stripe')
 
         return context
 

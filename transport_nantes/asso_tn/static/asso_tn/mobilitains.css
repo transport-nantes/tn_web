@@ -443,7 +443,6 @@ span.centered {
     margin-bottom: 2rem;
 }
 .page-holder {
-    min-height: 33vh;
     color: white;
     background-color: #DBE3EB;
     box-shadow: 1px 0px 64px -17px rgba(0,0,0,0.51) inset;
