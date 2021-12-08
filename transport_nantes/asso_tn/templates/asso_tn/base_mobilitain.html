@@ -186,11 +186,12 @@
 				</div>
 				{% if banner_is_present %}
 				<div class="page-holder bg-cover">
-					<div class="container py-5 mt-n5">
-						<p class="cf_text">{{ banner_text }}
-						    <a href="{{banner_button_link}}"
-						       class="btn donation-button mx-auto">
-							<span class="d-flex m-auto">{{banner_button_text}}</span></a></p>
+					<div class="container pt-5 pb-4 px-5 mt-n5 d-flex flex-column">
+						<p class="cf_text">{{ banner_text }}</p>
+						<a href="{{banner_button_link}}"
+							class="d-flex btn donation-button mx-auto">
+							<span class="d-flex m-auto">{{banner_button_text}}</span>
+						</a>
 					</div>
 				</div>
 				{% endif %}
