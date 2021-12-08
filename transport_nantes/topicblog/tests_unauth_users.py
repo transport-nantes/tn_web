@@ -12,7 +12,9 @@ class SimpleTest(TestCase):
 
     def test_main_page_status_code(self):
         response = self.client.get("/")
-        self.assertEqual(response.status_code, 404)
+        # By default, landing page is loaded with LandingView
+        # It doesn't require a TBItem.
+        self.assertEqual(response.status_code, 200)
 
         self.user = User.objects.create_user(username='test-user',
                                              password='test-pass')
