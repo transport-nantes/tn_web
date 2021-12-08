@@ -8,8 +8,8 @@ urlpatterns = [
     path('nous-contacter', AssoView.as_view(
         title="Nous contacter",
         meta_descr="""<meta name="description" content="Les Mobilitains oeuvrent pour une mobilité plus sécurisée, plus fluide et plus vertueuse."/>""",
-        twitter_title = "Qui sommes-nous ? | Mobilitains",
-        twitter_descr = "Les Mobilitains oeuvrent pour une mobilité plus sécurisée, plus fluide et plus vertueuse.",
+        twitter_title="Qui sommes-nous ? | Mobilitains",
+        twitter_descr="Les Mobilitains oeuvrent pour une mobilité plus sécurisée, plus fluide et plus vertueuse.",
         template_name='asso_tn/contact.html',
         hero_image="asso_tn/happy-folks-1000.jpg"),
          name='contact'),
@@ -39,5 +39,10 @@ urlpatterns = [
             # hero_description="tout le monde est avec !",
         ),
         name='crowdfunding-2021',
-        )
+        ),
+
+    path('agir', AssoView.as_view(title="Agir",
+                                  template_name='asso_tn/agir.html'),
+         name='agir'
+         ),
 ]
