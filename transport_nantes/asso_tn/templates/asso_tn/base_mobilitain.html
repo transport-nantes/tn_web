@@ -159,7 +159,10 @@
 								<a class="nav-link pr-4" href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}">La Grande Mobilité</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link pr-5" href="{% url 'topic_blog:view_item_by_slug' 'qui-sommes-nous' %}">Qui sommes-nous ?</a>
+								<a class="nav-link pr-5" href="{% url 'topic_blog:view_item_by_slug' 'la-petite-mobilite' %}">La Petite Mobilité</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link pr-5" href="{% url 'topic_blog:view_item_by_slug' 'agir' %}">Agir</a>
 							</li>
 
 							<li class="nav-item">{% bouton_don "CONTRIBUER AU PROJET" %}</li>
@@ -241,10 +244,14 @@
 									maintenant et faites avancer la mobilité.</p>
 
 
-
-								<span class="center py-3">{% bouton_don "J'adhère" %}</span>
-								<p class="small center pt-1"><i>Votre adhésion ou don donne droit
-									à une réduction d'impôt de 66 % selon votre situation fiscale.</i></p>
+								<p class="small pt-1">
+									<i><b><u>
+									Votre adhésion ou don donne droit
+									à une réduction d'impôt de 66 % selon votre situation fiscale.
+									</u></b></i>
+								</p>
+								<span class="center py-3">{% bouton_don "Faire un don" %}</span>
+								
 
 							</div>
 						</div>

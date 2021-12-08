@@ -15,14 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from topicblog.views import TopicBlogItemView
+from topicblog.views import LandingView
 from django.conf import settings
 from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
 
 urlpatterns = [
-    path('', TopicBlogItemView.as_view(), {'item_slug': 'index'},
-         name='index'),
+    path('', LandingView.as_view(), name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),

@@ -1,0 +1,41 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+
+{% block content %}
+
+{% block appcontent %}
+
+    <div id="landing-main-banner">
+            <img id="landing-article-image"
+            src="{% static "topicblog/banner_image.jpg" %}">
+            <div id="landing-banner-content"
+            class="d-flex flex-column">
+                <span id="landing-title">{{ landing_title }}</span>
+                <span id="landing-subtitle">{{ landing_subtitle }}</span>
+                <div id="landing-button">
+                    <a href="{{ landing_button_link }}">
+                        {{ landing_button_text }}
+                    </a>
+                </div>
+            </div>
+    </div>
+
+{% endblock appcontent %}
+
+<div class="background-ad-hoc-blue">
+    <div class="d-flex flex-column p-4 p-xl-5">
+         {% show_projects %}
+         {% show_mailing_list %}
+         {% show_qui_sommes_nous %}
+    </div>
+</div>
+
+{% show_donate %}
+<div id="volunteer">
+    {% show_volunteer %}
+</div>
+{% endblock content %}

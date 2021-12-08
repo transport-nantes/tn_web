@@ -344,3 +344,24 @@ class TopicBlogItemPublishView(SuperUserRequiredMixin, TemplateView):
             return HttpResponseServerError("Failed to publish item")
 
         return render(request, 'topicblog/tb_item_publish.html', context)
+
+
+class LandingView(TemplateView):
+    """
+    Renders the landing page.
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.template_name = 'topicblog/landing.html'
+        context['banner_is_present'] = True
+        context['banner_text'] = "C’est grâce à votre soutien que nous pouvons agir en toute indépendance."
+        context['banner_button_text'] = "Je participe"
+        context['banner_button_link'] = reverse('stripe_app:stripe')
+
+        context['landing_title'] = "#STOPBOUCHONS"
+        context["landing_subtitle"] = "Arrêtons de perdre du temps"
+        context["landing_button_text"] = "Je soutiens"
+        context["landing_button_link"] = reverse('stripe_app:stripe')
+
+        return context
