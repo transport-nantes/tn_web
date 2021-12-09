@@ -134,16 +134,23 @@
     	{% endblock head %}
   	</head>
   	<body{% block body_attribs %}{% endblock body_attribs %}>
+	    {% comment %}
+	    ***************************************************
+	    **  DO NOT DISABLE THE NON-PROD WARNING BANNER.  **
+	    **                                               **
+	    **  These banners are present as a safety        **
+	    **  mechanism.  Do not disable them.             **
+	    ***************************************************
+	    {% endcomment %}
+	    {% if role == 'dev' %} <span style="background-color: #880000;">&nbsp; DEV - DEV - DEV - DEV &nbsp; &nbsp; DEV - DEV - DEV - DEV &nbsp; </span>
+	    {% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
+	    {% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
+	    {% endif %}
 		{% block body %}
 			{% block navbar %}
 				<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 					<!-- Brand -->
 					<a class="navbar-brand navbar-logo" href="{% url 'index' %}"><img class="navbar-logo-image" src="{% static 'asso_tn/M-logo_white-32.png' %}" alt="Mobilitains logo"></a>
-					{% if role == 'dev' %} {% comment %} <span style="background-color: #880000">&nbsp; DEV - DEV - DEV - DEV &nbsp; </span> {% endcomment %}
-					{% elif role == 'beta' %}<span style="background-color: #FF0000">&nbsp; TEST - BETA - TEST - BETA &nbsp;</span>
-					{% elif not is_production %}<span style="background-color: #FF0000">&nbsp; ce site n'est pas le vrai &nbsp; </span>
-					{% endif %}
-
 					<!-- Toggler/collapsibe Button -->
 					<button class="navbar-toggler" data-toggle="collapse" data-target=".navbars">
 						<span class="navbar-toggler-icon"></span>
@@ -278,9 +285,6 @@
 								</li>
 								<li>
 									<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
-								</li>
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'agir-avec-les-entreprises' %}">Entreprises</a>
 								</li>
 							</ul>
 						</div>
