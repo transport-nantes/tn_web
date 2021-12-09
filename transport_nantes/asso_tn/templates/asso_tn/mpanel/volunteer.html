@@ -1,27 +1,28 @@
 {% load static %}
 
-<div class="container pt-5">
-    <div class="row">
-	<div class="col-md-6 mb-3">
-	    <img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
-		 alt="un benevole Mobilitain" style="width:100%;">
-	</div>
-	<div class="col-md-6">
-	    <h3>Devenir bénévole</h3>
+<div class="row">
+    <div class="col-md-12">
+        <img src="{% static 'asso_tn/images-libres/bénévole2.jpg' %}"
+	 class="img-fluid"
+         alt="un benevole Mobilitain">
+    </div>
+</div>
+<div class="row mb-5">
+    <div class="col-md-12">
+        <h2 class="mt-3">Devenir bénévole</h2>
 
-	    <h4>Envie d'agir avec nous&nbsp;?</h4>
+	<p><strong>Envie d'agir avec nous&nbsp;?</strong></p>
 
-	    <p>Devenez Mobilitain et agissez concrètement pour la
+	<p>Devenez Mobilitain et agissez concrètement pour la
 	    mobilité multimodale&nbsp;!</p>
 
-	    <p>Pas besoin d’être un pro de la mobilité pour passer à
+	<p>Pas besoin d’être un pro de la mobilité pour passer à
 	    l’action, toutes les bonnes volontés sont bienvenues.</p>
 
-	    <p>
-		<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-benevole' %}"
-		   class="btn 
-			  donation-button btn-lg">J'agis <i class="fa fa-arrow-right" area-hidden="true"></i></a>
-	    </p>
-	</div>
+	<p>
+            <a href="{% url 'topic_blog:view_item_by_slug' 'devenir-benevole' %}"
+               class="btn navigation-button btn-lg mt-3">J'agis
+		<i class="fa fa-arrow-right" area-hidden="true"></i></a>
+        </p>
     </div>
 </div>
