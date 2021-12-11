@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from django.test import TestCase
-from .models import (TopicBlogPage, TopicBlogItem, TopicBlogTemplate,
+from .models import (TopicBlogItem, TopicBlogTemplate,
                      TopicBlogContentType)
 from django.contrib.auth.models import User
 from django.urls import reverse
