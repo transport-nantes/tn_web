@@ -267,6 +267,20 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
     model = TopicBlogItem
     login_url = reverse_lazy("authentication:login")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'item_slug' in self.kwargs:
+            context['slug'] = self.kwargs['item_slug']
+        return context
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        if 'item_slug' in self.kwargs:
+            return ['topicblog/topicblogitem_list_one.html'] + names
+        else:
+            return names
+
+
     def get_queryset(self, *args, **kwargs):
         """Return a queryset of matches for a given item_slug.
         """

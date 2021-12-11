@@ -5,7 +5,8 @@
     {% for object in object_list %}
     <p>
 	<strong>
-	    <a href="#">{{ object.slug }}</a>
+	    <a href="{% url 'topic_blog:list_items_by_slug' object.slug|default:'--sans-slug--' %}">
+		{{ object.slug }}</a>
 	</strong>
 	{{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
 	<br>
@@ -20,9 +21,9 @@
 	{% endif %}
 	<br>
 	<a type="button" class="btn btn-outline-info btn-sm"
-	   href="{{object.get_edit_url}}">Modifier</a>
+	   href="{{ object.get_edit_url }}">Modifier</a>
 	<a type="button" class="btn btn-outline-info btn-sm"
-	   href="{{object.get_absolute_url}}">Visualiser</a>
+	   href="{{ object.get_absolute_url }}">Visualiser</a>
 	{% if object.publication_date %}
 	<a type="button" class="btn btn-outline-info btn-sm"
 	   href="{% url 'topic_blog:view_item_by_slug' object.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
