@@ -32,14 +32,6 @@ It is retrieved inside clean_slug_field.js
 {% endcomment %}
 {{slug_fields|json_script:"slug_fields"}}
 
-{% if success %}
-<div class="alert alert-success center flex-column">
-	<strong>Enregistré !</strong>
-	<span><a href="{{ created_item_edit_URL }}">Editer l'enregistrement</a></span>
-	<span><a href="{{ created_item_view_URL }}">Consulter</a></span>
-</div>
-{% endif %}
-
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
     <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" data-template-update-url="{% url 'topicblog:update_template_list' %}" enctype="multipart/form-data">
         {% csrf_token %}

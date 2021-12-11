@@ -2,6 +2,7 @@ from collections import Counter
 import logging
 
 from django.http import Http404, HttpResponseServerError
+from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
@@ -32,7 +33,6 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     """
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
-    success_url = '#'
     login_url = reverse_lazy("authentication:login")
 
     # This should (eventually) present a page with four sections:
@@ -53,10 +53,9 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
                 kwargs["form"] = TopicBlogItemForm(instance=tb_item)
                 context = super().get_context_data(**kwargs)
             except ObjectDoesNotExist:
-                raise Http404("Page non trouvée")
+                raise Http404
         else:
             tb_item = TopicBlogItem()
-            # context["form"] is set by the FormView
             context = super().get_context_data(**kwargs)
 
         # Sets if the "Créer un variant" button should be displayed.
@@ -114,37 +113,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
             tb_item.publication_date = None
 
         tb_item.save()
-        return tb_item
-
-    def post(self, request, *args, **kwargs):
-        try:
-            instance = TopicBlogItem.objects.get(id=self.kwargs['pkid'])
-            form = TopicBlogItemForm(request.POST, request.FILES,
-                                     instance=instance)
-        except (ObjectDoesNotExist, KeyError):
-            form = TopicBlogItemForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            # Create a new TBItem and save it.
-            # The form_valid function overwrites the FormView one.
-            tb_item = self.form_valid(form)
-            # Type hint
-            tb_item: TopicBlogItem
-            context = self.get_context_data()
-            context['success'] = True
-            context['created_item_view_URL'] = tb_item.get_absolute_url()
-            context['created_item_edit_URL'] = tb_item.get_edit_url()
-
-            return render(request, 'topicblog/tb_item_edit.html', context)
-
-        else:
-            # The form is invalid.  Re-render the form with error
-            # messages.
-            context = self.get_context_data()
-            context['success'] = False
-            context['form'] = form
-
-            return render(request, 'topicblog/tb_item_edit.html', context)
+        return HttpResponseRedirect(tb_item.get_absolute_url())
 
 
 @StaffRequired
@@ -213,9 +182,8 @@ class TopicBlogItemView(TemplateView):
         # existing template in the app.
         self.template_name = tb_item.template.template_name
         context['page'] = tb_item
-        # set_context adds the socials into the context
         tb_item: TopicBlogItem  # Type hint for linter
-        context = tb_item.set_context(context)
+        context = tb_item.set_social_context(context)
         context["banner_is_present"] = True
         context["banner_text"] = "C’est grâce à votre soutien que nous pouvons agir en toute indépendance."
         context["banner_button_text"] = "Je participe"
@@ -246,15 +214,15 @@ class TopicBlogItemViewOne(StaffRequiredMixin, TemplateView):
         try:
             tb_item = TopicBlogItem.objects.get(id=pk_id, slug=slug)
         except ObjectDoesNotExist:
-            raise Http404("Page non trouvée")
+            raise Http404
 
         # The template is set in the model, it's a str referring to an
         # existing template in the app.
         self.template_name = tb_item.template.template_name
         context['page'] = tb_item
-        # set_context adds the socials into the context
         tb_item: TopicBlogItem  # Type hint for linter
-        context = tb_item.set_context(context)
+        context = tb_item.set_social_context(context)
+        context['topicblog_admin'] = True
         return context
 
 

@@ -296,7 +296,7 @@ class TopicBlogItem(models.Model):
     # Cf. https://developers.facebook.com/docs/sharing/best-practices/
     # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064 # noqa
 
-    def set_context(self, context):
+    def set_social_context(self, context):
         """
         inherited from original TB, it adds socials related
         fields to the context["social"] entry of the context dict.
@@ -328,7 +328,8 @@ class TopicBlogItem(models.Model):
                            kwargs={"pkid": self.pk,
                                    "item_slug": self.slug})
         else:
-            return self.get_edit_url()
+            return reverse("topicblog:view_item_by_pkid_only",
+                           kwargs={"pkid": self.pk})
 
     def get_edit_url(self):
         """This function returns a link leading to
