@@ -276,18 +276,28 @@ class TopicBlogItem(models.Model):
     # I think I saw problems with unicode URLs, though.
     slug = models.SlugField(allow_unicode=True, blank=True)
     item_sort_key = models.IntegerField()
-    # Servable items are those who are published and still reachable.
-    # An item starts as unservable, and becomes servable when it is
-    # published. If servable, it will be able to be reached from
-    # the public.
-    # If a published item is set to unservable, trying to access it
-    # will result in a 404 .
+    # We control TBItem access via the fields servable and
+    # publication_date.  A TBItem may be served to non-privileged
+    # users if it has a non-empty publication_date and servable is
+    # True.  Privileged users may see unpublished pages as well.
+    #
+    # TBItems begin life with publication_date unset (set to None) and
+    # servable False.  On first publication, servable is set to True
+    # and publication_date is set to the current time and must never
+    # be changed after.
+    #
+    # Servable may be toggled if necessary to control visibility.
+    #
+    # We call an unpublished page a draft (brouillon).
+    # We call a published and servable page published (publiée).
+    # We call a published and unservable page retired (retirée).
+    #
+    # One should assume that drafts and retired pages may be deleted
+    # in some asyncrhonous manner by a cleanup process running outside
+    # of django itself.
     servable = models.BooleanField(default=False)
-    # An item isn't considered published until it has a publication
-    # date. Once published, it can't be unpublished.
-    # An item to be both published and servable to be accessible to
-    # the public.
     publication_date = models.DateTimeField(blank=True, null=True)
+    date_modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     # Content Type ##################################################

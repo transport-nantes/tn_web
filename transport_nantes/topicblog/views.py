@@ -275,7 +275,12 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             # If item_slug exists, we use it to filter the view.
             item_slug = self.kwargs['item_slug']
             qs = qs.filter(slug=item_slug)
-        return qs
+        # Should sort by date_modified, but that will be ugly until
+        # it's been in production for a bit.  So just leave it here
+        # that we should drop the sort on publication_date and only
+        # use date_modified after a bit.  Jeff, 11 Dec 2021.
+        return qs.order_by('-publication_date')
+        # return qs.order_by('-date_modified')
 
 
 @StaffRequired
