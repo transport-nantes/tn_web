@@ -9,7 +9,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequiredMixin, StaffRequired
 from asso_tn.utils import SuperUserRequiredMixin
@@ -33,7 +33,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
     success_url = '#'
-    login_url = "/admin/login/"
+    login_url = reverse_lazy("authentication:login")
 
     # This should (eventually) present a page with four sections:
     # slug, social, presentation, content_type, and content.  For now,
@@ -265,7 +265,7 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
 
     """
     model = TopicBlogItem
-    login_url = "/admin/login/"
+    login_url = reverse_lazy("authentication:login")
 
     def get_queryset(self, *args, **kwargs):
         """Return a queryset of matches for a given item_slug.
