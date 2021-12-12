@@ -3,33 +3,23 @@
 {% block content %}
 
 <div class="container">
+
     <div class="row pb-3">
-       <nav class="navbar navbar-expand-sm bg-light navbar-light">
-	<!-- Toggler/collapsibe Button -->
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar2">
-	  <span class="navbar-toggler-icon"></span>
-	</button>
-
-	<!-- Navbar links -->
-	<div class="collapse navbar-collapse" id="collapsibleNavbar2">
-	    <ul class="navbar-nav">
-	      <li class="nav-item">
-		<a class="nav-link" href="{% url 'mailing_list:dashboard' %}">Listes</a>
-	    </li>
-
-	  </ul>
+	<div class="col-sm-6">
+	    <h3>Contact</h3>
+	    <p>Newsletter, mailing list, et pétition sont pour
+		l'instant à peu près la même chose pour nous.
+	    </p>
+	    <p><a class="nav-link" href="{% url 'mailing_list:dashboard' %}">Listes</a></p>
 	</div>
-      </nav> 
-
-    </div>
-
-    {% block this_dashboard %}
-    <div class="row">
-	<div class="col-lg-12">
-	    <p>Hello.</p>
+	<div class="col-sm-6">
+	    <h3>TBv2</h3>
+	    <p>
+		<a class="nav-link" href="{% url 'topic_blog:new_item' %}">Créer un nouveu</a>
+		<a class="nav-link" href="{% url 'topic_blog:list_items' %}">Voir la liste</a>
+	    </p>
 	</div>
     </div>
-    {% endblock %}
 </div>
 
 {% block bottom_appeal %}{% endblock bottom_appeal %}
