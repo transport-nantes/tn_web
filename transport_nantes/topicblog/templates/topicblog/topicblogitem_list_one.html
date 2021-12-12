@@ -9,6 +9,12 @@
 	    {{ slug }}
 	</a>
     </strong>
+    {% if is_servable %}
+      {% with object_list|first as object %}
+    <a type="button" class="btn btn-outline-info btn-sm"
+       href="{% url 'topic_blog:view_item_by_slug' object.slug %}">Visualiser (usager)</a>
+      {% endwith %}
+    {% endif %}
     {% for object in object_list %}
     <p>
         {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
@@ -28,8 +34,6 @@
         <a type="button" class="btn btn-outline-info btn-sm"
            href="{{object.get_absolute_url}}">Visualiser</a>
         {% if object.publication_date %}
-        <a type="button" class="btn btn-outline-info btn-sm"
-           href="{% url 'topic_blog:view_item_by_slug' object.slug %}">Visualiser (usager)</a>
         {% if object.servable %}
         <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
            href="">Retirer</a>

@@ -259,7 +259,13 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if 'item_slug' in self.kwargs:
-            context['slug'] = self.kwargs['item_slug']
+            item_slug = self.kwargs['item_slug']
+            context['slug'] = item_slug
+            context['is_servable'] = TopicBlogItem.objects.filter(
+                slug=item_slug,
+                publication_date__isnull=False,
+                servable=True
+                ).exists()
         return context
 
     def get_template_names(self):
