@@ -191,6 +191,28 @@ class TopicBlogItem(models.Model):
     entry.
 
     """
+    class Meta:
+        permissions = (
+            # The simpleset permission allows a user to view TBItems
+            # that are draft or retired.
+            ("tbi.may_view", "May view unpublished TopicBlogItems"),
+
+            # Granting edit permission to users does not in itself
+            # permit them to publish or retire, so it is reasonably
+            # safe.
+            ("tbi.may_edit", "May create and modify TopicBlogItems"),
+
+            # Finally, we can grant users permission to publish, to
+            # self-publish (implies tbi_may_publish), to self-retire,
+            # and to retire (implies self-retire).  Permission to
+            # retire implies permission to re-publish.
+            ("tbi.may_publish", "May publish TopicBlogItems"),
+            ("tbi.may_publish_self", "May publish own TopicBlogItems"),
+            ("tbi.may_retire_self", "May retire own TopicBlogItems"),
+            ("tbi.may_retire", "May retire TopicBlogItems"),
+        )
+
+
     # I think I saw problems with unicode URLs, though.
     slug = models.SlugField(allow_unicode=True, blank=True)
     item_sort_key = models.IntegerField()
