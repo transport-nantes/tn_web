@@ -1,8 +1,20 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+
+{% comment %}
+Note that we need the slug|default:'--sans-slug--' goofiness because
+the template render will try to generate URLs even in the cases where we
+deactivate the button, and will fail to find a path mapping when the slug
+is empty.  Django sees an empty string and trims it when looking for patterns.
+
+Maybe there's a better way, I just haven't found it yet.
+{% endcomment %}
+
 {% block body %}{% if user.is_staff and topicblog_admin  %}
 <div class="container-fluid pl-5 py-3">
     <div class="row">
 	<p>
+	    <a type="button" class="btn btn-outline-info btn-sm"
+	       href="{% url 'topic_blog:list_items_by_slug' page.slug|default:'--sans-slug--' %}">Liste</a>
 	    {% if page.publication_date %}
 	    publiée {{ page.publication_date|date:"l d-m-Y" }} par {{ user.email }}
 	    {% if not page.servable %}(retirée){% endif %}
