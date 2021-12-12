@@ -1,7 +1,7 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import (TopicBlogItemEdit, TopicBlogItemView, TopicBlogItemViewOne,
-                    TopicBlogItemList, TopicBlogItemPublishView)
+                    TopicBlogItemList)
 from .views import (update_template_list, get_slug_dict, get_url_list,
                     get_slug_suggestions)
 # from transport_nantes.settings import ROLE
@@ -31,10 +31,6 @@ urlpatterns = [
          name='list_items'),
     path('admin/list/<slug:item_slug>/', TopicBlogItemList.as_view(),
          name='list_items_by_slug'),
-
-    path('admin/publish/<int:pkid>/<slug:item_slug>/',
-         TopicBlogItemPublishView.as_view(),
-         name="publish_item"),
 
     path('ajax/update-template-list/', update_template_list,
          name="update_template_list"),

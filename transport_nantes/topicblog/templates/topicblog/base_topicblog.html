@@ -20,9 +20,12 @@ Maybe there's a better way, I just haven't found it yet.
 	    {% if not page.servable %}(retirée){% endif %}
 	    {% else %}(brouillon)
 	      {% if page.is_publishable %}
-	      {# Would be far better to put a form here, but have to handle CSRF etc. #}
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{% url 'topic_blog:publish_item' page.id page.slug|default:'--sans-slug--' %}">Publier...</a>
+	      <form
+               action="{% url 'topicblog:view_item_by_pkid' pkid page.slug|default:'--sans-slug--' %}"
+	       method="POST">
+	     {% csrf_token %}
+	     <input type="submit" class="btn btn-outline-info btn-sm" value="Publier">
+             </form>
 	      {% endif %}
 	    {% endif %}
 

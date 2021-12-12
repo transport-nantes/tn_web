@@ -216,14 +216,35 @@ class TopicBlogItemViewOne(StaffRequiredMixin, TemplateView):
         except ObjectDoesNotExist:
             raise Http404
 
-        # The template is set in the model, it's a str referring to an
-        # existing template in the app.
+        # We set the template in the model.
         self.template_name = tb_item.template.template_name
         context['page'] = tb_item
         tb_item: TopicBlogItem  # Type hint for linter
         context = tb_item.set_social_context(context)
         context['topicblog_admin'] = True
         return context
+
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk_id = kwargs.get('pkid', -1)
+        item_slug = kwargs.get('item_slug', '')
+        tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=item_slug)
+
+        try:
+            tb_item: TopicBlogItem
+            if tb_item.publish():
+                tb_item.save()
+                return HttpResponseRedirect(tb_item.get_absolute_url())
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Failed to publish article {pk_id} with" +
+                         "slug \"{item_slug}\"")
+            return HttpResponseServerError("Failed to publish item")
+        # This shouldn't happen.  It's up to us to make sure we've
+        # vetted that the user is authorised to publish and that the
+        # necessary fields are completed before enabling the publish
+        # button.  Therefore, a 500 is appropriate here.
+        return HttpResponseServerError()
 
 
 class TopicBlogItemList(StaffRequiredMixin, ListView):
@@ -281,53 +302,3 @@ def get_url_list(request):
     slug = request.GET.get('slug')
     url = reverse("topicblog:list_items_by_slug", args=[slug])
     return JsonResponse({'url': url})
-
-
-class TopicBlogItemPublishView(SuperUserRequiredMixin, TemplateView):
-    """
-    Renders an item and list missing information if any to
-    make an item publishable.
-
-    Examples :
-    - A missing slug would prevent publication.
-    - A missing title would prevent publication.
-    - Missing socials informations would prevent publication.
-    """
-
-    template_name = 'topicblog/tb_item_publish.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        tb_item = get_object_or_404(TopicBlogItem,
-                                    id=kwargs['pkid'],
-                                    slug=kwargs['item_slug'])
-
-        tb_item: TopicBlogItem
-        context["missing_fields"] = \
-            tb_item.get_missing_publication_field_names()
-
-        context['tb_item'] = tb_item
-        return context
-
-    def post(self, request, *args, **kwargs):
-        """
-        Publishes the given item.
-        """
-        context = super().get_context_data(**kwargs)
-        pk_id = kwargs.get('pkid', -1)
-        item_slug = kwargs.get('item_slug', '')
-        tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=item_slug)
-
-        try:
-            tb_item: TopicBlogItem
-            if tb_item.publish():
-                tb_item.save()
-                context["publication_succeeded"] = True
-        except Exception as e:
-            logger.error(e)
-            logger.error(f"Failed to publish article {pk_id} with" +
-                         "slug \"{item_slug}\"")
-            return HttpResponseServerError("Failed to publish item")
-
-        return render(request, 'topicblog/tb_item_publish.html', context)
