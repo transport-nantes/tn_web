@@ -1,8 +1,10 @@
 from django.views.generic.base import TemplateView
+from asso_tn.utils import StaffRequiredMixin
+from django.urls import reverse_lazy
 
 # Create your views here.
 
-class DashboardIndex(TemplateView):
+class DashboardIndex(StaffRequiredMixin, TemplateView):
     """Present dashboard index.
 
     I haven't finished designing this, so it's anybody's guess what I
@@ -11,12 +13,9 @@ class DashboardIndex(TemplateView):
 
     """
     template_name = 'dashboard/index.html'
+    login_url = reverse_lazy("authentication:login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['hero'] = True
-        context['hero_image'] = 'asso_tn/images-libres/black-and-white-bridge-children-194009-1000.jpg'
-        context['hero_title'] = 'dashboard'
-        context['hero_description'] = '(machin)'
         return context
 
