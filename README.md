@@ -12,6 +12,12 @@ This program is distributed under the GNU GPL v3 licence.  See the file LICENCE 
   - [1.2 Setting the local environment](#setting-the-local-environment)
     - [1.2.1 Setting Django and Vagrant environment](#setting-django-and-vagrant-environment)
     - [1.2.2 Setting up a database](#setting-up-a-database)
+- [2. Contribution guidelines](#contribution-guidelines)
+  - [2.1 Style guide](#style-guide)
+    - [2.1.1 Code Style](#code-style)
+    - [2.1.2 Git Commit messages](#git-commit-messages)
+  - [2.2 I want to contribute](#i-want-to-contribute)
+  - [2.3 You have a question ?](#you-have-a-question)
 # How to install
 ## Requirements
 You will need the following softwares:
@@ -94,3 +100,35 @@ The landing page is an instance of an app named "topicblog", however because you
     - Save the form by hitting "Save" at the bottom right.
 
 Congratulations, you customized your first page on the website ! You can now see it at `http://localhost:8000/` or `0.0.0.0:8000/` ! 
+
+# Contribution Guidelines
+
+## Style Guide
+
+### Code Style
+
+Make sure your code is well formatted.
+This means : Complies to PEP8 (https://www.python.org/dev/peps/pep-0008/) and PEP257 (https://www.python.org/dev/peps/pep-0257/).
+You can use linters such as `flake8` and `pylint` to check your code.
+
+It must be written in English.
+
+### Git Commit messages
+
+* Your commits should be short and concise.
+* Use the present tense ("Add feature" not "Added feature")
+* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+* Reference issues and pull requests liberally after the first line
+
+
+## I want to contribute
+
+Thank you for your interest in contributing to this project.
+The simplest way for you to contribute is to fork the repository and start a pull request.
+
+If you want to report a bug, please open an issue on GitHub.
+
+## You have a question ?
+
+You can send your questions to [this address.](mailto:jevousaide@mobilitains.fr)
+
