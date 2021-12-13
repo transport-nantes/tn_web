@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'topicblog.apps.TopicBlogConfig',
     'dashboard.apps.DashboardConfig',
+    'utm.apps.UtmConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
     'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
+    'utm.middleware.utm.UtmMiddleware',
 ]
 
 ROOT_URLCONF = 'transport_nantes.urls'
