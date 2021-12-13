@@ -97,6 +97,23 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         tb_item.item_sort_key = 0
         tb_item.user = User.objects.get(username=self.request.user)
 
+        # If we are editing an existing item, the ImageField values
+        # won't be copied over -- they aren't included in the rendered
+        # form.  Checking the "clear" box in the form will still clear
+        # the image fields if needed.
+        #
+        # This is largely because we're using FormView instead of
+        # CreateView / UpdateView.
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            existing_item: TopicBlogItem
+            existing_item = TopicBlogItem.objects.get(id=pkid)
+            image_fields = existing_item.get_image_fields()
+            for field in image_fields:
+                if field in form.cleaned_data and \
+                        form.cleaned_data[field] is None:
+                    setattr(tb_item, field, getattr(existing_item, field))
+
         # We're in the time period bewteen publication and
         # expiry of editing possibilities
         if tb_item.publication_date and "sauvegarder" in self.request.POST:
