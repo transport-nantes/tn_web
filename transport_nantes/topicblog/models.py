@@ -528,6 +528,18 @@ class TopicBlogItem(models.Model):
 
         return slug_fields
 
+    def get_image_fields(self) -> list:
+        """
+        Return the names of fields that are Django ImageFields
+        """
+        all_fields = self._meta.get_fields()
+        image_fields = list()
+        for field in all_fields:
+            if isinstance(field, models.ImageField):
+                image_fields.append(field.name)
+
+        return image_fields
+
     def get_servable_status(self):
         """Return True if page is user visible, False otherwise."""
         if not self.servable:

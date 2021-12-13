@@ -97,6 +97,22 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         tb_item.item_sort_key = 0
         tb_item.user = User.objects.get(username=self.request.user)
 
+        # In the event we're editing an existing item, we need to
+        # get the images from the original item and copy them to the
+        # new item.  This is because the image fields are not
+        # copied by the form.
+        # Checking the "clear" box in the form will still clear the
+        # image fields if needed.
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            existing_item: TopicBlogItem
+            existing_item = TopicBlogItem.objects.get(id=pkid)
+            image_fields = existing_item.get_image_fields()
+            for field in image_fields:
+                if field in form.cleaned_data and \
+                        form.cleaned_data[field] is None:
+                    setattr(tb_item, field, getattr(existing_item, field))
+
         # We're in the time period bewteen publication and
         # expiry of editing possibilities
         if tb_item.publication_date and "sauvegarder" in self.request.POST:
