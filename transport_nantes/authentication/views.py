@@ -172,14 +172,10 @@ def activate(request, token, remember_me, base_template=None):
 
 class DeauthView(LogoutView):
     """Log out the user.
-
-    Renders the home page (but not by its view function, just via the
-    template, which is odd.  If the current page doesn't require
-    login, we should probably stay put, but that's neither important
-    now nor do I know how to do it.
-
+    Renders the home page
     """
-    template_name = "asso_tn/index.html"
+    next_page = "/"
+
 
 @login_required
 def profile(request):
