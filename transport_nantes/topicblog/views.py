@@ -1,6 +1,7 @@
 from collections import Counter
 import logging
 
+from django.db.models import Count, Max
 from django.http import Http404, HttpResponseServerError
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
@@ -302,11 +303,15 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             item_slug = self.kwargs['item_slug']
             qs = qs.filter(slug=item_slug).order_by(
                 '-date_modified','-publication_date')
+            return qs
         # Should sort by date_modified, but that will be ugly until
         # it's been in production for a bit.  So just leave it here
         # that we should drop the sort on publication_date and only
         # use date_modified after a bit.  Jeff, 11 Dec 2021.
-        return qs.order_by('-date_modified','-publication_date')
+        return qs.values('slug') \
+                 .annotate(count=Count('slug'),
+                           date_modified=Max('date_modified')) \
+                 .order_by('-date_modified')
 
 @StaffRequired
 def get_slug_dict(request):
