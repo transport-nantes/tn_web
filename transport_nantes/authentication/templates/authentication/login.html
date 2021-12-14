@@ -1,84 +1,99 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block app_content %}
-<div container>
+<div class="container">
     <div class="row">
 	<div class="col-lg-12">
-	    <h1>Connexion</h1>
+		<form method="post">
+			<ul class="nav nav-tabs mb-3" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" data-toggle="tab"
+					href="#email-and-captcha">Email et Captcha</a>
+				</li>
 
-	    <form method="post">
-		{% csrf_token %}
-		<p>
-		    {{ form.email.label }}<br>
-		    {{ form.email }}
-		    {% if form.email.help_text %}
-		    <small style="color: grey">{{ form.email.help_text }}</small>
-		    {% endif %}
-		</p>
-		{% for error in form.email.error_messages %}
-		<p style="color: red">{{ error }}</p>
-		{% endfor %}
-		<p>
-		    {{ form.captcha }}
-		    {% if form.captcha.help_text %}
-		    <small style="color: grey">{{ form.captcha.help_text }}</small>
-		    {% endif %}
-		</p>
-		{% for error in form.captcha.errors %}
-		<p style="color: red">{{ error }}</p>
-		{% endfor %}
-		<p class="text-secondary">C'est tout ce qu'il faut !
-		    Vous recevrez un mél pour valider votre connexion.
-		    Si vous n'avez pas déjà de compte, votre première connexion
-		    en créerait un.
-		</p>
-		<p>
-		    {{ form.password1.label }}<br>
-		    {{ form.password1 }}
-		    {% if form.password1.help_text %}
-		    <small style="color: grey">{{ form.password1.help_text }}</small>
-		    {% endif %}
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="tab"
+					href="#password-connexion-form">Mot de passe</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="tab"
+					href="#first-login-form">Première connexion par mot de passe</a>
+				</li>
+			</ul> <!-- nav-tabs -->
+
+			<div class="tab-content">
+				<div id="email-and-captcha" class="container tab-pane active">
+					<h1>Connexion</h1>
+
+					{% csrf_token %}
+					<div class="d-flex">
+						{{ form.email|as_crispy_field }}
+						{% for error in form.email.error_messages %}
+							<p style="color: red">{{ error }}</p>
+						{% endfor %}
+					</div>
+
+					<div class="d-flex flex-column">
+						{{ form.captcha|as_crispy_field }}
+						{% for error in form.captcha.errors %}
+							<p style="color: red">{{ error }}</p>
+						{% endfor %}
+					</div>
+					<button type="submit" class="btn donation-button">Connexion par email</button>
+					<p class="text-secondary my-2">C'est tout ce qu'il faut !
+						Vous recevrez un mél pour valider votre connexion.
+					</p>
+				</div> <!-- email-and-captcha -->
 			
-		</p>
-		{% for error in form.password1.error_messages %}
-		<p style="color: red">{{ error }}</p>
-		{% endfor %}
-		<p class="text-secondary">
-		    Sans mot de passe, vous recevrait un mél avec un
-		    lien pour valider votre connexion.  Si vous avez
-		    oublié votre mot de passe, connectez sans, vous
-		    recevrez un mél pour vous connecter.
-		</p>
-		<button type="submit" class="btn btn-outline-primary">Connexion</button>
 
-		<p><hr></p>
-		<p>
-		    {{ form.password2.label }}<br>
-		    {{ form.password2 }}
-		    {% if form.password2.help_text %}
-		    <small style="color: grey">{{ form.password2.help_text }}</small>
-		    {% endif %}
-		</p>
-		{% if pwd_error %}
-			<p style="color: red">{{ pwd_error }}</p>
-		{% endif%}
-		
-		{% for error in form.password2.errors %}
-			<p style="color: red">
-				{% if error == "The two password fields didn’t match." %}
-					Les mots de passe ne sont pas identiques.
-				{% else %}
-					{{ error }}
-				{% endif %}
-			</p>
-		{% endfor %}
+				<div id="password-connexion-form" class="container tab-pane fade">
+					<h1>Connexion par mot de passe</h1>
 
-		<p class="text-secondary">Si vous créez votre compte et vous fournissez un
-		    mot de passe, tapez-le une deuxième fois.</p>
-		<button type="submit" class="btn btn-outline-secondary">Inscription</button>
-	    </form>
+					<p>
+						{{ form.password1|as_crispy_field }}
+					</p>
+
+					<button id="pass-connexion" type="submit" class="btn donation-button">Connexion avec mot de passe</button>
+					{% for error in form.password1.error_messages %}
+						<p style="color: red">{{ error }}</p>
+					{% endfor %}
+					<p class="text-secondary my-2">
+						Sans mot de passe, vous recevrez un mél avec un
+						lien pour valider votre connexion.  Si vous avez
+						oublié votre mot de passe, utilisez la connexion par
+						email.
+					</p>
+
+				</div>  <!-- password-connexion-form -->
+				<div id="first-login-form" class="container tab-pane fade">
+					<p>
+						{{ form.password2|as_crispy_field  }}
+					</p>
+					{% if pwd_error %}
+						<p style="color: red">{{ pwd_error }}</p>
+					{% endif%}
+
+					{% for error in form.password2.errors %}
+						<p style="color: red">
+							{% if error == "The two password fields didn’t match." %}
+								Les mots de passe ne sont pas identiques.
+							{% else %}
+								{{ error }}
+							{% endif %}
+						</p>
+					{% endfor %}
+
+					<p class="text-secondary">Si vous créez votre compte et vous fournissez un
+						mot de passe, tapez-le une deuxième fois.</p>
+					<button type="submit" class="btn btn-outline-secondary">Inscription</button>
+				</div>  <!-- first-login-form" -->
+			</div> <!-- tab-content -->
+		</form>
 	</div>
     </div>
 </div>
+
 {% endblock %}
