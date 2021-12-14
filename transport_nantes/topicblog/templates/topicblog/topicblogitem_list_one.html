@@ -17,6 +17,7 @@
     {% endif %}
     {% for object in object_list %}
     <p>
+	<span class="text-muted">[{{ object.id }}]</span>
         {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
         <br>
         {% if object.publication_date %}
