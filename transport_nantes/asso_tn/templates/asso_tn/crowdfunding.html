@@ -5,11 +5,6 @@
 {% load markdown %}
 {% load don %}
 
-{% block scripts %}
-    {{ block.super }}
-    <script src="{% static 'asso_tn/crowdfunding_2021/js/mobile-menu.js' %}" defer></script>
-{% endblock scripts %}
-
 {% block styles %}
 
     {{ block.super}}
@@ -49,28 +44,13 @@
 <div class="container-fluid py-5 px-0 col-12 col-md-10 d-flex flex-wrap">
     {% block app_content %}
 
-        <ul id="mobile-nav" class="cf-panels d-flex col-12">
-            <li class="cf-panel-item d-flex flex-grow-1"><a id="Projet" class="d-flex w-100 justify-content-center bot-border" href="#">Projet</a></li>
-            <li class="cf-panel-item d-flex flex-grow-1 "><a id="Contreparties" class="d-flex w-100 justify-content-center" href="#">Contreparties</a></li>
-        </ul>
-
         <div id="main_body_cf" class="d-flex flex-column col-12 col-xl-8 ">
             <section id="introduction_cf">
-                <p><em>1er Décembre 2021,</em></p>
+                <p><em>14 décembre 2021,</em></p>
 
                 <h2 id="CF_title" class="mb-3">
-                    ⏰ C’est l’heure … Nous lançons notre collecte de fonds d’hiver pour une meilleure mobilité !
+                    🎉 Le premier palier a été atteint ! Merci à toutes et tous pour votre confiance et vos contributions
                 </h2>
-
-                <p>
-                Investir dans cette campagne, c’est œuvrer collectivement pour améliorer nos
-                conditions de déplacements tout en réduisant ses impôts !
-                Véritable pouvoir d’action, l’argent récolté servira à
-                financer l’opération piéton, la Grande Mobilité,
-                l’observatoire du Vélopolitain, les ateliers citoyens et
-                d’autres projets portés par l’organisation à but non lucratif
-                Les Mobilitains.
-                </p>
 
                 <p><b>Votre don est éligible à une réduction d'impôts allant jusqu'à 66% du montant !</b></p>
 
@@ -98,30 +78,31 @@
                 l'intermodalité vous le diront, coupler par exemple le train
                 et le vélo, c’est se déplacer plus loin, plus confortablement
                 et plus sereinement.
-                <br />
-                Aujourd’hui les territoires n’arrivent pas à suivre. C’est à
-                nous toutes et tous,
-                en notre qualité de citoyen et citoyenne d’encourager le
-                mouvement en changeant nos modes de transports, en
-                communiquant plus brutalement sur nos souhaits
                 </p>
             </section>
 
             <section id="constat_mobilité_cf">
                 <h3>Le constat de notre mobilité actuelle</h3>
 
-                <p>La voiture, en France, a la part belle. Nous lui avons même offert la majorité de notre infrastructure urbaine.</p>
-                <p>La conséquence → des embouteillages ! 🤬💥🤬 Et qu’en est-il des autres mobilités ?</p>
-                <p>Nous ne vous apprenons rien, l’ensemble de notre réseau de mobilité est saturé… Pour préserver notre santé, notre liberté et notre planète, il existe bon nombre d’alternatives à vos déplacements.</p>
-                <p>La solution des Mobilitains → optez pour la mobilité multimodale ! 🤩</p>
-                <img src="{% static 'asso_tn/crowdfunding_2021/03-IMG-crowdfunding-mobilitains.jpg' %}"
-                alt="Ensemble, agissons pour une meilleure mobilité"
-                class="img-fluid d-flex mx-auto my-4" />
-                <i>
-                    La mobilité intermodale, c’est l’acte de se déplacer en
-                    utilisant plusieurs modes de transport, qu’ils soient doux
-                    ou actifs. <small>Ex.→ vélo + marche, piéton + tramway , vélo + train, voiture + bus !</small>
-                </i>
+                <p>
+                    Trop d’embouteillages récurrents ! L’ensemble de notre réseau de mobilité est saturé.
+                    Pour préserver notre santé, notre liberté et notre planète, il existe bon nombre
+                    d’alternatives à vos déplacements. <br />
+                    La solution des Mobilitains → arrêter le tout voiture et mixer les modes de transports individuels ou collectifs.
+                </p>
+                
+                <ul>
+                    <li>🚴🏼‍♂️ Vélo</li>
+                    <li>🚄 Train</li>
+                    <li>🚎 Transports collectifs</li>
+                    <li>🛴 Trotinette</li>
+                    <li>🚶 Pieds</li>
+                    <li>🚴🏼‍♂️🚄 Vélo + train</li>
+                    <li>🚶🚊 Pieds + Tramway</li>
+                    <li>🚗🚌 Voiture + Bus</li>
+                    <li>etc...</li>
+                </ul>
+
             </section>
 
             <section id="agir_pour_vous_cf" class="mt-3">
@@ -156,136 +137,42 @@
                 en toute indépendance&nbsp;!</b></p>
             </section>
 
-            <section id="collapses_cf">
-                <div class="accordion my-3" id="accordionExample">
+            <section id="a-quoi-serivront-les-fonds">
+                <h2>
+                        À quoi serviront les fonds ?
+                </h2>
 
-                    <div class="card no-border">
-                        <div class="mb-1" id="headingThree">
-                        <h2 class="mb-0">
-                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Le projet
-                            </button>
-                        </h2>
-                        </div>
-                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                        <div class="card-body">
-                            <p>
-                            Indépendants, nous militons pour une meilleure mobilité. Une mobilité plus sûre,
-                            vertueuse et agréable, en harmonie avec les espaces qui nous entourent.
-                            </p>
-                            <p>3 concepts majeurs pour 2022 :</p>
-                            <ul>
-                                <li>
-                                    <p>
-                                        🚄 <strong>La grande Mobilité</strong>, me déplacer comme je veux quand je veux
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        🤸🏽‍♂️ <strong>La Petite Mobilité</strong>, me garantir un dernier kilomètre agréable et sécuritaire
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        🚴🏿‍♂️ <strong>Le Vélopolitain,</strong>, mon réseau cyclable fluide dans toute la métropole nantaise
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
+                    <p>
+                        🤸🏿‍♂️ <b>Avec 5 000 €, un projet piéton inédit</b> dans le quartier des Hauts Pavés Saint Félix.
+                        Une action publicitaire avec un concours photo citoyen programmé autour de la vie et des
+                        infrastructures piétonnes. Poussons la métropole nantaise à prendre au sérieux et à améliorer
+                        la qualité de notre dernier kilomètre.
+                    </p>
+                    <p>
+                        <b>🚴‍♀️ Avec 10 000 €, lançons l’observatoire du Vélopolitain,</b>
+                        un projet participatif qui aura 2 objectifs : pousser les territoires à adopter un réseau
+                        cyclable sécurisé, sans discontinuité, et apprendre au citoyen-usager à reconnaître un
+                        bon ou mauvais aménagement cyclable !
+                    </p>
+                    <p>
+                        <b>🔝  Avec 20 000€, l’observatoire de la Grande Mobilité</b>
+                        sortira de l’ombre. Ce grand projet soulignera que nos déplacements dans la région nantaise
+                        ne sont pas toujours réalisés en voiture, même dans les zones où la voiture est omniprésente.
+                        Il servira de base pour militer sur le  rééquilibrage urgent de nos systèmes de déplacement.
+                    </p>
+                    <p>
+                        <b>🚀 Avec 40 000€, tous ces projets verront la lumière du jour</b>
+                        d’ici à fin 2022. Ce sera grâce à vos soutiens que tout cela sera possible !
+                    </p>
 
-                    <div class="card no-border">
-                        <div class="mb-1" id="headingFour">
-                        <h2 class="mb-0">
-                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                Qui sommes-nous ?
-                            </button>
-                        </h2>
-                        </div>
-                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-center flex-wrap">
-                                <img src="{% static 'asso_tn/crowdfunding_2021/04-IMG-crowdfunding-mobilitains.png' %}"
-                                alt="timeline mobilitains"
-                                class="d-flex col-8 col-sm-5 col-md-4 col-lg-4 mb-2" />
-                                <div class="d-flex flex-column col-10 col-lg-5">
-                                    <p>
-                                        Transport Nantes a été créée en 2018 à l’initiative de 3 fondateurs militants avec la ferme intention
-                                        d’améliorer la vie des citoyens et citoyennes en déplacement.
-                                    </p>
-                                    <p>Post Covid-19, l’association prend un tournant majeur et devient Les Mobilitains !</p>
-                                </div>
-                            </div>
-
-                            <p class="mt-3">L’équipe :</p>
-                            <div class="d-flex col-10 mx-auto">
-                                <img src="{% static 'asso_tn/crowdfunding_2021/00-IMG-crowdfunding-mobilitains.png' %}">
-                            </div>
-
-                        </div>
-                        </div>
-                    </div>
-
-                    <div class="card no-border">
-                        <div class="mb-1" id="headingFive">
-                        <h2 class="mb-0">
-                            <button class="btn cf_collapse btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                À quoi serviront les fonds ?
-                            </button>
-                        </h2>
-                        </div>
-                        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
-                        <div class="card-body">
-                            <p>Principalement à :</p>
-                            <ul>
-                                <li>
-                                    <p>
-                                        👉  Mettre en œuvre et optimiser la plateforme numérique citoyenne pour améliorer la fluidité urbaine
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        👉 Activer les programmes de communication autour de la sécurité des mobilités douces et actives
-                                        (vélos, piétons, trottinettes, PMR, overboard ! etc. )
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        💥 fédérer une communauté de bénévoles autour du projet Les Mobilitains
-                                    </p>
-                                </li>
-                            </ul>
-
-                            <p>
-                                🤸🏿‍♂️ <b>Avec 5 000 €, un projet piéton inédit</b> dans le quartier des Hauts Pavés Saint Félix.
-                                Une action publicitaire avec un concours photo citoyen programmé autour de la vie et des
-                                infrastructures piétonnes. Poussons la métropole nantaise à prendre au sérieux et à améliorer
-                                la qualité de notre dernier kilomètre.
-                            </p>
-                            <p>
-                                <b>🚴‍♀️ Avec 10 000 €, lançons l’observatoire du Vélopolitain,</b>
-                                un projet participatif qui aura 2 objectifs : pousser les territoires à adopter un réseau
-                                cyclable sécurisé, sans discontinuité, et apprendre au citoyen-usager à reconnaître un
-                                bon ou mauvais aménagement cyclable !
-                            </p>
-                            <p>
-                                <b>🔝  Avec 20 000€, l’observatoire de la Grande Mobilité</b>
-                                sortira de l’ombre. Ce grand projet soulignera que nos déplacements dans la région nantaise
-                                ne sont pas toujours réalisés en voiture, même dans les zones où la voiture est omniprésente.
-                                Il servira de base pour militer sur le  rééquilibrage urgent de nos systèmes de déplacement.
-                            </p>
-                            <p>
-                                <b>🚀 Avec 40 000€, tous ces projets verront la lumière du jour</b>
-                                d’ici à fin 2022. Ce sera grâce à vos soutiens que tout cela sera possible !
-                            </p>
-
-                        </div>
-                        </div>
-                    </div>
-
-                </div>
             </section>
+
+            <p>
+                Sachez que nous vous aimons : pour nous, rien n’est trop pour vous remercier !
+                Pour toute demande, N'hésitez pas à nous contacter directement à 
+                <a href="mailto:contact@mobilitains.fr">contact@mobilitains.fr<a/>. 
+            </p>
+
 
             <span class="d-flex my-5">
                 <a href="{% url 'stripe_app:stripe' %}" class="d-block mx-auto btn donation-button">
