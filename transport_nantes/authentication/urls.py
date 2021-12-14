@@ -21,7 +21,7 @@ This is all based on
 https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
 """
-from django.urls import include, path
+from django.urls import path
 from . import views
 
 app_name = 'authentication'
