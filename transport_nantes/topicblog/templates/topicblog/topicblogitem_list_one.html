@@ -20,11 +20,12 @@
 	<span class="text-muted">[{{ object.id }}]</span>
         {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
         <br>
-        {% if object.publication_date %}
-        publiée {{ object.publication_date|date:"l d-m-Y" }} par {{ user.email }}
-        {% if not object.servable %}(retirée){% endif %}
+	Modifié {{ object.date_modified|date:"l d-m-Y" }}
+        <br>{% if object.publication_date %}
+        Publié {{ object.publication_date|date:"l d-m-Y" }} par {{ user.email }}
+        {% if not object.servable %}(retiré){% endif %}
         {% else %}
-        brouillon
+        Brouillon
         {% if object.is_publishable %}
         <span class="text-muted"><i>prêt à publier</i></span>
         {% endif %}

@@ -8,32 +8,10 @@
 	    <a href="{% url 'topic_blog:list_items_by_slug' object.slug|default:'--sans-slug--' %}">
 		{{ object.slug }}</a>
 	</strong>
-	{{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
-	<br>
-	{% if object.publication_date %}
-	publiée {{ object.publication_date|date:"l d-m-Y" }} par {{ user.email }}
-	{% if not object.servable %}(retirée){% endif %}
-	{% else %}
-	brouillon
-	{% if object.is_publishable %}
-	<span class="text-muted"><i>prêt à publier</i></span>
-	{% endif %}
-	{% endif %}
-	<br>
-	<a type="button" class="btn btn-outline-info btn-sm"
-	   href="{{ object.get_edit_url }}">Modifier</a>
-	<a type="button" class="btn btn-outline-info btn-sm"
-	   href="{{ object.get_absolute_url }}">Visualiser</a>
-	{% if object.publication_date %}
-	<a type="button" class="btn btn-outline-info btn-sm"
-	   href="{% url 'topic_blog:view_item_by_slug' object.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
-	{% if object.servable %}
-	<a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-	   href="">Retirer</a>
-	{% else %}
-	<a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-	   href="">Republier</a>
-	{% endif %}{% endif %}
+	<span class="text-muted">
+	    dernière modification {{ object.date_modified|date:"l d-m-Y" }}
+	</span>
+	[#={{ object.count }}]
     </p>
     {% empty %}
     <p>Aucun résultat.</p>
