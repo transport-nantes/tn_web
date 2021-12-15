@@ -26,6 +26,10 @@ class UtmMiddleware:
     def __call__(self, request):
         """Called on each request."""
         response = self.get_response(request)
+        if request.path.startswith('/admin/'):
+            return response
+        if request.path.startswith('/favicon.ico'):
+            return response
         utm = UTM()
         utm.base_url = request.path
         utm.session_id = request.COOKIES.get('sessionid', '-')
