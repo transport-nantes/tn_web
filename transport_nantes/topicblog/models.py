@@ -324,13 +324,45 @@ class TopicBlogItem(models.Model):
         fields to the context["social"] entry of the context dict.
         """
         social = {}
-        social['twitter_title'] = self.twitter_title
-        social['twitter_description'] = self.twitter_description
-        social['twitter_image'] = self.twitter_image
 
-        social['og_title'] = self.og_title
-        social['og_description'] = self.og_description
-        social['og_image'] = self.og_image
+        # Twitter cards
+        if self.twitter_title == '':
+            social['twitter_title'] = self.og_title
+        else:
+            social['twitter_title'] = self.twitter_title
+
+        if self.twitter_description == '':
+            social['twitter_description'] = self.og_description
+        else:
+            social['twitter_description'] = self.twitter_description
+
+        # Open-graph
+        if self.og_title == '':
+            social['og_title'] = self.twitter_title
+        else:
+            social['og_title'] = self.og_title
+        if self.og_description == '':
+            social['og_description'] = self.twitter_description
+        else:
+            social['og_description'] = self.og_description
+
+        """Check if OG and twitter image get a value
+        if both dont have value both sociale take the header images
+        if one of them have a value both sociale take this value
+        if both of them have value each social take the corresponding value
+        """
+        if self.twitter_image == '' and self.og_image == '':
+            social['twitter_image'] = self.header_image
+            social['og_image'] = self.header_image
+        elif self.twitter_image != '' and self.og_image == '':
+            social['twitter_image'] = self.twitter_image
+            social['og_image'] = self.twitter_image
+        elif self.twitter_image == '' and self.og_image != '':
+            social['twitter_image'] = self.og_image
+            social['og_image'] = self.og_image
+        elif self.twitter_image != '' and self.og_image != '':
+            social['twitter_image'] = self.twitter_image
+            social['og_image'] = self.og_image
 
         context['social'] = social
         return context
