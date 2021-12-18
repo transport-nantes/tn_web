@@ -90,11 +90,20 @@
 				{% endif %}
 
 			{% endblock styles %}
-
-			<meta property="og:title" content="{{ social.twitter_title }}" />
+			{# OG title #}
+			{% if social.og_title %}
+				<meta property="og:title" content="{{ social.og_title }}" />
+			{% else %}
+				<meta property="og:title" content="{{ social.twitter_title }}" />
+			{% endif %}
 			<meta property="og:type" content="website" />
 			<meta property="og:url" content="{{ request.build_absolute_uri }}" />
-			<meta property="og:description" content="{{ social.twitter_description }}" />
+			{# OG description #}
+			{% if social.og_description %}
+				<meta property="og:description" content="{{ social.og_description }}" />
+			{% else %}
+				<meta property="og:description" content="{{ social.twitter_description }}" />
+			{% endif %}
 			{% comment "About is_static" %}
 			On views that use static images and not ImageFields, the .url property doesn't
 			exist (e.g. AssoView uses a string to designate the image to use).
@@ -103,11 +112,27 @@
 			if they are designated with a string.
 			{% endcomment %}
 			{% if is_static %}
-				<meta name="og:image" content="{% static social.og_image %}" />
+				{# OG image #}
+				{% if social.og_image and social.og_image != "velopolitain/v1.png" %}
+					<meta property="og:image" content="{{social.og_image.url}}" />
+				{% elif social.twitter_image and social.twitter_image != "asso_tn/mobilite-pour-tous.jpg"%}
+					<meta property="og:image" content="{{ social.twitter_image.url }}" />
+				{% elif page.header_image  %}
+					<meta property="og:image" content="{{page.header_image.url}}" />
+				{% else %}
+					<meta name="og:image" content="{{social.og_image.url }}" />
+				{% endif %}
 			{% elif page.og_image %}
-				<meta property="og:image" content="{{ page.og_image.url }}" />
+				{% if page.og_image and page.og_image != "velopolitain/v1.png" %}
+					<meta property="og:image" content="{{page.og_image.url}}" />
+				{% elif page.twitter_image and page.twitter_image != "asso_tn/mobilite-pour-tous.jpg" %}
+					<meta property="og:image" content="{{ page.twitter_image.url }}" />
+				{% elif page.header_image  %}
+					<meta property="og:image" content="{{page.header_image.url}}" />
+				{% else %}
+					<meta property="og:image" content="{{page.og_image.url }}" />
+				{% endif %}
 			{% endif %}
-			<meta property="og:image:alt" content="{{ social.og_image_alt }}" />
 			{% if social.og_image_type %}
 				<meta property="og:image:type" content="{{ social.og_image_type }}" />
 				<meta property="og:image:width" content="{{ social.og_image_width }}" />
@@ -120,13 +145,43 @@
 			<meta name="twitter:site" content="{{ social.twitter_site }}" />
 			<meta name="twitter:creator" content="{{ social.twitter_creator }}" />
 			{% if is_static %}
-				<meta name="twitter:image" content="{% static social.twitter_image %}" />
+				{# Twitter image #}
+				{% if social.twitter_image and social.twitter_image != "asso_tn/mobilite-pour-tous.jpg" %}
+					<meta name="twitter:image" content="{{ social.twitter_image.url }}" />
+				{% elif social.og_image and social.og_image != "velopolitain/v1.png" %}
+					<meta name="twitter:image" content="{{ social.og_image.url }}" />
+				{% elif page.header_image  %}
+					<meta name="twitter:image" content="{{page.header_image.url}}" />
+				{% else %}
+					<meta name="twitter:image" content="{{social.twitter_image }}" />
+				{% endif %}
 			{% elif page.twitter_image %}
-				<meta name="twitter:image" content="{{ page.twitter_image.url }}" />
+				{% if  page.twitter_image and page.twitter_image != "asso_tn/mobilite-pour-tous.jpg" %}
+					<meta name="twitter:image" content="{{ page.twitter_image.url }}" />
+				{% elif page.og_image and page.og_image != "velopolitain/v1.png" %}
+					<meta name="twitter:image" content="{{ page.og_image.url }}" />
+				{% elif page.header_image  %}
+					<meta name="twitter:image" content="{{ page.header_image.url}}" />
+				{% else %}
+					<meta name="twitter:image" content="{{ page.twitter_image }}" />
+				{% endif %}
 			{% endif %}
-
-			<meta name="twitter:title" content="{{ social.twitter_title }}" />
-			<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{# Twitter title #}
+			{% if social.twitter_title and social.twitter_title != "Mobilitains - Pour une mobilité multimodale" %}
+				<meta name="twitter:title" content="{{ social.twitter_title }}" />
+			{% elif social.og_title %}
+				<meta name="twitter:title" content="{{ social.og_title }}" />
+			{% else %}
+				<meta name="twitter:title" content="{{ social.twitter_title }}" />
+			{% endif %}
+			{# Twitter description #}
+			{% if social.twitter_description and social.twitter_description != "Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse" %}
+				<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{% elif social.og_description %}
+				<meta name="twitter:description" content="{{ social.og_description }}" />
+			{% else %}
+				<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{% endif %}
 			{% comment %}
 				https://cards-dev.twitter.com/validator
 			{% endcomment %}
