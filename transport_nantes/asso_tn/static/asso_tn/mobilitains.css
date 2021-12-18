@@ -533,3 +533,6 @@ span.centered {
         display: flex !important;
     }
 }
+.text-utm {
+    font-size: 75%;
+}
