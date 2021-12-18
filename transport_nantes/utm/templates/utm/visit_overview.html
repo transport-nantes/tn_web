@@ -1,0 +1,16 @@
+<p class="text-utm">
+    <span style="color:red">Attention : ces données sont en mode test.  Les visiteurs avant 1 janvier 2021 ne sont pas correctement comptabilisés.</span><br>
+    48h : distincts humains={{ humans_unique_48h }}, humans={{ humans_48h }}, robots={{ robots_48h }}<br>
+    7j : distincts humains={{ humans_unique_7j }}, humans={{ humans_7j }}, robots={{ robots_7j }}<br>
+    toujours : distincts humains={{ humans_unique }}, humans={{ humans }}, robots={{ robots }}
+</p>
+<p class="text-utm">
+    Sources :
+    {% for name, count in sources.items %}
+        {{ name|default:"<aucun>" }}={{ count }},
+    {% endfor %}<br>
+    Mediums :
+    {% for name, count in mediums.items %}
+        {{ name|default:"<aucun>" }}={{ count }},
+    {% endfor %}<br>
+</p>
