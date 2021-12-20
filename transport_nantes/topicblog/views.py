@@ -18,7 +18,7 @@ from asso_tn.utils import SuperUserRequiredMixin
 from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
 
 class TopicBlogItemEdit(StaffRequiredMixin, FormView):

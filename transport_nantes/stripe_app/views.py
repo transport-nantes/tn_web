@@ -19,7 +19,7 @@ from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
                                        STRIPE_SECRET_KEY,
                                        STRIPE_ENDPOINT_SECRET)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
 
 class StripeView(TemplateView):
@@ -250,13 +250,13 @@ def tracking_progression(request: dict) -> TrackingProgression:
             data = TrackingProgression(**kwargs)
             data.save()
         except Exception as error_message:
-            logger.debug(
+            logger.info(
                 "Error while creating TrackingProgression instance : ",
                 error_message)
 
         return HttpResponse(status=200)
     except Exception as error_message:
-        logger.debug("error message: ", error_message)
+        logger.info("error message: ", error_message)
         return JsonResponse({'error': str(error_message)})
 
 
@@ -271,9 +271,11 @@ def stripe_webhook(request):
     POST request from Stripe contain a signature to authenticate the request.
     The signature is generated with the secret key of the stripe account.
     """
+    logger.info("Stripe webhook called")
     stripe.api_key = STRIPE_SECRET_KEY
     endpoint_secret = STRIPE_ENDPOINT_SECRET
     payload = request.body
+    logger.info("payload: ", payload)
     try:
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     except KeyError:
@@ -292,43 +294,54 @@ def stripe_webhook(request):
         logger.info("Invalid signature in stripe webhook")
         return HttpResponse(status=400)
 
+    logger.info("The event has been constructed : ", event)
+    logger.info("The event type is : ", event['type'])
     # Event when a donor completes a checkout session
     # whether it's a one-time payment or a subscription.
     if event['type'] == 'checkout.session.completed':
         logger.info("Stripe payment webhook succeeded.")
-        logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.info("Details attached to event : \n\n", "="*30, "\n", event)
         try:
             donation = make_donation_from_webhook(event)
             donation.save()
         except Exception as error_message:
-            logger.debug("="*80, "\n", "Error while creating \
+            logger.info("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
+            return HttpResponse(status=500)
         update_user_name(event)
 
     # Event for subscription payments (initial or recurring)
     # cf https://stripe.com/docs/billing/subscriptions/webhooks#tracking
-    if event['type'] == 'invoice.payment_succeeded':
+    elif event['type'] == 'invoice.payment_succeeded':
         # subscription_cycle is the reason invoked for subscription payments
         # that are not the first one.
+        logger.info('event["data"]["object"]["billing_reason"] : ',
+                    event['data']['object']['billing_reason'])
         if event["data"]["object"]["billing_reason"] == "subscription_cycle":
             logger.info("Stripe subscription payment webhook called.")
-            logger.debug("Details attached to event : \n\n", "="*30, "\n",
-                         event)
+            logger.info("Details attached to event : \n\n", "="*30, "\n",
+                        event)
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             save_recurring_payment_details(customer_id, amount)
 
-    if event["type"] == 'checkout.session.expired':
+    elif event["type"] == 'checkout.session.expired':
         logger.info("Stripe checkout session expired")
-        logger.debug("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.info("Details attached to event : \n\n", "="*30, "\n", event)
         try:
             donation = make_donation_from_webhook(event)
             donation.amount_centimes_euros = 0
             donation.save()
         except Exception as error_message:
-            logger.debug("="*80, "\n", "Error while creating \
+            logger.info("="*80, "\n", "Error while creating \
             a new Donation. Details : ", error_message)
+            return HttpResponse(status=500)
         update_user_name(event)
+
+    else:
+        logger.error("Unknown event type : ", event['type'])
+        logger.error("Details attached to event : \n\n", "="*30, "\n", event)
+        return HttpResponse(status=500)
 
     return HttpResponse(status=200)
 
@@ -359,7 +372,7 @@ def get_user(email: str) -> User:
         return HttpResponseServerError("Too many users with that email.")
 
     if len(existing_users) == 1:
-        logger.debug("User already exists: " + str(existing_users))
+        logger.info("User already exists: " + str(existing_users))
         return existing_users[0]
 
     else:
@@ -392,7 +405,7 @@ def update_user_name(event: dict) -> None:
             user.last_name = metadata["last_name"]
             user.save()
     except Exception as error_message:
-        logger.debug("Error while updating user name : ", error_message)
+        logger.info("Error while updating user name : ", error_message)
 
 
 def make_donation_from_webhook(event: dict) -> Donation:
@@ -430,10 +443,10 @@ def make_donation_from_webhook(event: dict) -> Donation:
         "originating_view": metadata["originating_view"],
         "originating_parameters": metadata["originating_parameters"],
     }
-    logger.debug("Creating of donation...")
+    logger.info("Creating of donation...")
     try:
         donation = Donation(**kwargs)
-        logger.debug("Donation entry created.")
+        logger.info("Donation entry created.")
         return donation
     except Exception as e:
         logger.info("Error while creating a new donation : ", e)
@@ -448,7 +461,7 @@ def save_recurring_payment_details(customer_id: str, amount: int) -> None:
     This happens when a donor did subscribe to a monthly donation
     and the next payments are successful.
     """
-    logger.debug("Saving recurring payment details...")
+    logger.info("Saving recurring payment details...")
     # We're getting the last record of a subscription to have
     # the proper amount and periodicity.
     customer = Donation.objects.filter(
