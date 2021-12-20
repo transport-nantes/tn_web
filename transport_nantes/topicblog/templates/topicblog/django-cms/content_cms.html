@@ -1,0 +1,123 @@
+{% extends 'topicblog/base_topicblog.html' %}
+{% load cms_tags sekizai_tags %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+{% comment "Purpose of this template" %}
+This template aims to adapt TBv2 content.html to django-cms use
+{% endcomment %}
+
+{% block head %}
+    {{ block.super }}
+    {% render_block "css" %}
+{% endblock head %}
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+
+     {{ block.super }}
+
+     {% comment %}
+       This is mostly a copy pasted version of the block.super, adapted to TBv2
+       Inline styles should be avoided because they can be hard to edit for front
+       but we need the template engine to work on the background-image attribute.
+     {% endcomment %}
+    <style>
+        .hero-image {
+        /*
+        Use "linear-gradient" to add a darken background effect to the
+        image (photographer.jpg). This will make the text easier to read
+        */
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url("{{ page.header_image.url }}");
+
+        /* Set a specific height */
+        height: 40%;
+
+        /* Position and center the image to scale nicely on all screens */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        }
+    </style>
+
+
+{% endblock styles %}
+
+{% block content %}
+{% comment "The toolbar" %}
+The cms toolbar needs to be placed at the top of the body tag and before
+any other placeholders. It displays the django-cms toolbar that assists you
+navigating in the content. Not displayed to not auth users, not sure about
+what authorization level you need to see it yet.
+{% endcomment %}
+{% cms_toolbar %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 class="hero-title">{% placeholder "header_image" %}</h1>
+          <p class="hero-description">{% placeholder "header_description" %}</p>
+     </div>
+</div>
+
+<!-- Main container with the content of the article -->
+<div class="container-fluid py-5 px-0">
+     {% block app_content %}
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+          
+        {# First paragraph of text #}
+        {% placeholder "body_1" %}
+        {# First CTA, if any #}
+        {% render_placeholder "cta_button" or %}
+            No CTA button
+        {% endplaceholder %}
+
+        {# Second paragraph #}
+        {{ page.body_text_2_md|markdown }}
+        {# Second CTA, if any #}
+        {% if page.cta_2_slug|length > 0 %}
+            <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}" 
+            class="btn donation-button my-3 centered-inline-button">
+        {{ page.cta_2_label }}
+        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
+        {# Body image, if any #}
+        {% if page.body_image|length > 0 %}
+            <img src="{{ page.body_image.url }}"
+                alt="{{ page.body_image_alt_text }}"
+                class="w-100 my-4">
+        {% endif %}
+
+        {# Third paragraph #}
+        {{ page.body_text_3_md|markdown }}
+        {# Third CTA, if any #}
+        {% if page.cta_3_slug|length > 0 %}
+            <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}" 
+        class="btn donation-button my-3 centered-inline-button ">
+        {{ page.cta_3_label }}
+        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
+     </div>
+
+     {% endblock app_content%}
+</div>
+     <div class="background-ad-hoc-blue">
+          <div class="d-flex flex-column p-4 p-xl-5">
+               {% show_projects %}
+               {% show_mailing_list %}
+               {% show_qui_sommes_nous %}
+              {% show_volunteer %}
+          </div>
+     </div>
+     
+{% endblock content %}

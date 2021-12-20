@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'topicblog.apps.TopicBlogConfig',
     'dashboard.apps.DashboardConfig',
     'utm.apps.UtmConfig',
+    'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,9 +48,48 @@ INSTALLED_APPS = [
     'stripe_app',
     'crispy_forms',
     'django_countries',
+    'django.contrib.sites',
+    'cms',
+    'menus',
+    'treebeard',
+    'sekizai',
+    'transport_nantes',
+    'filer',
+    'easy_thumbnails',
+    'mptt',
+    'djangocms_text_ckeditor',
+    'djangocms_link',
+    'djangocms_file',
+    'djangocms_picture',
+    'djangocms_video',
+    'djangocms_googlemap',
+    'djangocms_snippet',
+    'djangocms_style',
 ] + settings_local.MORE_INSTALLED_APPS
 
+# <Django-cms settings>
+SITE_ID = 1
+LANGUAGES = [
+    ('en', 'English'),
+    ('fr', 'French'),
+]
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+CMS_TEMPLATES = (
+    ('home.html', 'Home page template'),
+    ('asso_tn/base_mobilitain.html', 'Base mobilitains template'),
+)
+THUMBNAIL_HIGH_RESOLUTION = True
+
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters'
+)
+# </Django-cms settings>
+
 MIDDLEWARE = [
+    'cms.middleware.utils.ApphookReloadMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,6 +100,12 @@ MIDDLEWARE = [
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
     'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
     'utm.middleware.utm.UtmMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
+
 ]
 
 ROOT_URLCONF = 'transport_nantes.urls'
@@ -67,7 +113,7 @@ ROOT_URLCONF = 'transport_nantes.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates', settings_local.BASE_DIR + '/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,7 +122,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'asso_tn.context_processors.role',
-                'django.template.context_processors.media'
+                'django.template.context_processors.media',
+                'sekizai.context_processors.sekizai',
+                'cms.context_processors.cms_settings',
+                'django.template.context_processors.i18n',
             ],
         },
     },
