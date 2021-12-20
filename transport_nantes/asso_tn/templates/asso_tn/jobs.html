@@ -413,6 +413,28 @@ dans le Grand Ouest{% endblock twitter_description %}
 		</div>
 
 
+        <div class="text-center clipboard" style="margin-top: 15px;">
+            <span>Share this page:  </span>
+            <button type="button" class="btn btn-info button-clipboard"><span class="span_copy">Click to copy </span></button>
+        </div>
+        <script
+                          src="https://code.jquery.com/jquery-3.6.0.min.js"
+                          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+                          crossorigin="anonymous">
+        </script>
+        <script>
+        var $temp = $("<input>");
+        var $url = $(location).attr('href');
+
+        $('.button-clipboard').on('click', function() {
+        $("body").append($temp);
+        $temp.val($url).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $(".span_copy").text("URL copied!  ");
+        })
+        </script>
+
 
     {% comment %}
     <div class="row pt-3">
