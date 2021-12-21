@@ -51,7 +51,7 @@ def external_url(url, label):
 def external_url_button(url, label):
     html = """<p class="pl-5"> """ + \
 	"""<a href="{url}" target="_blank" """ + \
-	"""class="btn btn-outline-primary btn-lg">{label} """ + \
+	"""class="btn navigation-button">{label} """ + \
         """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
     return mark_safe(html.format(url=url, label=label))
 
