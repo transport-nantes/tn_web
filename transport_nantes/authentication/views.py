@@ -1,5 +1,8 @@
+import logging
+
 from asso_tn.utils import make_timed_token, token_valid
 
+from django.core.mail import send_mail
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -35,6 +38,8 @@ A quick note on the captcha:
 
 """
 
+logger = logging.getLogger("django")
+
 
 def login(request, base_template=None):
 
@@ -42,16 +47,19 @@ def login(request, base_template=None):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            logger.info("User {} is logging in.".format(user.username))
             remember_me = form.cleaned_data["remember_me"]
             try:
                 user.refresh_from_db()
+                logger.info(f"User is {user}")
                 if user.profile.authenticates_by_mail:
+                    logger.info(f"Attempt to send email to {user.email}")
                     send_activation(request, user, False, remember_me)
                     return render(request,
                                   'authentication/account_activation_sent.html', # noqa
                                   {'is_new': False})
-            except ObjectDoesNotExist:
-                print('ObjectDoesNotExist')
+            except ObjectDoesNotExist as e:
+                logger.info('ObjectDoesNotExist : {}'.format(e))
                 pass            # I'm not sure this can ever happen.
 
             # There should be precisely one or zero existing user with the
@@ -155,9 +163,20 @@ def send_activation(request, user, is_new, remember_me):
             'is_new': is_new,
             'remember_me': remember_me,
         })
+
+    logger.info(f"Sent message : \n{message}")
     if hasattr(settings, 'ROLE') and \
-            settings.ROLE in ['beta', 'production']:
-        user.email_user(subject, message)
+            settings.ROLE in ['dev', 'beta', 'production']:
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False)
+        except Exception as e:
+            logger.error(f"Error while sending mail to {user.email} : {e}")
+
     elif hasattr(settings, 'ROLE') and settings.ROLE == 'test':
         print("  [Envoi de mél supprimé ici.]")
     else:
