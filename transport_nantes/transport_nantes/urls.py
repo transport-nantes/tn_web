@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -45,6 +45,7 @@ urlpatterns = [
     # path('??', include('velopolitain_observatoire.urls')),
     path("donation/", include('stripe_app.urls')),
     path("cms/", include('cms.urls')),
+    re_path(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 ]
 
 if ROLE != 'production':

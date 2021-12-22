@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_countries',
     'django.contrib.sites',
+    'aldryn_apphooks_config',
+    'parler',
     'cms',
     'menus',
     'treebeard',
@@ -57,6 +59,10 @@ INSTALLED_APPS = [
     'filer',
     'easy_thumbnails',
     'mptt',
+    'taggit',
+    'taggit_autosuggest',
+    'meta',
+    'djangocms_blog',
     'djangocms_text_ckeditor',
     'djangocms_link',
     'djangocms_file',
@@ -65,6 +71,7 @@ INSTALLED_APPS = [
     'djangocms_googlemap',
     'djangocms_snippet',
     'djangocms_style',
+    'sortedm2m',
 ] + settings_local.MORE_INSTALLED_APPS
 
 # <Django-cms settings>
@@ -265,3 +272,28 @@ STRIPE_SECRET_KEY = settings_local.STRIPE_SECRET_KEY
 STRIPE_ENDPOINT_SECRET = settings_local.STRIPE_ENDPOINT_SECRET
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
+
+META_SITE_PROTOCOL = 'https'  # set 'http' for non ssl enabled websites
+META_USE_SITES = True
+
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_GOOGLEPLUS_PROPERTIES = True # django-meta 1.x+
+META_USE_SCHEMAORG_PROPERTIES = True  # django-meta 2.x+
+
+PARLER_LANGUAGES = {
+    1: (
+        {'code': 'fr', },
+        {'code': 'en', },
+    ),
+    'default': {
+        'fallbacks': ['fr', 'en'],
+    }
+}

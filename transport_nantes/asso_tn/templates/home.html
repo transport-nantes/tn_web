@@ -8,8 +8,11 @@
     
     <body>
         {% cms_toolbar %}
-        <h2>This is a h2</h2>
-        {% placeholder "content" %}
+        {% block content %}
+            {% placeholder "content" %}
+        {% endblock content %}
+        {% block content_wrapper %}
+        {% endblock content_wrapper %}
         {% render_block "js" %}
     </body>
 </html>
