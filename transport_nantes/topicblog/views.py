@@ -119,7 +119,6 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         # expiry of editing possibilities
         if tb_item.publication_date and "sauvegarder" in self.request.POST:
             # Make unservable the item before creating a new variant.
-            tb_item.servable = False
             tb_item.save()
 
         # Every modification creates a new item (copy or variant)
