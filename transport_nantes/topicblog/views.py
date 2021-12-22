@@ -14,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequiredMixin, StaffRequired
-from asso_tn.utils import SuperUserRequiredMixin
 from .models import TopicBlogItem, TopicBlogTemplate
 from .forms import TopicBlogItemForm
 
@@ -202,7 +201,8 @@ class TopicBlogItemView(TemplateView):
         tb_item: TopicBlogItem  # Type hint for linter
         context = tb_item.set_social_context(context)
         context["banner_is_present"] = True
-        context["banner_text"] = "C’est grâce à votre soutien que nous pouvons agir en toute indépendance."
+        context["banner_text"] = ("C’est grâce à votre soutien que nous "
+                                  "pouvons agir en toute indépendance.")
         context["banner_button_text"] = "Je participe"
         context["banner_button_link"] = reverse('stripe_app:stripe')
 
@@ -242,7 +242,7 @@ class TopicBlogItemViewOne(StaffRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs) # noqa
         pk_id = kwargs.get('pkid', -1)
         item_slug = kwargs.get('item_slug', '')
         tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=item_slug)
@@ -292,7 +292,6 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
         else:
             return names
 
-
     def get_queryset(self, *args, **kwargs):
         """Return a queryset of matches for a given item_slug.
         """
@@ -301,7 +300,7 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             # If item_slug exists, we use it to filter the view.
             item_slug = self.kwargs['item_slug']
             qs = qs.filter(slug=item_slug).order_by(
-                '-date_modified','-publication_date')
+                '-date_modified', '-publication_date')
             return qs
         # Should sort by date_modified, but that will be ugly until
         # it's been in production for a bit.  So just leave it here
@@ -311,6 +310,7 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
                  .annotate(count=Count('slug'),
                            date_modified=Max('date_modified')) \
                  .order_by('-date_modified')
+
 
 @StaffRequired
 def get_slug_dict(request):
