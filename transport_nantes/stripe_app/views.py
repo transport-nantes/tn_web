@@ -251,12 +251,12 @@ def tracking_progression(request: dict) -> TrackingProgression:
             data.save()
         except Exception as error_message:
             logger.info(
-                "Error while creating TrackingProgression instance : ",
+                "Error while creating TrackingProgression instance : {0}",
                 error_message)
 
         return HttpResponse(status=200)
     except Exception as error_message:
-        logger.info("error message: ", error_message)
+        logger.info(f"error message: {error_message}")
         return JsonResponse({'error': str(error_message)})
 
 
@@ -275,7 +275,7 @@ def stripe_webhook(request):
     stripe.api_key = STRIPE_SECRET_KEY
     endpoint_secret = STRIPE_ENDPOINT_SECRET
     payload = request.body
-    logger.info("payload: ", payload)
+    logger.info(f"payload: {payload}")
     try:
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     except KeyError:
@@ -294,19 +294,20 @@ def stripe_webhook(request):
         logger.info("Invalid signature in stripe webhook")
         return HttpResponse(status=400)
 
-    logger.info("The event has been constructed : ", event)
-    logger.info("The event type is : ", event['type'])
+    logger.info(f"The event has been constructed : {event}")
+    logger.info(f"The event type is : {event['type']}")
     # Event when a donor completes a checkout session
     # whether it's a one-time payment or a subscription.
     if event['type'] == 'checkout.session.completed':
         logger.info("Stripe payment webhook succeeded.")
-        logger.info("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.info(
+            "Details attached to event : \n\n" + "="*30 + f"\n {event}")
         try:
             donation = make_donation_from_webhook(event)
             donation.save()
         except Exception as error_message:
-            logger.info("="*80, "\n", "Error while creating \
-            a new Donation. Details : ", error_message)
+            logger.info("="*80 + f"\nError while creating \
+            a new Donation. Details : {error_message}")
             return HttpResponse(status=500)
         update_user_name(event)
 
@@ -315,32 +316,34 @@ def stripe_webhook(request):
     elif event['type'] == 'invoice.payment_succeeded':
         # subscription_cycle is the reason invoked for subscription payments
         # that are not the first one.
-        logger.info('event["data"]["object"]["billing_reason"] : ',
-                    event['data']['object']['billing_reason'])
+        billing_reason = event['data']['object']['billing_reason']
+        logger.info(f'Billing reason : {billing_reason}')
         if event["data"]["object"]["billing_reason"] == "subscription_cycle":
             logger.info("Stripe subscription payment webhook called.")
-            logger.info("Details attached to event : \n\n", "="*30, "\n",
-                        event)
+            logger.info("Details attached to event : \n\n" + "="*30 +
+                        f"\n {event}")
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             save_recurring_payment_details(customer_id, amount)
 
     elif event["type"] == 'checkout.session.expired':
         logger.info("Stripe checkout session expired")
-        logger.info("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.info(
+            "Details attached to event : \n\n" + "="*30 + f"\n {event}")
         try:
             donation = make_donation_from_webhook(event)
             donation.amount_centimes_euros = 0
             donation.save()
         except Exception as error_message:
-            logger.info("="*80, "\n", "Error while creating \
-            a new Donation. Details : ", error_message)
+            logger.info("="*80 + f"\nError while creating \
+            a new Donation. Details : {error_message}")
             return HttpResponse(status=500)
         update_user_name(event)
 
     else:
-        logger.error("Unknown event type : ", event['type'])
-        logger.error("Details attached to event : \n\n", "="*30, "\n", event)
+        logger.error(f"Unknown event type : {event['type']}")
+        logger.error(
+            "Details attached to event : \n\n" + "="*30 + f"\n{event}")
         return HttpResponse(status=500)
 
     return HttpResponse(status=200)
@@ -372,7 +375,7 @@ def get_user(email: str) -> User:
         return HttpResponseServerError("Too many users with that email.")
 
     if len(existing_users) == 1:
-        logger.info("User already exists: " + str(existing_users))
+        logger.info(f"User already exists: {str(existing_users)}")
         return existing_users[0]
 
     else:
@@ -405,7 +408,7 @@ def update_user_name(event: dict) -> None:
             user.last_name = metadata["last_name"]
             user.save()
     except Exception as error_message:
-        logger.info("Error while updating user name : ", error_message)
+        logger.info(f"Error while updating user name : {error_message}")
 
 
 def make_donation_from_webhook(event: dict) -> Donation:
@@ -449,7 +452,7 @@ def make_donation_from_webhook(event: dict) -> Donation:
         logger.info("Donation entry created.")
         return donation
     except Exception as e:
-        logger.info("Error while creating a new donation : ", e)
+        logger.info(f"Error while creating a new donation : {e}")
         return False
 
 
@@ -470,7 +473,8 @@ def save_recurring_payment_details(customer_id: str, amount: int) -> None:
         periodicity_months__gte=1).last()
 
     if customer is None:
-        logger.info("No subscriptions found for this customer_id.")
+        logger.info(
+            f"No subscriptions found for this customer_id: ({customer_id})")
         return False
 
     last_donation_kwargs = customer.__dict__
@@ -499,7 +503,7 @@ def save_recurring_payment_details(customer_id: str, amount: int) -> None:
         new_donation.save()
         logger.info("Donation entry created.")
     except Exception as e:
-        logger.info("Error while creating a new donation : ", e)
+        logger.info(f"Error while creating a new donation : {e}")
         return False
 
 
