@@ -1,10 +1,9 @@
-This repository contains the Transport Nantes website code.
-
-This program is distributed under the GNU GPL v3 licence.  See the file LICENCE for its text.
-
 # Project description
 
-(to come)
+This repository contains the Transport Nantes website code.
+We aim to promote a better, safer, more reliable mobility in France.
+
+This program is distributed under the GNU GPL v3 licence.  See the file LICENCE for its text.
 
 # Table of contents
 - [1. How to install](#how-to-install)
@@ -67,6 +66,15 @@ Indeed, even though your configuration is fine, you don't have the database crea
 
 ### Setting up a database
 
+#### The easy way
+1. Enter the command `python manage.py init_db` in the terminal.
+2. Done ! You can see the front page of the website at `http://localhost:8000/` or `0.0.0.0:8000/`. 
+It also creates a superuser called `Superuser` with the password `admin`.
+
+#### The manual way
+<details>
+<summary>I'm a masochist, I want to do it manually</summary>
+
 1. Start by running the `python manage.py migrate` command. You should now see a new file named `db.sqlite3` in your current directory.
 
 2. Run `python manage.py createsuperuser` to create a superuser, you will use this to connect to Django's admin interface.
@@ -100,6 +108,7 @@ The landing page is an instance of an app named "topicblog", however because you
     - Save the form by hitting "Save" at the bottom right.
 
 Congratulations, you customized your first page on the website ! You can now see it at `http://localhost:8000/` or `0.0.0.0:8000/` ! 
+</details>
 
 # Contribution Guidelines
 
