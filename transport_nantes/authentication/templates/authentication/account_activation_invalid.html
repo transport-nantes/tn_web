@@ -1,6 +1,7 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
-{% load static %}
 
 {% block content %}
-  <p>Le lien de confirmation est invalide. Peut-être qu'il a déjà été utilisé ou qu'il a expiré.</p>
+<p>Le lien de confirmation n'est pas valide.  Il n'est valable que
+    pendant une courte période.  Vous pouvez réessayer
+    <a href="{% url 'authentication:login' %}">ici</a>.</p>
 {% endblock %}

@@ -1,13 +1,11 @@
 {% autoescape off %}
 Bonjour,
 
-{% if is_new %}Vous avez demandé la création d'un compte à {{ domain }}.
-Le lien suivant confirmera sa création.
 Si toutefois vous n'avez pas demandé la création d'un compte, vous
-pouvez simplement supprimer ce mél. {% else %}Vous avez demandé de connecter à votre compte à {{ domain }}.
-Le lien suivant vous le permettra.
-Si toutefois ce mél ne correspond pas à votre demande, vous
-pouvez simplement supprimer ce mél.{% endif %}
+pouvez simplement supprimer ce mél.
 
-http://{{ domain }}{% url 'authentication:activate' token=token remember_me=remember_me %}
+{{ uri }}
+
+{{ scheme }}://{{ host }}{% url 'authentication:activate' token=token remember_me=remember_me %}
+
 {% endautoescape %}
