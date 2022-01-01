@@ -32,6 +32,7 @@ class SimpleTest(TestCase):
         self.assertTrue(object.gclid)
         self.assertTrue(object.msclkid)
         self.assertTrue(object.twclid)
+        self.assertNotEqual("-", object.session_id)
 
     def test_parse_url_ads_false(self):
         the_campaign = get_random_string()
@@ -54,3 +55,4 @@ class SimpleTest(TestCase):
         self.assertFalse(object.gclid)
         self.assertFalse(object.msclkid)
         self.assertFalse(object.twclid)
+        self.assertNotEqual("-", object.session_id)
