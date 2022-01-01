@@ -26,9 +26,10 @@ from . import views
 
 app_name = 'authentication'
 urlpatterns = [
-    path('in', views.login, name='login'),
+    path('in', views.LoginView.as_view(), name='login'),
+    path('pass/<str:token>',
+         views.PasswordLoginView.as_view(), name='password_login'),
     path('out', views.DeauthView.as_view(), name='logout'),
-    path('mod', views.profile, name='mod'),
-    path('activate/<remember_me>/<token>', views.activate, name='activate'),
-
+    path('mod', views.ProfileView.as_view(), name='mod'),
+    path('activate/<str:token>', views.ActivationLoginView.as_view(), name='activate'),
 ]
