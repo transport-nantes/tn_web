@@ -10,8 +10,11 @@ class SessionCookieMiddleWare:
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        # Add a session cookie to requests if absent.
         request = self.process_request(request)
+        response = self.get_response(request)
+
+        # Communicate the session cookie to the client if absent.
         response = self.process_response(request, response)
         return response
 
