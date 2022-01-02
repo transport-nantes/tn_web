@@ -20,7 +20,7 @@ urlpatterns = [
     path('dashboard', DashboardView.as_view(), name='dashboard')
 ]
 
-# For debugging the thankyou template:
+# For debugging the "thank you" template:
 if hasattr(settings, 'ROLE') and 'production' != settings.ROLE:
     urlpatterns.append(path('merci', MailingListMerci.as_view(),
                             name='list_ok'))
