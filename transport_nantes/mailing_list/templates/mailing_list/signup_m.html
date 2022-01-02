@@ -2,6 +2,7 @@
 {% load static %}
 {% load don %}
 {% load mpanels %}
+{% load crispy_forms_tags %}
 
 {% block og_title %}Inscrivez-vous à la newsletter des Mobilitains !{% endblock og_title %}
 {% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
@@ -37,7 +38,7 @@
 		{% for field in form %}
 		<p>
 		    {{ field.label }}<br>
-		    {{ field }}
+		    {{ field|as_crispy_field }}
 		    {% if field.help_text %}
 		    <small style="color: grey">{{ field.help_text }}</small>
 		    {% endif %}
