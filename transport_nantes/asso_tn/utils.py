@@ -1,5 +1,6 @@
 import datetime
 from functools import wraps
+import logging
 
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
@@ -9,6 +10,8 @@ from django.utils.crypto import secrets
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
+logger = logging.getLogger("django")
 
 
 def make_timed_token(email, minutes, persistent=0, test_value_now=None):
@@ -50,6 +53,7 @@ def make_timed_token(email, minutes, persistent=0, test_value_now=None):
     encoded_token = urlsafe_base64_encode(token.encode())
     return encoded_token
 
+
 def token_valid(encoded_timed_token, test_value_now=None):
     """Validate a timed token.
 
@@ -63,7 +67,11 @@ def token_valid(encoded_timed_token, test_value_now=None):
     The test_value_now is for testing and should not normally be set.
 
     """
-    timed_token = urlsafe_base64_decode(encoded_timed_token).decode()
+    try:
+        timed_token = urlsafe_base64_decode(encoded_timed_token).decode()
+    except (TypeError, ValueError):
+        logger.info(f"token_valid: invalid token ({encoded_timed_token})")
+        return (None, 0)
     the_rand_value, the_email, the_soon, the_persistent, the_hmac = \
         timed_token.split('|')
     computed_hmac = salted_hmac(the_soon + the_persistent,
