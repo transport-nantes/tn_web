@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 from . import settings_local
+import sys
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -216,3 +217,9 @@ STRIPE_SECRET_KEY = settings_local.STRIPE_SECRET_KEY
 STRIPE_ENDPOINT_SECRET = settings_local.STRIPE_ENDPOINT_SECRET
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Allows the captcha to pass in tests mode
+# See doc :
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#captcha-test-mode
+if 'test' in sys.argv and ROLE == "dev":
+    CAPTCHA_TEST_MODE = True

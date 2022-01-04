@@ -3,7 +3,6 @@ import datetime
 
 from .utils import make_timed_token, token_valid
 
-# Create your tests here.
 
 class TimedTokenTest(TestCase):
 
@@ -27,5 +26,5 @@ class TimedTokenTest(TestCase):
             self.assertEqual(before_response[0], EMAIL)
             self.assertEqual(before_response[1], persisted)
             after_response = token_valid(token, NOW + EXPIRY_SECONDS + 1)
-            self.assertEqual(after_response[0], -1)
+            self.assertEqual(after_response[0], None)
             self.assertEqual(after_response[1], 0)
