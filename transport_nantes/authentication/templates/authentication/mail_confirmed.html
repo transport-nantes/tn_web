@@ -3,12 +3,7 @@
 
 {% block content %}
 <div class="p-3">
-  <h2>Bienvenue 
-    {% if user.get_full_name %}
-      , {{ user.get_full_name }} <small>{{ user.username }}</small>
-    {% endif %}
-    !
+  <h2>Bienvenue{% if user.get_full_name %}, {{ user.get_full_name }}{% endif %}&nbsp;!
   </h2>
-  <p>Merci d'avoir confirmé votre adresse !</p>
 </div>
 {% endblock %}
