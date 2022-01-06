@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.views.generic.edit import FormView
 from django.core.mail import send_mail
@@ -147,7 +148,9 @@ def send_activation(request, email, remember_me):
         except Exception as e:
             logger.error(f"Error while sending mail to {email} : {e}")
 
-    else:
+    elif os.getenv('TEST_MODE', "0") == "0":
+        # Only print this in dev mode, which is the only time
+        # we'd care.
         print(f"Sent message : \n{message}")
 
 
