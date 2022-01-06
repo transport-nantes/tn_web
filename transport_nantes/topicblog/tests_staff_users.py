@@ -494,9 +494,11 @@ class TBIListStatusCodeTests(TestCase):
                          msg="The page must return 200 if we provide no "
                          "parameters.")
 
-        # Checks that the number of items displayed is correct
-        # All items must be in the context
-        number_of_items = TopicBlogItem.objects.all().count()
+        # Checks that the number of items displayed is equal to the
+        # number of TBItems with non-empty slugs.  Note that this test
+        # will fail the day we implement pagination on the TBItem list
+        # page.
+        number_of_items = TopicBlogItem.objects.exclude(slug="").count()
         self.assertEqual(len(response.context["object_list"]),
                          number_of_items,
                          msg="The list of items must be the same length as "
