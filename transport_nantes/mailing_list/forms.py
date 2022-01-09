@@ -54,9 +54,18 @@ class MailingListSignupForm(ModelForm):
 
 # Like MailingListSignupForm, but only requests email.
 class QuickMailingListSignupForm(ModelForm):
+    captcha = CaptchaField(
+        label="Je suis humain",
+        help_text="* disponibilité réservée aux humains",
+        error_messages=dict(invalid="captcha incorrect, veuillez réessayer"))
+    mailinglist = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.HiddenInput())
+
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('email', 'captcha', 'mailinglist')
 
         labels = {
             'email': "Adresse mél",

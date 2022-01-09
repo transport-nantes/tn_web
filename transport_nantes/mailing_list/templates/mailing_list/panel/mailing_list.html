@@ -2,9 +2,9 @@
 
 <div class="container py-5 d-flex justify-content-center">
     <div class="row justify-content-center">
-	<div>
-	    <h2 >Restez en contact&nbsp;!</h2>
-	</div>
+	{% if title %}<div>
+	    <h2 >{{ title }}</h2>
+	</div>{% endif %}
 	<div class="d-flex col-sm-12 justify-content-center">
 	    <form class="d-flex flex-column" method="post"
 		  action="{% url 'mailing_list:quick_list_signup' %}">{% csrf_token %}
@@ -12,9 +12,10 @@
 		<p>{{ form.non_field_errors }}</p>
 		{% endif %}
 		{% for field in form %}
-		<p>
+		<div class="fieldWrapper">
+		    {{ field.errors }}
 		    {{ field|as_crispy_field }}
-		</p>
+		</div>
 		{% for error in field.error_messages %}
 		<p style="color: red">{{ error }}</p>
 		{% endfor %}

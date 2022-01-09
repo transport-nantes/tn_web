@@ -1,6 +1,8 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
@@ -8,10 +10,11 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from asso_tn.views import AssoView
-from .forms import MailingListSignupForm, QuickPetitionSignupForm
+from .forms import MailingListSignupForm, QuickMailingListSignupForm, QuickPetitionSignupForm
 from .models import MailingList, MailingListEvent, Petition
 from .events import user_subscribe_count, subscriber_count
 
+logger = logging.getLogger("django")
 
 class MailingListSignup(FormView):
     template_name = 'mailing_list/signup_m.html'
@@ -89,7 +92,7 @@ class MailingListSignup(FormView):
 class QuickMailingListSignup(FormView):
     template_name = 'mailing_list/quick_signup_m.html'
     merci_template = 'mailing_list/merci_m.html'
-    form_class = MailingListSignupForm
+    form_class = QuickMailingListSignupForm
 
     # We don't currently populate this form with the user's current
     # subscriptions.  If the user is logged in, we should.  This then
@@ -97,11 +100,6 @@ class QuickMailingListSignup(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['hero'] = True
-        context['hero_image'] = ('asso_tn/images-libres/'
-                                 'black-and-white-bridge-children-194009-1000'
-                                 '.jpg')
-        context['hero_title'] = 'Newsletter'
         return context
 
     def form_invalid(self, form):
@@ -110,10 +108,6 @@ class QuickMailingListSignup(FormView):
         This is actually a bit of a hack.  We should build the correct
         form, extract the email address from the incoming form, and
         then display the correct thing.  I think.
-
-        This should also pre-select one newsletter, which should be a
-        change to the newsletter model.  If the user is logged in, it
-        should also pre-populate the subscribed newsletters.
 
         """
         return render(self.request, self.template_name, {'form': form})
@@ -124,54 +118,38 @@ class QuickMailingListSignup(FormView):
         This method is called when valid form data has been POSTed.
         It returns an HttpResponse.
         """
-        subscribe = False
-        user = form.save(commit=False)
+        # Get user or None.
+        user = User.objects.filter(email=form.cleaned_data['email']).first()
+        if user is None:
+            user = User()   # New user.
+            user.username = get_random_string(20)
+            user.email = form.cleaned_data['email']
+            logger.info(f"Created new user with email {user.email}")
+            user.save()
+        mailing_list = form.cleaned_data['mailinglist']
+        # If we don't find this, we should 500.
         try:
-            user.refresh_from_db()
+            mailing_list_obj = MailingList.objects.get(
+                mailing_list_token=mailing_list)
         except ObjectDoesNotExist:
-            print('ObjectDoesNotExist')
-            pass            # I'm not sure this can ever happen.
-        if user is None or user.pk is None:
-            user = User.objects.filter(
-                email=form.cleaned_data['email']).first()
-            if user is None:
-                user = User()   # New user.
-                user.username = get_random_string(20)
-                user.first_name = form.cleaned_data['first_name']
-                user.last_name = form.cleaned_data['last_name']
-                user.email = form.cleaned_data['email']
-        user.save()
-        user.profile.commune = form.cleaned_data['commune']
-        user.profile.code_postal = form.cleaned_data['code_postal']
-        user.profile.save()
-        for newsletter in form.cleaned_data['newsletters']:
-            subscription = MailingListEvent.objects.create(
-                user=user,
-                mailing_list=newsletter,
-                event_type=MailingListEvent.EventType.SUBSCRIBE)
-            subscription.save()
-            # At some point we should also store the last known
-            # subscription state in a table with foreign key user.  If
-            # the user is in that table, we use it, otherwise we look
-            # up in mailing_list_events.  (We'll always need this
-            # extra lookup, because a newly created list won't
-            # populate users' current (unsubscribed) state.
-            #
-            # We should wait until this is a performance issue, however.
-            subscribe = True
-        if subscribe:
-            return render(
-                self.request, self.merci_template,
-                {
-                    'hero': True,
-                    'hero_image':
-                    ('asso_tn/images-libres/'
-                     'black-and-white-bridge-children-194009-1000'
-                     '.jpg'),
-                    'hero_title': 'Newsletter',
-                }
-            )
-        return super(MailingListSignup, self).form_valid(form)
+            logger.info(f"Failed to find mailing_list_token={mailing_list}")
+            return HttpResponseServerError()
+        subscription = MailingListEvent.objects.create(
+            user=user,
+            mailing_list=mailing_list_obj,
+            event_type=MailingListEvent.EventType.SUBSCRIBE)
+        subscription.save()
+        return render(
+            self.request, self.merci_template,
+            {
+                'hero': True,
+                'hero_image':
+                ('asso_tn/images-libres/'
+                 'black-and-white-bridge-children-194009-1000'
+                 '.jpg'),
+                'hero_title': 'Newsletter',
+            }
+        )
 
 
 class MailingListMerci(TemplateView):

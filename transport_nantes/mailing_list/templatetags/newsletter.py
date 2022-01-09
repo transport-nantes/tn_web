@@ -8,20 +8,21 @@ from mailing_list.forms import QuickPetitionSignupForm
 register = template.Library()
 
 @register.inclusion_tag('mailing_list/panel/mailing_list.html', takes_context=True)
-def show_mailing_list(context):
+def show_mailing_list(context, **kwargs):
     """Offer to join the mailing list.
 
-    """
-    form = QuickMailingListSignupForm
-    context['form'] = form
-    return context
+    The caller must provide a mailinglist name.  This makes no sense
+    without, and we will 500 (our fault) without.
 
-@register.inclusion_tag('mailing_list/panel/inline_mailing_list.html', takes_context=True)
-def inline_mailing_list(context):
-    """Offer to join the mailing list.
+    Optionally provide a title.
 
     """
-    form = QuickMailingListSignupForm
+    context['title'] = kwargs.get('title', "")
+    mailinglist = kwargs.get('mailinglist')
+    if mailinglist is None:
+        mailinglist = context.get('mailinglist')
+    form = QuickMailingListSignupForm(
+        initial={"mailinglist": mailinglist})
     context['form'] = form
     return context
 
