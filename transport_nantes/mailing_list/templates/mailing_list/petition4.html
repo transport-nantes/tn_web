@@ -23,13 +23,13 @@
 	The petition signup should show at the right and at the bottom but not twice at the bottom.
 	{% endcomment %}
 	<div class="col-lg-10 col-md-8 col-sm-7 col-xs-12">
-	    {{ petition.petition1_md|markdown }} {# part 1 is required  #}
+	    {% tn_markdown petition.petition1_md %} {# part 1 is required  #}
 	    <div class="pl-1 pr-1 pt-1" style="background-color:  #EAF3FC;">
-		{{ petition.petition2_md|markdown }} {# parts 2-4 are optional #}
+		{% tn_markdown petition.petition2_md %} {# parts 2-4 are optional #}
 	    </div>
-	    {{ petition.petition3_md|markdown }}
+	    {% tn_markdown petition.petition3_md %}
 	    <div class="pl-1 pr-1 pt-1" style="background-color:  #FFB686;">
-		{{ petition.petition4_md|markdown }}
+		{% tn_markdown petition.petition4_md %}
 	    </div>
 	    <div class="d-none d-sm-block">
 		{% show_petition_signup petition_token %}
