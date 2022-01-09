@@ -13,11 +13,11 @@
 	    <p>Ce questionnaire n'est plus d'actualité.</p>
 	    {% endif %}
 
-	    <div class="text-info">{{ survey.description|markdown }}</div>
+	    <div class="text-info">{% tn_markdown survey.description %}</div>
 
 	    {% for question in questions %}
 	    <p><b>{{ question.question_number }}.  {{ question.question_title }} </b>
-		{{ question.question_text|markdown }}</p>
+		{% tn_markdown question.question_text %}</p>
 	    {% endfor %}
 	</div>
     </div>

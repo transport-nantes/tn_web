@@ -21,10 +21,10 @@
 <div class="container pt-5">
     <div class="row">
 	<div class="col-lg-10 col-md-9 col-sm-8">
-	    {{ petition.petition1_md|markdown }} {# part 1 is required  #}
-	    {{ petition.petition2_md|markdown }} {# parts 2-4 are optional #}
-	    {{ petition.petition3_md|markdown }}
-	    {{ petition.petition4_md|markdown }}
+	    {% tn_markdown petition.petition1_md %} {# part 1 is required  #}
+	    {% tn_markdown petition.petition2_md %} {# parts 2-4 are optional #}
+	    {% tn_markdown petition.petition3_md %}
+	    {% tn_markdown petition.petition4_md %}
 	</div>
 	<div class="col-lg-2 col-md-3 col-sm-4">
 	    {% show_petition_signup petition_token %}

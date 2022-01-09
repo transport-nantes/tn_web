@@ -68,7 +68,7 @@
          <p class="font-weight-bold">Communiqué de presse</p>
 
           {# First paragraph of text #}
-          {{ page.body_text_1_md|markdown }}
+          {% tn_markdown page.body_text_1_md %}
           {# First CTA, if any #}
           {% if page.cta_1_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
@@ -78,7 +78,7 @@
           {% endif %}
 
           {# Second paragraph #}
-          {{ page.body_text_2_md|markdown }}
+          {% tn_markdown page.body_text_2_md %}
           {# Second CTA, if any #}
           {% if page.cta_2_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}"
@@ -95,7 +95,7 @@
           {% endif %}
 
           {# Third paragraph #}
-          {{ page.body_text_3_md|markdown }}
+          {% tn_markdown page.body_text_3_md %}
           {# Third CTA, if any #}
           {% if page.cta_3_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}"

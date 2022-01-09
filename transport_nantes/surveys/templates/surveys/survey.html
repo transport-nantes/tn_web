@@ -75,7 +75,7 @@
             <h3>La réponse de {{ this_liste.tete_de_liste|default:'' }} ({{ this_liste.liste|default:'' }}) :</h3>
             {% if this_response is not none %}
             <div>
-                {{ this_response.survey_question_response|markdown }}
+                {% tn_markdown this_response.survey_question_response %}
             </div>
             {% else %}
             <p>La liste {{ liste }} n'a pas répondu à cette question.</p>

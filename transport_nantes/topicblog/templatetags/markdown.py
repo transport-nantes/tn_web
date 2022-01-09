@@ -3,21 +3,20 @@ from django.utils.html import escape, mark_safe
 from markdown2 import markdown
 
 from topicblog.tn_links import TNLinkParser
+from django import template
 
 register = template.Library()
 
-@register.filter(name='markdown')
-def safe_markdown(value):
+@register.simple_tag(takes_context=True, name="tn_markdown")
+def tn_markdown(context, value):
     """Safely render markdown to html.
 
-    First escape any html so that we are sure the string is safe.
-
-    Then render markdown to html so that we can render
-    in a template as safe.
+    First escape any html so that we are sure the string is safe, then
+    render to html so that a template may use the data as safe.
 
     Usage:
 
-      {{ value|markdown }}
+      {% tn_markdown md_text_variable %}
     """
     parser = TNLinkParser(verbose=False)
     return mark_safe(markdown(parser.transform(escape(value))))
