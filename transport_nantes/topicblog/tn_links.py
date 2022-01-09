@@ -38,7 +38,7 @@ Some examples:
     [[don:adhésion]]((text))   equivalent to {% bouton_join "text" %}
     [[don:fixed|1]]((text))    equivalent to {% fixed_amount_donation_button 1 "text" %}
 
-    [[news:name]]((text))      equivalent to {% show_mailing_list %}
+    [[news:name]]((text))      equivalent to {% show_mailing_list name %}
 
     [[action:text]]((item_slug))
                                equivalent to [text](/tb/t/item_slug/)
@@ -60,12 +60,14 @@ functions in order to permit HTML on the output.
 
 """
 
-def render_inclusion_tag_to_html(tag_source, tag_name):
+def render_inclusion_tag_to_html(tag_source, tag_name, kwargs):
     """Render an inclusion tag to a string.
     """
 
     template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
-    template_context = {'csrf_token': settings.csrf_token}
+    template_context = {'csrf_token':  settings.csrf_token,
+                        'mailinglist': kwargs['mailinglist']}
+    print('tc', template_context)
     html = Template(template_string).render(Context(template_context))
     return html
 
@@ -205,9 +207,12 @@ class TNLinkParser(object):
                 self.out_string += self.bracket_class_string + ':' + \
                     self.bracket_label_string + '(' + self.paren_string + ')'
         elif 'news' == self.bracket_class_string:
-            newsletter_name = self.bracket_label_string
+            mailinglist_name = self.bracket_label_string
             description_text = self.paren_string
-            self.out_string += render_inclusion_tag_to_html('newsletter', 'show_mailing_list')
+            self.out_string += render_inclusion_tag_to_html(
+                'newsletter',
+                'show_mailing_list',
+                {"mailinglist": mailinglist_name})
             # Bug: this doesn't take into account the mailing list
             # requested or the label we request.
         elif 'action' == self.bracket_class_string:
