@@ -16,7 +16,7 @@
 	    <div class="text-info">{{ survey.description|markdown }}</div>
 
 	    {% for question in questions %}
-	    <p><b>{{ question.question_number }}.  {{ question.question_title }}. </b>
+	    <p><b>{{ question.question_number }}.  {{ question.question_title }} </b>
 		{{ question.question_text|markdown }}</p>
 	    {% endfor %}
 	</div>
