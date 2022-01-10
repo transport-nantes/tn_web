@@ -1,5 +1,6 @@
 import logging
 import os
+from django.utils.crypto import get_random_string
 
 from django.views.generic.edit import FormView
 from django.core.mail import send_mail
@@ -71,7 +72,10 @@ class LoginView(FormView):
             authenticates_by_email = True
         if authenticates_by_email:
             logger.info(f"Sending email to {email}")
-            send_activation(self.request, email, remember_me)
+            try:
+                send_activation(self.request, email, remember_me)
+            except Exception as e:
+                logger.error(f"Error sending activation email to {email}: {e}")
             return render(self.request,
                           'authentication/account_activation_sent.html') # noqa
         else:
@@ -163,12 +167,23 @@ class ActivationLoginView(TemplateView):
         token = self.kwargs.get('token', '')
         email, remember_me = token_valid(token)
         if email is None:
+            logger.info(f"Invalid token : {token}")
             self.template_name = \
                 'authentication/account_activation_invalid.html'
             return context
 
+        # We have a valid token.
+        else:
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                logger.info(f"Creation of user account for {email}")
+                user = User()
+                user.email = email
+                user.username = get_random_string(length=20)
+                user.set_unusable_password()
+                user.save()
+
         try:
-            user = User.objects.get(email=email)
             user.is_active = True
             user.profile.email_confirmed = True
             user.save()
@@ -180,7 +195,8 @@ class ActivationLoginView(TemplateView):
             else:
                 self.request.session.set_expiry(60*60*24*30)
 
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            logger.info(f"Error while activating account : {e}")
             self.template_name = \
                 'authentication/account_activation_invalid.html'
 
