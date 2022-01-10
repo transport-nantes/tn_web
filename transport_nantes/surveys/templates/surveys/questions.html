@@ -17,7 +17,7 @@
 
 	    {% for question in questions %}
 	    <p><b>{{ question.question_number }}.  {{ question.question_title }}. </b>
-		{{ question.question_text }}</p>
+		{{ question.question_text|markdown }}</p>
 	    {% endfor %}
 	</div>
     </div>
