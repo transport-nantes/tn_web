@@ -172,33 +172,25 @@ class ActivationLoginView(TemplateView):
                 'authentication/account_activation_invalid.html'
             return context
 
-        # We have a valid token.
-        else:
-            user = User.objects.filter(email=email).first()
-            if user is None:
-                logger.info(f"Creation of user account for {email}")
-                user = User()
-                user.email = email
-                user.username = get_random_string(length=20)
-                user.set_unusable_password()
-                user.save()
-
-        try:
-            user.is_active = True
-            user.profile.email_confirmed = True
+        user = User.objects.filter(email=email).first()
+        if user is None:
+            logger.info(f"Creation of user account for {email}")
+            user = User()
+            user.email = email
+            user.username = get_random_string(length=20)
+            user.set_unusable_password()
             user.save()
-            auth.login(self.request, user)
-            # Set session cookie expiration to session duration if "False"
-            # otherwise for 30 days
-            if remember_me == "False":
-                self.request.session.set_expiry(0)
-            else:
-                self.request.session.set_expiry(60*60*24*30)
 
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-            logger.info(f"Error while activating account : {e}")
-            self.template_name = \
-                'authentication/account_activation_invalid.html'
+        user.is_active = True
+        user.profile.email_confirmed = True
+        user.save()
+        auth.login(self.request, user)
+        # Set session cookie expiration to session duration if "False"
+        # otherwise for 30 days
+        if remember_me == "False":
+            self.request.session.set_expiry(0)
+        else:
+            self.request.session.set_expiry(60*60*24*30)
 
         return context
 
