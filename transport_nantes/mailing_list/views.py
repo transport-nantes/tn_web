@@ -10,11 +10,13 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from asso_tn.views import AssoView
-from .forms import MailingListSignupForm, QuickMailingListSignupForm, QuickPetitionSignupForm
+from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
+                    QuickPetitionSignupForm)
 from .models import MailingList, MailingListEvent, Petition
 from .events import user_subscribe_count, subscriber_count
 
 logger = logging.getLogger("django")
+
 
 class MailingListSignup(FormView):
     template_name = 'mailing_list/signup_m.html'

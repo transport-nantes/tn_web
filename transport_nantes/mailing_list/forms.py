@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.forms import Form, ModelForm
+from django.forms import ModelForm
 from captcha.fields import CaptchaField
-from authentication.models import Profile
 from .models import MailingList
+
 
 class MailingListMMCF(forms.ModelMultipleChoiceField):
     """A custom form that gives us pretty mailing list labels in
@@ -18,6 +18,7 @@ class MailingListMMCF(forms.ModelMultipleChoiceField):
     def label_from_instance(self, member):
         return '{name}'.format(name=member.mailing_list_name)
 
+
 class MailingListSignupForm(ModelForm):
     captcha = CaptchaField(
         label="Je suis humain",
@@ -30,9 +31,11 @@ class MailingListSignupForm(ModelForm):
     code_postal = forms.CharField(
         max_length=80,
         required=False,
-        label="Code postal", help_text='Nous aide à vous apporter des actualités')
+        label="Code postal",
+        help_text='Nous aide à vous apporter des actualités')
     newsletters = MailingListMMCF(
-        queryset=MailingList.objects.filter(list_active=True, is_petition=False),
+        queryset=MailingList.objects.filter(list_active=True,
+                                            is_petition=False),
         widget=forms.CheckboxSelectMultiple({'class': 'no-bullet-list'}),
         label="Je m’inscris :")
 
@@ -90,7 +93,7 @@ class QuickPetitionSignupForm(ModelForm):
         error_messages=dict(invalid="captcha incorrect, veuillez réessayer"))
     petition_name = forms.CharField(
         max_length=80,
-        required=False,#True
+        required=False,  # True
         widget=forms.HiddenInput())
 
     class Meta:
