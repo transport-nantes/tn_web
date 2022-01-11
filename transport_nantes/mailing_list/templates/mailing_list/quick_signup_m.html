@@ -20,6 +20,9 @@
 <div class="container pt-5">
     <div class="row">
 	<div class="col-md-12">
+		{% if form.errors %}
+			<p class="text-danger">{{ form.errors }}</p>
+		{% endif %}
 	    <p>Vous y êtes presque&nbsp!</p>
 
 	    <form method="post">{% csrf_token %}

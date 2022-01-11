@@ -52,12 +52,14 @@ class MailingListSignupForm(ModelForm):
             'email': "*",
         }
 
+
 # Like MailingListSignupForm, but only requests email.
 class QuickMailingListSignupForm(ModelForm):
     captcha = CaptchaField(
         label="Je suis humain",
         help_text="* disponibilité réservée aux humains",
-        error_messages=dict(invalid="captcha incorrect, veuillez réessayer"))
+        error_messages=dict(invalid="captcha incorrect, veuillez réessayer"),
+        required=True)
     mailinglist = forms.CharField(
         max_length=100,
         required=True,
@@ -70,6 +72,16 @@ class QuickMailingListSignupForm(ModelForm):
         labels = {
             'email': "Adresse mél",
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('email')
+
+        if email == "":
+            self.add_error('email', "Vous devez entrer une adresse mél")
+
+        return cleaned_data
+
 
 class QuickPetitionSignupForm(ModelForm):
     captcha = CaptchaField(
