@@ -110,6 +110,7 @@ class QuickMailingListSignup(FormView):
         then display the correct thing.  I think.
 
         """
+        form["email"].initial = self.request.POST["email"]
         return render(self.request, self.template_name, {'form': form})
 
     def form_valid(self, form):
