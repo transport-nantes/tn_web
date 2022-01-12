@@ -3,9 +3,9 @@ from django.utils.html import escape, mark_safe
 from markdown2 import markdown
 
 from topicblog.tn_links import TNLinkParser
-from django import template
 
 register = template.Library()
+
 
 @register.simple_tag(takes_context=True, name="tn_markdown")
 def tn_markdown(context, value):
@@ -18,5 +18,5 @@ def tn_markdown(context, value):
 
       {% tn_markdown md_text_variable %}
     """
-    parser = TNLinkParser(verbose=False)
+    parser = TNLinkParser(context, verbose=False)
     return mark_safe(markdown(parser.transform(escape(value))))
