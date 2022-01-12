@@ -1,3 +1,5 @@
+from enum import Enum, unique, auto
+
 from django.conf import settings
 from django.template import Template, Context
 from django.urls import reverse, NoReverseMatch
@@ -60,17 +62,19 @@ functions in order to permit HTML on the output.
 
 """
 
-def render_inclusion_tag_to_html(tag_source, tag_name, kwargs):
+
+def render_inclusion_tag_to_html(context, tag_source, tag_name, kwargs):
     """Render an inclusion tag to a string.
     """
 
     template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
     template_context = {'csrf_token':  settings.csrf_token,
                         'mailinglist': kwargs['mailinglist']}
-    html = Template(template_string).render(Context(template_context))
+    template_context = Context(template_context)
+    context.push(template_context)
+    html = Template(template_string).render(context)
     return html
 
-from enum import Enum, unique, auto
 
 @unique
 class State(Enum):
@@ -86,6 +90,7 @@ class State(Enum):
     IN_DOUBLE_PAREN = auto()
     PARSING_CLOSE_PAREN = auto()
 
+
 class TNLinkParser(object):
     """
     """
@@ -99,8 +104,9 @@ class TNLinkParser(object):
     state = State.ORDINARY
     verbose = False
 
-    def __init__(self, verbose=False):
+    def __init__(self, context, verbose=False):
         self.verbose = verbose
+        self.context = context
 
     def clear(self):
         """Clear state before parsing.
@@ -209,6 +215,7 @@ class TNLinkParser(object):
             mailinglist_name = self.bracket_label_string
             description_text = self.paren_string
             self.out_string += render_inclusion_tag_to_html(
+                self.context,
                 'newsletter',
                 'show_mailing_list',
                 {"mailinglist": mailinglist_name})
