@@ -9,7 +9,7 @@ from .tn_links import TNLinkParser, render_inclusion_tag_to_html
 
 class TnLinkParserTest(TestCase):
     def setUp(self):
-        self.parser = TNLinkParser(verbose=False)
+        self.parser = TNLinkParser({}, verbose=False)
 
     def test_broken_links(self):
         self.assertEqual(self.parser.transform('[['), '[[')
@@ -71,7 +71,7 @@ class TnLinkParserTest(TestCase):
         html = 'dog ' + don.external_url(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
-        self.parser = TNLinkParser(verbose=False)
+        self.parser = TNLinkParser({}, verbose=False)
         pdll = 'Pays de la Loire'
         pdll_url = 'https://dog/cat/horse'
         markdown = '[[externe:{label}]](({url}))'.format(label=pdll, url=pdll_url)
@@ -89,7 +89,7 @@ class TnLinkParserTest(TestCase):
         html = 'dog ' + don.external_url_button(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
-        self.parser = TNLinkParser(verbose=False)
+        self.parser = TNLinkParser({}, verbose=False)
         pdll = 'Pays de la Loire'
         pdll_url = 'https://dog/cat/horse'
         markdown = '[[EXTERNE:{label}]](({url}))'.format(label=pdll, url=pdll_url)
