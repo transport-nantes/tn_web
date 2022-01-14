@@ -16,8 +16,10 @@
 	    <div class="text-info">{% tn_markdown survey.description %}</div>
 
 	    {% for question in questions %}
+	    <div class="pt-3 pb-2">
 	    <p><b>{{ question.question_number }}.  {{ question.question_title }} </b>
 		{% tn_markdown question.question_text %}</p>
+	    </div>
 	    {% endfor %}
 	</div>
     </div>
