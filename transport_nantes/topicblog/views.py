@@ -20,24 +20,20 @@ from .forms import TopicBlogItemForm
 logger = logging.getLogger("django")
 
 
-class TopicBlogItemEdit(StaffRequiredMixin, FormView):
-    """Create or modify a TBItem.
+class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
+    """
+    Create or modify a concrete TBObject.  This class handles the
+    elements common to all TBObject types.
 
-    Fetch a TopicBlogItem and render it for editing.  For additional
-    security (avoid fishing), require the pk_id and slug.  If the slug
-    is absent, assume it is empty.  If the pk_id is also absent, we
-    are creating a new item.
+    Fetch a TopicBlogObject and render it for editing.  For additional
+    security (avoid phishing), require the pk_id and slug.  If the
+    slug is absent, assume it is empty.  If the pk_id is also absent,
+    we are creating a new item.
 
-    Requires authorisation.
+    The derived view must provide model, template_name, and form_class.
 
     """
-    template_name = 'topicblog/tb_item_edit.html'
-    form_class = TopicBlogItemForm
     login_url = reverse_lazy("authentication:login")
-
-    # This should (eventually) present a page with four sections:
-    # slug, social, presentation, content_type, and content.  For now,
-    # we'll just present one big page with all the sections joined.
 
     def get_context_data(self, **kwargs):
         # In FormView, we must use the self.kwargs to retrieve the URL
@@ -48,19 +44,178 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
         slug = self.kwargs.get('item_slug', '')
 
         if pk_id > 0:
-            try:
-                tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=slug)
-                kwargs["form"] = TopicBlogItemForm(instance=tb_item)
-                context = super().get_context_data(**kwargs)
-            except ObjectDoesNotExist:
-                raise Http404
-        else:
-            tb_item = TopicBlogItem()
+            tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
+            kwargs["form"] = self.form_class(instance=tb_object)
             context = super().get_context_data(**kwargs)
+        else:
+            tb_object = self.model()
+            context = super().get_context_data(**kwargs)
+        context['tb_object'] = tb_object
+        return context
+
+    def form_valid(self, form):
+        tb_object = form.save(commit=False)
+        tb_object.user = User.objects.get(username=self.request.user)
+        if hasattr(self, "form_post_process"):
+            self.form_post_process(tb_object, form)
+
+        # Every modification creates a new item.
+        tb_object.pk = None
+        tb_object.publication_date = None
+        tb_object.save()
+        return HttpResponseRedirect(tb_object.get_absolute_url())
+
+
+class TopicBlogBaseView(TemplateView):
+    """
+    Render a TopicBlogItem.
+
+    View a TopicBlogObject by published slug.  No authentication
+    required.
+
+    The derived view must provide model.
+
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            tb_object = self.model.objects.filter(
+                slug=kwargs['item_slug'],
+                publication_date__isnull=False
+                ).order_by("date_modified").last()
+        except ObjectDoesNotExist:
+            raise Http404("Page non trouvée")
+        if tb_object is None:
+            raise Http404("Page non trouvée")
+
+        servable = tb_object.get_servable_status()
+        if not servable:
+            logger.info("TopicBlogBaseView: %s is not servable", tb_object)
+            raise HttpResponseServerError("Le serveur a rencontré un problème")
+
+        # The template is set in the model, it's a str referring to an
+        # existing template in the app.
+        self.template_name = tb_object.template.template_name
+        context['page'] = tb_object
+        tb_object: self.model  # Type hint for linter
+        context = tb_object.set_social_context(context)
+        context["banner_is_present"] = True
+        context["banner_text"] = ("C’est grâce à votre soutien que nous "
+                                  "pouvons agir en toute indépendance.")
+        context["banner_button_text"] = "Je participe"
+        context["banner_button_link"] = reverse('stripe_app:stripe')
+
+        return context
+
+
+class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
+    """
+    Render a specific TopicBlogObject.
+
+    The pk_id specifies which object we want.  A slug is an additional
+    security measure to prevent probing by pk_id.  If the slug is not
+    provided, it is interpreted to be empty, which only makes sense
+    during object creation.
+
+    The derived view must provide model.
+
+    """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        pk_id = kwargs.get('pkid', -1)
+        slug = kwargs.get('item_slug', '')
+        tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
+
+        # We set the template in the model.
+        self.template_name = tb_object.template.template_name
+        context['page'] = tb_object
+        tb_object: self.model  # Type hint for linter
+        context = tb_object.set_social_context(context)
+        context['topicblog_admin'] = True
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs) # noqa
+        pk_id = kwargs.get('pkid', -1)
+        item_slug = kwargs.get('item_slug', '')
+        tb_object = get_object_or_404(self.model, id=pk_id, slug=item_slug)
+
+        try:
+            tb_object: self.model
+            if tb_object.publish():
+                self.model.objects.filter(
+                    slug=tb_object.slug).exclude(
+                        id=tb_object.id).update(publication_date=None)
+                tb_object.save()
+                return HttpResponseRedirect(tb_object.get_absolute_url())
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Failed to publish object {pk_id} with" +
+                         "slug \"{item_slug}\"")
+            return HttpResponseServerError("Failed to publish item")
+        # This shouldn't happen.  It's up to us to make sure we've
+        # vetted that the user is authorised to publish and that the
+        # necessary fields are completed before enabling the publish
+        # button.  Therefore, a 500 is appropriate here.
+        return HttpResponseServerError()
+
+
+class TopicBlogBaseList(StaffRequiredMixin, ListView):
+    """
+    Render a list of TopicBlogObjects.
+
+    """
+    login_url = reverse_lazy("authentication:login")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'item_slug' in self.kwargs:
+            item_slug = self.kwargs['item_slug']
+            context['slug'] = item_slug
+            context['is_servable'] = self.model.objects.filter(
+                slug=item_slug,
+                publication_date__isnull=False
+                ).exists()
+        return context
+
+    def get_queryset(self, *args, **kwargs):
+        """Return a queryset of matches for a given item_slug.
+        """
+        qs = super(ListView, self).get_queryset(*args, **kwargs)
+        if 'item_slug' in self.kwargs:
+            # If item_slug exists, we use it to filter the view.
+            item_slug = self.kwargs['item_slug']
+            qs = qs.filter(slug=item_slug).order_by(
+                '-date_modified', '-publication_date')
+            return qs
+        return qs.values('slug') \
+                 .annotate(count=Count('slug'),
+                           date_modified=Max('date_modified')) \
+                 .order_by('-date_modified')
+
+
+class TopicBlogItemEdit(TopicBlogBaseEdit):
+    """
+    Create or modify a TBItem.
+
+    """
+    model = TopicBlogItem
+    template_name = 'topicblog/tb_item_edit.html'
+    form_class = TopicBlogItemForm
+
+    # This should (eventually) present a page with four sections:
+    # slug, social, presentation, content_type, and content.  For now,
+    # we'll just present one big page with all the sections joined.
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tb_item = context['tb_object']
 
         # Sets if the "Sauvegarder" button should be displayed.
-        context["is_editable"] = context["form"].is_editable
-
         context["form_admin"] = ["slug", "template", "title", "header_image",
                                  "header_title", "header_description",
                                  "header_slug", "content_type"]
@@ -78,9 +233,7 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
 
         return context
 
-    def form_valid(self, form):
-        tb_item = form.save(commit=False)
-        tb_item.user = User.objects.get(username=self.request.user)
+    def form_post_process(self, tb_item, form):
 
         # If we are editing an existing item, the ImageField values
         # won't be copied over -- they aren't included in the rendered
@@ -98,12 +251,6 @@ class TopicBlogItemEdit(StaffRequiredMixin, FormView):
                 if field in form.cleaned_data and \
                         form.cleaned_data[field] is None:
                     setattr(tb_item, field, getattr(existing_item, field))
-
-        # Every modification creates a new item.
-        tb_item.pk = None
-        tb_item.publication_date = None
-        tb_item.save()
-        return HttpResponseRedirect(tb_item.get_absolute_url())
 
 
 @StaffRequired
@@ -140,125 +287,21 @@ def update_template_list(request):
                   {'templates': templates})
 
 
-class TopicBlogItemView(TemplateView):
-    """Render a TopicBlogItem.
-
-    View a TopicBlogItem by slug.  If multiple items share a slug, we
-    choose the one that is currently prioritised (has greatest
-    item_sort_key).  No authentication required.
-
+class TopicBlogItemView(TopicBlogBaseView):
     """
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        try:
-            tb_item = TopicBlogItem.objects.filter(
-                slug=kwargs['item_slug'],
-                publication_date__isnull=False
-                ).order_by("date_modified").last()
-        except ObjectDoesNotExist:
-            raise Http404("Page non trouvée")
-        if tb_item is None:
-            raise Http404("Page non trouvée")
-
-        servable = tb_item.get_servable_status()
-        if not servable:
-            logger.info("TopicBlogItemView: %s is not servable", tb_item)
-            raise HttpResponseServerError("Le serveur a rencontré un problème")
-
-        # The template is set in the model, it's a str referring to an
-        # existing template in the app.
-        self.template_name = tb_item.template.template_name
-        context['page'] = tb_item
-        tb_item: TopicBlogItem  # Type hint for linter
-        context = tb_item.set_social_context(context)
-        context["banner_is_present"] = True
-        context["banner_text"] = ("C’est grâce à votre soutien que nous "
-                                  "pouvons agir en toute indépendance.")
-        context["banner_button_text"] = "Je participe"
-        context["banner_button_link"] = reverse('stripe_app:stripe')
-
-        return context
-
-
-class TopicBlogItemViewOne(StaffRequiredMixin, TemplateView):
-    """Render a specific TopicBlogItem.
-
-    Render a specific TopicBlogItem.  That is, we require the pk_id to
-    specify which item we want.  A slug is an additional required
-    argument as an additional security measure to prevent probing by
-    pk_id.  (If the slug is not provided, it is interpreted to be
-    empty, which only makes sense during object creation.)
-
-    Requires authorisation.
-
-    """
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Default is not a valid pk id, so will 404.
-        pk_id = kwargs.get('pkid', -1)
-        slug = kwargs.get('item_slug', '')
-        try:
-            tb_item = TopicBlogItem.objects.get(id=pk_id, slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
-
-        # We set the template in the model.
-        self.template_name = tb_item.template.template_name
-        context['page'] = tb_item
-        tb_item: TopicBlogItem  # Type hint for linter
-        context = tb_item.set_social_context(context)
-        context['topicblog_admin'] = True
-        return context
-
-    def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs) # noqa
-        pk_id = kwargs.get('pkid', -1)
-        item_slug = kwargs.get('item_slug', '')
-        tb_item = get_object_or_404(TopicBlogItem, id=pk_id, slug=item_slug)
-
-        try:
-            tb_item: TopicBlogItem
-            if tb_item.publish():
-                TopicBlogItem.objects.filter(
-                    slug=tb_item.slug).exclude(
-                        id=tb_item.id).update(publication_date=None)
-                tb_item.save()
-                return HttpResponseRedirect(tb_item.get_absolute_url())
-        except Exception as e:
-            logger.error(e)
-            logger.error(f"Failed to publish article {pk_id} with" +
-                         "slug \"{item_slug}\"")
-            return HttpResponseServerError("Failed to publish item")
-        # This shouldn't happen.  It's up to us to make sure we've
-        # vetted that the user is authorised to publish and that the
-        # necessary fields are completed before enabling the publish
-        # button.  Therefore, a 500 is appropriate here.
-        return HttpResponseServerError()
-
-
-class TopicBlogItemList(StaffRequiredMixin, ListView):
-    """Render a list of TopicBlogItems.
-
-    It's then displayed in the topicblogitem_list template.
+    Render a TopicBlogItem.
 
     """
     model = TopicBlogItem
-    login_url = reverse_lazy("authentication:login")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if 'item_slug' in self.kwargs:
-            item_slug = self.kwargs['item_slug']
-            context['slug'] = item_slug
-            context['is_servable'] = TopicBlogItem.objects.filter(
-                slug=item_slug,
-                publication_date__isnull=False
-                ).exists()
-        return context
+
+
+class TopicBlogItemViewOne(TopicBlogBaseViewOne):
+    model = TopicBlogItem
+
+
+class TopicBlogItemList(TopicBlogBaseList):
+    model = TopicBlogItem
 
     def get_template_names(self):
         names = super().get_template_names()
@@ -266,25 +309,6 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             return ['topicblog/topicblogitem_list_one.html'] + names
         else:
             return names
-
-    def get_queryset(self, *args, **kwargs):
-        """Return a queryset of matches for a given item_slug.
-        """
-        qs = super(ListView, self).get_queryset(*args, **kwargs)
-        if 'item_slug' in self.kwargs:
-            # If item_slug exists, we use it to filter the view.
-            item_slug = self.kwargs['item_slug']
-            qs = qs.filter(slug=item_slug).order_by(
-                '-date_modified', '-publication_date')
-            return qs
-        # Should sort by date_modified, but that will be ugly until
-        # it's been in production for a bit.  So just leave it here
-        # that we should drop the sort on publication_date and only
-        # use date_modified after a bit.  Jeff, 11 Dec 2021.
-        return qs.values('slug') \
-                 .annotate(count=Count('slug'),
-                           date_modified=Max('date_modified')) \
-                 .order_by('-date_modified')
 
 
 @StaffRequired

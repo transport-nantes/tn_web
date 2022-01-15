@@ -23,8 +23,6 @@ class TopicBlogItemForm(ModelForm):
         # variant available allows the user to create a variant with a button
         # is editable allows the user to save the changes like a normal form.
         self.instance: TopicBlogItem
-        self.variant_available = False
-        self.is_editable = self.instance.is_editable()
 
         # When an item is published, its slug becomes frozen (unmodifiable).
         if self.instance.publication_date:

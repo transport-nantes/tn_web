@@ -36,13 +36,7 @@
         <a type="button" class="btn btn-outline-info btn-sm"
            href="{{object.get_absolute_url}}">Visualiser</a>
         {% if object.publication_date %}
-        {% if object.servable %}
-        <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-           href="">Retirer</a>
-        {% else %}
-        <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-           href="">Republier</a>
-        {% endif %}{% endif %}
+	{% endif %}
     </p>
     {% empty %}
     <p>Aucun résultat.</p>
