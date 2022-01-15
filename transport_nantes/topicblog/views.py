@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequiredMixin, StaffRequired
-from .models import TopicBlogItem, TopicBlogTemplate
+from .models import TopicBlogItem, TopicBlogTemplate, TopicBlogEmail
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
@@ -41,7 +41,7 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
         # the URL parameters to the View instance and assigns kwargs
         # to self.kwargs.
         pk_id = self.kwargs.get('pkid', -1)
-        slug = self.kwargs.get('item_slug', '')
+        slug = self.kwargs.get('the_slug', '')
 
         if pk_id > 0:
             tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
@@ -82,7 +82,7 @@ class TopicBlogBaseView(TemplateView):
 
         try:
             tb_object = self.model.objects.filter(
-                slug=kwargs['item_slug'],
+                slug=kwargs['the_slug'],
                 publication_date__isnull=False
                 ).order_by("date_modified").last()
         except ObjectDoesNotExist:
@@ -127,7 +127,7 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         pk_id = kwargs.get('pkid', -1)
-        slug = kwargs.get('item_slug', '')
+        slug = kwargs.get('the_slug', '')
         tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
 
         # We set the template in the model.
@@ -141,8 +141,8 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         context = super().get_context_data(**kwargs) # noqa
         pk_id = kwargs.get('pkid', -1)
-        item_slug = kwargs.get('item_slug', '')
-        tb_object = get_object_or_404(self.model, id=pk_id, slug=item_slug)
+        the_slug = kwargs.get('the_slug', '')
+        tb_object = get_object_or_404(self.model, id=pk_id, slug=the_slug)
 
         try:
             tb_object: self.model
@@ -155,7 +155,7 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         except Exception as e:
             logger.error(e)
             logger.error(f"Failed to publish object {pk_id} with" +
-                         "slug \"{item_slug}\"")
+                         "slug \"{the_slug}\"")
             return HttpResponseServerError("Failed to publish item")
         # This shouldn't happen.  It's up to us to make sure we've
         # vetted that the user is authorised to publish and that the
@@ -173,29 +173,86 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if 'item_slug' in self.kwargs:
-            item_slug = self.kwargs['item_slug']
-            context['slug'] = item_slug
+        if 'the_slug' in self.kwargs:
+            the_slug = self.kwargs['the_slug']
+            context['slug'] = the_slug
             context['is_servable'] = self.model.objects.filter(
-                slug=item_slug,
+                slug=the_slug,
                 publication_date__isnull=False
                 ).exists()
         return context
 
     def get_queryset(self, *args, **kwargs):
-        """Return a queryset of matches for a given item_slug.
+        """Return a queryset of matches for a given the_slug.
         """
         qs = super(ListView, self).get_queryset(*args, **kwargs)
-        if 'item_slug' in self.kwargs:
-            # If item_slug exists, we use it to filter the view.
-            item_slug = self.kwargs['item_slug']
-            qs = qs.filter(slug=item_slug).order_by(
+        if 'the_slug' in self.kwargs:
+            # If the_slug exists, we use it to filter the view.
+            the_slug = self.kwargs['the_slug']
+            qs = qs.filter(slug=the_slug).order_by(
                 '-date_modified', '-publication_date')
             return qs
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
                            date_modified=Max('date_modified')) \
                  .order_by('-date_modified')
+
+
+######################################################################
+# TopicBlogItem
+
+
+
+@StaffRequired
+def get_slug_suggestions(request):
+    """Return a JSON list of suggested slugs.
+
+    This is a helper function for the AJAX call to get the list of
+    suggested slugs.  It is called from the template.
+
+    """
+    partial_slug = request.GET.get('partial_slug')
+    slug_list = TopicBlogItem.objects.filter(
+        slug__contains=partial_slug).order_by("-id")[:20]
+    slug_list = slug_list.values_list('slug', flat=True)
+    # Why did we use set instead of applying DISTINCT() ?
+    # Because Django doesn't support DISTINCT(*field) on
+    # databases other than Postgres. We tried to use raw queries
+    # but it proved to be unsuccessful.
+    slug_list = set(slug_list)
+    return JsonResponse(list(slug_list), safe=False)
+
+
+@StaffRequired
+def update_template_list(request):
+    """
+    Uses a content type passed through Ajax to render
+    a dropdown list of templates associated with this
+    content type for the user to choose from.
+    """
+    content_type = request.GET.get('content_type')
+    templates = TopicBlogTemplate.objects.filter(
+        content_type=content_type)
+    return render(request, 'topicblog/template_dropdown.html',
+                  {'templates': templates})
+
+
+@StaffRequired
+def get_slug_dict(request):
+    """Return a list of all existing slugs"""
+    qs = TopicBlogItem.objects.order_by('slug').values('slug')
+    dict_of_slugs = Counter([item['slug'] for item in qs])
+    return JsonResponse(dict_of_slugs, safe=False)
+
+
+@StaffRequired
+def get_url_list(request):
+    """Return an url directing to a list of items
+    given a slug.
+    """
+    slug = request.GET.get('slug')
+    url = reverse("topicblog:list_items_by_slug", args=[slug])
+    return JsonResponse({'url': url})
 
 
 class TopicBlogItemEdit(TopicBlogBaseEdit):
@@ -207,15 +264,10 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
 
-    # This should (eventually) present a page with four sections:
-    # slug, social, presentation, content_type, and content.  For now,
-    # we'll just present one big page with all the sections joined.
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tb_item = context['tb_object']
 
-        # Sets if the "Sauvegarder" button should be displayed.
         context["form_admin"] = ["slug", "template", "title", "header_image",
                                  "header_title", "header_description",
                                  "header_slug", "content_type"]
@@ -253,40 +305,6 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
                     setattr(tb_item, field, getattr(existing_item, field))
 
 
-@StaffRequired
-def get_slug_suggestions(request):
-    """Return a JSON list of suggested slugs.
-
-    This is a helper function for the AJAX call to get the list of
-    suggested slugs.  It is called from the template.
-
-    """
-    partial_slug = request.GET.get('partial_slug')
-    slug_list = TopicBlogItem.objects.filter(
-        slug__contains=partial_slug).order_by("-id")[:20]
-    slug_list = slug_list.values_list('slug', flat=True)
-    # Why did we use set instead of applying DISTINCT() ?
-    # Because Django doesn't support DISTINCT(*field) on
-    # databases other than Postgres. We tried to use raw queries
-    # but it proved to be unsuccessful.
-    slug_list = set(slug_list)
-    return JsonResponse(list(slug_list), safe=False)
-
-
-@StaffRequired
-def update_template_list(request):
-    """
-    Uses a content type passed through Ajax to render
-    a dropdown list of templates associated with this
-    content type for the user to choose from.
-    """
-    content_type = request.GET.get('content_type')
-    templates = TopicBlogTemplate.objects.filter(
-        content_type=content_type)
-    return render(request, 'topicblog/template_dropdown.html',
-                  {'templates': templates})
-
-
 class TopicBlogItemView(TopicBlogBaseView):
     """
     Render a TopicBlogItem.
@@ -305,25 +323,28 @@ class TopicBlogItemList(TopicBlogBaseList):
 
     def get_template_names(self):
         names = super().get_template_names()
-        if 'item_slug' in self.kwargs:
+        if 'the_slug' in self.kwargs:
             return ['topicblog/topicblogitem_list_one.html'] + names
         else:
             return names
 
 
-@StaffRequired
-def get_slug_dict(request):
-    """Return a list of all existing slugs"""
-    qs = TopicBlogItem.objects.order_by('slug').values('slug')
-    dict_of_slugs = Counter([item['slug'] for item in qs])
-    return JsonResponse(dict_of_slugs, safe=False)
+######################################################################
+# TopicBlogEmail
+
+class TopicBlogEmailEdit(TopicBlogBaseEdit):
+    model = TopicBlogEmail
+    template_name = 'topicblog/tb_item_edit.html'
+    form_class = TopicBlogItemForm
 
 
-@StaffRequired
-def get_url_list(request):
-    """Return an url directing to a list of items
-    given a slug.
-    """
-    slug = request.GET.get('slug')
-    url = reverse("topicblog:list_items_by_slug", args=[slug])
-    return JsonResponse({'url': url})
+class TopicBlogEmailView(TopicBlogBaseView):
+    model = TopicBlogEmail
+
+
+class TopicBlogEmailViewOne(TopicBlogBaseViewOne):
+    model = TopicBlogEmail
+
+
+class TopicBlogEmailList(TopicBlogBaseList):
+    model = TopicBlogEmail

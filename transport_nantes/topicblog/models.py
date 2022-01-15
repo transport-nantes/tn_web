@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.db import models
 
 from transport_nantes.settings_local import TOPIC_BLOG_EDIT_WINDOW_SECONDS
-
+from mailing_list.models import MailingList
 
 class TopicBlogPage(models.Model):
     """Represent a blog entry that permits some measurement.
@@ -280,6 +280,9 @@ class TopicBlogObjectBase(models.Model):
         return True
 
 
+######################################################################
+# TopicBlogItem
+
 class TopicBlogItem(TopicBlogObjectBase):
 
     """Represent an item in the TopicBlog.
@@ -348,7 +351,7 @@ class TopicBlogItem(TopicBlogObjectBase):
         if self.slug:
             return reverse("topicblog:view_item_by_pkid",
                            kwargs={"pkid": self.pk,
-                                   "item_slug": self.slug})
+                                   "the_slug": self.slug})
         else:
             return reverse("topicblog:view_item_by_pkid_only",
                            kwargs={"pkid": self.pk})
@@ -362,7 +365,7 @@ class TopicBlogItem(TopicBlogObjectBase):
         else:
             return reverse("topicblog:edit_item",
                            kwargs={"pkid": self.pk,
-                                   "item_slug": self.slug})
+                                   "the_slug": self.slug})
 
     def is_publishable(self) -> bool:
         """
@@ -518,3 +521,107 @@ class TopicBlogItem(TopicBlogObjectBase):
                 image_fields.append(field.name)
 
         return image_fields
+
+
+######################################################################
+# TopicBlogEmail
+
+class TopicBlogEmail(TopicBlogObjectBase):
+    """Represent an email.
+
+    This can be rendered as an email to be sent or as a web page that
+    the user clicks (or shares) with exactly the same content.
+
+    Note that many fields are nullable in order to permit saving
+    drafts during composition.  Publication and sending, however, must
+    validate that all necessary fields are provided.
+
+    This model must be marked immutable.  That's hard to enforce, but
+    changes must only be spelling and typographical fixes.  If we send
+    a mail, we can't have the web version change in the mean time.
+
+    The header_image only displays on the website, not in emails.  A
+    good way to make an email stay unread is to begin with an image so
+    that the user doesn't see what's coming.
+
+    """
+    class Meta:
+        permissions = (
+            # The simpleset permission allows a user to view TBEmails
+            # that are draft or retired.
+            ("tbe.may_view", "May view unpublished TopicBlogEmails"),
+
+            # Granting edit permission to users does not in itself
+            # permit them to publish or retire, so it is reasonably
+            # safe.
+            ("tbe.may_edit", "May create and modify TopicBlogEmails"),
+
+            # Finally, we can grant users permission to publish, to
+            # self-publish (implies tbe_may_publish), to self-retire,
+            # and to retire (implies self-retire).  Permission to
+            # retire implies permission to re-publish.
+            ("tbe.may_publish", "May publish TopicBlogEmails"),
+            ("tbe.may_publish_self", "May publish own TopicBlogEmails"),
+            ("tbe.may_send", "May send TopicBlogEmails"),
+            ("tbe.may_send_self", "May send own TopicBlogEmails"),
+        )
+
+    subject = models.CharField(max_length=80, blank=True)
+    header_image = models.ImageField(
+        upload_to='header/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+
+    # Content #######################################################
+    body_text_1_md = models.TextField(blank=True)
+    cta_1_slug = models.SlugField(blank=True)
+    cta_1_label = models.CharField(max_length=100, blank=True)
+    body_image_1 = models.ImageField(
+        upload_to='body/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+    body_image_1_alt_text = models.CharField(max_length=100, blank=True)
+
+    body_text_2_md = models.TextField(blank=True)
+    cta_2_slug = models.SlugField(blank=True)
+    cta_2_label = models.CharField(max_length=100, blank=True)
+    body_image_2 = models.ImageField(
+        upload_to='body/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+    body_image_2_alt_text = models.CharField(max_length=100, blank=True)
+
+    # Plus slug, template, title, comment, and social media fields,
+    # provided through abstract base class.
+
+
+class TopicBlogEmailSendRecord(models.Model):
+
+    """Represent the fact that we sent an email.
+    """
+    slug = models.SlugField(allow_unicode=True, blank=True)
+    mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
+    recipient =  models.ForeignKey(User, on_delete=models.PROTECT)
+    send_time = models.DateTimeField(auto_now=True)
+    # Open time is the time of the first instance of a beacon responding.
+    open_time = models.DateTimeField()
+    # Click time is the time of the first instance of a link being clicked.
+    click_time = models.DateTimeField()
+    # Unsubscribe time is the first instance of a user clicking the
+    # unsubscribe button, whether the unsubscribe is successful or
+    # not.  Note that we still have to send the user to the
+    # appropriate mailinglist unsubscribe page with user_id filled in
+    # (so that no email confirmation is required, which would be safer
+    # but would annoy most people).
+    unsubscribe_time = models.DateTimeField()
+
+
+class TopicBlogEmailClicks(models.Model):
+
+    """Represent the fact that an email was clicked.
+
+    Note that TopicBlogEmailSendRecord will record the first click,
+    but here we want to record all clicks that happen and where they
+    lead.
+
+    """
+    email = models.ForeignKey(TopicBlogEmailSendRecord, on_delete=models.PROTECT)
+    click_time = models.DateTimeField()
+    click_url = models.CharField(max_length=1024, blank=False)
