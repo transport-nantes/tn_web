@@ -109,7 +109,7 @@ class TBIEditStatusCodeTest(TestCase):
             reverse("topicblog:edit_item",
                     kwargs={
                         "pkid": self.item_with_slug.id,
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -122,7 +122,7 @@ class TBIEditStatusCodeTest(TestCase):
             reverse("topicblog:edit_item",
                     kwargs={
                         "pkid": 999999999,
-                        "item_slug": "wrong-slug"
+                        "the_slug": "wrong-slug"
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -135,7 +135,7 @@ class TBIEditStatusCodeTest(TestCase):
             reverse("topicblog:edit_item",
                     kwargs={
                         "pkid": 999999999,
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -148,7 +148,7 @@ class TBIEditStatusCodeTest(TestCase):
             reverse("topicblog:edit_item",
                     kwargs={
                         "pkid": self.item_with_slug.id,
-                        "item_slug": "wrong-slug"
+                        "the_slug": "wrong-slug"
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -165,7 +165,7 @@ class TBIEditStatusCodeTest(TestCase):
         response = self.client.get(
             reverse("topicblog:edit_item_by_slug",
                     kwargs={
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -204,7 +204,7 @@ class TBIEditStatusCodeTest(TestCase):
             reverse("topicblog:edit_item",
                     kwargs={
                         "pkid": self.item_without_slug.id,
-                        "item_slug": "test-slug"
+                        "the_slug": "test-slug"
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -266,7 +266,7 @@ class TBIViewStatusCodeTests(TestCase):
             reverse("topicblog:view_item_by_pkid",
                     kwargs={
                         "pkid": self.item_with_slug.id,
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -277,7 +277,7 @@ class TBIViewStatusCodeTests(TestCase):
             reverse("topicblog:view_item_by_pkid",
                     kwargs={
                         "pkid": self.item_with_slug.id,
-                        "item_slug": "wrong-slug"
+                        "the_slug": "wrong-slug"
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -288,7 +288,7 @@ class TBIViewStatusCodeTests(TestCase):
             reverse("topicblog:view_item_by_pkid",
                     kwargs={
                         "pkid": 999999,
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -299,7 +299,7 @@ class TBIViewStatusCodeTests(TestCase):
             reverse("topicblog:view_item_by_pkid",
                     kwargs={
                         "pkid": 999999,
-                        "item_slug": "wrong-slug"
+                        "the_slug": "wrong-slug"
                     })
             )
         self.assertEqual(response.status_code, 403,
@@ -333,7 +333,7 @@ class TBIViewStatusCodeTests(TestCase):
         response = self.client.get(
             reverse("topicblog:view_item_by_slug",
                     kwargs={
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 200,
@@ -356,7 +356,7 @@ class TBIViewStatusCodeTests(TestCase):
         response = self.client.get(
             reverse("topicblog:view_item_by_slug",
                     kwargs={
-                        "item_slug": "wrong-slug"
+                        "the_slug": "wrong-slug"
                     })
             )
         self.assertEqual(response.status_code, 404,
@@ -390,7 +390,7 @@ class TBIViewStatusCodeTests(TestCase):
             reverse("topicblog:view_item_by_pkid",
                     kwargs={
                         "pkid": self.item_without_slug.id,
-                        "item_slug": "a-slug"
+                        "the_slug": "a-slug"
                     })
             )
 
@@ -437,7 +437,7 @@ class TBIListStatusCodeTests(TestCase):
         response = self.client.get(
             reverse("topicblog:list_items_by_slug",
                     kwargs={
-                        "item_slug": self.item_with_slug.slug
+                        "the_slug": self.item_with_slug.slug
                     })
             )
         self.assertEqual(response.status_code, 403,
