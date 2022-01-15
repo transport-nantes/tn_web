@@ -169,72 +169,42 @@ class TopicBlogTemplate(models.Model):
 # new.
 
 
-class TopicBlogItem(models.Model):
-
-    """Represent an item in the TopicBlog.
-
-    An item is the central user-visible element of a TopicBlog (TB)
-    entry.
+class TopicBlogObjectBase(models.Model):
 
     """
+    Represent all that is common in various the various
+    TopicBlogObjects (Item, Email, etc.).
+    """
+
     class Meta:
-        permissions = (
-            # The simpleset permission allows a user to view TBItems
-            # that are draft or retired.
-            ("tbi.may_view", "May view unpublished TopicBlogItems"),
-
-            # Granting edit permission to users does not in itself
-            # permit them to publish or retire, so it is reasonably
-            # safe.
-            ("tbi.may_edit", "May create and modify TopicBlogItems"),
-
-            # Finally, we can grant users permission to publish, to
-            # self-publish (implies tbi_may_publish), to self-retire,
-            # and to retire (implies self-retire).  Permission to
-            # retire implies permission to re-publish.
-            ("tbi.may_publish", "May publish TopicBlogItems"),
-            ("tbi.may_publish_self", "May publish own TopicBlogItems"),
-            ("tbi.may_retire_self", "May retire own TopicBlogItems"),
-            ("tbi.may_retire", "May retire TopicBlogItems"),
-        )
-
+        abstract = True
 
     # I think I saw problems with unicode URLs, though.
     slug = models.SlugField(allow_unicode=True, blank=True)
-    # We control TBItem access via the publication_date.  A TBItem may
-    # be served to non-privileged users if it has a non-empty
-    # publication_date.  Privileged users may see unpublished pages as
-    # well.
+
+    # Publication signals that the TBObject may be served to
+    # non-privileged users.  A NULL or future publication_date
+    # indicates the object should not be served to non-auth'd users.
     #
-    # TBItems begin life with publication_date unset (set to None).
-    # On first publication, publication_date and
-    # first_publication_date are set to the current time.  The
-    # first_publication_date must never be changed after.
-    # Modifications to the item may cause different items with the
-    # same slug to be published and unpublished, but once a slug is
-    # published, it must stay published and be the unique instance of
-    # itself that is published.
+    # At most one of a collection of TBObjects of the same type and
+    # with the same slug should be published.  More than one is an
+    # error.
     #
-    # We call an unpublished page a draft (brouillon).
-    # We call a published page published (publiée).
-    # We call a published and then unpublished page retired (retirée).
+    # The first_publication_date helps us understand collection life
+    # cycle.  The modification date helps us understand object life
+    # cycle.
     #
-    # One should assume that drafts and retired pages may be deleted
+    # We call an unpublished object a draft (brouillon).
+    # We call a published object published (publiée).
+    # We call a published and then unpublished object retired (retirée).
+    #
+    # One should assume that drafts and retired objects may be deleted
     # in some asyncrhonous manner by a cleanup process running outside
-    # of django itself.
+    # of django itself, although we don't currently do so.
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-
-    # Content Type ##################################################
-    #
-    # Encode what type of object we mean to be displaying.
-    #
-    # Examples are blog articles, newsletters (mailed or web viewed),
-    # and petitions.
-    content_type = models.ForeignKey(TopicBlogContentType,
-                                     on_delete=models.CASCADE)
 
     # Presentation ##################################################
     #
@@ -250,29 +220,6 @@ class TopicBlogItem(models.Model):
         help_text='résolution recommandée : 1600x500')
     header_title = models.CharField(max_length=80, blank=True)
     header_description = models.CharField(max_length=120, blank=True)
-
-    # Content #######################################################
-    #
-    # Encode the editorial content of a TBItem.
-    #
-    # We are encoding that content is some text and a CTA (and maybe
-    # the same again), an image, and then maybe another bit of text
-    # with a CTA.
-    body_text_1_md = models.TextField(blank=True)
-    cta_1_slug = models.SlugField(blank=True)
-    cta_1_label = models.CharField(max_length=100, blank=True)
-    body_text_2_md = models.TextField(blank=True)
-    cta_2_slug = models.SlugField(blank=True)
-    cta_2_label = models.CharField(max_length=100, blank=True)
-
-    body_image = models.ImageField(
-        upload_to='body/', blank=True,
-        help_text='résolution recommandée : 1600x500')
-    body_image_alt_text = models.CharField(max_length=100, blank=True)
-
-    body_text_3_md = models.TextField(blank=True)
-    cta_3_slug = models.SlugField(blank=True)
-    cta_3_label = models.CharField(max_length=100, blank=True)
 
     # Social media ##################################################
     #
@@ -325,6 +272,77 @@ class TopicBlogItem(models.Model):
         else:
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
+    def get_servable_status(self):
+        """Return True if page is user visible, False otherwise."""
+        if self.publication_date is None or \
+                datetime.now(timezone.utc) < self.publication_date:
+            return False
+        return True
+
+
+class TopicBlogItem(TopicBlogObjectBase):
+
+    """Represent an item in the TopicBlog.
+
+    An item is the central user-visible element of a TopicBlog (TB)
+    entry.
+
+    """
+    class Meta:
+        permissions = (
+            # The simpleset permission allows a user to view TBItems
+            # that are draft or retired.
+            ("tbi.may_view", "May view unpublished TopicBlogItems"),
+
+            # Granting edit permission to users does not in itself
+            # permit them to publish or retire, so it is reasonably
+            # safe.
+            ("tbi.may_edit", "May create and modify TopicBlogItems"),
+
+            # Finally, we can grant users permission to publish, to
+            # self-publish (implies tbi_may_publish), to self-retire,
+            # and to retire (implies self-retire).  Permission to
+            # retire implies permission to re-publish.
+            ("tbi.may_publish", "May publish TopicBlogItems"),
+            ("tbi.may_publish_self", "May publish own TopicBlogItems"),
+            ("tbi.may_retire_self", "May retire own TopicBlogItems"),
+            ("tbi.may_retire", "May retire TopicBlogItems"),
+        )
+
+
+    # Content Type ##################################################
+    #
+    # Encode what type of object we mean to be displaying.
+    #
+    # Examples are blog articles, newsletters (mailed or web viewed),
+    # and petitions.
+    content_type = models.ForeignKey(TopicBlogContentType,
+                                     on_delete=models.CASCADE)
+
+    # Content #######################################################
+    #
+    # Encode the editorial content of a TBItem.
+    #
+    # We are encoding that content is some text and a CTA (and maybe
+    # the same again), an image, and then maybe another bit of text
+    # with a CTA.
+    body_text_1_md = models.TextField(blank=True)
+    cta_1_slug = models.SlugField(blank=True)
+    cta_1_label = models.CharField(max_length=100, blank=True)
+    body_text_2_md = models.TextField(blank=True)
+    cta_2_slug = models.SlugField(blank=True)
+    cta_2_label = models.CharField(max_length=100, blank=True)
+
+    body_image = models.ImageField(
+        upload_to='body/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+    body_image_alt_text = models.CharField(max_length=100, blank=True)
+
+    body_text_3_md = models.TextField(blank=True)
+    cta_3_slug = models.SlugField(blank=True)
+    cta_3_label = models.CharField(max_length=100, blank=True)
+
+
     def get_absolute_url(self):
         """This function is called on creation of the item"""
         if self.slug:
@@ -345,14 +363,6 @@ class TopicBlogItem(models.Model):
             return reverse("topicblog:edit_item",
                            kwargs={"pkid": self.pk,
                                    "item_slug": self.slug})
-
-    def can_create_variant(self) -> bool:
-        """
-        Checks if the user can create a variant or not.
-        Users can create variants at any time, unless the form
-        is about a new item.
-        """
-        return True if self.id else False
 
     def is_editable(self) -> bool:
         """
@@ -528,10 +538,3 @@ class TopicBlogItem(models.Model):
                 image_fields.append(field.name)
 
         return image_fields
-
-    def get_servable_status(self):
-        """Return True if page is user visible, False otherwise."""
-        if self.publication_date is None or \
-                datetime.now(timezone.utc) < self.publication_date:
-            return False
-        return True
