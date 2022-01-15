@@ -364,26 +364,6 @@ class TopicBlogItem(TopicBlogObjectBase):
                            kwargs={"pkid": self.pk,
                                    "item_slug": self.slug})
 
-    def is_editable(self) -> bool:
-        """
-        Checks if the user can edit the item or not.
-        Users can edit the item at any time, unless the item
-        has been published for more than a set amount of time.
-        """
-        is_editable = True
-        if self.publication_date:
-            # Checks to allow the user to edit the item or not
-            time_since_publication = datetime.now(
-                timezone.utc) - self.publication_date
-
-            # Beyond X seconds, the user can't edit the item anymore
-            # and only has the possibility to create a variant.
-            seconds_since_publication_date = time_since_publication.seconds
-            if seconds_since_publication_date > TOPIC_BLOG_EDIT_WINDOW_SECONDS:
-                is_editable = False
-
-        return is_editable
-
     def is_publishable(self) -> bool:
         """
         Return True if the item may be published.
