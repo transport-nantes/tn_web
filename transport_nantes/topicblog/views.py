@@ -181,9 +181,8 @@ class TopicBlogItemView(TemplateView):
         try:
             tb_item = TopicBlogItem.objects.filter(
                 slug=kwargs['item_slug'],
-                publication_date__isnull=False,
-                servable=True
-                ).order_by("item_sort_key").last()
+                publication_date__isnull=False
+                ).order_by("date_modified").last()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_item is None:
@@ -250,6 +249,9 @@ class TopicBlogItemViewOne(StaffRequiredMixin, TemplateView):
         try:
             tb_item: TopicBlogItem
             if tb_item.publish():
+                TopicBlogItem.objects.filter(
+                    slug=tb_item.slug).exclude(
+                        id=tb_item.id).update(publication_date=None)
                 tb_item.save()
                 return HttpResponseRedirect(tb_item.get_absolute_url())
         except Exception as e:
@@ -280,8 +282,7 @@ class TopicBlogItemList(StaffRequiredMixin, ListView):
             context['slug'] = item_slug
             context['is_servable'] = TopicBlogItem.objects.filter(
                 slug=item_slug,
-                publication_date__isnull=False,
-                servable=True
+                publication_date__isnull=False
                 ).exists()
         return context
 

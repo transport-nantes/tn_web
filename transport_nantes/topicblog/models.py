@@ -122,8 +122,6 @@ class TopicBlogTemplate(models.Model):
     # Flags not provided because not user-editable or that otherwise
     # make no sense to include.
     #
-    #   item_sort_key
-    #   servable
     #   publication_date
     #   template
     #   user
@@ -131,7 +129,7 @@ class TopicBlogTemplate(models.Model):
     # Provide the names of fields that the user may set but that do
     # not impede publication.
     optional_fields_for_publication = set().union(
-        ['header_description', 'header_slug',
+        ['header_description',
          'cta_1_slug', 'cta_1_label',
          'cta_2_slug', 'cta_2_label',
          'cta_3_slug', 'cta_3_label',
@@ -161,26 +159,14 @@ class TopicBlogTemplate(models.Model):
 
 
 # The way to think of TopicBlog (TB) is as a collection of TBItem's,
-# which encodes a name, servability (whether or not we propose the
-# item for serving), and satellite information (which is embedded in
-# TBItem, because that seems easier with django than creating
-# satellite classes for presentation, social media, content, etc.).
+# which encodes a name, publication date (we serve the item only if
+# published), and satellite information (which is embedded in TBItem,
+# because that seems easier with django than creating satellite
+# classes for presentation, social media, content, etc.).
 #
 # Thus, a modification of a TBItem is simply a new TBItem that
 # contains some of the things the old one did as well as something
-# new.  For example, to make a variant of a TBItem with new social
-# media info, we would duplicate the TBItem, replace the social media
-# fields, and persist the new TBItem with the one changed data.
-#
-# All servable items with the same slug are potentially servable when
-# a user requests that slug.  More specifically, they should be
-# considered not just close or related but legitimately
-# interchangeable.  In fact, we use the TBItem's item_sort_key to
-# simplify serving.  Rather than doing multiple queries to learn how
-# many items have the same slug and choosing one at random, we let a
-# periodic process set the item_sort_key's to new random values.  On
-# requesting a slug, we select the slug with the maximum
-# item_sort_key.
+# new.
 
 
 class TopicBlogItem(models.Model):
@@ -215,28 +201,29 @@ class TopicBlogItem(models.Model):
 
     # I think I saw problems with unicode URLs, though.
     slug = models.SlugField(allow_unicode=True, blank=True)
-    item_sort_key = models.IntegerField()
-    # We control TBItem access via the fields servable and
-    # publication_date.  A TBItem may be served to non-privileged
-    # users if it has a non-empty publication_date and servable is
-    # True.  Privileged users may see unpublished pages as well.
+    # We control TBItem access via the publication_date.  A TBItem may
+    # be served to non-privileged users if it has a non-empty
+    # publication_date.  Privileged users may see unpublished pages as
+    # well.
     #
-    # TBItems begin life with publication_date unset (set to None) and
-    # servable False.  On first publication, servable is set to True
-    # and publication_date is set to the current time and must never
-    # be changed after.
-    #
-    # Servable may be toggled if necessary to control visibility.
+    # TBItems begin life with publication_date unset (set to None).
+    # On first publication, publication_date and
+    # first_publication_date are set to the current time.  The
+    # first_publication_date must never be changed after.
+    # Modifications to the item may cause different items with the
+    # same slug to be published and unpublished, but once a slug is
+    # published, it must stay published and be the unique instance of
+    # itself that is published.
     #
     # We call an unpublished page a draft (brouillon).
-    # We call a published and servable page published (publiée).
-    # We call a published and unservable page retired (retirée).
+    # We call a published page published (publiée).
+    # We call a published and then unpublished page retired (retirée).
     #
     # One should assume that drafts and retired pages may be deleted
     # in some asyncrhonous manner by a cleanup process running outside
     # of django itself.
-    servable = models.BooleanField(default=False)
     publication_date = models.DateTimeField(blank=True, null=True)
+    first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
@@ -263,10 +250,6 @@ class TopicBlogItem(models.Model):
         help_text='résolution recommandée : 1600x500')
     header_title = models.CharField(max_length=80, blank=True)
     header_description = models.CharField(max_length=120, blank=True)
-    # The header_slug points to an existing TBItem slug and will
-    # render as a link to that page.  That is, it is a way to encode
-    # "what happens if a user clicks on this header?".
-    header_slug = models.CharField(max_length=100, blank=True)
 
     # Content #######################################################
     #
@@ -338,10 +321,9 @@ class TopicBlogItem(models.Model):
     def __str__(self):
         if self.slug:
             return f'{str(self.slug)} - {str(self.title)} - ' + \
-                f'ISK : {str(self.item_sort_key)} - ID : {str(self.id)}'
+                f'ID : {str(self.id)}'
         else:
-            return f'{str(self.title)} - ISK : {str(self.item_sort_key)} ' + \
-                f'- ID : {str(self.id)} (NO SLUG)'
+            return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
     def get_absolute_url(self):
         """This function is called on creation of the item"""
@@ -407,9 +389,17 @@ class TopicBlogItem(models.Model):
         """
         If publishable, set item publication and return True.
         Else do nothing and return False.
+
+        The caller is responsable for retiring any same-slug item that
+        is already published.
+
+        It would manifestly be better to do the two together in a transaction.
+        Cf. https://docs.djangoproject.com/en/3.2/topics/db/transactions/
+
         """
         if self.is_publishable():
-            self.servable = True
+            if self.first_publication_date is None:
+                self.first_publication_date = datetime.now()
             self.publication_date = datetime.now()
             return True
         else:
@@ -488,7 +478,6 @@ class TopicBlogItem(models.Model):
             fields.add('header_image')
             fields.add('header_title')
             fields.add('header_description')
-            fields.add('header_slug')
         if template.body_text_1_md:
             fields.add('body_text_1_md')
         if template.body_text_2_md:
@@ -542,11 +531,7 @@ class TopicBlogItem(models.Model):
 
     def get_servable_status(self):
         """Return True if page is user visible, False otherwise."""
-        if not self.servable:
-            return False
-
         if self.publication_date is None or \
                 datetime.now(timezone.utc) < self.publication_date:
             return False
-
         return True
