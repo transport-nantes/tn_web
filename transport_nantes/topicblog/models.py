@@ -8,33 +8,13 @@ from django.db import models
 from transport_nantes.settings_local import TOPIC_BLOG_EDIT_WINDOW_SECONDS
 from mailing_list.models import MailingList
 
+######################################################################
+# topic blog, v1
+
 class TopicBlogPage(models.Model):
-    """Represent a blog entry that permits some measurement.
-
-    We want to discover and measur what works and what doesn't.  So
-    the idea is that we have topics and one or more pages servable
-    under that topic.  All pages for a given topic should be
-    semantically interchangeable, and internal links on our own blog
-    should generally point to topics rather than specific pages.  This
-    lets us measure what sorts of pages work well and what sorts
-    don't.
-
-    We have two important contexts: externally presented links (e.g.,
-    shares) and internally presented links (within site).  In the
-    first case, we're measuring using interaction with the page's
-    social media preview information, such as twitter card or
-    opengraph info.  To some extent, we'll also want to measure what
-    causes the page to hold the reader's attention, to click further,
-    eventually to convert.
-
-    In the second case, we're measuring only retention and progress to
-    goal.  So we generally want to distinguish between the two.
-    Probably our only real way to do that is via REFERER, because any
-    internal link can be copied and presented externally.
-
-    """
     # Obsolete, but removing the model doesn't remove the table,
     # which leaves a strange trace behind.
+    pass
 
 
 ######################################################################
@@ -69,7 +49,7 @@ class TopicBlogTemplate(models.Model):
     Note that creating the html template is a standard git action:
     create, edit, commit, PR.  So designers can do that part with no
     worry.  This model provides an interface between the html template
-    and the TB editors so that users re asked for the fields that
+    and the TB editors so that users are asked for the fields that
     matter to the actions they are performing.
 
     At some point we might want to make this more publicly accessible,
@@ -77,17 +57,32 @@ class TopicBlogTemplate(models.Model):
     devs will be light and not worth the development cost of making
     instances of this model safe to edit.
 
-    With the exception of the template_name field, this model is
-    largely a placeholder for now to remind us of what we want to
-    happen eventually.  The first iteration of TBv2 will ask users for
-    all fields possible.  We'll make it more use friendly once it
-    works.
-
     I think we will want to have content be inserted via templatetags
     in order to facilitate automated content serving.  But for now,
     we'll assume we have a template file that defines an entire page.
     (We'll therefore need a single record in the database to represent
     that.)
+
+    # Design notes.
+
+    This model (and the ContentType model above) are questionable.
+    While it's not unusual to have software configuration in the
+    database rather than in code, the usual scenario for that is third
+    party or at least one code : many installations.  That is not our
+    use case.  We have one code base and one installation.
+
+    It could reasonably be argued, then, that we should instead, for
+    each TBObject subclass, simply specify in the code a map from
+    template names to a map of the boolean switches this model
+    provides.  That would push all template configuration to python
+    and git rather than splitting it across two sources.
+
+    It's also a bit annoying that this model must know of every field
+    that every derived class might want to use.
+
+    This comment written during the TBItem ->
+    TB(Item|Email|Press|Launcher|Petition) transition, which will
+    surely inform how annoying or not the above really is.
 
     """
     # The template_name must be a valid filename of an html template
