@@ -101,11 +101,6 @@ class TopicBlogBaseView(TemplateView):
         context['page'] = tb_object
         tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
-        context["banner_is_present"] = True
-        context["banner_text"] = ("C’est grâce à votre soutien que nous "
-                                  "pouvons agir en toute indépendance.")
-        context["banner_button_text"] = "Je participe"
-        context["banner_button_link"] = reverse('stripe_app:stripe')
 
         return context
 
