@@ -102,7 +102,7 @@ class TopicBlogTemplate(models.Model):
     # The fields are also required for publishing the TopicBlogItem
     # instance unless they are provided by the
     # optional_fields_for_publication() function.
-    slug = models.BooleanField(default=False)
+    slug = models.BooleanField(max_length=90, default=False)
     title = models.BooleanField(default=False)
     header = models.BooleanField(default=False)
     body_text_1_md = models.BooleanField(default=False)
@@ -175,7 +175,7 @@ class TopicBlogObjectBase(models.Model):
         abstract = True
 
     # I think I saw problems with unicode URLs, though.
-    slug = models.SlugField(allow_unicode=True, blank=True)
+    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
 
     # Publication signals that the TBObject may be served to
     # non-privileged users.  A NULL or future publication_date
@@ -325,10 +325,10 @@ class TopicBlogItem(TopicBlogObjectBase):
     # the same again), an image, and then maybe another bit of text
     # with a CTA.
     body_text_1_md = models.TextField(blank=True)
-    cta_1_slug = models.SlugField(blank=True)
+    cta_1_slug = models.SlugField(max_length=90, blank=True)
     cta_1_label = models.CharField(max_length=100, blank=True)
     body_text_2_md = models.TextField(blank=True)
-    cta_2_slug = models.SlugField(blank=True)
+    cta_2_slug = models.SlugField(max_length=90, blank=True)
     cta_2_label = models.CharField(max_length=100, blank=True)
 
     body_image = models.ImageField(
@@ -337,7 +337,7 @@ class TopicBlogItem(TopicBlogObjectBase):
     body_image_alt_text = models.CharField(max_length=100, blank=True)
 
     body_text_3_md = models.TextField(blank=True)
-    cta_3_slug = models.SlugField(blank=True)
+    cta_3_slug = models.SlugField(max_length=90, blank=True)
     cta_3_label = models.CharField(max_length=100, blank=True)
 
 
@@ -568,7 +568,7 @@ class TopicBlogEmail(TopicBlogObjectBase):
 
     # Content #######################################################
     body_text_1_md = models.TextField(blank=True)
-    cta_1_slug = models.SlugField(blank=True)
+    cta_1_slug = models.SlugField(max_length=90, blank=True)
     cta_1_label = models.CharField(max_length=100, blank=True)
     body_image_1 = models.ImageField(
         upload_to='body/', blank=True,
@@ -576,7 +576,7 @@ class TopicBlogEmail(TopicBlogObjectBase):
     body_image_1_alt_text = models.CharField(max_length=100, blank=True)
 
     body_text_2_md = models.TextField(blank=True)
-    cta_2_slug = models.SlugField(blank=True)
+    cta_2_slug = models.SlugField(max_length=90, blank=True)
     cta_2_label = models.CharField(max_length=100, blank=True)
     body_image_2 = models.ImageField(
         upload_to='body/', blank=True,
@@ -591,7 +591,7 @@ class TopicBlogEmailSendRecord(models.Model):
 
     """Represent the fact that we sent an email.
     """
-    slug = models.SlugField(allow_unicode=True, blank=True)
+    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     recipient =  models.ForeignKey(User, on_delete=models.PROTECT)
     send_time = models.DateTimeField(auto_now=True)
