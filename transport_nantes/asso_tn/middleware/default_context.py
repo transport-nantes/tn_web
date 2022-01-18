@@ -8,15 +8,19 @@ from django.template import RequestContext
 # (now no longer used) Sites module.  We may or may not still need
 # this, at least in its current form.
 
+
 class DefaultContextMiddleware:
     social_media_context = {
         # This assumes images are served from STATIC.
         # We'll need to change something (in base?) when using MEDIA.
-        'og_image': 'velopolitain/v1.png',
+        'og_image_default': 'velopolitain/v1.png',
         'og_image_alt': 'mobilité',
-        'twitter_image': "asso_tn/mobilite-pour-tous.jpg",
-        'twitter_title': "Mobilitains - Pour une mobilité multimodale",
-        'twitter_description': "Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse",
+        'twitter_image_default': "asso_tn/mobilite-pour-tous.jpg",
+        'og_twitter_title_default': ("Mobilitains - Pour une "
+                                     "mobilité multimodale"),
+        'og_twitter_description_default': ("Nous agissons pour une mobilité "
+                                           "plus fluide, plus sécurisée "
+                                           "et plus vertueuse"),
         'twitter_site': "@Mobilitains",
         'twitter_creator': "@Mobilitains",
         'twitter_card': "summary_large_image",
@@ -28,7 +32,8 @@ class DefaultContextMiddleware:
 
     def __call__(self, request):
         context = RequestContext(request)
-        settings.csrf_token = request.COOKIES.get(settings.CSRF_COOKIE_NAME, "")
+        settings.csrf_token = request.COOKIES.get(
+            settings.CSRF_COOKIE_NAME, "")
         response = self.get_response(request)
         return response
 
