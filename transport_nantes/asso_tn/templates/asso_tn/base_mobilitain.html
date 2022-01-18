@@ -90,11 +90,24 @@
 				{% endif %}
 
 			{% endblock styles %}
-
-			<meta property="og:title" content="{{ social.twitter_title }}" />
+			{# OG title #}
+			{% if social.og_title %}
+				<meta property="og:title" content="{{ social.og_title }}" />
+			{% elif social.twitter_title %}
+				<meta property="og:title" content="{{ social.twitter_title }}" />
+			{% else %}	
+				<meta property="og:title" content="{{ social.og_twitter_title_default }}" />
+			{% endif %}
 			<meta property="og:type" content="website" />
 			<meta property="og:url" content="{{ request.build_absolute_uri }}" />
-			<meta property="og:description" content="{{ social.twitter_description }}" />
+			{# OG description #}
+			{% if social.og_description %}
+				<meta property="og:description" content="{{ social.og_description }}" />
+			{% elif social.twitter_description %}
+				<meta property="og:description" content="{{ social.twitter_description }}" />
+			{% else %}
+				<meta property="og:description" content="{{ social.og_twitter_description_default }}" />
+			{% endif %}
 			{% comment "About is_static" %}
 			On views that use static images and not ImageFields, the .url property doesn't
 			exist (e.g. AssoView uses a string to designate the image to use).
@@ -103,9 +116,24 @@
 			if they are designated with a string.
 			{% endcomment %}
 			{% if is_static %}
-				<meta name="og:image" content="{% static social.og_image %}" />
+				{# OG image #}
+				{% if social.og_image %}
+					<meta property="og:image" content="{% static social.og_image %}" />
+				{% elif social.twitter_image %}
+					<meta property="og:image" content="{% static social.twitter_image %}" />
+				{% elif hero_image %}
+					<meta property="og:image" content="{% static hero_image %}" />
+				{% else %}
+					<meta name="og:image" content="{% static social.og_image_default %}" />
+				{% endif %}
 			{% elif page.og_image %}
 				<meta property="og:image" content="{{ page.og_image.url }}" />
+			{% elif page.twitter_image %}
+				<meta property="og:image" content="{{ page.twitter_image.url }}" />
+			{% elif page.header_image  %}
+				<meta property="og:image" content="{{ page.header_image.url}}" />
+			{% else %}
+				<meta property="og:image" content="{% static social.og_image_default %}" />
 			{% endif %}
 			<meta property="og:image:alt" content="{{ social.og_image_alt }}" />
 			{% if social.og_image_type %}
@@ -120,13 +148,41 @@
 			<meta name="twitter:site" content="{{ social.twitter_site }}" />
 			<meta name="twitter:creator" content="{{ social.twitter_creator }}" />
 			{% if is_static %}
-				<meta name="twitter:image" content="{% static social.twitter_image %}" />
+				{# Twitter image #}
+				{% if social.twitter_image %}
+					<meta name="twitter:image" content="{% static social.twitter_image %}" />
+				{% elif social.og_image %}
+					<meta name="twitter:image" content="{% static social.og_image %}" />
+				{% elif hero_image  %}
+					<meta name="twitter:image" content="{% static hero_image %}" />
+				{% else %}
+					<meta name="twitter:image" content="{% static social.twitter_image_default %}" />
+				{% endif %}
 			{% elif page.twitter_image %}
 				<meta name="twitter:image" content="{{ page.twitter_image.url }}" />
+			{% elif page.og_image %}
+				<meta name="twitter:image" content="{{ page.og_image.url }}" />
+			{% elif page.header_image  %}
+				<meta name="twitter:image" content="{{ page.header_image.url}}" />
+			{% else %}
+				<meta name="twitter:image" content="{% static social.twitter_image_default %}" />
 			{% endif %}
-
-			<meta name="twitter:title" content="{{ social.twitter_title }}" />
-			<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{# Twitter title #}
+			{% if social.twitter_title %}
+				<meta name="twitter:title" content="{{ social.twitter_title }}" />
+			{% elif social.og_title %}
+				<meta name="twitter:title" content="{{ social.og_title }}" />
+			{% else %}
+				<meta name="twitter:title" content="{{ social.og_twitter_title_default }}" />
+			{% endif %}
+			{# Twitter description #}
+			{% if social.twitter_description %}
+				<meta name="twitter:description" content="{{ social.twitter_description }}" />
+			{% elif social.og_description %}
+				<meta name="twitter:description" content="{{ social.og_description }}" />
+			{% else %}
+				<meta name="twitter:description" content="{{ social.og_twitter_description_default }}" />
+			{% endif %}
 			{% comment %}
 				https://cards-dev.twitter.com/validator
 			{% endcomment %}
