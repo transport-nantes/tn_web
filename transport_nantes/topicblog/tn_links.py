@@ -67,13 +67,9 @@ def render_inclusion_tag_to_html(context, tag_source, tag_name, kwargs):
     """Render an inclusion tag to a string.
     """
 
+    context['mailinglist'] = kwargs['mailinglist']
     template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
-    template_context = {'csrf_token':  settings.csrf_token,
-                        'mailinglist': kwargs['mailinglist']}
-    template_context = Context(template_context)
-    context.push(template_context)
-    html = Template(template_string).render(context)
-    return html
+    return Template(template_string).render(context)
 
 
 @unique
