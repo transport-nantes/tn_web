@@ -84,7 +84,7 @@ class TopicBlogBaseView(TemplateView):
             tb_object = self.model.objects.filter(
                 slug=kwargs['the_slug'],
                 publication_date__isnull=False
-                ).order_by("date_modified").last()
+                ).order_by("-publication_date", "-date_modified").first()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_object is None:
@@ -198,7 +198,6 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
 # TopicBlogItem
 
 
-
 @StaffRequired
 def get_slug_suggestions(request):
     """Return a JSON list of suggested slugs.
@@ -307,7 +306,6 @@ class TopicBlogItemView(TopicBlogBaseView):
 
     """
     model = TopicBlogItem
-
 
 
 class TopicBlogItemViewOne(TopicBlogBaseViewOne):
