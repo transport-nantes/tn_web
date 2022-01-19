@@ -186,7 +186,7 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
             # If the_slug exists, we use it to filter the view.
             the_slug = self.kwargs['the_slug']
             qs = qs.filter(slug=the_slug).order_by(
-                '-date_modified', '-publication_date')
+                '-publication_date', '-date_modified')
             return qs
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
@@ -323,6 +323,13 @@ class TopicBlogItemList(TopicBlogBaseList):
             return ['topicblog/topicblogitem_list_one.html'] + names
         else:
             return names
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'the_slug' in self.kwargs:
+            context["currently_published"] = context["object_list"].first()
+
+        return context
 
 
 ######################################################################

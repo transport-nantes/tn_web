@@ -17,26 +17,40 @@
     {% endif %}
     {% for object in object_list %}
     <p>
-	<span class="text-muted">[{{ object.id }}]</span>
+        <span class="text-muted">[{{ object.id }}]</span>
         {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
-        <br>
-	Modifié {{ object.date_modified|date:"l d-m-Y" }}
-        <br>{% if object.publication_date %}
-        Publié {{ object.publication_date|date:"l d-m-Y" }} par {{ user.email }}
-        {% if not object.servable %}(retiré){% endif %}
-        {% else %}
-        Brouillon
-        {% if object.is_publishable %}
-        <span class="text-muted"><i>prêt à publier</i></span>
+        {% if object.id == currently_published.id %}
+                <b style="color:green;">(Page actuelle)</b>
         {% endif %}
-        {% endif %}
+        <br />
+        Créé le {{ object.date_created|date:"l d-m-Y" }}
+        <small class="text-muted">{{ object.date_created|date:"H:i:s" }}</small>
+        par {{ object.user.email }}
+        <br> 
+        Modifié le {{ object.date_modified|date:"l d-m-Y" }}
+        <small class="text-muted">{{ object.date_modified|date:"H:i:s" }}</small>
         <br>
-        <a type="button" class="btn btn-outline-info btn-sm"
-           href="{{object.get_edit_url}}">Modifier</a>
-        <a type="button" class="btn btn-outline-info btn-sm"
-           href="{{object.get_absolute_url}}">Visualiser</a>
         {% if object.publication_date %}
-	{% endif %}
+
+            Publié le {{ object.publication_date|date:"l d-m-Y" }}
+            <small class="text-muted">{{ object.publication_date|date:"H:i:s" }}</small>
+            par {{ object.published_by.email }}
+            {% if object.id == currently_published.id %}
+                <small class="text-muted"> (Première publication : {{ currently_published.first_publication_date|date:"l d-m-Y H:i:s" }})</small>
+            {% endif %}
+
+        {% else %}
+
+            Brouillon
+            {% if object.is_publishable %}
+                <span class="text-muted"><i>prêt à publier</i></span>
+            {% endif %}
+        {% endif %}
+        <br>
+        <a type="button" class="btn btn-outline-info btn-sm"
+        href="{{object.get_edit_url}}">Modifier</a>
+        <a type="button" class="btn btn-outline-info btn-sm"
+        href="{{object.get_absolute_url}}">Visualiser</a>
     </p>
     {% empty %}
     <p>Aucun résultat.</p>
