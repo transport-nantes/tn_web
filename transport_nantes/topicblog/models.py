@@ -1,11 +1,9 @@
 from datetime import datetime, timezone
-from random import randint
 
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.db import models
 
-from transport_nantes.settings_local import TOPIC_BLOG_EDIT_WINDOW_SECONDS
 from mailing_list.models import MailingList
 
 ######################################################################
@@ -243,6 +241,11 @@ class TopicBlogObjectBase(models.Model):
     # Cf. https://developers.facebook.com/docs/sharing/best-practices/
     # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064 # noqa
 
+    author_notes = models.TextField(
+        help_text='Notes pour éditeurs : ne seront pas affichées sur le site',
+        verbose_name="Notes libres pour éditeurs",
+        blank=True, null=True)
+
     def set_social_context(self, context):
         """
         inherited from original TB, it adds socials related
@@ -307,7 +310,6 @@ class TopicBlogItem(TopicBlogObjectBase):
             ("tbi.may_retire", "May retire TopicBlogItems"),
         )
 
-
     # Content Type ##################################################
     #
     # Encode what type of object we mean to be displaying.
@@ -339,7 +341,6 @@ class TopicBlogItem(TopicBlogObjectBase):
     body_text_3_md = models.TextField(blank=True)
     cta_3_slug = models.SlugField(max_length=90, blank=True)
     cta_3_label = models.CharField(max_length=100, blank=True)
-
 
     def get_absolute_url(self):
         """This function is called on creation of the item"""
@@ -593,7 +594,7 @@ class TopicBlogEmailSendRecord(models.Model):
     """
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
-    recipient =  models.ForeignKey(User, on_delete=models.PROTECT)
+    recipient = models.ForeignKey(User, on_delete=models.PROTECT)
     send_time = models.DateTimeField(auto_now=True)
     # Open time is the time of the first instance of a beacon responding.
     open_time = models.DateTimeField()
@@ -617,6 +618,7 @@ class TopicBlogEmailClicks(models.Model):
     lead.
 
     """
-    email = models.ForeignKey(TopicBlogEmailSendRecord, on_delete=models.PROTECT)
+    email = models.ForeignKey(TopicBlogEmailSendRecord,
+                              on_delete=models.PROTECT)
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
