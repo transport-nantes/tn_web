@@ -57,8 +57,15 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
     def form_valid(self, form):
         tb_object = form.save(commit=False)
         tb_object.user = User.objects.get(username=self.request.user)
+
+        # Read-only fields aren't set, so we have to fetch them 
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            tb_existing = self.model.objects.get(id=pkid)
+            tb_object.first_publication_date = tb_existing.first_publication_date
+
         if hasattr(self, "form_post_process"):
-            self.form_post_process(tb_object, form)
+            self.form_post_process(tb_object, tb_existing, form)
 
         # Every modification creates a new item.
         tb_object.pk = None
@@ -280,7 +287,7 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
 
         return context
 
-    def form_post_process(self, tb_item, form):
+    def form_post_process(self, tb_item, tb_existing, form):
 
         # If we are editing an existing item, the ImageField values
         # won't be copied over -- they aren't included in the rendered
@@ -291,13 +298,12 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
         # CreateView / UpdateView.
         pkid = self.kwargs.get('pkid', -1)
         if pkid > 0:
-            existing_item: TopicBlogItem
-            existing_item = TopicBlogItem.objects.get(id=pkid)
-            image_fields = existing_item.get_image_fields()
+            tb_existing: TopicBlogItem
+            image_fields = tb_existing.get_image_fields()
             for field in image_fields:
                 if field in form.cleaned_data and \
                         form.cleaned_data[field] is None:
-                    setattr(tb_item, field, getattr(existing_item, field))
+                    setattr(tb_item, field, getattr(tb_existing, field))
 
 
 class TopicBlogItemView(TopicBlogBaseView):
