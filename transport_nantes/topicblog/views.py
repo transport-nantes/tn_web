@@ -282,7 +282,7 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
         context["form_social"] = ["social_description", "twitter_title",
                                   "twitter_description", "twitter_image",
                                   "og_title", "og_description", "og_image"]
-        context["form_etc"] = ["author_notes"]
+        context["form_notes"] = ["author_notes"]
 
         context["slug_fields"] = tb_item.get_slug_fields()
 
