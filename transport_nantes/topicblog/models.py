@@ -197,8 +197,13 @@ class TopicBlogObjectBase(models.Model):
     # in some asyncrhonous manner by a cleanup process running outside
     # of django itself, although we don't currently do so.
     publication_date = models.DateTimeField(blank=True, null=True)
+    published_by = models.ForeignKey(User, blank=True, null=True,
+                                     on_delete=models.PROTECT,
+                                     related_name='+')
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True, blank=True,
+                                        null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     # Presentation ##################################################
@@ -373,7 +378,7 @@ class TopicBlogItem(TopicBlogObjectBase):
             return False
         return True
 
-    def publish(self):
+    def publish(self, user: User) -> bool:
         """
         If publishable, set item publication and return True.
         Else do nothing and return False.
@@ -389,6 +394,7 @@ class TopicBlogItem(TopicBlogObjectBase):
             if self.first_publication_date is None:
                 self.first_publication_date = datetime.now()
             self.publication_date = datetime.now()
+            self.published_by = user
             return True
         else:
             return False

@@ -10,13 +10,16 @@ class TopicBlogTemplateAdmin(admin.ModelAdmin):
 class TopicBlogItemAdmin(admin.ModelAdmin):
     # Making it read-only allows admins to see its ID
     # By default, non modifyable fields are hidden in admin panel
-    readonly_fields = ('pk',)
+    readonly_fields = ('pk', "date_modified", "date_created")
+
 
 class TopicBlogContentTypeAdmin(admin.ModelAdmin):
     pass
 
+
 class TopicBlogEmailAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(TopicBlogContentType, TopicBlogContentTypeAdmin)
 admin.site.register(TopicBlogTemplate, TopicBlogTemplateAdmin)

@@ -138,10 +138,11 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         pk_id = kwargs.get('pkid', -1)
         the_slug = kwargs.get('the_slug', '')
         tb_object = get_object_or_404(self.model, id=pk_id, slug=the_slug)
+        user = User.objects.filter(username=request.user).first()
 
         try:
             tb_object: self.model
-            if tb_object.publish():
+            if tb_object.publish(user):
                 self.model.objects.filter(
                     slug=tb_object.slug).exclude(
                         id=tb_object.id).update(publication_date=None)
