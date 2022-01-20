@@ -393,7 +393,9 @@ class TopicBlogItem(TopicBlogObjectBase):
         if self.is_publishable():
             if self.first_publication_date is None:
                 self.first_publication_date = datetime.now()
-            self.publication_date = datetime.now()
+                self.publication_date = self.publication_date
+            else:
+                self.publication_date = datetime.now()
             self.published_by = user
             return True
         else:
