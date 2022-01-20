@@ -48,6 +48,9 @@ It is retrieved inside clean_slug_field.js
 	    <li class="nav-item">
 	      <a class="nav-link" data-toggle="tab" href="#form_social">Social</a>
 	    </li>
+		<li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_etc">Autres</a>
+	    </li>
 	  </ul>
 
 	  <!-- Tab panes -->
@@ -94,6 +97,19 @@ It is retrieved inside clean_slug_field.js
 	    <div id="form_social" class="container tab-pane fade"><br>
 			{% for field in form %}
 				{% if field.name in form_social %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% comment %}{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}{% endcomment %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+		<div id="form_etc" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_etc %}
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
