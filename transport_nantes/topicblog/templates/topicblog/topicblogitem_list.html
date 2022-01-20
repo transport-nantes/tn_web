@@ -9,7 +9,9 @@
 		{{ object.slug }}</a>
 	</strong>
 	<span class="text-muted">
-	    dernière modification {{ object.date_modified|date:"l d-m-Y" }}
+	    {% if object.date_published %}publié {{ object.date_published|date:"l d-m-Y" }}
+	    {% endif %}
+	    modifié {{ object.date_modified|date:"l d-m-Y" }}
 	</span>
 	[#={{ object.count }}]
     </p>

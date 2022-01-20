@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import datetime, timezone
 import logging
 
 from django.db.models import Count, Max
@@ -168,13 +169,13 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if 'the_slug' in self.kwargs:
-            the_slug = self.kwargs['the_slug']
+        qs = context['object_list']
+        the_slug = self.kwargs.get('the_slug', None)
+        if the_slug:
             context['slug'] = the_slug
-            context['is_servable'] = self.model.objects.filter(
-                slug=the_slug,
-                publication_date__isnull=False
-                ).exists()
+            context['servable_object'] = qs.filter(
+                publication_date__lte=datetime.now(timezone.utc)).order_by(
+                    '-publication_date', '-date_modified').first()
         return context
 
     def get_queryset(self, *args, **kwargs):
@@ -182,15 +183,14 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
         """
         qs = super(ListView, self).get_queryset(*args, **kwargs)
         if 'the_slug' in self.kwargs:
-            # If the_slug exists, we use it to filter the view.
             the_slug = self.kwargs['the_slug']
-            qs = qs.filter(slug=the_slug).order_by(
-                '-date_modified', '-publication_date')
-            return qs
+            return qs.filter(slug=the_slug).order_by(
+                '-publication_date', '-date_modified')
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
-                           date_modified=Max('date_modified')) \
-                 .order_by('-date_modified')
+                           date_modified=Max('date_modified'),
+                           publication_date=Max('publication_date')) \
+                 .order_by('-publication_date', '-date_modified')
 
 
 ######################################################################

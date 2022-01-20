@@ -2,34 +2,40 @@
 
 {% block content %}
 <div class="container-fluid pl-5 py-3">
-
+    <p>
     <strong>
         <a href="{% url 'topic_blog:list_items' %}">
 	    <i class="fa fa-arrow-left" aria-hidden="true"></i>
 	    {{ slug }}
 	</a>
     </strong>
-    {% if is_servable %}
-      {% with object_list|first as object %}
+    {% if servable_object %}
     <a type="button" class="btn btn-outline-info btn-sm"
-       href="{% url 'topic_blog:view_item_by_slug' object.slug %}">Visualiser (usager)</a>
-      {% endwith %}
+       href="{% url 'topic_blog:view_item_by_slug' servable_object.slug %}">Visualiser (usager)</a>
     {% endif %}
+    </p>
     {% for object in object_list %}
-    <p>
-	<span class="text-muted">[{{ object.id }}]</span>
+    <p class="small text-monospace">
+	{% if servable_object and object.id == servable_object.id %}
+	<span class="text-normal font-weight-bold">
+	{% else %}
+	<span class="text-muted">
+	{% endif %}
+	[{{ object.id }}]</span>
         {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
         <br>
-	Modifié {{ object.date_modified|date:"l d-m-Y" }}
-        <br>{% if object.publication_date %}
-        Publié {{ object.publication_date|date:"l d-m-Y" }} par {{ user.email }}
-        {% if not object.servable %}(retiré){% endif %}
+	{% if object.publication_date %}
+        Publié {{ object.publication_date|date:"l d-m-Y à G:i" }}
+	{% if servable_object and object.id == servable_object.id %}
+	depuis {{ object.first_publication_date|date:"l d-m-Y  à G:i" }}{% endif %}
         {% else %}
         Brouillon
         {% if object.is_publishable %}
         <span class="text-muted"><i>prêt à publier</i></span>
         {% endif %}
         {% endif %}
+        <br>
+	Modifié {{ object.date_modified|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
         <br>
         <a type="button" class="btn btn-outline-info btn-sm"
            href="{{object.get_edit_url}}">Modifier</a>
