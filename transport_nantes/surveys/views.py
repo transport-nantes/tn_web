@@ -51,7 +51,17 @@ class ResponseView(TemplateView):
         context['survey'] = survey
         context['questions'] = SurveyQuestion.objects.filter(
             survey=survey).order_by('sort_index')
-        print(context)
+
+        # Hack, hard code for today.
+        context["is_static"] = True
+        context['social'] = {}
+        context['social']['og_title'] = "Élections présidentielles de printemps 2022"
+        context['social']['og_description'] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context['social']['og_image'] = "asso_tn/drapeau.jpg"
+        context['social']['twitter_title'] = "Élections présidentielles de printemps 2022"
+        context['social']['twitter_description'] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context['social']['twitter_image'] = "asso_tn/drapeau.jpg"
+
         return context
 
 #### Views for viewing results ########################################
