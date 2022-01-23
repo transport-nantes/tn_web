@@ -9,7 +9,7 @@
     <div class="row">
 	<div class="col-lg-12">
 	    <h1>Formulaire candidat.e</h1>
-
+{% if False %}
 	    <p>Nous vous remercions par avance de vos réponses !
 		Nous vous invitons à nous les envoyer par <a
 	    href="mailto:sondage@mobilitains.fr">mél</a>&nbsp;: vos
@@ -24,6 +24,22 @@
 		    <li>Site web</li>
 		</ul>
 	    </p>
+{% else %}
+	    <p>Nous vous remercions par avance de vos réponses !
+		Nous vous invitons à nous les envoyer par <a
+	    href="mailto:sondage@mobilitains.fr">mél</a>&nbsp;: vos
+	    réponses aux questions ainsi que les informations
+	    suivantes dans le mesure qu'elles
+	    sont pertinents pour vous :<ul>
+		    <li>Le nom du (de la) candidat-e {% comment %}et le nom de la tête de
+			liste{% endcomment %}</li>
+		    <li>L'adresse mél</li>
+		    <li>Réseaux sociaux : twitter, facebook,
+			instagram, etc.</li>
+		    <li>Site web</li>
+		</ul>
+	    </p>
+{% endif %}
 	    <p>
 		Après validation, vos réponses figureront sur notre
 		site web et nous les médiatiserons.  (Vous aurez bien
