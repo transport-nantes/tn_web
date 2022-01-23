@@ -2,6 +2,7 @@
 {% load don %}
 <h2>Les projets Mobilitains</h2>
 <div class="row pt-1">
+{% comment %}
     <div class="col-md-3">
 	<div class="thumbnail">
 	    <a href="{% url "geoplan:map" "nantes" "velopolitain" %}">
@@ -18,6 +19,28 @@
 		    <p>
 			Agir pour que Nantes Métropole tienne ses promesses.
 		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+{% endcomment %}
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url "surveys:questions" "presidentielles-2022" %}">
+		<div class="shadow-md">
+		    <img class="rounded"
+			 src="{% static 'asso_tn/drapeau-667.jpg' %}"
+			 alt="drapeau français sous l'arc de Triomphe"
+			 style="width:100%">
+		</div>
+		<div class="caption pt-2">
+		    <h3 class="font-weight-light"
+			style="font-variant: all-small-caps;
+			       font-size: 150%;">La mobilité régionale</h3>
+		    <p>
+			Les candidat-e-s
+		    aux présidentielles sur leurs projets de soutien
+		    de la mobilité régionale</p>
 		</div>
 	    </a>
 	</div>
