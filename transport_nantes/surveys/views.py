@@ -27,13 +27,14 @@ class QuestionnaireView(TemplateView):
         context['next_page'] = reverse('surveys:response_1', args=[slug])
 
         # Hack, hard code for today.
+        context["is_static"] = True
         context['social'] = {}
-        context['social']['og_title'] = "Élections du printemps 2021"
-        context['social']['og_description'] = "Les mobiltains demandent des actions concrètes à l’échelle départementale et régionale"
-        context['social']['og_image'] = "asso_tn/traffic-1600.jpg"
-        context['social']['twitter_title'] = ""
-        context['social']['twitter_description'] = "Les mobiltains demandent des actions concrètes à l’échelle départementale et régionale"
-        context['social']['twitter_image'] = "asso_tn/traffic-1600.jpg"
+        context['social']['og_title'] = "Élections présidentielles de printemps 2022"
+        context['social']['og_description'] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context['social']['og_image'] = "asso_tn/drapeau.jpg"
+        context['social']['twitter_title'] = "Élections présidentielles de printemps 2022"
+        context['social']['twitter_description'] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context['social']['twitter_image'] = "asso_tn/drapeau.jpg"
 
         return context
 
