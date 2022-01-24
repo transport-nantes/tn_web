@@ -1,5 +1,6 @@
 {% load static %}
 {% load don %}
+{% load og_twitter %}
 <!DOCTYPE html>
 <html lang="fr">
 {% block html %}
@@ -91,23 +92,12 @@
 
 			{% endblock styles %}
 			{# OG title #}
-			{% if social.og_title %}
-				<meta property="og:title" content="{{ social.og_title }}" />
-			{% elif social.twitter_title %}
-				<meta property="og:title" content="{{ social.twitter_title }}" />
-			{% else %}	
-				<meta property="og:title" content="{{ social.og_twitter_title_default }}" />
-			{% endif %}
+			<meta property="og:title" content="{% first_not_empty social.og_title social.twitter_title  social.og_twitter_title_default %}" />
 			<meta property="og:type" content="website" />
 			<meta property="og:url" content="{{ request.build_absolute_uri }}" />
 			{# OG description #}
-			{% if social.og_description %}
-				<meta property="og:description" content="{{ social.og_description }}" />
-			{% elif social.twitter_description %}
-				<meta property="og:description" content="{{ social.twitter_description }}" />
-			{% else %}
-				<meta property="og:description" content="{{ social.og_twitter_description_default }}" />
-			{% endif %}
+			<meta property="og:description" content="{% first_not_empty social.og_description social.twitter_description  social.og_twitter_description_default %}" />
+
 			{% comment "About is_static" %}
 			On views that use static images and not ImageFields, the .url property doesn't
 			exist (e.g. AssoView uses a string to designate the image to use).
@@ -115,25 +105,11 @@
 			Passing is_static=True to the template tag allows us to display the images
 			if they are designated with a string.
 			{% endcomment %}
+			{# OG image #}
 			{% if is_static %}
-				{# OG image #}
-				{% if social.og_image %}
-					<meta property="og:image" content="{% static social.og_image %}" />
-				{% elif social.twitter_image %}
-					<meta property="og:image" content="{% static social.twitter_image %}" />
-				{% elif hero_image %}
-					<meta property="og:image" content="{% static hero_image %}" />
-				{% else %}
-					<meta name="og:image" content="{% static social.og_image_default %}" />
-				{% endif %}
-			{% elif page.og_image %}
-				<meta property="og:image" content="{{ page.og_image.url }}" />
-			{% elif page.twitter_image %}
-				<meta property="og:image" content="{{ page.twitter_image.url }}" />
-			{% elif page.header_image  %}
-				<meta property="og:image" content="{{ page.header_image.url}}" />
+				<meta property="og:image" content="{% first_not_empty_image social.og_image social.twitter_image hero_image social.og_image_default %}" />
 			{% else %}
-				<meta property="og:image" content="{% static social.og_image_default %}" />
+				<meta property="og:image" content="{% first_not_empty_image page.og_image page.twitter_image page.header_image social.og_image_default %}" />
 			{% endif %}
 			<meta property="og:image:alt" content="{{ social.og_image_alt }}" />
 			{% if social.og_image_type %}
@@ -147,42 +123,16 @@
 			<meta name="twitter:card" content="{{ social.twitter_card }}" />
 			<meta name="twitter:site" content="{{ social.twitter_site }}" />
 			<meta name="twitter:creator" content="{{ social.twitter_creator }}" />
+			{# Twitter image #}
 			{% if is_static %}
-				{# Twitter image #}
-				{% if social.twitter_image %}
-					<meta name="twitter:image" content="{% static social.twitter_image %}" />
-				{% elif social.og_image %}
-					<meta name="twitter:image" content="{% static social.og_image %}" />
-				{% elif hero_image  %}
-					<meta name="twitter:image" content="{% static hero_image %}" />
-				{% else %}
-					<meta name="twitter:image" content="{% static social.twitter_image_default %}" />
-				{% endif %}
-			{% elif page.twitter_image %}
-				<meta name="twitter:image" content="{{ page.twitter_image.url }}" />
-			{% elif page.og_image %}
-				<meta name="twitter:image" content="{{ page.og_image.url }}" />
-			{% elif page.header_image  %}
-				<meta name="twitter:image" content="{{ page.header_image.url}}" />
+				<meta name="twitter:image" content="{% first_not_empty_image social.twitter_image social.og_image hero_image social.twitter_image_default %}" />
 			{% else %}
-				<meta name="twitter:image" content="{% static social.twitter_image_default %}" />
+				<meta name="twitter:image" content="{% first_not_empty_image page.twitter_image  page.og_image page.header_image social.twitter_image_default %}" />
 			{% endif %}
 			{# Twitter title #}
-			{% if social.twitter_title %}
-				<meta name="twitter:title" content="{{ social.twitter_title }}" />
-			{% elif social.og_title %}
-				<meta name="twitter:title" content="{{ social.og_title }}" />
-			{% else %}
-				<meta name="twitter:title" content="{{ social.og_twitter_title_default }}" />
-			{% endif %}
+			<meta name="twitter:title" content="{% first_not_empty social.twitter_title social.og_title  social.og_twitter_title_default %}" />
 			{# Twitter description #}
-			{% if social.twitter_description %}
-				<meta name="twitter:description" content="{{ social.twitter_description }}" />
-			{% elif social.og_description %}
-				<meta name="twitter:description" content="{{ social.og_description }}" />
-			{% else %}
-				<meta name="twitter:description" content="{{ social.og_twitter_description_default }}" />
-			{% endif %}
+			<meta name="twitter:description" content="{% first_not_empty social.twitter_description social.og_description  social.og_twitter_description_default %}" />
 			{% comment %}
 				https://cards-dev.twitter.com/validator
 			{% endcomment %}

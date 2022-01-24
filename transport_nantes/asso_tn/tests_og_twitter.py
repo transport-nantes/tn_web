@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from topicblog.models import TopicBlogItem
 from django.contrib.auth.models import User
 from datetime import datetime, timezone
+from .templatetags.og_twitter import (get_image_url, first_not_empty,
+                                      first_not_empty_image)
 
 
 class Test_Og_Twitter_Dymanic_Page(TestCase):
@@ -225,7 +227,6 @@ class Test_Og_Twitter_Static_Page(TestCase):
                             twitter_image, status_code=200, html=True)
 
     def testing_jobs(self):
-
         og_title = ("<meta property='og:title'"
                     "content='Mobilitains - Pour une mobilité multimodale' />")
         self.assertContains(self.reponse_jobs, og_title,
@@ -253,3 +254,60 @@ class Test_Og_Twitter_Static_Page(TestCase):
                          "content='/static/asso_tn/mobilite-pour-tous.jpg' />")
         self.assertContains(self.reponse_legales,
                             twitter_image, status_code=200, html=True)
+
+
+class Test_template_tags_og_twitter(TestCase):
+    def setUp(self):
+        # Creates a user for FKs
+        self.user = User.objects.create(username='template-user',
+                                        password='mdp-template')
+        # Create a TopicBlog with all og value and empty twitter
+        self.template_tags = TopicBlogItem.objects.create(
+            slug="templatetags",
+            publication_date=datetime.now(timezone.utc),
+            user=self.user,
+            template_name="topicblog/content.html",
+            title="Template Tags",
+            header_image="image-header.png",
+            twitter_title="",
+            twitter_description="",
+            twitter_image="twitter_image.png",
+            og_title="",
+            og_description="",
+            og_image="og_image.png"
+        )
+
+    def testing_get_image_url(self):
+        og_image = self.template_tags.og_image
+        twitter_image = self.template_tags.twitter_image
+        header_image = self.template_tags.header_image
+        self.assertEqual(get_image_url("image.png"), "/static/image.png")
+        self.assertEqual(get_image_url("default_image.png"),
+                         "/static/default_image.png")
+        self.assertEqual(get_image_url(twitter_image),
+                         "/media/twitter_image.png")
+        self.assertEqual(get_image_url(og_image), "/media/og_image.png")
+        self.assertEqual(get_image_url(header_image),
+                         "/media/image-header.png")
+
+    def testing_first_not_empty(self):
+        self.assertEqual(first_not_empty("deux", "", 0, "un"), "deux")
+        self.assertEqual(first_not_empty("", "", 0, "un"), "un")
+        self.assertEqual(first_not_empty("trois", "deux", 0, "un"), "trois")
+        self.assertEqual(first_not_empty("un", "", 0, "", ""), "un")
+        self.assertEqual(first_not_empty("", "", 0, ""), None)
+
+    def testing_first_not_empty_image(self):
+        og_image = self.template_tags.og_image
+        twitter_image = self.template_tags.twitter_image
+        header_image = self.template_tags.header_image
+        self.assertEqual(first_not_empty_image(
+            "", "", "default.png"), "/static/default.png")
+        self.assertEqual(first_not_empty_image(
+            "", "", header_image, "default"), "/media/image-header.png")
+        self.assertEqual(first_not_empty_image(
+            og_image, twitter_image, "", "default"), "/media/og_image.png")
+        self.assertEqual(first_not_empty_image(
+            "", twitter_image, header_image, "default"),
+            "/media/twitter_image.png")
+        self.assertEqual(first_not_empty_image("", "", "", ""), None)
