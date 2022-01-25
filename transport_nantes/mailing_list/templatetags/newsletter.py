@@ -17,7 +17,8 @@ def show_mailing_list(context, **kwargs):
     Optionally provide a title.
 
     """
-    context['title'] = kwargs.get('title', "")
+    if 'title' in kwargs:
+        context['title'] = kwargs.get('title', "")
     mailinglist = kwargs.get('mailinglist')
     if mailinglist is None:
         mailinglist = context.get('mailinglist')
