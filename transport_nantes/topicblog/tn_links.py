@@ -66,7 +66,7 @@ functions in order to permit HTML on the output.
 def render_inclusion_tag_to_html(context, tag_source, tag_name, kwargs):
     """Render an inclusion tag to a string.
     """
-
+    context['title'] = kwargs['title']
     context['mailinglist'] = kwargs['mailinglist']
     template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
     return Template(template_string).render(context)
@@ -214,7 +214,8 @@ class TNLinkParser(object):
                 self.context,
                 'newsletter',
                 'show_mailing_list',
-                {"mailinglist": mailinglist_name})
+                {"mailinglist": mailinglist_name,
+                 "title": description_text})
             # Bug: this doesn't take into account the mailing list
             # requested or the label we request.
         elif 'action' == self.bracket_class_string:
