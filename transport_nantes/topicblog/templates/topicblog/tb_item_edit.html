@@ -16,7 +16,6 @@
 {% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
 
 {% block app_content %}
-<script src="{% static 'topicblog/update_template_list.js' %}" defer></script>
 <script src="{% static 'topicblog/clean_slug_field.js' %}" defer></script>
 <script src="{% static 'topicblog/clear_file_inputs.js' %}" defer></script>
 <script src="{% static 'topicblog/same_slug_warning.js' %}" defer></script>
@@ -32,7 +31,7 @@ It is retrieved inside clean_slug_field.js
 {{slug_fields|json_script:"slug_fields"}}
 
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
-    <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" data-template-update-url="{% url 'topicblog:update_template_list' %}" enctype="multipart/form-data">
+    <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" enctype="multipart/form-data">
         {% csrf_token %}
 	<div class="container">
 	  <ul class="nav nav-tabs" role="tablist">

@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from django.test import TestCase
-from .models import (TopicBlogItem, TopicBlogTemplate,
-                     TopicBlogContentType)
+from .models import (TopicBlogItem, TopicBlogTemplate,)
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -16,13 +15,9 @@ class Test(TestCase):
         self.user = User.objects.create_user(username='test-user',
                                              password='test-pass')
         self.user.save()
-        # Creates a base content type for FKs
-        self.content_type = TopicBlogContentType.objects.create(
-            content_type="test_type")
         # Create a base template
         self.template = TopicBlogTemplate.objects.create(
-            template_name="topicblog/content.html",
-            content_type=self.content_type)
+            template_name="topicblog/content.html",)
         # Create an Item with a slug, ID = 1
         self.item_with_slug = TopicBlogItem.objects.create(
             slug="index",
@@ -30,7 +25,6 @@ class Test(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             publication_date=datetime.now(timezone.utc),
             user=self.user,
-            content_type=self.content_type,
             template=self.template,
             title="Test-title")
         response = self.client.get("/")
@@ -46,13 +40,9 @@ class TBIEditStatusCodeTest(TestCase):
         self.user.is_staff = True
         self.user.save()
         self.client.login(username='test-user', password='test-pass')
-        # Creates a base content type for FKs
-        self.content_type = TopicBlogContentType.objects.create(
-            content_type="test_type")
         # Create a base template
         self.template = TopicBlogTemplate.objects.create(
-            template_name="topicblog/content.html",
-            content_type=self.content_type)
+            template_name="topicblog/content.html",)
         # Create an Item with a slug, ID = 1
         self.item_with_slug = TopicBlogItem.objects.create(
             slug="test-slug",
@@ -60,7 +50,6 @@ class TBIEditStatusCodeTest(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             publication_date=datetime.now(timezone.utc),
             user=self.user,
-            content_type=self.content_type,
             template=self.template,
             title="Test-title")
         # Create an Item with no slug, ID = 2
@@ -70,7 +59,6 @@ class TBIEditStatusCodeTest(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             publication_date=datetime.now(timezone.utc),
             user=self.user,
-            content_type=self.content_type,
             template=self.template,
             title="Test-title")
         # Create an Item with a slug and higher sort key, ID = 3
@@ -80,7 +68,6 @@ class TBIEditStatusCodeTest(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             publication_date=datetime.now(timezone.utc),
             user=self.user,
-            content_type=self.content_type,
             template=self.template,
             title="Test-title")
 

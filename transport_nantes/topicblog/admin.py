@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (TopicBlogContentType, TopicBlogTemplate, TopicBlogItem,
+from .models import (TopicBlogTemplate, TopicBlogItem,
                      TopicBlogEmail)
 
 
@@ -12,13 +12,11 @@ class TopicBlogItemAdmin(admin.ModelAdmin):
     # By default, non modifyable fields are hidden in admin panel
     readonly_fields = ('pk',)
 
-class TopicBlogContentTypeAdmin(admin.ModelAdmin):
-    pass
 
 class TopicBlogEmailAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(TopicBlogContentType, TopicBlogContentTypeAdmin)
+
 admin.site.register(TopicBlogTemplate, TopicBlogTemplateAdmin)
 admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
