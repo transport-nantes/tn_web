@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
 
 urlpatterns = [
-    path('', TopicBlogItemView.as_view(), {'the_slug': 'index'},
+    path('', TopicBlogItemView.as_view(), {'the_slug': 'ligne-johanna-rolland-2021'},
          name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
