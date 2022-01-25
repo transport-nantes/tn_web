@@ -1,6 +1,7 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
 {% load don %}
+{% load mpanels %}
 
 {% block og_title %}Inscrivez-vous à la newsletter des Mobilitains !{% endblock og_title %}
 {% block og_description %}Recevez chaque mois ou chaque trimestre des nouvelles essentielles de la mobilité en région nantaise.{% endblock og_description %}
@@ -24,11 +25,11 @@
 	    </p>
 
 	    <p class="pt-3">
-		Les mobilitains ont besoin votre soutien pour continuer leurs actions --
-		ne serait-ce pas le moment de nous donner un coup de pouce ?
-		{% lien_don "C’est déjà une aide&nbsp;!" %}
+		Nous avons de besoin votre soutien pour continuer nos actions.
 	    </p>
 	    <p>{% bouton_don "Je fais un don" %}</p>
+
+	    {% show_projects %}
 	</div>
     </div>
 </div>
