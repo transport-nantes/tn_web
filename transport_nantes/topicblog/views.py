@@ -63,6 +63,8 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
         if pkid > 0:
             tb_existing = self.model.objects.get(id=pkid)
             tb_object.first_publication_date = tb_existing.first_publication_date
+        else:
+            tb_existing = None
 
         if hasattr(self, "form_post_process"):
             self.form_post_process(tb_object, tb_existing, form)
