@@ -203,6 +203,8 @@ class TopicBlogObjectBase(models.Model):
     #
     # Encode the basic structure of a TBItem's presentation.
     template = models.ForeignKey(TopicBlogTemplate, on_delete=models.PROTECT)
+    template_name = models.CharField(max_length=80, blank=True)
+
     # The HTML document <title>.
     title = models.CharField(max_length=100, blank=True)
     # The header is the (optional) large full-width image, possibly
@@ -276,6 +278,14 @@ class TopicBlogObjectBase(models.Model):
                 datetime.now(timezone.utc) < self.publication_date:
             return False
         return True
+
+    def fill_template_name(self):
+        """
+        Fill the template_name_transition field with the template
+        name of the template used to render this object.
+        """
+        self.template_name = self.template.template_name
+        self.save()
 
 
 ######################################################################
