@@ -21,6 +21,30 @@ from .forms import TopicBlogItemForm
 logger = logging.getLogger("django")
 
 
+class Transition(TemplateView):
+    """
+    Transition function.
+
+    Fill the template_name_transition field with the template
+    name of the template used to render this object.
+    """
+    template_name = 'topicblog/content.html'
+
+    def get_context_data(self, **kwargs):
+        """Quick and dirty: we don't care about unauthorised people who
+        trespass here, and this class/method won't last long.
+
+        """
+        user = User.objects.get(username=self.request.user)
+        if not user.is_superuser:
+            raise Http404("Not you!")
+        qs = TopicBlogItem.objects.all()
+        for item in qs:
+            item.template_name = item.template.template_name
+            item.save()
+        page = {'body_text_1_md': '## Done.'}
+        return {'page': page}
+
 class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
     """
     Create or modify a concrete TBObject.  This class handles the

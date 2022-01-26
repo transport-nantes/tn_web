@@ -203,6 +203,8 @@ class TopicBlogObjectBase(models.Model):
     #
     # Encode the basic structure of a TBItem's presentation.
     template = models.ForeignKey(TopicBlogTemplate, on_delete=models.PROTECT)
+    template_name = models.CharField(max_length=80, blank=True)
+
     # The HTML document <title>.
     title = models.CharField(max_length=100, blank=True)
     # The header is the (optional) large full-width image, possibly
