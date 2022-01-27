@@ -16,12 +16,6 @@ class TopicBlogItemForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.fields["content_type"] is None:
-            self.fields['template'] = ModelChoiceField(
-                queryset=TopicBlogTemplate.objects.none())
-        # The two next bool set the availability of buttons in the template
-        # variant available allows the user to create a variant with a button
-        # is editable allows the user to save the changes like a normal form.
         self.instance: TopicBlogItem
 
         # When an item is published, its slug becomes frozen (unmodifiable).

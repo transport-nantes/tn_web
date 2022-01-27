@@ -6,7 +6,7 @@ from django.db.models import Count, Max
 from django.http import Http404, HttpResponseServerError
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequiredMixin, StaffRequired
-from .models import TopicBlogItem, TopicBlogTemplate, TopicBlogEmail
+from .models import TopicBlogItem, TopicBlogEmail
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
@@ -64,6 +64,8 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
             tb_existing = self.model.objects.get(id=pkid)
             tb_object.first_publication_date = \
                 tb_existing.first_publication_date
+        else:
+            tb_existing = None
 
         if hasattr(self, "form_post_process"):
             self.form_post_process(tb_object, tb_existing, form)
@@ -106,7 +108,7 @@ class TopicBlogBaseView(TemplateView):
 
         # The template is set in the model, it's a str referring to an
         # existing template in the app.
-        self.template_name = tb_object.template.template_name
+        self.template_name = tb_object.template_name
         context['page'] = tb_object
         tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
@@ -135,7 +137,7 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
 
         # We set the template in the model.
-        self.template_name = tb_object.template.template_name
+        self.template_name = tb_object.template_name
         context['page'] = tb_object
         tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
@@ -223,20 +225,6 @@ def get_slug_suggestions(request):
     # but it proved to be unsuccessful.
     slug_list = set(slug_list)
     return JsonResponse(list(slug_list), safe=False)
-
-
-@StaffRequired
-def update_template_list(request):
-    """
-    Uses a content type passed through Ajax to render
-    a dropdown list of templates associated with this
-    content type for the user to choose from.
-    """
-    content_type = request.GET.get('content_type')
-    templates = TopicBlogTemplate.objects.filter(
-        content_type=content_type)
-    return render(request, 'topicblog/template_dropdown.html',
-                  {'templates': templates})
 
 
 @StaffRequired

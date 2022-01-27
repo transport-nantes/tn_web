@@ -21,20 +21,15 @@ class TopicBlogPage(models.Model):
 
 
 class TopicBlogContentType(models.Model):
-    """Provide a list of valid content types.
-
-    Examples are article, petition, etc.
+    """Deprecated, held a single charfield designating the content
+    type of a topicblog object.
     """
-    # Provide a (relatively) short name because this will appear in
-    # dropdown lists in the TopicBlogItem editor.
-    content_type = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.content_type
+    pass
 
 
 class TopicBlogTemplate(models.Model):
-    """Encode template metadata for displaying TB content.
+    """DEPRECATED - EVERYTHING BELOW IS HISTORY
+    Encode template metadata for displaying TB content.
 
     More precisely, we want to encode data useful for content editing
     so that we know what fields to display.  So this just provides a
@@ -84,83 +79,7 @@ class TopicBlogTemplate(models.Model):
     surely inform how annoying or not the above really is.
 
     """
-    # The template_name must be a valid filename of an html template
-    # template to pass to django's render() function.
-    template_name = models.CharField(max_length=80, unique=True)
-
-    # Provide a field for free-form comments from humans, who can note
-    # their intent on creating the model.
-    comment = models.TextField()
-
-    content_type = models.ForeignKey(TopicBlogContentType,
-                                     on_delete=models.CASCADE)
-
-    # These flags indicate which fields are involved in a
-    # TopicBlogItem using this template instance.
-    #
-    # The fields are also required for publishing the TopicBlogItem
-    # instance unless they are provided by the
-    # optional_fields_for_publication() function.
-    slug = models.BooleanField(max_length=90, default=False)
-    title = models.BooleanField(default=False)
-    header = models.BooleanField(default=False)
-    body_text_1_md = models.BooleanField(default=False)
-    cta_1 = models.BooleanField(default=False)
-    body_text_2_md = models.BooleanField(default=False)
-    cta_2 = models.BooleanField(default=False)
-    body_image = models.BooleanField(default=False)
-    body_text_3_md = models.BooleanField(default=False)
-    cta_3 = models.BooleanField(default=False)
-    social_media = models.BooleanField(default=False)
-
-    # Flags not provided because not user-editable or that otherwise
-    # make no sense to include.
-    #
-    #   publication_date
-    #   template
-    #   user
-
-    # Provide the names of fields that the user may set but that do
-    # not impede publication.
-    optional_fields_for_publication = set().union(
-        ['header_description',
-         'cta_1_slug', 'cta_1_label',
-         'cta_2_slug', 'cta_2_label',
-         'cta_3_slug', 'cta_3_label',
-         'body_image', 'body_image_alt_text',
-         'twitter_title', 'twitter_description',
-         'twitter_image', 'og_title',
-         'og_description', 'og_image'])
-
-    # Fields that, if required for publication, the requirement is
-    # satisfied by providing any one of them.
-    one_of_fields_for_publication = [
-        ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
-        ['header_title', 'header_description'],
-    ]
-
-    # Dependent fields: if one in a group is provided, the others must
-    # be as well before we can publish.
-    dependent_field_names = [
-        ['cta_1_slug', 'cta_1_label'],
-        ['cta_2_slug', 'cta_2_label'],
-        ['cta_3_slug', 'cta_3_label'],
-        ['body_image', 'body_image_alt_text'],
-    ]
-
-    def __str__(self):
-        return self.template_name
-
-
-# The way to think of TopicBlog (TB) is as a collection of TBItem's,
-# which encodes a name, publication date (we serve the item only if
-# published), and satellite information (which is embedded in TBItem,
-# because that seems easier with django than creating satellite
-# classes for presentation, social media, content, etc.).
-#
-# Thus, a modification of a TBItem is simply a new TBItem that
-# contains some of the things the old one did as well as something
-# new.
+    pass
 
 
 class TopicBlogObjectBase(models.Model):
@@ -314,13 +233,86 @@ class TopicBlogItem(TopicBlogObjectBase):
 
     # Content Type ##################################################
     #
-    # Encode what type of object we mean to be displaying.
-    #
-    # Examples are blog articles, newsletters (mailed or web viewed),
-    # and petitions.
-    content_type = models.ForeignKey(TopicBlogContentType,
-                                     on_delete=models.CASCADE)
-
+    # The content types match existing templates with their content type.
+    # "content type": [list of templates available for this type]
+    # The templates in the list must :
+    # 1) Exist in the templates/ directory
+    # 2) be configurated in self.template_config
+    # Default values for template_config ###########################
+    template_config_default = {
+        "optional_fields_for_publication": (
+                'header_description',
+                'cta_1_slug', 'cta_1_label',
+                'cta_2_slug', 'cta_2_label',
+                'cta_3_slug', 'cta_3_label',
+                'body_image', 'body_image_alt_text',
+                'twitter_title', 'twitter_description',
+                'twitter_image', 'og_title',
+                'og_description', 'og_image'
+            ),
+        # Fields that, if required for publication, the requirement is
+        # satisfied by providing any one of them.
+        "one_of_fields_for_publication": [
+                ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
+                ['header_title', 'header_description'],
+            ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+                ['cta_1_slug', 'cta_1_label'],
+                ['cta_2_slug', 'cta_2_label'],
+                ['cta_3_slug', 'cta_3_label'],
+                ['body_image', 'body_image_alt_text'],
+            ],
+    }
+    template_config = {
+        'topicblog/content.html': {
+            'user_template_name': 'Article',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'header': True,
+                'body_text_1_md': True,
+                'cta_1': True,
+                'body_text_2_md': True,
+                'cta_2': True,
+                'body_image': True,
+                'body_text_3_md': True,
+                'cta_3': True,
+                'social_media': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+        'topicblog/communique_presse_1.html': {
+            'user_template_name': 'Communiqué de presse',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'header': False,
+                'body_text_1_md': True,
+                'cta_1': True,
+                'body_text_2_md': True,
+                'cta_2': True,
+                'body_image': False,
+                'body_text_3_md': True,
+                'cta_3': True,
+                'social_media': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        }
+    }
     # Content #######################################################
     #
     # Encode the editorial content of a TBItem.
@@ -370,7 +362,7 @@ class TopicBlogItem(TopicBlogObjectBase):
         Return True if the item may be published.
 
         An item may be published if it has no missing required fields,
-        as defined by the related TopicBlogTemplate.
+        as defined in self.template_config
         """
         if self.get_missing_publication_field_names():
             return False
@@ -405,10 +397,12 @@ class TopicBlogItem(TopicBlogObjectBase):
         fields (eg. 'body_text_1_md', 'body_text_2_md', 'body_text_3_md',
         'body_image'), 'content' is also added to the list.
         """
-        template = self.template
+        template = self.template_name
+        template_cfg = self.template_config[template]
+        optional_fields = template_cfg['optional_fields_for_publication']
         missing_field_names = set()
         required_field_names = self.get_participating_field_names().\
-            difference(template.optional_fields_for_publication)
+            difference(optional_fields)
 
         for field_name in required_field_names:
             if not getattr(self, field_name):
@@ -421,7 +415,7 @@ class TopicBlogItem(TopicBlogObjectBase):
         #
         # Of course, for now we aren't even providing feedback, so
         # this comment is ahead of its time.
-        for field_name_set in template.one_of_fields_for_publication:
+        for field_name_set in template_cfg['one_of_fields_for_publication']:
             one_provided = False
             for field_name in field_name_set:
                 if field_name not in missing_field_names:
@@ -438,7 +432,7 @@ class TopicBlogItem(TopicBlogObjectBase):
         # but is something we can sort later if it becomes confusing
         # for users.  Initially, we should just make sure that our
         # user instructions note that we do this.
-        for dependent_field_name_set in template.dependent_field_names:
+        for dependent_field_name_set in template_cfg["dependent_field_names"]:
             all_provided = True
             all_missing = True
             for field_name in dependent_field_name_set:
@@ -459,41 +453,55 @@ class TopicBlogItem(TopicBlogObjectBase):
 
         This only provides user-settable fields.
         """
-        template = self.template
+        template = self.template_name
+        template_cfg = self.template_config[template]
+
         fields = set()
-        if template.slug:
-            fields.add('slug')
-        if template.title:
-            fields.add('title')
-        if template.header:
-            fields.add('header_image')
-            fields.add('header_title')
-            fields.add('header_description')
-        if template.body_text_1_md:
-            fields.add('body_text_1_md')
-        if template.body_text_2_md:
-            fields.add('body_text_2_md')
-        if template.body_text_3_md:
-            fields.add('body_text_3_md')
-        if template.cta_1:
-            fields.add('cta_1_slug')
-            fields.add('cta_1_label')
-        if template.cta_2:
-            fields.add('cta_2_slug')
-            fields.add('cta_2_label')
-        if template.cta_3:
-            fields.add('cta_3_slug')
-            fields.add('cta_3_label')
-        if template.body_image:
-            fields.add('body_image')
-            fields.add('body_image_alt_text')
-        if template.social_media:
-            fields.add('twitter_title')
-            fields.add('twitter_description')
-            fields.add('twitter_image')
-            fields.add('og_title')
-            fields.add('og_description')
-            fields.add('og_image')
+        for field_name, value in template_cfg["fields"].items():
+            if value:
+                if field_name == "slug":
+                    fields.add('slug')
+                    continue
+                if field_name == "title":
+                    fields.add('title')
+                    continue
+                if field_name == "header":
+                    fields.add('header_image')
+                    fields.add('header_title')
+                    fields.add('header_description')
+                    continue
+                if field_name == "body_text_1_md":
+                    fields.add('body_text_1_md')
+                    continue
+                if field_name == "body_text_2_md":
+                    fields.add('body_text_2_md')
+                    continue
+                if field_name == "body_text_3_md":
+                    fields.add('body_text_3_md')
+                    continue
+                if field_name == "cta_1":
+                    fields.add('cta_1_slug')
+                    fields.add('cta_1_label')
+                    continue
+                if field_name == "cta_2":
+                    fields.add('cta_2_slug')
+                    fields.add('cta_2_label')
+                    continue
+                if field_name == "cta_3":
+                    fields.add('cta_3_slug')
+                    fields.add('cta_3_label')
+                    continue
+                if field_name == "body_image":
+                    fields.add('body_image')
+                    fields.add('body_image_alt_text')
+                    continue
+                if field_name == "social_media":
+                    fields.add('twitter_title')
+                    fields.add('twitter_description')
+                    fields.add('twitter_image')
+                    fields.add('og_title')
+                    fields.add('og_description')
+                    fields.add('og_image')
         return fields
 
     def get_slug_fields(self) -> list:

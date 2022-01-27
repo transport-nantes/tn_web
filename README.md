@@ -111,28 +111,10 @@ The database is set but still empty. Let's display a "Hello, world!" message in 
 
 4. Open your browser at `http://localhost:8000/admin` or `0.0.0.0:8000/admin`. You're facing Django Admin's interface. Use the credentials you created to connect to it.
 
-The landing page is an instance of an app named "topicblog", however because your database is empty, you will also need to create 3 items before you can see the landing page : 
+The landing page is an instance of an app named "topicblog", however because your database is empty, you will also need to create 1 item before you can see the landing page : 
 
 5. Edition of the landing page 
-  - At the bottom of Admin Interface, click on on the "+ Add" button next to "Topic blog content types". In the form, fill the "Content type" with "content" or whatever you want to call your content type. I'll assume you also entered "content".
-    - Save the form by hitting "Save" at the bottom right. 
-  - Back to admin interface, now click on on the "+ Add" button next to "Topic blog templates". In the form fill the fields like this :
-    - "Template name" with `topicblog/content.html`
-    - "Comment" with any string, suggestion : `This template is used to display the content of a topic blog item.`
-    - "Content type" with the content type you created in the previous step. In our case only "content" is available.
-    - Save the form by hitting "Save" at the bottom right.
-  - Back to admin interface, now click on on the "+ Add" button next to "Topic blog Items". In the form fill the fields like this :
-    - "slug" to "index"
-    - "item_sort_key" to "0"
-    - "servable" to "True" (checked)
-    - "publication_date" to any anterior date (you can use Django's button to have the current date)
-    - "User" to the superuser you created in the previous step.
-    - "content_type" to the content type you created in the previous step.
-    - "template" to the template you created in the previous step.
-    - "title" to "Hello, world!"
-    - "body text 1 md" to "This is my first Hello, world! on this website !" or anything you like ;) 
-    - Save the form by hitting "Save" at the bottom right.
-
+  [todo]  
 Congratulations, you customized your first page on the website ! You can now see it at `http://localhost:8000/` or `0.0.0.0:8000/` ! 
 
 # Contribution Guidelines
