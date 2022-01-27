@@ -1,6 +1,6 @@
+from django import forms
 from django.forms import ModelForm
-from django.forms.models import ModelChoiceField
-from .models import TopicBlogItem, TopicBlogTemplate
+from .models import TopicBlogItem
 
 
 class TopicBlogItemForm(ModelForm):
@@ -22,14 +22,16 @@ class TopicBlogItemForm(ModelForm):
         if self.instance.publication_date:
             self.fields['slug'].widget.attrs['readonly'] = True
 
-        # self.data is the POST data
-        if 'template' in self.data:
-            try:
-                template_id = int(self.data.get('template'))
-                # Sets the list of valid inputs to be this queryset
-                self.fields['template'].queryset = \
-                    TopicBlogTemplate.objects.filter(id=template_id)
-            except (ValueError, TypeError):
-                # invalid input from the client
-                # ignore and fallback to empty queryset
-                pass
+        def get_template_list(self) -> list:
+
+            templates = self.instance.template_config
+            template_list = \
+                [(None, "Selectionnez un template ...")]
+            for template, value in templates.items():
+                template_list.append((template, value["user_template_name"]))
+
+            return template_list
+
+        template_list = get_template_list(self)
+        self.fields['template'] = forms.ChoiceField(choices=template_list,
+                                                    initial=None)
