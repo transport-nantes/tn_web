@@ -9,6 +9,7 @@ from mailing_list.models import MailingList
 ######################################################################
 # topic blog, v1
 
+
 class TopicBlogPage(models.Model):
     # Obsolete, but removing the model doesn't remove the table,
     # which leaves a strange trace behind.
@@ -202,7 +203,6 @@ class TopicBlogObjectBase(models.Model):
     # Presentation ##################################################
     #
     # Encode the basic structure of a TBItem's presentation.
-    template = models.ForeignKey(TopicBlogTemplate, on_delete=models.PROTECT)
     template_name = models.CharField(max_length=80, blank=True)
 
     # The HTML document <title>.
