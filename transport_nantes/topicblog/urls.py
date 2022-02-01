@@ -3,7 +3,6 @@ from .views import *
 
 app_name = 'topic_blog'
 urlpatterns = [
-    path('transition', Transition.as_view(), name='ADMIN_transition'),
     path('t/<slug:the_slug>/', TopicBlogItemView.as_view(),
          name='view_item_by_slug'),
     path('e/<slug:the_slug>/', TopicBlogEmailView.as_view(),
