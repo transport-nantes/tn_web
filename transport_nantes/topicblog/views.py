@@ -68,7 +68,7 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
             tb_existing = None
 
         if hasattr(self, "form_post_process"):
-            self.form_post_process(tb_object, tb_existing, form)
+            tb_object = self.form_post_process(tb_object, tb_existing, form)
 
         # Every modification creates a new item.
         tb_object.pk = None
@@ -277,6 +277,17 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
         return context
 
     def form_post_process(self, tb_item, tb_existing, form):
+        """
+        Perform any post-processing of the form.
+        Following args are defined in TopicBlogEditBase.form_valid()
+
+            tb_item : Item created from the form's POST
+
+            tb_existing : Item retrieved from the database if we are
+            editing an existing item. None otherwise.
+
+            form : form from request.POST
+        """
 
         # If we are editing an existing item, the ImageField values
         # won't be copied over -- they aren't included in the rendered
@@ -293,6 +304,12 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
                 if field in form.cleaned_data and \
                         form.cleaned_data[field] is None:
                     setattr(tb_item, field, getattr(tb_existing, field))
+
+        # template field being set in the ModelForm it needs to be specifically
+        # set here before saving.
+        tb_item.template_name = form.cleaned_data["template"]
+
+        return tb_item
 
 
 class TopicBlogItemView(TopicBlogBaseView):
