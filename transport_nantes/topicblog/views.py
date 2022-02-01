@@ -58,11 +58,12 @@ class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
         tb_object = form.save(commit=False)
         tb_object.user = User.objects.get(username=self.request.user)
 
-        # Read-only fields aren't set, so we have to fetch them 
+        # Read-only fields aren't set, so we have to fetch them
         pkid = self.kwargs.get('pkid', -1)
         if pkid > 0:
             tb_existing = self.model.objects.get(id=pkid)
-            tb_object.first_publication_date = tb_existing.first_publication_date
+            tb_object.first_publication_date = \
+                tb_existing.first_publication_date
 
         if hasattr(self, "form_post_process"):
             self.form_post_process(tb_object, tb_existing, form)
@@ -204,7 +205,6 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
 # TopicBlogItem
 
 
-
 @StaffRequired
 def get_slug_suggestions(request):
     """Return a JSON list of suggested slugs.
@@ -313,7 +313,6 @@ class TopicBlogItemView(TopicBlogBaseView):
 
     """
     model = TopicBlogItem
-
 
 
 class TopicBlogItemViewOne(TopicBlogBaseViewOne):
