@@ -120,7 +120,10 @@ class TopicBlogObjectBase(models.Model):
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT,
+                             related_name='+')
+    publisher = models.ForeignKey(User, on_delete=models.PROTECT,
+                                  related_name='+', blank=True, null=True)
 
     # Presentation ##################################################
     #
@@ -224,14 +227,10 @@ class TopicBlogItem(TopicBlogObjectBase):
             # safe.
             ("tbi.may_edit", "May create and modify TopicBlogItems"),
 
-            # Finally, we can grant users permission to publish, to
-            # self-publish (implies tbi_may_publish), to self-retire,
-            # and to retire (implies self-retire).  Permission to
-            # retire implies permission to re-publish.
+            # Finally, we can grant users permission to publish and to
+            # self-publish (implies tbi_may_publish)
             ("tbi.may_publish", "May publish TopicBlogItems"),
             ("tbi.may_publish_self", "May publish own TopicBlogItems"),
-            ("tbi.may_retire_self", "May retire own TopicBlogItems"),
-            ("tbi.may_retire", "May retire TopicBlogItems"),
         )
 
     # Content Type ##################################################
