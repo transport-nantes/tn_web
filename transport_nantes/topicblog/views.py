@@ -7,21 +7,23 @@ from django.http import Http404, HttpResponseServerError
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 
-from asso_tn.utils import StaffRequiredMixin, StaffRequired
+from asso_tn.utils import StaffRequired
 from .models import TopicBlogItem, TopicBlogEmail
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
 
 
-class TopicBlogBaseEdit(StaffRequiredMixin, FormView):
+class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
     """
     Create or modify a concrete TBObject.  This class handles the
     elements common to all TBObject types.
@@ -116,7 +118,7 @@ class TopicBlogBaseView(TemplateView):
         return context
 
 
-class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
+class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
     """
     Render a specific TopicBlogObject.
 
@@ -145,13 +147,17 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs) # noqa
         pk_id = kwargs.get('pkid', -1)
         the_slug = kwargs.get('the_slug', '')
         tb_object = get_object_or_404(self.model, id=pk_id, slug=the_slug)
 
+        user = User.objects.get(username=request.user)
+        if tb_object.user == user:
+            if not user.has_perm('topicblog.may_publish_self'):
+                raise PermissionDenied("Vous n'avez pas les droits pour "
+                                       "publier vos propres articles")
         try:
-            tb_object: self.model
+            tb_object.publisher = self.request.user
             if tb_object.publish():
                 self.model.objects.filter(
                     slug=tb_object.slug).exclude(
@@ -170,7 +176,7 @@ class TopicBlogBaseViewOne(StaffRequiredMixin, TemplateView):
         return HttpResponseServerError()
 
 
-class TopicBlogBaseList(StaffRequiredMixin, ListView):
+class TopicBlogBaseList(LoginRequiredMixin, ListView):
     """
     Render a list of TopicBlogObjects.
 
@@ -245,7 +251,7 @@ def get_url_list(request):
     return JsonResponse({'url': url})
 
 
-class TopicBlogItemEdit(TopicBlogBaseEdit):
+class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     """
     Create or modify a TBItem.
 
@@ -254,7 +260,10 @@ class TopicBlogItemEdit(TopicBlogBaseEdit):
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
 
+    permission_required = 'topicblog.tbi.may_edit'
+
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         tb_item = context['tb_object']
 
@@ -320,12 +329,31 @@ class TopicBlogItemView(TopicBlogBaseView):
     model = TopicBlogItem
 
 
-class TopicBlogItemViewOne(TopicBlogBaseViewOne):
+class TopicBlogItemViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbi.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbi.may_view')
+        return super().has_permission()
+
+
+class TopicBlogItemViewOne(TopicBlogItemViewOnePermissions,
+                           TopicBlogBaseViewOne):
     model = TopicBlogItem
 
 
-class TopicBlogItemList(TopicBlogBaseList):
+class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogItem
+
+    permission_required = 'topicblog.tbi.may_view'
 
     def get_template_names(self):
         names = super().get_template_names()
