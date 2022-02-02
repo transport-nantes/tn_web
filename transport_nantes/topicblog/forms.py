@@ -33,5 +33,6 @@ class TopicBlogItemForm(ModelForm):
             return template_list
 
         template_list = get_template_list(self)
-        self.fields['template'] = forms.ChoiceField(choices=template_list,
-                                                    initial=None)
+        self.fields['template'] = forms.ChoiceField(
+            choices=template_list,
+            initial=self.instance.template_name)
