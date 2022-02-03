@@ -185,7 +185,7 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
             context['slug'] = the_slug
             context['servable_object'] = qs.filter(
                 publication_date__lte=datetime.now(timezone.utc)).order_by(
-                    '-publication_date', '-date_modified').first()
+                    '-publication_date').first()
         return context
 
     def get_queryset(self, *args, **kwargs):
@@ -195,12 +195,12 @@ class TopicBlogBaseList(StaffRequiredMixin, ListView):
         if 'the_slug' in self.kwargs:
             the_slug = self.kwargs['the_slug']
             return qs.filter(slug=the_slug).order_by(
-                '-publication_date', '-date_modified')
+                '-date_modified')
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
                            date_modified=Max('date_modified'),
                            publication_date=Max('publication_date')) \
-                 .order_by('-publication_date', '-date_modified')
+                 .order_by('-date_modified')
 
 
 ######################################################################
