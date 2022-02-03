@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
+import logging
 
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.db import models
 
 from mailing_list.models import MailingList
+
+logger = logging.getLogger("django")
 
 ######################################################################
 # topic blog, v1
@@ -241,7 +244,7 @@ class TopicBlogItem(TopicBlogObjectBase):
     # Default values for template_config ###########################
     template_config_default = {
         "optional_fields_for_publication": (
-                'header_description',
+                'header_image', 'header_description',
                 'cta_1_slug', 'cta_1_label',
                 'cta_2_slug', 'cta_2_label',
                 'cta_3_slug', 'cta_3_label',
@@ -364,7 +367,9 @@ class TopicBlogItem(TopicBlogObjectBase):
         An item may be published if it has no missing required fields,
         as defined in self.template_config
         """
-        if self.get_missing_publication_field_names():
+        missing_fields = self.get_missing_publication_field_names()
+        if missing_fields:
+            logger.info(f"Can't publish, missing {missing_fields}")
             return False
         return True
 
@@ -382,8 +387,8 @@ class TopicBlogItem(TopicBlogObjectBase):
         """
         if self.is_publishable():
             if self.first_publication_date is None:
-                self.first_publication_date = datetime.now()
-            self.publication_date = datetime.now()
+                self.first_publication_date = datetime.now(timezone.utc)
+            self.publication_date = datetime.now(timezone.utc)
             return True
         else:
             return False
