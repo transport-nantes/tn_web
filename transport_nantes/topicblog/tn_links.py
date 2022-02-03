@@ -6,6 +6,7 @@ from django.urls import reverse, NoReverseMatch
 
 from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
+from .templatetags import slug
 
 """Filter for Transport Nantes specific non-standard markdown.
 
@@ -42,8 +43,8 @@ Some examples:
 
     [[news:name]]((text))      equivalent to {% show_mailing_list name %}
 
-    [[action:text]]((item_slug))
-                               equivalent to [text](/tb/t/item_slug/)
+    [[slug:text]]((item_slug)) equivalent to [text](/tb/t/item_slug/)
+    [[cta:text]]((item_slug))  CTA labeled [text] to (/tb/t/item_slug/)
     [[contact:button-label]]((email-subject-label))
                                button that opens an email
 
@@ -218,12 +219,15 @@ class TNLinkParser(object):
                  "title": description_text})
             # Bug: this doesn't take into account the mailing list
             # requested or the label we request.
-        elif 'action' == self.bracket_class_string:
+        elif 'cta' == self.bracket_class_string or 'action' == self.bracket_class_string:
+            # Deprecated "action:".
             try:
                 url = reverse('topic_blog:view_item_by_slug', args=[self.paren_string])
             except NoReverseMatch:
                 url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
             self.out_string += don.action_button(url, self.bracket_label_string)
+        elif 'slug' == self.bracket_class_string:
+            self.out_string += slug.tbi_slug(self.bracket_label_string, self.paren_string)
         elif 'contact' == self.bracket_class_string:
             self.out_string += don.contact_button(self.bracket_label_string, self.paren_string)
         elif 'externe' == self.bracket_class_string:
