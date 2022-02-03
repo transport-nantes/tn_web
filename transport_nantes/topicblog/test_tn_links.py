@@ -5,6 +5,7 @@ from unittest import TestCase
 
 from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
+from .templatetags import slug
 from .tn_links import TNLinkParser, render_inclusion_tag_to_html
 
 class TnLinkParserTest(TestCase):
@@ -96,6 +97,13 @@ class TnLinkParserTest(TestCase):
         html = don.external_url_button(pdll_url, pdll)
         self.assertEqual(self.parser.transform(markdown), html)
 
+    def test_internal_url(self):
+        the_slug = 'my-slug'
+        the_label = 'my-label-text'
+        markdown = f'[[slug:{the_slug}]](({the_label}))'
+        html = slug.tbi_slug(the_slug, the_label)
+        self.assertEqual(self.parser.transform(markdown), html)
+
     def test_petition_url(self):
         label = 'my-label-text'
         petition = 'my-petition'
@@ -110,6 +118,12 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform(markdown), html)
 
     def test_call_to_action(self):
+        self.assertEqual(self.parser.transform('[[cta:join us!]]((my_topic_name))'), \
+                         don.action_button(reverse(
+                             'topic_blog:view_item_by_slug',
+                             args=['my_topic_name']),
+                                           'join us!'))
+        # Deprecated version:
         self.assertEqual(self.parser.transform('[[action:join us!]]((my_topic_name))'), \
                          don.action_button(reverse(
                              'topic_blog:view_item_by_slug',
