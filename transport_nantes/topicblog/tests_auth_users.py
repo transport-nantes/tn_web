@@ -26,6 +26,15 @@ class Test(TestCase):
             user=self.user,
             template_name=self.template_name,
             title="Test-title")
+        # Temporary, to be removed once the main page is index again.
+        self.index_item = TopicBlogItem.objects.create(
+            slug="ligne-johanna-rolland-pour-plus-de-mobilite",
+            date_modified=datetime.now(timezone.utc) - timedelta(9),
+            first_publication_date=datetime.now(timezone.utc),
+            publication_date=datetime.now(timezone.utc),
+            user=self.user,
+            template_name=self.template_name,
+            title="Test-title")
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
