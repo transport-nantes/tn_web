@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
 
+from django.contrib.auth.models import Permission, User
 from django.test import TestCase
-from .models import TopicBlogItem
-from django.contrib.auth.models import User
 from django.urls import reverse
+
+from .models import TopicBlogItem
 
 
 class Test(TestCase):
@@ -26,6 +27,15 @@ class Test(TestCase):
             user=self.user,
             template_name=self.template_name,
             title="Test-title")
+        # Temporary, to be removed once the main page is index again.
+        self.index_item = TopicBlogItem.objects.create(
+            slug="ligne-johanna-rolland-pour-plus-de-mobilite",
+            date_modified=datetime.now(timezone.utc) - timedelta(9),
+            first_publication_date=datetime.now(timezone.utc),
+            publication_date=datetime.now(timezone.utc),
+            user=self.user,
+            template_name=self.template_name,
+            title="Test-title")
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
@@ -37,6 +47,17 @@ class TBIEditStatusCodeTest(TestCase):
         self.user = User.objects.create_user(username='test-user',
                                              password='test-pass')
         self.user.is_staff = True
+        edit_permission = Permission.objects.get(codename="tbi.may_edit")
+        view_permission = Permission.objects.get(codename="tbi.may_view")
+        publish_permission = Permission.objects.get(codename="tbi.may_publish")
+        publish_self_permission = Permission.objects.get(
+            codename="tbi.may_publish_self")
+        self.user.user_permissions.add(
+            edit_permission,
+            view_permission,
+            publish_permission,
+            publish_self_permission
+            )
         self.user.save()
         self.client.login(username='test-user', password='test-pass')
         # Create a base template
