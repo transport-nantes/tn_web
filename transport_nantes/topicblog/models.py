@@ -385,9 +385,12 @@ class TopicBlogItem(TopicBlogObjectBase):
 
         """
         if self.is_publishable():
+            now_timestamp = datetime.now(timezone.utc)
             if self.first_publication_date is None:
-                self.first_publication_date = datetime.now(timezone.utc)
-            self.publication_date = datetime.now(timezone.utc)
+                self.first_publication_date = now_timestamp
+                self.publication_date = now_timestamp
+            else:
+                self.publication_date = now_timestamp
             return True
         else:
             return False
