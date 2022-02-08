@@ -324,7 +324,8 @@ def stripe_webhook(request):
                         f"\n {event}")
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
-            save_recurring_payment_details(customer_id, amount)
+            event_id = event["id"]
+            save_recurring_payment_details(customer_id, amount, event_id)
 
     elif event["type"] == 'checkout.session.expired':
         logger.info("Stripe checkout session expired")
@@ -431,6 +432,7 @@ def make_donation_from_webhook(event: dict) -> Donation:
     metadata = event["data"]["object"]["metadata"]
     # kwargs to be used to create a Donation object.
     kwargs = {
+        "stripe_event_id": event["id"],
         "stripe_customer_id": event["data"]["object"]["customer"],
         "user": get_user(event["data"]["object"]["customer_email"]),
         "email": event["data"]["object"]["customer_email"],
@@ -446,17 +448,24 @@ def make_donation_from_webhook(event: dict) -> Donation:
         "originating_view": metadata["originating_view"],
         "originating_parameters": metadata["originating_parameters"],
     }
-    logger.info("Creating of donation...")
+    logger.info("Creating donation...")
     try:
-        donation = Donation(**kwargs)
-        logger.info("Donation entry created.")
-        return donation
+        already_exists = Donation.objects.filter(
+            stripe_event_id=event["id"]).exists()
+        if already_exists:
+            logger.info("Donation already exists.")
+            return False
+        else:
+            donation = Donation(**kwargs)
+            logger.info("Donation entry created.")
+            return donation
     except Exception as e:
         logger.info(f"Error while creating a new donation : {e}")
         return False
 
 
-def save_recurring_payment_details(customer_id: str, amount: int) -> None:
+def save_recurring_payment_details(
+        customer_id: str, amount: int, event_id: str) -> None:
     """
     Save a donation entry for recurring payments.
     We use the data of the last donation associated with the
@@ -480,6 +489,7 @@ def save_recurring_payment_details(customer_id: str, amount: int) -> None:
     last_donation_kwargs = customer.__dict__
 
     kwargs = {
+        "stripe_event_id": event_id,
         "stripe_customer_id": last_donation_kwargs["stripe_customer_id"],
         "user_id": last_donation_kwargs["user_id"],
         "email": last_donation_kwargs["email"],
@@ -499,9 +509,15 @@ def save_recurring_payment_details(customer_id: str, amount: int) -> None:
     }
 
     try:
-        new_donation = Donation(**kwargs)
-        new_donation.save()
-        logger.info("Donation entry created.")
+        already_exists = Donation.objects.filter(
+            stripe_event_id=event_id).exists()
+        if already_exists:
+            logger.info("Event already saved : " + event_id)
+            return False
+        else:
+            new_donation = Donation(**kwargs)
+            new_donation.save()
+            logger.info("Donation entry created.")
     except Exception as e:
         logger.info(f"Error while creating a new donation : {e}")
         return False

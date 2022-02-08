@@ -58,6 +58,7 @@ class Donation(models.Model):
     from Stripe to our website's webhook.
     """
 
+    stripe_event_id = models.CharField(null=True, max_length=50)
     stripe_customer_id = models.CharField(max_length=50, null=True)
     # We should *never* delete users or donation records.
     # Still, we model correctly for relational integrity.
