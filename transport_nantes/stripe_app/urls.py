@@ -8,7 +8,7 @@ app_name = "stripe_app"
 urlpatterns = [
     path('', StripeView.as_view(), name="stripe"),
     path('<int:amount>/', QuickDonationView.as_view(), name="quick_donation"),
-    path('config/', get_public_key),
+    path('config/', get_public_key, name="get_public_key"),
     path('create-checkout-session/', create_checkout_session,
          name="checkout-session"),
     path('success/', SuccessView.as_view(), name="stripe_success"),
