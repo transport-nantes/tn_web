@@ -24,3 +24,7 @@ aws_config
 
 # User content
 transport_nantes/asso_tn/user_content/*
+
+# Coverage
+.coverage*
+htmlcov/
