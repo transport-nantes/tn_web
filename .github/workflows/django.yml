@@ -1,0 +1,46 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Create Config File
+      run: |
+        cp transport_nantes/transport_nantes/settings_local.py.DEV.template transport_nantes/transport_nantes/settings_local.py
+        sed 's/your-secret-here/django.core.management.utils.get_random_secret_key()/g' transport_nantes/transport_nantes/settings_local.py 
+    - name: Create Log File
+      run: |
+        mkdir -p /tmp/django-tn-log/
+        touch /tmp/django-tn-log/tn_web.log
+    - name: Run Tests & Coverage
+      run: |
+        cd transport_nantes
+        coverage run --source='.' manage.py test
+        coverage report
+    - name: Remove Config File
+      run: |
+        rm transport_nantes/transport_nantes/settings_local.py
+    - name: Remove Log File
+      run: |
+        rm /tmp/django-tn-log/tn_web.log
