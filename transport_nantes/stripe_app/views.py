@@ -325,7 +325,8 @@ def stripe_webhook(request):
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             event_id = event["id"]
-            error_flag = save_recurring_payment_details(customer_id, amount, event_id)
+            error_flag = save_recurring_payment_details(
+                customer_id, amount, event_id)
             if error_flag:
                 return HttpResponse(status=500)
 
