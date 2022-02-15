@@ -1,12 +1,18 @@
-from stripe.webhook import WebhookSignature
 from datetime import datetime
+from pathlib import Path
 
 from django.conf import settings
-from django.test import RequestFactory, TestCase
+from django.test import LiveServerTestCase, RequestFactory, TestCase
 from django.urls import reverse
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from stripe.webhook import WebhookSignature
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 
-from .views import stripe_webhook
 from .models import Donation
+from .views import stripe_webhook
 
 
 class StripeAppTests(TestCase):
@@ -162,7 +168,9 @@ class StripeAppTests(TestCase):
         payload = self.checkout_session_completed_sub_payload
         # Alter payload to get a session expired type
         payload = payload.decode('utf-8')
-        payload = payload.replace('"type": "checkout.session.completed"', '"type": "checkout.session.expired"')
+        payload = payload.replace(
+            '"type": "checkout.session.completed"',
+            '"type": "checkout.session.expired"')
         payload = payload.encode('utf-8')
 
         response = self.post_payload_to_webhook(payload)
@@ -174,8 +182,151 @@ class StripeAppTests(TestCase):
         payload = self.checkout_session_completed_sub_payload
         # Alter payload to get a session expired type
         payload = payload.decode('utf-8')
-        payload = payload.replace('"type": "checkout.session.completed"', '"type": "unknown_event"')
+        payload = payload.replace(
+            '"type": "checkout.session.completed"', '"type": "unknown_event"')
         payload = payload.encode('utf-8')
 
         response = self.post_payload_to_webhook(payload)
         self.assertEqual(response.status_code, 500)
+
+
+class TestStripeAppSelenium(LiveServerTestCase):
+    """Regroups all tests done with Selenium"""
+
+    def setUp(self):
+
+        self.options = Options()
+        self.options.add_argument('--headless')
+        self.browser = WebDriver(ChromeDriverManager().install(),
+                                 chrome_options=self.options)
+        # Introduce a delay to let the browser load the pages
+        # see doc :
+        # https://www.selenium.dev/documentation/webdriver/waits/#implicit-wait
+        self.browser.implicitly_wait(3)
+        self.this_dir = Path(__file__).parent.absolute()
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def fill_personal_info_part(self):
+        """Fill the personal info part of the form"""
+        self.browser.find_element_by_id('id_first_name').send_keys('FirstName')
+        self.browser.find_element_by_id('id_last_name').send_keys('LastName')
+        self.browser.find_element_by_id('id_mail').send_keys(
+            'email@email.com')
+        self.browser.find_element_by_id('id_address').send_keys('Address')
+        self.browser.find_element_by_id('id_more_address').send_keys(
+            'Complement')
+        self.browser.find_element_by_id('id_postal_code').send_keys('12345')
+        self.browser.find_element_by_id('id_city').send_keys('City')
+        # Check the consent box
+        self.browser.find_element_by_xpath(
+            '/html/body/div[4]/form/div[8]/div/label').click()
+
+    def fill_amount_form_sub_20euros(self):
+        """Fill the amount form with a monthly sub of 20 euros"""
+        # Select "Je donne tous les mois"
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[1]/div/div[2]/label').click()
+        # Select '20€'
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[2]/div/div[3]/label').click()
+
+    def fill_amount_form_onetime_preset_amount(self):
+        """Fill the amount form with a one time payment"""
+        # Select "Je donne une fois"
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[1]/div/div[1]/label').click()
+        # Select the 2nd choice (preset amount)
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[3]/div/div[2]/label').click()
+
+    def fill_amount_form_onetime_free_amount(self):
+        """Fill the amount form with a one time payment"""
+        # Select "Je donne une fois"
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[1]/div/div[1]/label').click()
+        # Select the 4th choice (free amount)
+        self.browser.find_element_by_xpath(
+            '/html/body/div[3]/form/div[3]/div/div[4]/label').click()
+        # Fill the free amount
+        self.browser.find_element_by_id('free_amount').send_keys('15')
+
+    def run_stripe_page_javascript(self):
+        """Runs the javascripts in Stripe page"""
+        self.browser.execute_script(
+            open(self.this_dir / 'static' / 'stripe_app' / 'form_flow.js'
+                 ).read())
+        self.browser.execute_script(
+            open(self.this_dir / 'static' / 'stripe_app' / 'form_style.js'
+                 ).read())
+
+    def test_subscription_flow(self):
+        """Test the subscription flow"""
+
+        # Go to the Sdonation form
+        self.browser.get(self.live_server_url + reverse('stripe_app:stripe'))
+
+        self.run_stripe_page_javascript()
+        self.fill_amount_form_sub_20euros()
+        # Click on "Continuer"
+        self.browser.find_element_by_id('toStep2').click()
+
+        self.fill_personal_info_part()
+        # Submit the form to Stripe
+        self.browser.find_element_by_id('supportButton').click()
+
+        # Wait until the checkout page is loaded
+        reached_stripe = WebDriverWait(self.browser, 5).until(
+            EC.url_contains("checkout.stripe")
+        )
+
+        self.assertEqual(reached_stripe, True)
+
+    def test_one_time_payment_flow(self):
+        """Test that we can do a one time payment with a preset amount
+        through the form"""
+
+        # Go to the donation form
+        self.browser.get(self.live_server_url + reverse('stripe_app:stripe'))
+
+        self.run_stripe_page_javascript()
+        # Select one time payment and 2nd option (preset amount)
+        self.fill_amount_form_onetime_preset_amount()
+        # Click on "Continuer"
+        self.browser.find_element_by_id('toStep2').click()
+
+        self.fill_personal_info_part()
+        # Submit the form to Stripe
+        self.browser.find_element_by_id('supportButton').click()
+
+        # Wait until the checkout page is loaded
+        reached_stripe = WebDriverWait(self.browser, 5).until(
+            EC.url_contains("checkout.stripe")
+        )
+
+        self.assertEqual(reached_stripe, True)
+
+    def test_one_time_payment_flow_free_amount(self):
+        """Test that we can do a one time payment with a free amount
+        through the form"""
+
+        # Go to the donation form
+        self.browser.get(self.live_server_url + reverse('stripe_app:stripe'))
+
+        self.run_stripe_page_javascript()
+        # Select one time payment and 4th option (free amount)
+        self.fill_amount_form_onetime_free_amount()
+        # Click on "Continuer"
+        self.browser.find_element_by_id('toStep2').click()
+
+        self.fill_personal_info_part()
+        # Submit the form to Stripe
+        self.browser.find_element_by_id('supportButton').click()
+
+        # Wait until the checkout page is loaded
+        reached_stripe = WebDriverWait(self.browser, 5).until(
+            EC.url_contains("checkout.stripe")
+        )
+
+        self.assertEqual(reached_stripe, True)
