@@ -45,6 +45,7 @@ urlpatterns = [
     # the OGM project.  Cf. also the benjamin-ajax-exercise branch.
     # path('??', include('velopolitain_observatoire.urls')),
     path("donation/", include('stripe_app.urls')),
+    path("presse/", include('press.urls')),
 ]
 
 if ROLE != 'production':
