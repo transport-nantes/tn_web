@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'stripe_app',
     'crispy_forms',
     'django_countries',
+    'press',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
