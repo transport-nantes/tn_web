@@ -3,21 +3,22 @@ import logging
 import random
 import string
 
-from django.views.generic.base import TemplateView
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
-from django.http.response import HttpResponseServerError
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-
 import stripe
 import user_agents
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http.response import HttpResponseServerError
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import TemplateView
+from transport_nantes.settings import (ROLE, STRIPE_ENDPOINT_SECRET,
+                                       STRIPE_PUBLISHABLE_KEY,
+                                       STRIPE_SECRET_KEY)
 
-from .models import TrackingProgression, Donation
-from .forms import DonationForm, AmountForm, QuickDonationForm
-from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
-                                       STRIPE_SECRET_KEY,
-                                       STRIPE_ENDPOINT_SECRET)
+from .forms import AmountForm, DonationForm, QuickDonationForm
+from .models import Donation, TrackingProgression
 
 logger = logging.getLogger("django")
 
@@ -325,7 +326,8 @@ def stripe_webhook(request):
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             event_id = event["id"]
-            error_flag = save_recurring_payment_details(customer_id, amount, event_id)
+            error_flag = save_recurring_payment_details(
+                customer_id, amount, event_id)
             if error_flag:
                 return HttpResponse(status=500)
 
@@ -547,3 +549,120 @@ class QuickDonationView(TemplateView):
         context["info_form"] = DonationForm()
         context["originating_view"] = "QuickDonationView"
         return context
+
+
+class TempCreateMissingRecords(LoginRequiredMixin, TemplateView):
+    """
+    Temporary view.
+    Creates the missing records for a certain user.
+    """
+    template_name = 'topicblog/content.html'
+
+    def get(self, request, *args, **kwargs):
+        # Checks Superuser status.
+        if not self.request.user.is_superuser:
+            return HttpResponseForbidden("You're not allowed to do that.")
+
+        context = super().get_context_data(**kwargs)
+        # We check that given username is the one we intend to alter
+        stripe_customer_id = kwargs["stripe_customer_id"]
+        wanted_user = Donation.objects.get(id=3).user
+        given_user = kwargs["username"]
+        if given_user != wanted_user.username:
+            return HttpResponseServerError(
+                "Wrong username !")
+        try:
+            # Edit the first (and only) record
+            first_donation = Donation.objects.get(user=wanted_user)
+            if first_donation.id != 3:
+                return HttpResponseServerError("Mauvais id !")
+            # Check that there isn't a set stripe_customer_id on the record
+            if first_donation.stripe_customer_id is None:
+                first_donation.stripe_customer_id = stripe_customer_id
+                first_donation.save()
+            else:
+                return HttpResponseServerError(
+                    "The stripe customer id is already defined on this record")
+        except MultipleObjectsReturned as e:
+            # if we attempt to refresh the view, no duplicates will be
+            # created because get will get > 1 record.
+            logger.info(
+                f"Several donations found for this user : {e}\n"
+                "The view is already consumed.")
+            return HttpResponseServerError("Multiple donations found.")
+        except ObjectDoesNotExist as e:
+            logger.info(
+                f"No donation found for this user : {e}\n")
+            return HttpResponseServerError("No donation found.")
+
+        # Dictionnary created from Stripe's history
+        # Contains the missing data to create a proper record
+        missed_donations = [
+            {
+                "stripe_event_id": "evt_1JmNz9ClnCBJWy551RjcNV0l",
+                # October recurring donation
+                "timestamp": datetime.datetime(
+                    2021, 10, 19, 8, 28, 31, tzinfo=datetime.timezone.utc),
+            },
+            {
+                "stripe_event_id": "evt_1JxcknClnCBJWy55uaDNm2Wr",
+                # November recurring donation
+                "timestamp": datetime.datetime(
+                    2021, 11, 19, 7, 28, 9, tzinfo=datetime.timezone.utc),
+            },
+            {
+                "stripe_event_id": "evt_1K8V8IClnCBJWy55ZVxU8ef0",
+                # December recurring donation
+                "timestamp": datetime.datetime(
+                    2021, 12, 19, 7, 33, 22, tzinfo=datetime.timezone.utc),
+            },
+            {
+                "stripe_event_id": "evt_1KJjroClnCBJWy55rVWrl9KF",
+                # January recurring donation
+                "timestamp": datetime.datetime(
+                    2022, 1, 19, 7, 30, 48, tzinfo=datetime.timezone.utc),
+            },
+        ]
+        for donation in missed_donations:
+            # We create a new Donation object from the informations
+            # gathered in the first donation.
+            new_donation = Donation(
+                stripe_event_id=donation["stripe_event_id"],
+                stripe_customer_id=first_donation.stripe_customer_id,
+                user=wanted_user,
+                email=first_donation.email,
+                first_name=first_donation.first_name,
+                last_name=first_donation.last_name,
+                address=first_donation.address,
+                more_address=first_donation.more_address,
+                postal_code=first_donation.postal_code,
+                city=first_donation.city,
+                country=first_donation.country,
+                periodicity_months=1,
+                amount_centimes_euros=500,
+                originating_view="TempCreateMissingRecords",
+                originating_parameters="",
+                timestamp=donation["timestamp"]
+            )
+            new_donation.id = None
+            new_donation.save()
+            # because .save() overrides the timestamp to datetime.now(),
+            # we need to set it back to the timestamp we want by acting
+            # directly on the SQL level, that doesn't call save methods
+            # See doc :
+            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#update
+            Donation.objects.filter(id=new_donation.id).update(
+                timestamp=donation["timestamp"])
+
+        # 1 original + 4 new, one per month
+        expected_number_of_records_post_operation = 5
+        number_of_records = Donation.objects.filter(user=wanted_user).count()
+        if number_of_records == expected_number_of_records_post_operation:
+            context["page"] = {'body_text_1_md': '## Done.'}
+        else:
+            context["page"] = {'body_text_1_md':
+                               '## Error. Number of records is not correct :'
+                               f'{number_of_records} instead of '
+                               f'{expected_number_of_records_post_operation}'}
+
+        return self.render_to_response(context)

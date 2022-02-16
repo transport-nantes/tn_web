@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import (QuickDonationView, StripeView, SuccessView, get_public_key,
+from .views import (QuickDonationView, StripeView, SuccessView,
+                    TempCreateMissingRecords, get_public_key,
                     create_checkout_session, tracking_progression,
                     stripe_webhook)
 
@@ -14,4 +15,6 @@ urlpatterns = [
     path('success/', SuccessView.as_view(), name="stripe_success"),
     path('tracking/', tracking_progression),
     path('webhook/', stripe_webhook, name="webhook"),
+    path('migrate-my-user/<str:stripe_customer_id>/<str:username>/',
+         TempCreateMissingRecords.as_view(), name="create_missing_records"),
 ]
