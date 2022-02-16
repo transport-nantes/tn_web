@@ -88,6 +88,10 @@ Vagrant.configure("2") do |config|
     sudo mkdir /tmp/django-tn-log/
     sudo touch /tmp/django-tn-log/tn_web.log
     sudo chmod 777 /tmp/django-tn-log/tn_web.log
+    sudo sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+    sudo apt-get update -y
+    sudo apt-get install google-chrome-stable -y
 SETUP
   # To run in vagrant:
   #  ROOT_URLCONF=transport_nantes.urls_m DEFAULT_SITE_ID=1 \
