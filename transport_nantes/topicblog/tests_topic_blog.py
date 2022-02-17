@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-
 from django.test import TestCase, Client
 from .models import TopicBlogItem
 from django.contrib.auth.models import Permission, User
@@ -18,9 +17,10 @@ class Test(TestCase):
         # Create a base template
         self.template_name = "topicblog/content.html"
         # Create an Item with a slug, ID = 1
-        main_page_slug_name = "ligne-johanna-rolland-pour-plus-de-mobilite"
+        self.main_page_slug_name = ("ligne-johanna-rolland-"
+                                    "pour-plus-de-mobilite")
         self.item_with_slug = TopicBlogItem.objects.create(
-            slug=main_page_slug_name,
+            slug=self.main_page_slug_name,
             date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
@@ -74,6 +74,9 @@ class TBIEditStatusCodeTest(TestCase):
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
+            body_text_1_md="body 1",
+            body_text_2_md="body 2",
+            body_text_3_md="body 3",
             template_name=self.template_name,
             title="Test-title")
 
@@ -92,6 +95,29 @@ class TBIEditStatusCodeTest(TestCase):
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
+            template_name=self.template_name,
+            title="Test-title")
+        # Create an intem with the body image but no the alt image
+        self.item_without_alt = TopicBlogItem.objects.create(
+            slug="test-slug-no-alt",
+            date_modified=datetime.now(timezone.utc) - timedelta(seconds=7),
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            user=self.user,
+            body_image="body.png",
+            body_text_1_md="body 1",
+            body_text_2_md="body 2",
+            body_text_3_md="body 3",
+            template_name=self.template_name,
+            title="Test-title")
+        # Create an item without publication date and first publication date
+        self.item_without_date = TopicBlogItem.objects.create(
+            slug="test-slug-no-date",
+            date_modified=datetime.now(timezone.utc) - timedelta(seconds=7),
+            user=self.user,
+            body_text_1_md="body 1",
+            body_text_2_md="body 2",
+            body_text_3_md="body 3",
             template_name=self.template_name,
             title="Test-title")
 
@@ -784,3 +810,105 @@ class TBIListStatusCodeTests(TestCase):
                          f"\nnumber of items: {number_of_items}"
                          "\nnumber of items in the list: "
                          f'{len(response.context["object_list"])}')
+
+
+class TBIModel(TestCase):
+    def setUp(self):
+        TBIEditStatusCodeTest.setUp(self)
+
+    def test_is_pubichable_function(self):
+        self.assertTrue(self.item_with_slug.is_publishable())
+        self.assertTrue(self.item_without_date.is_publishable())
+        self.assertFalse(self.item_without_slug.is_publishable())
+        self.assertFalse(self.item_without_alt.is_publishable())
+
+    def test_publish_function(self):
+        self.assertTrue(self.item_with_slug.publish())
+        self.assertTrue(self.item_without_date.publish())
+        self.assertFalse(self.item_without_slug.publish())
+        self.assertFalse(self.item_without_alt.publish())
+
+    def test_get_servable_status(self):
+        self.assertTrue(self.item_with_slug.get_servable_status())
+        self.assertFalse(self.item_without_slug.get_servable_status())
+        self.assertFalse(self.item_without_date.get_servable_status())
+
+    def test_get_image_fields_function(self):
+        self.assertEqual(self.item_with_slug.get_image_fields(),
+                         ['header_image', 'twitter_image',
+                          'og_image', 'body_image'])
+        self.assertEqual(self.item_without_slug.get_image_fields(),
+                         ['header_image', 'twitter_image',
+                          'og_image', 'body_image'])
+
+    def test_get_absolute_url_function(self):
+        self.assertEqual(self.item_with_slug.get_absolute_url(),
+                         '/tb/admin/t/view/1/test-slug/')
+        self.assertEqual(
+            self.item_without_slug.get_absolute_url(), '/tb/admin/t/view/2/')
+
+    def test_get_missing_publication_field_names(self):
+        self.assertEqual(
+            self.item_with_slug.get_missing_publication_field_names(), set())
+        self.assertEqual(
+            self.item_without_slug.get_missing_publication_field_names(),
+            {'body_text_2_md', 'body_text_3_md', 'body_text_1_md', 'slug'})
+        self.assertEqual(
+            self.item_without_alt.get_missing_publication_field_names(),
+            {'body_image', 'body_image_alt_text'})
+
+
+class TBIView(TestCase):
+    def setUp(self):
+        TBIEditStatusCodeTest.setUp(self)
+        """For this test we use a list of dictionaries, that is composed of:
+            - client = the client of user (auth user, unauth and staff user)
+            - code = the statut code (not varie for user)
+            - message = the error message (not varie for user)"""
+        
+        self.users_expected = [
+            {"client": self.client, "code": 403,
+             "msg": "User with no staff status is not permited"},
+            {"client": self.unauth_client, "code": 403,
+             "msg": "Unauth can't have acces to this data"},
+            {"client": self.user_permited_client, "code": 200,
+             "msg": "The page must return 200 the user is staff"}
+        ]
+
+    def test_get_slug_suggestions(self):
+        for user_type in self.users_expected:
+            response = user_type["client"].get(
+                f"{reverse('topicblog:get_slug_suggestions')}"
+                "?partial_slug=alt"
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+        # test the result of the staff user
+        self.assertJSONEqual(str(response.content, encoding='utf8'),
+                             ['test-slug-no-alt'])
+
+    def test_get_slug_dict(self):
+        for user_type in self.users_expected:
+            response = user_type["client"].get(
+                reverse('topicblog:get_slug_dict')
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+        # test the result of the staff user
+        self.assertJSONEqual(str(response.content, encoding='utf8'),
+                             {"": 1, "test-slug": 2, "test-slug-no-alt": 1,
+                              "test-slug-no-date": 1, })
+
+    def test_get_url_list(self):
+        for user_type in self.users_expected:
+            response = user_type["client"].get(
+                f"{reverse('topicblog:get_url_list')}"
+                "?slug=test-slug-no-alt"
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+        # test the result of the staff user
+        self.assertJSONEqual(str(response.content, encoding='utf8'),
+                             {"url": "/tb/admin/t/list/test-slug-no-alt/"})
