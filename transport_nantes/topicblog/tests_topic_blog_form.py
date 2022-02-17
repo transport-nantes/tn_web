@@ -5,7 +5,6 @@ from django.test import LiveServerTestCase, Client
 from selenium.webdriver.support.ui import Select
 from django.urls import reverse
 from .models import TopicBlogItem
-from datetime import datetime, timedelta, timezone
 from selenium.webdriver.chrome.options import Options
 
 
@@ -73,32 +72,38 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.selenium = WebDriver(ChromeDriverManager().install(),
                                   options=options)
 
-        self.selenium.implicitly_wait(10)
+        self.selenium.implicitly_wait(5)
 
     def tearDown(self):
         # Close the browser
         self.selenium.quit()
 
-    def fill_the_form_and_publish(self, slug, title):
+    def fill_the_form_and_publish(self, slug, title, body_1="body 1", body_2="body 2",
+                                  body_3="body 3", edit=False):
         """Fill the topicblog item form and publish
         """
-        slug_input = self.selenium.find_element_by_name("slug")
-        slug_input.send_keys(slug)
+        if not edit:
+            slug_input = self.selenium.find_element_by_name("slug")
+            slug_input.send_keys(slug)
         title_input = self.selenium.find_element_by_name("title")
+        title_input.clear()
         title_input.send_keys(title)
         select = Select(self.selenium.find_element_by_name("template"))
         select.select_by_value("topicblog/content.html")
         self.selenium.find_element_by_link_text("Contenu (1)").click()
         body_text_1_md_input = self.selenium.find_element_by_id(
             "id_body_text_1_md")
-        body_text_1_md_input.send_keys("body 1")
+        body_text_1_md_input.clear()
+        body_text_1_md_input.send_keys(body_1)
         body_text_2_md_input = self.selenium.find_element_by_id(
             "id_body_text_2_md")
-        body_text_2_md_input.send_keys("body 2")
+        body_text_2_md_input.clear()
+        body_text_2_md_input.send_keys(body_2)
         self.selenium.find_element_by_link_text("Contenu (2)").click()
         body_text_3_md_input = self.selenium.find_element_by_id(
             "id_body_text_3_md")
-        body_text_3_md_input.send_keys("body 3")
+        body_text_3_md_input.clear()
+        body_text_3_md_input.send_keys(body_3)
         self.selenium.find_element_by_name("sauvegarder").click()
         self.selenium.find_element_by_xpath(
             "//input[@value='Publier']").click()
@@ -116,7 +121,7 @@ class TestsTopicItemForm(LiveServerTestCase):
             slug="test-slug-staff")[0]
         self.assertIsNotNone(
             item_staff, msg="The item created by the super user"
-                            "is not in the database")
+                            " is not in the database")
         # Go to the user view
         self.selenium.find_element_by_link_text("Visualiser (usager)").click()
         """Get the body innerHTML and check if
@@ -127,7 +132,7 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.assertHTMLEqual(
             body_html, "<p>body 1</p><p>body 2</p><p>body 3</p>",
             msg="The body innerHTML is not the same"
-                "as what we send to the form")
+                " as what we send to the form")
 
     def test_editor_create_item_but_cant_publish(self):
         self.selenium.get('%s%s' % (self.live_server_url,
@@ -139,11 +144,14 @@ class TestsTopicItemForm(LiveServerTestCase):
                           reverse("topic_blog:new_item")))
         slug = 'test-slug-editor'
         self.fill_the_form_and_publish(slug, 'title item')
+        # Check if the item is on the databse and the publication should equal to none.
         item_editor = TopicBlogItem.objects.filter(
             slug="test-slug-editor")[0]
+        self.assertIsNotNone(item_editor,
+                             msg="The item created by the editor"
+                                 " is not in the database")
         self.assertIsNone(item_editor.publication_date,
-                          msg="The item created by the editor"
-                              "is not in the database")
+                          msg="The publication date is not none")
         # Check if the user get the 403 Forbidden
         body = self.selenium.find_element_by_tag_name("body")
         body_html = body.get_attribute('innerHTML')
@@ -170,7 +178,6 @@ class TestsTopicItemForm(LiveServerTestCase):
         # Create an item with the first editor that is not published
         self.item = TopicBlogItem.objects.create(
             slug="test-slug",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
             user=self.user_editor,
             template_name="topicblog/content.html",
             body_text_1_md="body 1",
@@ -211,4 +218,71 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.assertHTMLEqual(
             body_html, "<p>body 1</p><p>body 2</p><p>body 3</p>",
             msg="The body innerHTML is not the same"
-                "as what we send to the form")
+                " as what we send to the form")
+
+    def test_edit_and_self_publish(self):
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("topic_blog:new_item")))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_admin,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("topic_blog:new_item")))
+        self.fill_the_form_and_publish(slug="test-edited", title="title-edit")
+        # Go to the edit view
+        self.selenium.find_element_by_link_text("Modifier").click()
+        self.fill_the_form_and_publish(slug="", title="new title edited",
+                                       body_1="new setence 1",
+                                       body_2="new setence 2",
+                                       body_3="new setence 3")
+
+        # Check if the new title is on the database
+        item_edited = TopicBlogItem.objects.filter(
+            title="new title edited")[0]
+
+        self.assertIsNotNone(item_edited,
+                             msg="The item edited by the staff"
+                             " is not in the database")
+        # Go to the user view
+        self.selenium.find_element_by_link_text("Visualiser (usager)").click()
+        """Get the body innerHTML and check if
+        this is what we send in the form
+        """
+        body_app_content = self.selenium.find_element_by_id("app_content")
+        body_html = body_app_content.get_attribute('innerHTML')
+        self.assertHTMLEqual(
+            body_html, "<p>new setence 1</p><p>new setence 2</p><p>new setence 3</p>",
+            msg="The body innerHTML is not the same"
+                " as what we send to the form")
+
+    def test_publish_an_unpublishable_item(self):
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("topic_blog:new_item")))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_admin,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("topic_blog:new_item")))
+        slug_input = self.selenium.find_element_by_name("slug")
+        slug_input.send_keys("unpublishable")
+        select = Select(self.selenium.find_element_by_name("template"))
+        select.select_by_value("topicblog/content.html")
+        self.selenium.find_element_by_name("sauvegarder").click()
+        # Check if the item is on the databse and get the data for faking the publish
+        item_unpublishable = TopicBlogItem.objects.filter(
+            slug="unpublishable")[0]
+
+        self.assertIsNotNone(item_unpublishable,
+                             msg="The item created by the staff"
+                                 " is not in the database")
+        # testing with the unpublishable item of the staff
+        response_0 = self.client.post(
+            reverse("topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": item_unpublishable.id,
+                        "the_slug": item_unpublishable.slug
+                    })
+        )
+        self.assertEqual(response_0.status_code, 500,
+                         msg="try to pubilsh unpublishable item should return"
+                             "HttpResponseServerError(code 500)")
