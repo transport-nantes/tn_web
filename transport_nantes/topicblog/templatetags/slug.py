@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def tbi_slug(slug, label):
+def tbi_slug(label, slug):
     """Render an internal TBItem link from a slug.
 
     The value must include everything after "/tb/t/".
