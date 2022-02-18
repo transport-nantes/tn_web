@@ -16,9 +16,19 @@ class PressMentionListView(ListView):
 class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
     model = PressMention
     template_name = "press/press_list.html"
-    queryset = PressMention.objects.all().order_by('-article_publication_date')
+    queryset = PressMention.objects.all()
+    ordering = ['-article_publication_date']
     context_object_name = 'press_mention_list'
+    paginate_by = 20
     permission_required = 'press.press-editor'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["number_pagination_list"] = \
+            context["paginator"].get_elided_page_range(
+            number=context["page_obj"].number,
+            on_each_side=4, on_ends=0)
+        return context
 
 
 class PressMentionCreateView(PermissionRequiredMixin, FormView):
