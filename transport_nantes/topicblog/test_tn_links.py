@@ -100,8 +100,8 @@ class TnLinkParserTest(TestCase):
     def test_internal_url(self):
         the_slug = 'my-slug'
         the_label = 'my-label-text'
-        markdown = f'[[slug:{the_slug}]](({the_label}))'
-        html = slug.tbi_slug(the_slug, the_label)
+        markdown = f'[[slug:{the_label}]](({the_slug}))'
+        html = slug.tbi_slug(the_label, the_slug)
         self.assertEqual(self.parser.transform(markdown), html)
 
     def test_petition_url(self):
