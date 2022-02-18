@@ -28,7 +28,16 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
             context["paginator"].get_elided_page_range(
             number=context["page_obj"].number,
             on_each_side=4, on_ends=0)
+        if self.request.GET.get("newspaper_name"):
+            context["is_not_full"] = True
         return context
+
+    def get_queryset(self):
+        if self.request.GET.get("newspaper_name"):
+            name = self.request.GET.get("newspaper_name")
+            if name:
+                return PressMention.objects.filter(newspaper_name=name)
+        return super().get_queryset()
 
 
 class PressMentionCreateView(PermissionRequiredMixin, FormView):
