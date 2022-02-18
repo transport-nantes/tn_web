@@ -2,7 +2,6 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">Journal</th>
-      <th scope="col">Url</th>
       <th scope="col">Titre</th>
       <th scope="col">Description</th>
       <th scope="col">Date</th>
@@ -12,12 +11,7 @@
     {% for press_mention in press_mention_list %}
     <tr>
       <td>{{ press_mention.newspaper_name }}</td>
-      <td>
-        <a class="btn btn-outline-info" href="{{press_mention.article_link }}" role="button" target="_blank">
-          Lien
-        </a>
-      </td>
-      <td>{{ press_mention.article_title }}</td>
+      <td><a href="{{press_mention.article_link }}" target="_blank">{{ press_mention.article_title }}</a></td>
       <td>{{ press_mention.article_summary }}</td>
       <td>{{ press_mention.article_publication_date|date:"d/m/Y" }}</td>
     </tr>
