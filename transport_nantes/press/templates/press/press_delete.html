@@ -1,0 +1,32 @@
+{% extends 'asso_tn/base_mobilitain.html' %} 
+{% load crispy_forms_tags %} 
+{% block content %}
+<div class="container-fluid pl-5 py-3">
+  <div class="row">
+    <div class="col-md-8 col-sm-12 mx-auto">
+      <h5 class="alert alert-danger text-center" role="alert">Vous êtes sûr le point de supprimer cette publication.</h5>
+      <h5 class="text-center">Effacer cette publication</h5>
+      <form method="post">{% csrf_token %}
+        <div class="text-center">
+          <p>Nom du journal : {{ object.newspaper_name }}</p>
+          <p>Liens : {{ object.article_link }}</p>
+          <p>Titre : {{ object.article_title }}</p>
+          <p>Description : {{ object.article_summary }}</p>
+          <p>Date : {{ object.article_publication_date|date:"d/m/Y"  }}</p>
+        </div>
+        {{ form }}
+        <div class="row">
+          <div class="col-sm-6">
+            <button type="submit" class="btn navigation-button btn-lg btn-block">
+              Confirmer
+            </button>
+          </div>
+          <div class="col-sm-6">
+            <a href="{% url 'press:list_items' %}" class="btn navigation-button btn-lg btn-block">Retour vers la liste</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
