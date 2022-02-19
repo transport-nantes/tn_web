@@ -1,4 +1,5 @@
-from django.views.generic import ListView, FormView
+from attr import fields
+from django.views.generic import ListView, CreateView,UpdateView,DeleteView
 from .models import PressMention
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -40,29 +41,27 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
         return super().get_queryset()
 
 
-class PressMentionCreateView(PermissionRequiredMixin, FormView):
+class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     template_name = "press/press_create.html"
     form_class = PressMentionForm
     success_url = reverse_lazy('press:new_item')
     permission_required = 'press.press-editor'
-
-    def form_valid(self, form):
-        name = form.cleaned_data['newspaper_name']
-        link = form.cleaned_data['article_link']
-        title = form.cleaned_data['article_title']
-        summary = form.cleaned_data['article_summary']
-        publication_date = form.cleaned_data['article_publication_date']
-        press_mention = PressMention.objects.create(
-            newspaper_name=name,
-            article_link=link,
-            article_title=title,
-            article_summary=summary,
-            article_publication_date=publication_date,
-        )
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["press_mention_list"] = PressMention.objects.all().order_by(
             "-article_publication_date")
         return context
+
+class PressMentionUpdateView(PermissionRequiredMixin,UpdateView):
+    model = PressMention
+    template_name = "press/press_update.html"
+    form_class = PressMentionForm
+    success_url = reverse_lazy('press:list_items')
+    permission_required = 'press.press-editor'
+
+class PressMentionDeleteView(PermissionRequiredMixin,DeleteView):
+    model = PressMention
+    template_name = "press/press_delete.html"
+    permission_required = 'press.press-editor'
+    success_url = reverse_lazy('press:list_items')

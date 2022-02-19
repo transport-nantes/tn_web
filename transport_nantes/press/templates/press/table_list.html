@@ -1,7 +1,7 @@
 {% if is_not_full %}
   <a href="{% url 'press:list_items' %}" class="btn navigation-button btn-lg my-3">Retour à la liste complète</a>
 {% endif %}
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped table-responsive-sm">
   <thead class="thead-dark">
     <tr>
       <th scope="col">Journal</th>
@@ -23,6 +23,10 @@
       <td><a href="{{press_mention.article_link }}" target="_blank" class="btn navigation-button">{{ press_mention.article_title }}</a></td>
       <td>{{ press_mention.article_summary }}</td>
       <td>{{ press_mention.article_publication_date|date:"d/m/Y" }}</td>
+      <td>
+        <a href="{% url 'press:update_item' press_mention.id%}" class="btn navigation-button m-1"><i class="fas fa-edit"></i></a>
+        <a href="{% url 'press:delete_item' press_mention.id%} " class="btn navigation-button m-1"><i class="fa fa-trash"></i></a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
