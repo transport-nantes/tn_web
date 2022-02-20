@@ -24,11 +24,7 @@
         N'oubliez pas qu'il faut toujours respecter les droits d'auteur.
       </h5>
       <h5 class="text-center">Création d'une nouvelle publication</h5>
-      <form method="post">
-        {% csrf_token %} {{ form|crispy }}
-        <button type="submit" class="btn navigation-button btn-lg btn-block">
-          Sauvegarder
-        </button>
+        {% crispy form %}
       </form>
     </div>
   </div>

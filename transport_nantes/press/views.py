@@ -1,5 +1,4 @@
-from attr import fields
-from django.views.generic import ListView, CreateView,UpdateView,DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import PressMention
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -50,18 +49,30 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["press_mention_list"] = PressMention.objects.all().order_by(
-            "-article_publication_date")
+            "-article_publication_date")[:20]
+        context["newspaper_name_list"] = PressMention.objects.distinct(
+            ).order_by('newspaper_name').values_list(
+                'newspaper_name', flat=True)
         return context
 
-class PressMentionUpdateView(PermissionRequiredMixin,UpdateView):
+
+class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
     model = PressMention
     template_name = "press/press_update.html"
     form_class = PressMentionForm
     success_url = reverse_lazy('press:list_items')
     permission_required = 'press.press-editor'
 
-class PressMentionDeleteView(PermissionRequiredMixin,DeleteView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["newspaper_name_list"] = PressMention.objects.distinct(
+            ).order_by('newspaper_name').values_list(
+                'newspaper_name', flat=True)
+        return context
+
+
+class PressMentionDeleteView(PermissionRequiredMixin, DeleteView):
     model = PressMention
     template_name = "press/press_delete.html"
-    permission_required = 'press.press-editor'
     success_url = reverse_lazy('press:list_items')
+    permission_required = 'press.press-editor'
