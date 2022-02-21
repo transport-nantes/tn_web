@@ -1,17 +1,18 @@
 import logging
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
-                    QuickPetitionSignupForm)
+                    QuickPetitionSignupForm,
+                    FirstStepQuickMailingListSignupForm)
 from .models import MailingList, MailingListEvent, Petition
 from .events import user_subscribe_count, subscriber_count
 
@@ -77,25 +78,30 @@ class MailingListSignup(FormView):
             # We should wait until this is a performance issue, however.
             subscribe = True
         if subscribe:
-            return render(
-                self.request, self.merci_template,
-                {
-                    'hero': True,
-                    'hero_image':
-                    ('asso_tn/images-libres/'
-                     'black-and-white-bridge-children-194009-1000'
-                     '.jpg'),
-                    'hero_title': 'Newsletter',
-                }
-            )
+            return reverse_lazy('mailing_list:list_ok')
         return super(MailingListSignup, self).form_valid(form)
+
+
+class FirstStepQuickMailingListSignup(FormView):
+    template_name = 'mailing_list/quick_signup_m.html'
+    form_class = FirstStepQuickMailingListSignupForm
+
+    def form_valid(self, form):
+        self.good_form = form
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        email = self.good_form.cleaned_data['email']
+        mailinglist = self.good_form.cleaned_data['mailinglist']
+        return (f"{reverse_lazy('mailing_list:quick_list_signup')}"
+                f"?email={email}&mailinglist={mailinglist}")
 
 
 class QuickMailingListSignup(FormView):
     template_name = 'mailing_list/quick_signup_m.html'
     merci_template = 'mailing_list/merci_m.html'
     form_class = QuickMailingListSignupForm
-
+    success_url = reverse_lazy('mailing_list:list_ok')
     # We don't currently populate this form with the user's current
     # subscriptions.  If the user is logged in, we should.  This then
     # becomes the edit form as well.
@@ -103,6 +109,18 @@ class QuickMailingListSignup(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_form(self):
+        if (self.request.GET.get("email") and
+                self.request.GET.get("mailinglist")):
+            form = super().get_form()
+            email = self.request.GET.get("email")
+            mailinglist = self.request.GET.get("mailinglist")
+            if email and mailinglist:
+                form["email"].initial = email
+                form["mailinglist"].initial = mailinglist
+                return form
+        return super().get_form()
 
     def form_invalid(self, form):
         """Display the correct form.
@@ -113,6 +131,7 @@ class QuickMailingListSignup(FormView):
 
         """
         form["email"].initial = self.request.POST["email"]
+        form["mailinglist"].initial = self.request.POST["mailinglist"]
         return render(self.request, self.template_name, {'form': form})
 
     def form_valid(self, form):
@@ -142,17 +161,7 @@ class QuickMailingListSignup(FormView):
             mailing_list=mailing_list_obj,
             event_type=MailingListEvent.EventType.SUBSCRIBE)
         subscription.save()
-        return render(
-            self.request, self.merci_template,
-            {
-                'hero': True,
-                'hero_image':
-                ('asso_tn/images-libres/'
-                 'black-and-white-bridge-children-194009-1000'
-                 '.jpg'),
-                'hero_title': 'Newsletter',
-            }
-        )
+        return super().form_valid(form)
 
 
 class MailingListMerci(TemplateView):
@@ -181,7 +190,7 @@ class QuickPetitionSignup(FormView):
     # This needs to be parameterised by petition.
     merci_template = 'mailing_list/merci_petition.html'
     form_class = QuickPetitionSignupForm
-
+    success_url = reverse_lazy('mailing_list:list_ok')
     # We don't currently populate this form with the user's current
     # subscriptions.  If the user is logged in, we should.  This then
     # becomes the edit form as well.
@@ -222,17 +231,7 @@ class QuickPetitionSignup(FormView):
             mailing_list=petition[0],
             event_type=MailingListEvent.EventType.SUBSCRIBE)
         subscription.save()
-        return render(
-            self.request, self.merci_template,
-            {
-                'hero': True,
-                'hero_image':
-                ('asso_tn/images-libres/'
-                 'black-and-white-bridge-children-194009-1000'
-                 '.jpg'),
-                'hero_title': 'Newsletter',
-            }
-        )
+        return super().form_valid(form)
 
 
 class PetitionView(AssoView):

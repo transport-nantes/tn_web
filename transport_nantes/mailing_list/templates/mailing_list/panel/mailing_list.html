@@ -7,7 +7,7 @@
 	</div>{% endif %}
 	<div class="d-flex col-sm-12 justify-content-center">
 	    <form class="d-flex flex-column" method="post"
-		  action="{% url 'mailing_list:quick_list_signup' %}">{% csrf_token %}
+		  action="{% url 'mailing_list:first_step_quick_list_signup' %}">{% csrf_token %}
 		{% if form.non_field_errors %}
 		<p>{{ form.non_field_errors }}</p>
 		{% endif %}
