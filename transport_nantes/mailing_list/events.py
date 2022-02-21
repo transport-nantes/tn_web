@@ -4,6 +4,31 @@ from django.db.models import Q
 
 from .models import MailingListEvent
 
+
+def subscribe_user_to_list(user, mailing_list) -> MailingListEvent:
+    """Subscribe user to a mailing list or sign a petition"""
+
+    subscribe = MailingListEvent.objects.create(
+        user=user,
+        mailing_list=mailing_list,
+        event_type=MailingListEvent.EventType.SUBSCRIBE)
+    subscribe.save()
+
+
+
+def unsubscribe_user_from_list(user, mailing_list) -> MailingListEvent:
+    """Unsubscribe  user to a mailing list or unsign
+       a petition (the petition is still signed by
+       the user if he sign again it will only count
+       as one)"""
+
+    unsubscribe = MailingListEvent.objects.create(
+        user=user,
+        mailing_list=mailing_list,
+        event_type=MailingListEvent.EventType.UNSUBSCRIBE)
+    unsubscribe.save()
+
+
 def user_current_state(user, mailing_list):
     """Return user's most current state on the provided mailing list
 
@@ -23,6 +48,7 @@ def user_current_state(user, mailing_list):
             user=user, mailing_list=mailing_list,
             event_type=MailingListEvent.EventType.UNSUBSCRIBE)
 
+
 def user_subscribe_count(mailing_list):
     """Return the number of users currently subscribed to the mailing list.
 
@@ -38,6 +64,7 @@ def user_subscribe_count(mailing_list):
     users_subscribed = user_states.filter(
         Q(event_type=MailingListEvent.EventType.SUBSCRIBE)).count()
     return users_subscribed
+
 
 def subscriber_count(mailing_list):
     """Return the number of users who have signed a petition.
