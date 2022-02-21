@@ -1,36 +1,30 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 
 {% block content %}
-
 <div class="container">
-
-    <div class="row pb-3">
-	<div class="col-sm-6">
-	    <h3>Contact</h3>
-	    <p>Newsletter, mailing list, et pétition sont pour
-		l'instant à peu près la même chose pour nous.
-	    </p>
-	    <p><a class="nav-link" href="{% url 'mailing_list:dashboard' %}">Listes</a></p>
+	<div class="row pb-3">
+		<div class="col-sm-6">
+			<h3>Contact</h3>
+			<p>Newsletter, mailing list, et pétition sont pour l'instant à peu près la même chose pour nous.</p>
+			<p><a class="nav-link" href="{% url 'mailing_list:list_items' %}">Listes</a></p>
+		</div>
+		<div class="col-sm-6">
+			<h3>TBv2</h3>
+			<p>
+				<a class="nav-link" href="{% url 'topic_blog:new_item' %}">Créer un nouveu</a>
+				<a class="nav-link" href="{% url 'topic_blog:list_items' %}">Voir la liste</a>
+			</p>
+		</div>
+		<div class="col-sm-6">
+			<h3>Press</h3>
+			<p>Les articles qui mentionnent les mobilitains</p>
+			<p>
+				<a class="nav-link" href="{% url 'press:new_item' %}">Créer un nouveu</a>
+				<a class="nav-link" href="{% url 'press:list_items' %}">Voir la liste</a>
+			</p>
+		</div>
 	</div>
-	<div class="col-sm-6">
-	    <h3>TBv2</h3>
-	    <p>
-		<a class="nav-link" href="{% url 'topic_blog:new_item' %}">Créer un nouveu</a>
-		<a class="nav-link" href="{% url 'topic_blog:list_items' %}">Voir la liste</a>
-	    </p>
-	</div>
-	<div class="col-sm-6">
-	    <h3>Press</h3>
-		<p>Les articles qui mentionnent les mobilitains
-		</p>
-	    <p>
-			<a class="nav-link" href="{% url 'press:new_item' %}">Créer un nouveu</a>
-			<a class="nav-link" href="{% url 'press:list_items' %}">Voir la liste</a>
-	    </p>
-	</div>
-    </div>
 </div>
-
 {% block bottom_appeal %}{% endblock bottom_appeal %}
 
 {% endblock %}

@@ -6,8 +6,7 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic import TemplateView, ListView, FormView
 
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
@@ -255,15 +254,18 @@ class PetitionView(AssoView):
         return context
 
 
-class DashboardView(TemplateView):
-    template_name = 'mailing_list/dashboard.html'
+class MailingListListView(ListView):
+    model = MailingList
+    template_name = "mailing_list/mailing_list_list_view.html"
+    queryset = MailingList.objects.all()
+    oder_by = ['is_petition', 'mailing_list_name']
+    context_object_name = 'mailing_lists_base'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lists = MailingList.objects.all().order_by(
-            'is_petition', 'mailing_list_name')
+        lists = self.get_queryset()
         context['mailing_lists'] = [(list, user_subscribe_count(list))
                                     for list in lists if not list.is_petition]
-        context['petitions'] = [(list, subscriber_count(list))
-                                for list in lists if list.is_petition]
+        context['petitions_lists'] = [(list, subscriber_count(list))
+                                      for list in lists if list.is_petition]
         return context

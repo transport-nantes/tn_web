@@ -1,0 +1,50 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block content %}
+<div class="container-fluid p-3">
+	<h2 class="text-center">Listes (newsletters, etc.)</h2>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th scope="col">Nom</th>
+					<th scope="col">Fréquence de contacte (en semaines)</th>
+					<th scope="col">État</th>
+					<th scope="col">Nombre d'inscrits</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for mailing_list,count_subscriber in mailing_lists %}
+				<tr>
+					<td>{{ mailing_list.mailing_list_name }}</td>
+					<td>{{ mailing_list.contact_frequency_weeks }}</td>
+					<td>{% if mailing_list.list_active %} Activé {% else %} Désactivé {% endif %}</td>
+					<td>{{ count_subscriber }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<h2 class="text-center">Pétition</h2>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead class="thead-dark">
+				<tr>
+					<th scope="col">Nom</th>
+					<th scope="col">État</th>
+					<th scope="col">Nombre d'inscrits</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for petitions_lists,count_subscriber in petitions_lists %}
+				<tr>
+					<td>{{ petitions_lists.mailing_list_name }}</td>
+					<td>{% if petitions_lists.list_active %} Activé {% else %} Désactivé {% endif %}</td>
+					<td>{{ count_subscriber }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}
