@@ -507,9 +507,8 @@ def save_recurring_payment_details(
         "country": last_donation_kwargs["country"],
         "periodicity_months": last_donation_kwargs["periodicity_months"],
         "amount_centimes_euros": amount,
-        "originating_view": last_donation_kwargs["originating_view"],
-        "originating_parameters":
-            last_donation_kwargs["originating_parameters"],
+        "originating_view": '<repeat-subscription>',
+        "originating_parameters": "",
         "timestamp": datetime.datetime.now
     }
 
