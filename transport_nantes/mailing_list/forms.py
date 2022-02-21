@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
 from captcha.fields import CaptchaField
 from .models import MailingList
 
@@ -56,7 +56,17 @@ class MailingListSignupForm(ModelForm):
         }
 
 
+# Fist step of subscire to the mailing list
+class FirstStepQuickMailingListSignupForm(Form):
+    email = forms.EmailField(label="Adresse mél", required=True)
+    mailinglist = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.HiddenInput())
+
 # Like MailingListSignupForm, but only requests email.
+
+
 class QuickMailingListSignupForm(ModelForm):
     captcha = CaptchaField(
         label="Je suis humain",

@@ -2,12 +2,14 @@ from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from mailing_list.forms import QuickMailingListSignupForm
+from mailing_list.forms import FirstStepQuickMailingListSignupForm
 from mailing_list.forms import QuickPetitionSignupForm
 
 register = template.Library()
 
-@register.inclusion_tag('mailing_list/panel/mailing_list.html', takes_context=True)
+
+@register.inclusion_tag('mailing_list/panel/mailing_list.html',
+                        takes_context=True)
 def show_mailing_list(context, **kwargs):
     """Offer to join the mailing list.
 
@@ -22,10 +24,11 @@ def show_mailing_list(context, **kwargs):
     mailinglist = kwargs.get('mailinglist')
     if mailinglist is None:
         mailinglist = context.get('mailinglist')
-    form = QuickMailingListSignupForm(
+    form = FirstStepQuickMailingListSignupForm(
         initial={"mailinglist": mailinglist})
     context['form'] = form
     return context
+
 
 @register.inclusion_tag('mailing_list/panel/petition.html')
 def show_petition_signup(petition_name):
@@ -40,6 +43,7 @@ def show_petition_signup(petition_name):
     form = QuickPetitionSignupForm(
         initial={'petition_name': petition_name})
     return {'form': form}
+
 
 @register.simple_tag
 def petition_link(petition, label):
