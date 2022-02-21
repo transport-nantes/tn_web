@@ -13,8 +13,9 @@ from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
                     QuickPetitionSignupForm,
                     FirstStepQuickMailingListSignupForm)
-from .models import MailingList, MailingListEvent, Petition
-from .events import user_subscribe_count, subscriber_count
+from .models import MailingList, Petition
+from .events import (user_subscribe_count, subscriber_count,
+                     subscribe_user_to_list)
 
 logger = logging.getLogger("django")
 
@@ -63,11 +64,7 @@ class MailingListSignup(FormView):
         user.profile.code_postal = form.cleaned_data['code_postal']
         user.profile.save()
         for newsletter in form.cleaned_data['newsletters']:
-            subscription = MailingListEvent.objects.create(
-                user=user,
-                mailing_list=newsletter,
-                event_type=MailingListEvent.EventType.SUBSCRIBE)
-            subscription.save()
+            subscribe_user_to_list(user, newsletter)
             # At some point we should also store the last known
             # subscription state in a table with foreign key user.  If
             # the user is in that table, we use it, otherwise we look
@@ -156,11 +153,7 @@ class QuickMailingListSignup(FormView):
         except ObjectDoesNotExist:
             logger.info(f"Failed to find mailing_list_token={mailing_list}")
             return HttpResponseServerError()
-        subscription = MailingListEvent.objects.create(
-            user=user,
-            mailing_list=mailing_list_obj,
-            event_type=MailingListEvent.EventType.SUBSCRIBE)
-        subscription.save()
+        subscribe_user_to_list(user, mailing_list_obj)
         return super().form_valid(form)
 
 
@@ -226,11 +219,7 @@ class QuickPetitionSignup(FormView):
             mailing_list_token=form.cleaned_data['petition_name'])
         if len(petition) == 0:
             return HttpResponseNotFound("Pétition inconnu")
-        subscription = MailingListEvent.objects.create(
-            user=user,
-            mailing_list=petition[0],
-            event_type=MailingListEvent.EventType.SUBSCRIBE)
-        subscription.save()
+        subscribe_user_to_list(user, petition[0])
         return super().form_valid(form)
 
 
