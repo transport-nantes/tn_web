@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from .views import (MailingListSignup, QuickMailingListSignup,
                     QuickPetitionSignup, PetitionView, MailingListMerci,
-                    DashboardView, FirstStepQuickMailingListSignup)
+                    MailingListListView, FirstStepQuickMailingListSignup)
 
 app_name = 'mailing_list'
 urlpatterns = [
@@ -18,7 +18,7 @@ urlpatterns = [
          template_name='mailing_list/petition4.html'),
          name='petition'),
 
-    path('dashboard', DashboardView.as_view(), name='dashboard')
+    path('list', MailingListListView.as_view(), name='list_items')
 ]
 
 # For debugging the "thank you" template:
