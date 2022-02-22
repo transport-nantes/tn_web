@@ -6,15 +6,16 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import TemplateView, FormView, ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
-                    QuickPetitionSignupForm,
+                    QuickPetitionSignupForm, SubscribeUpdateForm,
                     FirstStepQuickMailingListSignupForm)
 from .models import MailingList, Petition
-from .events import (user_subscribe_count, subscriber_count,
-                     subscribe_user_to_list)
+from .events import (user_subscribe_count, subscriber_count, user_current_state,
+                     subscribe_user_to_list, unsubscribe_user_from_list)
 
 logger = logging.getLogger("django")
 
@@ -252,9 +253,77 @@ class MailingListListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lists = self.get_queryset()
-        context['mailing_lists'] = [(list, user_subscribe_count(list))
-                                    for list in lists if not list.is_petition]
-        context['petitions_lists'] = [(list, subscriber_count(list))
-                                      for list in lists if list.is_petition]
+        mailing_lists = self.get_queryset()
+        context['mailing_lists'] = [(mailing_list, user_subscribe_count(
+            mailing_list)) for mailing_list in mailing_lists
+            if not mailing_list.is_petition]
+        context['petitions_lists'] = [(mailing_list, subscriber_count(
+            mailing_list)) for mailing_list in mailing_lists
+            if mailing_list.is_petition]
         return context
+
+
+class UserStatusView(LoginRequiredMixin, ListView):
+    model = MailingList
+    template_name = "mailing_list/mailing_list_user_status.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mailing_lists'] = list()
+        context['petitions_lists'] = list()
+        base_lists = MailingList.objects.filter(
+            list_active=True).order_by(
+                'is_petition', 'mailing_list_name')
+        for mailing_list in base_lists:
+            state = user_current_state(
+                self.request.user, mailing_list).event_type
+            if not mailing_list.is_petition:
+                context['mailing_lists'].append((mailing_list, state,))
+            else:
+                context['petitions_lists'].append((mailing_list, state,))
+        context['user_id'] = self.request.user.id
+        return context
+
+
+class MailingListSubscribeFromStatus(LoginRequiredMixin, FormView):
+    template_name = 'mailing_list/validate_form.html'
+    form_class = SubscribeUpdateForm
+    success_url = reverse_lazy('mailing_list:user_status')
+
+    def form_valid(self, form):
+        # Check if the user connect as same id as the form
+        if self.request.user.id != form.cleaned_data['user']:
+            return reverse_lazy('mailing_list:user_status')
+        else:
+            user_id = form.cleaned_data['user']
+            mailing_list_id = form.cleaned_data['mailinglist']
+            user = get_object_or_404(User, id=user_id)
+            mailing_list = get_object_or_404(MailingList, id=mailing_list_id)
+            subscribe_user_to_list(user, mailing_list)
+            return super().form_valid(form)
+
+
+class MailingListUnsubscribeFromStatus(LoginRequiredMixin, FormView):
+    template_name = 'mailing_list/validate_form.html'
+    form_class = SubscribeUpdateForm
+    success_url = reverse_lazy('mailing_list:user_status')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mailing_list_id = self.kwargs['mailing_list']
+        context['user_id'] = self.request.user.id
+        context['mailing_list'] = get_object_or_404(
+            MailingList, id=mailing_list_id)
+        return context
+
+    def form_valid(self, form):
+        # Check if the user connect as same id as the form
+        if self.request.user.id != form.cleaned_data['user']:
+            return reverse_lazy('mailing_list:user_status')
+        else:
+            user_id = form.cleaned_data['user']
+            mailing_list_id = form.cleaned_data['mailinglist']
+            user = get_object_or_404(User, id=user_id)
+            mailing_list = get_object_or_404(MailingList, id=mailing_list_id)
+            unsubscribe_user_from_list(user, mailing_list)
+            return super().form_valid(form)

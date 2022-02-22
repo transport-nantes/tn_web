@@ -4,7 +4,6 @@ from django.forms import ModelForm, Form
 from captcha.fields import CaptchaField
 from .models import MailingList
 
-
 class MailingListMMCF(forms.ModelMultipleChoiceField):
     """A custom form that gives us pretty mailing list labels in
     MailingListSignupForm.  Without this, we'd get whatever __str__()
@@ -55,8 +54,16 @@ class MailingListSignupForm(ModelForm):
             'email': "*",
         }
 
+# Form for subscribe or subscribe auth required
+class SubscribeUpdateForm(Form):
+    user = forms.IntegerField(
+        widget=forms.HiddenInput())
+    mailinglist = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.HiddenInput())
 
-# Fist step of subscire to the mailing list
+# Fisrt step of subscire to the mailing list
 class FirstStepQuickMailingListSignupForm(Form):
     email = forms.EmailField(label="Adresse mél", required=True)
     mailinglist = forms.CharField(

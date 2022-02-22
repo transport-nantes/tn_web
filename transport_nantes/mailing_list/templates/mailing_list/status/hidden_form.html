@@ -1,0 +1,22 @@
+<form method="post"
+    {% if unsubscribe %}
+        action="{% url 'mailing_list:status_unsubscribe' mailing_list.id %}"
+    {% else %}
+        action="{% url 'mailing_list:status_subscribe' %}"
+    {% endif %}>
+    {% csrf_token %}
+    <input type="hidden" id="user" name="user" value="{{user_id}}">
+    <input type="hidden" id="mailinglist" name="mailinglist" value="{{mailing_list.id}}">
+    {% if unsubscribe %}
+        <div class="row">
+            <div class="col-md-6">
+                    <button type="submit" class="btn navigation-button btn-lg btn-block">{{button}}</button>
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'mailing_list:user_status' %}" class="btn navigation-button btn-lg btn-block">Retour</a>
+            </div>
+        </div>
+    {% else %}
+        <button type="submit" class="btn donation-button m-1">{{button}}</button>
+    {% endif %}
+</form>

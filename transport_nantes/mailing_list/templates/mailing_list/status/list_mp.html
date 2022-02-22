@@ -1,0 +1,30 @@
+<div>
+    <h2 class="text-center">{{div_title}}</h2>
+    <ul class="list-group">
+        {% if  base_list %}
+        {% for mailing_list,state in base_list %}
+            <li class="list-group-item" id="id-ml-{{mailing_list.id}}" >
+                <div class="d-flex align-items-center">
+                    {{ mailing_list.mailing_list_name }}
+                    {% if mailing_list.is_petition %}
+                        {% if state == "sub" %}
+                            <span class="m-1 alert alert-success p-2">Signé</span>
+                        {% else %}
+                            {% include "mailing_list/status/hidden_form.html"  with button="Signer" %}
+                        {% endif %}
+                    {% else %}
+                        {% if state == "sub" %}
+                            <a href="{% url 'mailing_list:status_unsubscribe' mailing_list.id %}" class="m-1">Se désabonner</a>
+                        {% else %}
+                            {% comment %} Generate a hidden form for subscribe to a mailing list no confirm needed {% endcomment %}
+                            {% include "mailing_list/status/hidden_form.html"  with button="S'abonner" %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>Aucun</li>
+    {% endif %}
+      </ul>
+</div>
