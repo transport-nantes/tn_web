@@ -382,8 +382,9 @@ class TopicBlogEmailView(TopicBlogBaseView):
     model = TopicBlogEmail
 
 
-class TopicBlogEmailViewOne(TopicBlogBaseViewOne):
+class TopicBlogEmailViewOne(PermissionRequiredMixin, TopicBlogBaseViewOne):
     model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_view'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

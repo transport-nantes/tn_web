@@ -1,8 +1,14 @@
 from datetime import datetime, timedelta, timezone
-from django.test import TestCase, Client
-from .models import TopicBlogItem
+
 from django.contrib.auth.models import Permission, User
+from django.test import Client, TestCase
 from django.urls import reverse
+from mailing_list.models import MailingList
+from mailing_list.events import (get_subcribed_users_email_list,
+                                 unsubscribe_user_from_list,
+                                 subscribe_user_to_list)
+
+from .models import TopicBlogEmail, TopicBlogItem
 
 
 class Test(TestCase):
@@ -865,7 +871,7 @@ class TBIView(TestCase):
             - client = the client of user (auth user, unauth and staff user)
             - code = the statut code (not varie for user)
             - message = the error message (not varie for user)"""
-        
+
         self.users_expected = [
             {"client": self.client, "code": 403,
              "msg": "User with no staff status is not permited"},
@@ -912,3 +918,92 @@ class TBIView(TestCase):
         # test the result of the staff user
         self.assertJSONEqual(str(response.content, encoding='utf8'),
                              {"url": "/tb/admin/t/list/test-slug-no-alt/"})
+
+
+class TopicBlogEmailTest(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="test_user",
+            email="admin@admin.com",
+            password="test_password")
+        self.email_article = TopicBlogEmail.objects.create(
+            subject="Test subject",
+            user=self.superuser,
+            body_text_1_md="Test body text 1",
+            slug="test-email",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            template_name="topicblog/tbemails/email.html",
+            title="Test title")
+        self.mailing_list = MailingList.objects.create(
+            mailing_list_name="the_mailing_list_name",
+            mailing_list_token="the_mailing_list_token",
+            contact_frequency_weeks=12,
+            list_active=True)
+        self.no_permissions_user = User.objects.create_user(
+            username="user_without_permissions",
+            email="test@test.com"
+        )
+        subscribe_user_to_list(self.superuser, self.mailing_list)
+        subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
+        self.no_permissions_client = Client()
+        self.admin_client = Client()
+        self.admin_client.force_login(self.superuser)
+        self.no_permissions_client.force_login(self.no_permissions_user)
+
+        # Anonymous users are invited tol og in and from there, you
+        # land either on 403 Forbidden or 200 OK depending on the
+        # user's permissions.
+        self.perm_needed_responses = [
+            {"client": self.client, "code": 302,
+             "msg": "Anonymous users are redirected to login."},
+            {"client": self.no_permissions_client, "code": 403,
+             "msg": ("Logged in users without proper permissions can't have "
+                     "access to this page.")},
+            {"client": self.admin_client, "code": 200,
+             "msg": "The page must return 200 the user has the permission."}
+        ]
+        self.no_perm_needed_responses = [
+            {"client": self.client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."},
+            {"client": self.no_permissions_client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."},
+            {"client": self.admin_client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."}
+        ]
+
+    def test_TBE_view_one_status_code(self):
+
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(
+                reverse('topic_blog:view_email_by_pkid',
+                        args=[self.email_article.pk, self.email_article.slug]
+                        )
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+    def test_TBE_view_status_code(self):
+        for user_type in self.no_perm_needed_responses:
+            response = user_type["client"].get(
+                reverse('topic_blog:view_email_by_slug',
+                        args=[self.email_article.slug]
+                        )
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+    def test_get_subcribed_users_email_list(self):
+
+        # superuser and no_perm_user are subscribed to the mailing list
+        # in the setUp method
+        number_of_subscribed_users = 2
+        self.assertEqual(
+            len(get_subcribed_users_email_list(self.mailing_list)),
+            number_of_subscribed_users)
+
+        unsubscribe_user_from_list(self.superuser, self.mailing_list)
+        number_of_subscribed_users = 1
+        self.assertEqual(
+            len(get_subcribed_users_email_list(self.mailing_list)),
+            number_of_subscribed_users)
