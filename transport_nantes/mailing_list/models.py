@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import django.utils.timezone
 
-
 # This application might have been called newsletter.  Think of this
 # as about newsletters, not about the lists, in the sense that this is
 # an application that is designed for keeping in touch with lists of
