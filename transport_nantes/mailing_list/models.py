@@ -1,14 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 import django.utils.timezone
-import uuid
 
 # This application might have been called newsletter.  Think of this
 # as about newsletters, not about the lists, in the sense that this is
 # an application that is designed for keeping in touch with lists of
 # people, currently by email.
+
 
 class MailingList(models.Model):
     """Represent things a mailing list.
@@ -45,6 +43,7 @@ class MailingList(models.Model):
             name=self.mailing_list_name,
             token=self.mailing_list_token,
             freq=self.contact_frequency_weeks)
+
 
 class Petition(models.Model):
     """Parameters of a petition.
@@ -99,6 +98,7 @@ class Petition(models.Model):
             sl=self.slug,
             list_name=self.mailing_list.mailing_list_name)
 
+
 class MailingListEvent(models.Model):
     """Events on mailing lists.
 
@@ -134,4 +134,3 @@ class MailingListEvent(models.Model):
 
 # We'll need to make sure we have an automatic unsubscribe pathway
 # with link in mails.
-
