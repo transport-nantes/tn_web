@@ -4,7 +4,9 @@ from django.contrib.auth.models import Permission, User
 from django.test import Client, TestCase
 from django.urls import reverse
 from mailing_list.models import MailingList
-from mailing_list.events import subscribe_user_to_list
+from mailing_list.events import (get_subcribed_users_email_list,
+                                 unsubscribe_user_from_list,
+                                 subscribe_user_to_list)
 
 from .models import TopicBlogEmail, TopicBlogItem
 
@@ -990,3 +992,18 @@ class TopicBlogEmailTest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+    def test_get_subcribed_users_email_list(self):
+
+        # superuser and no_perm_user are subscribed to the mailing list
+        # in the setUp method
+        number_of_subscribed_users = 2
+        self.assertEqual(
+            len(get_subcribed_users_email_list(self.mailing_list)),
+            number_of_subscribed_users)
+
+        unsubscribe_user_from_list(self.superuser, self.mailing_list)
+        number_of_subscribed_users = 1
+        self.assertEqual(
+            len(get_subcribed_users_email_list(self.mailing_list)),
+            number_of_subscribed_users)
