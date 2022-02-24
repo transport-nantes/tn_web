@@ -1,6 +1,7 @@
 from collections import Counter
 from datetime import datetime, timezone
 import logging
+from django.conf import settings
 
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseServerError
@@ -10,13 +11,18 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
+from django.utils.html import strip_tags
 
 from asso_tn.utils import StaffRequired
+from mailing_list.events import get_subcribed_users_email_list
+from mailing_list.models import MailingList
 from .models import TopicBlogItem, TopicBlogEmail
 from .forms import TopicBlogItemForm
 
@@ -390,3 +396,52 @@ class TopicBlogEmailViewOne(TopicBlogBaseViewOne):
 
 class TopicBlogEmailList(TopicBlogBaseList):
     model = TopicBlogEmail
+
+
+class TopicBlogEmailSendMail(PermissionRequiredMixin, TemplateView):
+    """Sends and display a mail containing a TopicBlogEmail object to
+    a given mailing list."""
+    model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_send'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Sends an article by mail, given pkid and slug.
+        """
+        context = {}
+        pkid = self.kwargs.get('pkid', -1)
+        the_slug = self.kwargs.get('the_slug', None)
+        mailing_list_token = self.kwargs.get('mailing_list_token', None)
+        if pkid < 0 or the_slug is None:
+            return HttpResponseServerError(
+                f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
+
+        # The recipient list is extracted from a MailingList.
+        mailing_list = MailingList.objects.get(
+            mailing_list_token=mailing_list_token)
+        mailing_list: MailingList
+        recipient_list = get_subcribed_users_email_list(mailing_list)
+
+        # Preparing the email
+        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
+        self.template_name = tb_email.template_name
+        context["email"] = tb_email
+        # HTML message is the one displayed in mail client
+        html_message = render_to_string(
+            tb_email.template_name, context=context)
+        # In cases where the HTML message isn't accepted, a plain text
+        # message is displayed in the mail client.
+        plain_text_message = strip_tags(html_message)
+        try:
+            send_mail(
+                subject=tb_email.subject,
+                message=plain_text_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=recipient_list,
+                html_message=html_message,
+                fail_silently=False
+            )
+        except Exception as e:
+            return HttpResponseServerError(str(e))
+
+        return self.render_to_response(context=context)
