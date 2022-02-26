@@ -6,23 +6,27 @@
 	    <h2 >{{ title }}</h2>
 	</div>{% endif %}
 	<div class="d-flex col-sm-12 justify-content-center">
-	    <form class="d-flex flex-column" method="post"
-		  action="{% url 'mailing_list:first_step_quick_list_signup' %}">{% csrf_token %}
-		{% if form.non_field_errors %}
-		<p>{{ form.non_field_errors }}</p>
+		{% if user.is_authenticated %}
+			{% include "mailing_list/status/hidden_form.html"  with button="S'inscrire à la newsletter" user_id=user.id %}
+		{% else %}
+		<form class="d-flex flex-column" method="post"
+				action="{% url 'mailing_list:first_step_quick_list_signup' %}">{% csrf_token %}
+			{% if form.non_field_errors %}
+				<p>{{ form.non_field_errors }}</p>
+			{% endif %}
+			{% for field in form %}
+				<div class="fieldWrapper">
+					{{ field.errors }}
+					{{ field|as_crispy_field }}
+				</div>
+				{% for error in field.error_messages %}
+					<p style="color: red">{{ error }}</p>
+				{% endfor %}
+			{% endfor %}
+			<button type="submit" class="btn donation-button">Je m'inscris</button>
+	  	</form>
 		{% endif %}
-		{% for field in form %}
-		<div class="fieldWrapper">
-		    {{ field.errors }}
-		    {{ field|as_crispy_field }}
-		</div>
-		{% for error in field.error_messages %}
-		<p style="color: red">{{ error }}</p>
-		{% endfor %}
-		{% endfor %}
-		
-		<button type="submit" class="btn donation-button">Je m'inscris</button>
-	    </form>
+
 	</div>
     </div>
 </div>

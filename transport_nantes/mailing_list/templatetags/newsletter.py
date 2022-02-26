@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 
 from mailing_list.forms import FirstStepQuickMailingListSignupForm
 from mailing_list.forms import QuickPetitionSignupForm
+from mailing_list.models import MailingList
 
 register = template.Library()
 
@@ -24,6 +25,18 @@ def show_mailing_list(context, **kwargs):
     mailinglist = kwargs.get('mailinglist')
     if mailinglist is None:
         mailinglist = context.get('mailinglist')
+    if mailinglist:
+        try:
+            context['mailing_list'] = MailingList.objects.get(
+            mailing_list_token=mailinglist)
+        except MailingList.ObjectDoesNotExist:
+            mailing_list = MailingList.objects.create(
+                mailing_list_name=mailinglist,
+                mailing_list_token=mailinglist,
+                list_active=True,
+            )
+            mailing_list.save()
+
     form = FirstStepQuickMailingListSignupForm(
         initial={"mailinglist": mailinglist})
     context['form'] = form
