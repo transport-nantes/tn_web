@@ -376,8 +376,17 @@ class TopicBlogEmailView(TopicBlogBaseView):
     model = TopicBlogEmail
 
 
-class TopicBlogEmailViewOne(TopicBlogBaseViewOne):
+class TopicBlogEmailViewOne(PermissionRequiredMixin, TopicBlogBaseViewOne):
     model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_view'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pkid = self.kwargs.get('pkid', -1)
+        the_slug = self.kwargs.get('the_slug', None)
+        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
+        context["email"] = tb_email
+        return context
 
 
 class TopicBlogEmailList(TopicBlogBaseList):
