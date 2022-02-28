@@ -2,12 +2,11 @@ import logging
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,render, redirect
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic import TemplateView, ListView, FormView
-
+from django.conf import settings
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
                     QuickPetitionSignupForm,
@@ -79,7 +78,7 @@ class MailingListSignup(FormView):
 
 
 class FirstStepQuickMailingListSignup(FormView):
-    template_name = 'mailing_list/quick_signup_m.html'
+    template_name = 'mailing_list/first_step_sign_up_m.html'
     form_class = FirstStepQuickMailingListSignupForm
 
     def form_valid(self, form):
@@ -95,12 +94,28 @@ class FirstStepQuickMailingListSignup(FormView):
 
 class QuickMailingListSignup(FormView):
     template_name = 'mailing_list/quick_signup_m.html'
-    merci_template = 'mailing_list/merci_m.html'
     form_class = QuickMailingListSignupForm
     success_url = reverse_lazy('mailing_list:list_ok')
     # We don't currently populate this form with the user's current
     # subscriptions.  If the user is logged in, we should.  This then
     # becomes the edit form as well.
+
+    def get(self, request):
+        # check if we are on prod
+        if hasattr(settings, 'ROLE') and 'production' == settings.ROLE:
+            # check if the request have a previous url
+            if ("HTTP_REFERER" not in self.request.META.keys()):
+                return redirect(
+                    reverse_lazy(
+                        "mailing_list:first_step_quick_list_signup"))
+            else:
+                the_domaine = self.request.build_absolute_uri("/")
+                the_previous_domaine = self.request.META["HTTP_REFERER"]
+                if the_domaine != the_previous_domaine[:len(the_domaine)]:
+                    return redirect(
+                        reverse_lazy(
+                            "mailing_list:first_step_quick_list_signup"))
+        return super().get(self,request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -166,6 +181,24 @@ class MailingListMerci(TemplateView):
     """
     template_name = 'mailing_list/merci_m.html'
 
+    def get(self, request):
+        # check if we are on prod
+        if hasattr(settings, 'ROLE') and 'production' == settings.ROLE:
+            # check if the request have a previous url
+            if ("HTTP_REFERER" not in self.request.META.keys()):
+                return redirect(
+                    reverse_lazy(
+                        "mailing_list:first_step_quick_list_signup"))
+            else:
+                print(4)
+                the_domaine = self.request.build_absolute_uri("/")
+                the_previous_domaine = self.request.META["HTTP_REFERER"]
+                if the_domaine != the_previous_domaine[:len(the_domaine)]:
+                    return redirect(
+                        reverse_lazy(
+                            "mailing_list:first_step_quick_list_signup"))
+        return super().get(self,request)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hero'] = True

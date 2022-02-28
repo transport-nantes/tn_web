@@ -1,5 +1,4 @@
 from django.urls import path
-from django.conf import settings
 from .views import (MailingListSignup, QuickMailingListSignup,
                     QuickPetitionSignup, PetitionView, MailingListMerci,
                     MailingListListView, FirstStepQuickMailingListSignup)
@@ -18,13 +17,10 @@ urlpatterns = [
          template_name='mailing_list/petition4.html'),
          name='petition'),
 
-    path('list', MailingListListView.as_view(), name='list_items')
+    path('list', MailingListListView.as_view(), name='list_items'),
+    path('inscrire-captcha',
+         QuickMailingListSignup.as_view(),
+         name='quick_list_signup'),
+    path('merci', MailingListMerci.as_view(),
+         name='list_ok'),
 ]
-
-# For debugging the "thank you" template:
-if hasattr(settings, 'ROLE') and 'production' != settings.ROLE:
-    urlpatterns.append(path('merci', MailingListMerci.as_view(),
-                            name='list_ok'))
-    urlpatterns.append(path('inscrire-captcha',
-                            QuickMailingListSignup.as_view(),
-                            name='quick_list_signup'),)
