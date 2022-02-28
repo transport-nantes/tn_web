@@ -380,6 +380,7 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
             return user.has_perm('topicblog.tbe.may_view')
         return super().has_permission()
 
+
 class TopicBlogEmailEdit(TopicBlogBaseEdit):
     model = TopicBlogEmail
     template_name = 'topicblog/tb_item_edit.html'
@@ -391,23 +392,29 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_email.html'
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbe.may_send_self') or \
-           (user.has_perm('topicblog.tbe.may_send') \
-            and tb_object.publisher != user):
+           (user.has_perm('topicblog.tbe.may_send')
+                and tb_object.publisher != user):
             context['sendable'] = True
         return context
 
 
-class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
-                            TopicBlogBaseViewOne):
+class TopicBlogEmailViewOne(PermissionRequiredMixin, TopicBlogBaseViewOne):
     model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_view'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
+        pkid = self.kwargs.get('pkid', -1)
+        the_slug = self.kwargs.get('the_slug', None)
+        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
+        context["email"] = tb_email
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_email.html'
         return context
 
 
@@ -422,6 +429,7 @@ class TopicBlogEmailList(TopicBlogBaseList):
             return ['topicblog/topicblogemail_list_one.html'] + names
         else:
             return names
+
 
 class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
     """Notes to Benjamin and Mickael:
