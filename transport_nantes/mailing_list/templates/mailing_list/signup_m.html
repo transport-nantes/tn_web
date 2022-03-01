@@ -1,4 +1,4 @@
-{% extends 'asso_tn/base_mobilitiain.html' %}
+{% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
 {% load don %}
 {% load mpanels %}
@@ -37,11 +37,7 @@
 		<p>{{ form.non_field_errors }}</p>
 		{% for field in form %}
 		<p>
-		    {{ field.label }}<br>
 		    {{ field|as_crispy_field }}
-		    {% if field.help_text %}
-		    <small style="color: grey">{{ field.help_text }}</small>
-		    {% endif %}
 		</p>
 		{% for error in field.error_messages %}
 		<p style="color: red">{{ error }}</p>
