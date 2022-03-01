@@ -50,9 +50,9 @@ class MailingListSignupForm(ModelForm):
             'email': "Adresse mél",
         }
         help_texts = {
-            'first_name': "*",
-            'last_name': "*",
-            'email': "*",
+            'first_name': "* Obligatoire",
+            'last_name': "* Obligatoire",
+            'email': "* Obligatoire",
         }
 
 
