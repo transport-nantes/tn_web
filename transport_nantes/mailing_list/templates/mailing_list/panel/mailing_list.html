@@ -1,13 +1,13 @@
 {% load crispy_forms_tags %}
 
-<div class="container py-5 d-flex justify-content-center">
+<div class="container py-5 d-flex justify-content-center" id="newsletter">
     <div class="row justify-content-center">
 	{% if title %}<div>
 	    <h2 >{{ title }}</h2>
 	</div>{% endif %}
 	<div class="d-flex col-sm-12 justify-content-center">
 	    <form class="d-flex flex-column" method="post"
-		  action="{% url 'mailing_list:first_step_quick_list_signup' %}">{% csrf_token %}
+		  action="{% url 'mailing_list:quick_signup' %}">{% csrf_token %}
 		{% if form.non_field_errors %}
 		<p>{{ form.non_field_errors }}</p>
 		{% endif %}
@@ -20,7 +20,7 @@
 		<p style="color: red">{{ error }}</p>
 		{% endfor %}
 		{% endfor %}
-		
+
 		<button type="submit" class="btn donation-button">Je m'inscris</button>
 	    </form>
 	</div>

@@ -2,9 +2,9 @@ from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from mailing_list.forms import FirstStepQuickMailingListSignupForm
-from mailing_list.forms import QuickPetitionSignupForm
-
+from mailing_list.forms import (FirstStepQuickMailingListSignupForm, 
+                                QuickPetitionSignupForm)
+  
 register = template.Library()
 
 

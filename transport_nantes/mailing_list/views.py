@@ -2,11 +2,10 @@ import logging
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import ListView, FormView
 
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
@@ -78,103 +77,75 @@ class MailingListSignup(FormView):
         return super(MailingListSignup, self).form_valid(form)
 
 
-class FirstStepQuickMailingListSignup(FormView):
+class QuickMailingListSignup(FormView):
     template_name = 'mailing_list/quick_signup_m.html'
     form_class = FirstStepQuickMailingListSignupForm
 
     def form_valid(self, form):
         self.good_form = form
-        return super().form_valid(form)
+        if isinstance(form, FirstStepQuickMailingListSignupForm):
+            form = QuickMailingListSignupForm()
+            form["email"].initial = self.good_form.cleaned_data['email']
+            form["mailinglist"].initial = \
+                self.good_form.cleaned_data['mailinglist']
+            return render(self.request, self.template_name, {"form": form})
+        elif isinstance(form, QuickMailingListSignupForm):
+            self.template_name = "mailing_list/merci_m.html"
+            """Process a valid MailingListSignupForm.
 
-    def get_success_url(self) -> str:
-        email = self.good_form.cleaned_data['email']
-        mailinglist = self.good_form.cleaned_data['mailinglist']
-        return (f"{reverse_lazy('mailing_list:quick_list_signup')}"
-                f"?email={email}&mailinglist={mailinglist}")
+            This method is called when valid form data has been POSTed.
+            It returns an HttpResponse.
+            """
+            # Get user or None.
+            user = User.objects.filter(
+                email=form.cleaned_data['email']).first()
+            if user is None:
+                user = User()   # New user.
+                user.username = get_random_string(20)
+                user.email = form.cleaned_data['email']
+                logger.info(f"Created new user with email {user.email}")
+                user.save()
+            mailing_list = form.cleaned_data['mailinglist']
+            # If we don't find this, we should 500.
+            try:
+                mailing_list_obj = MailingList.objects.get(
+                    mailing_list_token=mailing_list)
+            except ObjectDoesNotExist:
+                logger.info(
+                    f"Failed to find mailing_list_token={mailing_list}")
+                return HttpResponseServerError()
+            subscribe_user_to_list(user, mailing_list_obj)
+            return render(self.request, self.template_name, {})
 
-
-class QuickMailingListSignup(FormView):
-    template_name = 'mailing_list/quick_signup_m.html'
-    merci_template = 'mailing_list/merci_m.html'
-    form_class = QuickMailingListSignupForm
-    success_url = reverse_lazy('mailing_list:list_ok')
-    # We don't currently populate this form with the user's current
-    # subscriptions.  If the user is logged in, we should.  This then
-    # becomes the edit form as well.
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def get_form(self):
-        if (self.request.GET.get("email") and
-                self.request.GET.get("mailinglist")):
-            form = super().get_form()
-            email = self.request.GET.get("email")
-            mailinglist = self.request.GET.get("mailinglist")
-            if email and mailinglist:
-                form["email"].initial = email
-                form["mailinglist"].initial = mailinglist
-                return form
-        return super().get_form()
+        return HttpResponseServerError()
 
     def form_invalid(self, form):
         """Display the correct form.
-
         This is actually a bit of a hack.  We should build the correct
         form, extract the email address from the incoming form, and
         then display the correct thing.  I think.
-
         """
-        form["email"].initial = self.request.POST["email"]
-        form["mailinglist"].initial = self.request.POST["mailinglist"]
-        return render(self.request, self.template_name, {'form': form})
+        if isinstance(form, QuickMailingListSignupForm):
+            form["email"].initial = self.request.POST["email"]
+            form["mailinglist"].initial = self.request.POST["mailinglist"]
+            return render(self.request, self.template_name, {'form': form})
 
-    def form_valid(self, form):
-        """Process a valid MailingListSignupForm.
+    def get(self, request, *args, **kwargs):
+        form = FirstStepQuickMailingListSignupForm()
+        self.kwargs['mailinglist'] = request.GET.get('mailinglist')
+        if self.kwargs['mailinglist']:
+            form["mailinglist"].initial = self.kwargs['mailinglist']
+        else:
+            return redirect(f"{reverse_lazy('index')}#newsletter")
+        return render(self.request, self.template_name, {"form": form})
 
-        This method is called when valid form data has been POSTed.
-        It returns an HttpResponse.
-        """
-        # Get user or None.
-        user = User.objects.filter(email=form.cleaned_data['email']).first()
-        if user is None:
-            user = User()   # New user.
-            user.username = get_random_string(20)
-            user.email = form.cleaned_data['email']
-            logger.info(f"Created new user with email {user.email}")
-            user.save()
-        mailing_list = form.cleaned_data['mailinglist']
-        # If we don't find this, we should 500.
-        try:
-            mailing_list_obj = MailingList.objects.get(
-                mailing_list_token=mailing_list)
-        except ObjectDoesNotExist:
-            logger.info(f"Failed to find mailing_list_token={mailing_list}")
-            return HttpResponseServerError()
-        subscribe_user_to_list(user, mailing_list_obj)
-        return super().form_valid(form)
-
-
-class MailingListMerci(TemplateView):
-    """View class only used whilst debugging.
-
-    This is useful for revealing the thank you page, but under normal
-    circumstances it should not be revealed without first filling out
-    the form.
-
-    """
-    template_name = 'mailing_list/merci_m.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['hero'] = True
-        context['hero_image'] = ('asso_tn/images-libres/'
-                                 'black-and-white-bridge-children-194009-1000'
-                                 '.jpg')
-        context['hero_title'] = 'Newsletter'
-        context['hero_description'] = '(actuellement debugging)'
-        return context
+    def get_form_class(self, *args, **kwargs):
+        post_data = dict(self.request.POST)
+        is_captcha_form = post_data.get("captcha_0", None)
+        if is_captcha_form:
+            return QuickMailingListSignupForm
+        else:
+            return FirstStepQuickMailingListSignupForm
 
 
 class QuickPetitionSignup(FormView):
