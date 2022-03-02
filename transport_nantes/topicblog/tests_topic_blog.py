@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import Permission, User
+from django.core import mail
 from django.test import Client, TestCase
 from django.urls import reverse
 from mailing_list.models import MailingList
@@ -924,7 +925,7 @@ class TopicBlogEmailTest(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             username="test_user",
-            email="admin@admin.com",
+            email="admin@mobilitain.fr",
             password="test_password")
         self.email_article = TopicBlogEmail.objects.create(
             subject="Test subject",
@@ -942,7 +943,7 @@ class TopicBlogEmailTest(TestCase):
             list_active=True)
         self.no_permissions_user = User.objects.create_user(
             username="user_without_permissions",
-            email="test@test.com"
+            email="test@mobilitain.fr"
         )
         subscribe_user_to_list(self.superuser, self.mailing_list)
         subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
@@ -1007,3 +1008,29 @@ class TopicBlogEmailTest(TestCase):
         self.assertEqual(
             len(get_subcribed_users_email_list(self.mailing_list)),
             number_of_subscribed_users)
+
+    def test_tbe_send_mail(self):
+        url = reverse('topic_blog:send_email',
+                      args=[self.email_article.pk,
+                            self.email_article.slug,
+                            self.mailing_list.mailing_list_token])
+
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+        # 2 : one for the superuser and one for the no_perm_user
+        number_of_recipients = \
+            len(get_subcribed_users_email_list(self.mailing_list))
+
+        # Test that one message has been sent. (By superuser)
+        # One mail has been sent to two recipients
+        self.assertEqual(len(mail.outbox), 1)
+
+        # Test that the subject of the first message is correct.
+        self.assertEqual(mail.outbox[0].subject, self.email_article.subject)
+
+        # Test that the number of recipients is correct.
+        self.assertEqual(len(mail.outbox[0].recipients()),
+                         number_of_recipients)

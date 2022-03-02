@@ -1,6 +1,7 @@
 from collections import Counter
 from datetime import datetime, timezone
 import logging
+from django.conf import settings
 
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseServerError
@@ -10,13 +11,18 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.core import mail
+from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
+from django.utils.html import strip_tags
 
 from asso_tn.utils import StaffRequired
+from mailing_list.events import get_subcribed_users_email_list
+from mailing_list.models import MailingList
 from .models import TopicBlogItem, TopicBlogEmail
 from .forms import TopicBlogItemForm
 
@@ -420,91 +426,73 @@ class TopicBlogEmailViewOne(PermissionRequiredMixin, TopicBlogBaseViewOne):
 
 class TopicBlogEmailList(TopicBlogBaseList):
     model = TopicBlogEmail
-    permission_required = 'topicblog.tbe.may_view'
-
-    def get_template_names(self):
-        names = super().get_template_names()
-        print(names)
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicblogemail_list_one.html'] + names
-        else:
-            return names
 
 
-class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
-    """Notes to Benjamin and Mickael:
+class TopicBlogEmailSendMail(LoginRequiredMixin, PermissionRequiredMixin,
+                             TemplateView):
+    """Sends and display a mail containing a TopicBlogEmail object to
+    a given mailing list."""
+    model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_send'
 
-    This view isn't implemented yet.  Here's what I think you should do:
+    def get(self, request, *args, **kwargs):
+        """
+        Sends an article by mail, given pkid and slug.
+        """
+        context = {}
+        pkid = self.kwargs.get('pkid', -1)
+        the_slug = self.kwargs.get('the_slug', None)
+        mailing_list_token = self.kwargs.get('mailing_list_token', None)
+        if pkid < 0 or the_slug is None:
+            return HttpResponseServerError(
+                f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
 
-    1.  On GET, display a form.  That form should (for now) just show
-    the mailing_lists available in a dropdown list and let the user
-    choose one.  Once a mailing_list is chosen, enable a send button.
-    Pushing the send button will POST to the same url.
+        # The recipient list is extracted from a MailingList.
+        mailing_list = MailingList.objects.get(
+            mailing_list_token=mailing_list_token)
+        mailing_list: MailingList
+        recipient_list = get_subcribed_users_email_list(mailing_list)
 
-    2.  On POST, send the mail.  This means you do the following:
-        (i)  Get the list of users from the mailing_list by calling
-             subscribed_users() from mailing_list/events.py.  Note that
-             that function doesn't exist yet, but it should be a really,
-             really simple function for you to write based on the other
-             functions in the file.  You should make a single commit
-             with that function and tests for that function.
-        (ii) For each user in the list:
+        # Preparing the email
+        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
+        self.template_name = tb_email.template_name
+        context["email"] = tb_email
 
-             Compute a timed_token (function already exists,
-             make_timed_token() in asso_tn/utils.py).  Given it a
-             three-week timeout so as not to over-think.  Pass the
-             TopicBlogEmailSendRecord pk_id in persistent.  If someone
-             comes back after expiration, we can ask them to respond
-             to a new query (not for today).  In the footer of the
-             base email template (note: this is 30 seconds, you just
-             write "<div><div><p><a href={% url
-             ... %}>unsubscribe</a></div></div>" with maybe some
-             arguments to the divs and such.  DO NOT spend time now
-             fiddling with making it look just right.  There's a
-             difference between unworldly user interaction paradigms
-             and simply not being pretty yet.  The latter is easily
-             remedied in a second commit, the former is trickier.
-             This is a commit.
+        try:
+            self.send_tbemail(tb_email, context, recipient_list)
+        except Exception as e:
+            logger.info(f"Error sending email: {e}")
+            return HttpResponseServerError()
 
-             Also compute the url (the path already exists) to view
-             this email on the web.  Put that in the context, too, and
-             make sure you add a link at the top of the email base
-             template, just above the content.  That's another commit.
+        # Displays the email in the browser
+        return self.render_to_response(context=context)
 
-             Render the email, pass it off to SES for sending, and
-             write a record to TopicBlogEmailSendRecord.  This is
-             another commit.
+    def send_tbemail(self, tb_email: TopicBlogEmail, context: dict,
+                     recipient_list: list,
+                     from_email: str = settings.DEFAULT_FROM_EMAIL) -> None:
+        """
+        To send emails to multiple persons, django send_mail function isn't
+        enough, we need to create a EmailMultiAlternatives object to be able,
+        for example to put recipients in BCC field or add attachments.
+        It also improves the performances by reusing the same connexion to SMTP
+        server.
+        Doc :
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
+        https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-alternative-content-types
+        """
+        # HTML message is the one displayed in mail client
+        html_message = render_to_string(
+            tb_email.template_name, context=context)
+        # In cases where the HTML message isn't accepted, a plain text
+        # message is displayed in the mail client.
+        plain_text_message = strip_tags(html_message)
 
-             Now write a function that serves a beacon.  A beacon
-             means you have a non-threatening path (NOT
-             /tb/e/beacon/<value>/ but rather /tb/e/i/<value>/ -- and
-             value is going to be another timed_token that encodes the
-             pk_id of the TopicBlogEmailSendRecord) that returns a
-             one-pixel background-colour gif.  We can change it later,
-             that will work for now.  This is a commit.
-
-             Now go back to the above and add a beacon to the email
-             base template.  Give it a ten year time-out, which is
-             nine years and six months more than we probably need.
-             That means you generate the beacon value and pass it in
-             so that the image (/tb/e/i/<value>) has the right value.
-             This is a commit.
-
-             Note that the two timed tokens encode the email address
-             to which we sent the mail and the pk_id of the
-             TopicBlogEmailSendRecord, so the beacon function or the
-             unsub page can easily look up the send record.  The
-             beacon function should update
-             TopicBlogEmailSendRecord.open_time.  Clicks should lead
-             to setting TopicBlogEmailSendRecord.click_time.  In both
-             cases, only if not already set, since what we want is the
-             time of the first view, the first click.  This is a
-             commit.
-
-             If the user validates an unsub having clicked in from an
-             email, then we have the timed token handy and we should
-             set TopicBlogEmailSendRecord.unsubscribe_time if it's not
-             already set (and call unsubscribe_user_from_list()).
-
-    """
-    pass
+        email = mail.EmailMultiAlternatives(
+            subject=tb_email.subject,
+            body=plain_text_message,
+            from_email=from_email,
+            bcc=recipient_list,
+        )
+        email.attach_alternative(html_message, "text/html")
+        email.send(fail_silently=False)

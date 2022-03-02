@@ -52,7 +52,8 @@ urlpatterns = [
     path('admin/e/list/<slug:the_slug>/', views.TopicBlogEmailList.as_view(),
          name='list_emails_by_slug'),
 
-    path('admin/e/send/<slug:the_slug>/', views.TopicBlogEmailSend.as_view(),
+    path('admin/e/send/<int:pkid>/<slug:the_slug>/<str:mailing_list_token>/',
+         views.TopicBlogEmailSendMail.as_view(),
          name='send_email'),
 
     path('ajax/get-slug-dict/', views.get_slug_dict,
