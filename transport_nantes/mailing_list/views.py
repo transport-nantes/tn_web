@@ -1,4 +1,6 @@
 import logging
+from django.contrib.auth.mixins import (PermissionRequiredMixin,
+                                        LoginRequiredMixin)
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotFound, HttpResponseServerError
@@ -191,7 +193,7 @@ class QuickPetitionSignup(FormView):
         if len(petition) == 0:
             return HttpResponseNotFound("Pétition inconnu")
         subscribe_user_to_list(user, petition[0])
-        return super().form_valid(form)
+        return render(self.request, self.merci_template, {})
 
 
 class PetitionView(AssoView):
@@ -215,7 +217,9 @@ class PetitionView(AssoView):
         return context
 
 
-class MailingListListView(ListView):
+class MailingListListView(LoginRequiredMixin,
+                          PermissionRequiredMixin, ListView):
+    permission_required = 'mailing_list.view_mailinglist'
     model = MailingList
     template_name = "mailing_list/mailing_list_list_view.html"
     queryset = MailingList.objects.all()
