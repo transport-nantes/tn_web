@@ -1,4 +1,4 @@
-from django.test import LiveServerTestCase
+from django.test import Client, LiveServerTestCase, TestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -105,3 +105,70 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         index_url = f"{self.live_server_url}{reverse('index')}#newsletter"
         self.assertEqual(self.selenium.current_url, index_url,
                          msg="User should be redirect to index page")
+
+
+class MailingListStatusCodeTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='ml-staff',
+                                                      password='ml-staff',
+                                                      email="staff@mail.com")
+        self.logged_client = Client()
+        self.logged_client.login(username='ml-staff', password='ml-staff')
+        self.superuser = User.objects.create_superuser(username='ml-admin',
+                                                       password='ml-admin',
+                                                       email="admin@mail.com")
+        self.admin_client = Client()
+        self.admin_client.login(username='ml-admin', password='ml-admin')
+        self.mailing_list_default = MailingList.objects.create(
+            mailing_list_name="general-quarterly",
+            mailing_list_token="general-quarterly",
+            contact_frequency_weeks=12,
+            list_active=True,
+        )
+
+    def test_mailing_list_list_signup(self):
+        url = reverse("mailing_list:list_signup")
+        response = self.logged_client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_quick_signup(self):
+        url = reverse("mailing_list:quick_signup")
+        # We expect a redirect on GETs if no mailing_list_token is provided
+        response = self.logged_client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_quick_signup_with_mailing_list_token(self):
+        url = reverse("mailing_list:quick_signup") + \
+            f'?mailinglist={self.mailing_list_default.mailing_list_token}'
+
+        # We expect a redirect on GETs if no mailing_list_token is provided
+        response = self.logged_client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_quick_petition_signup(self):
+        url = reverse("mailing_list:quick_petition_signup")
+        response = self.logged_client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_items(self):
+        url = reverse("mailing_list:list_items")
+        response = self.logged_client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        response = self.admin_client.get(url)
+        self.assertEqual(response.status_code, 200)
