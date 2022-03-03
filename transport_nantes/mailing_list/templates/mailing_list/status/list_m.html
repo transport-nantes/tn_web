@@ -1,0 +1,21 @@
+<div>
+    <h2>{{div_title}}</h2>
+    <ul>
+        {% for mailing_list,state in base_list %}
+            <li id="id-ml-{{mailing_list.id}}" >
+                <div class="d-flex align-items-center">
+                    {{ mailing_list.mailing_list_name }}
+                        {% if state == "sub" %}
+                            <a href="{% url 'mailing_list:toggle_subscription' %}?mailinglist={{mailing_list.id}}" class="m-1">Se désabonner</a>
+                        {% else %}
+                            {% comment %} Generate a hidden form for subscribe to a mailing list no confirm needed {% endcomment %}
+                            {% include "mailing_list/status/hidden_form.html"  with button_label="S'abonner" %}
+                        {% endif %}
+                </div>
+            </li>
+        {% empty %}
+            <li>Aucune</li>
+        {% endfor %}
+      </ul>
+      {% include "mailing_list/status/pagination.html" %}
+</div>

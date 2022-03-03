@@ -1,0 +1,27 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load don %}
+{% load mpanels %}
+{% load crispy_forms_tags %}
+{% block app_content %}
+
+<div class="container pt-5">
+    <div class="row">
+	<div class="col-md-12">
+		{% if form.errors %}
+			<p class="text-danger">{{ form.errors }}</p>
+		{% endif %}
+		<h5 class="alert alert-danger text-center">Vous êtes sur le point de vous désinscire de la newsletter</h5>
+		<p>Newsletter :  {{mailing_list.mailing_list_name}}</p>
+        {% include "mailing_list/status/hidden_form.html"  with unsubscribe=True button_label="Confirmer"  %}
+	</div>
+    </div>
+    <div class="row pt-4">
+	{% show_projects %}
+    </div>
+</div>
+
+{% show_donate %}
+{% show_volunteer %}
+
+{% endblock %}

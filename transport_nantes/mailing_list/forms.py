@@ -56,7 +56,16 @@ class MailingListSignupForm(ModelForm):
         }
 
 
-# Fist step of subscire to the mailing list
+# Form for subscribe or unsubscribe auth required
+class SubscribeUpdateForm(Form):
+    mailinglist = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.HiddenInput())
+
+# First step of quick signup to the newsletter
+
+
 class FirstStepQuickMailingListSignupForm(Form):
     email = forms.EmailField(label="Adresse mél", required=True)
     mailinglist = forms.CharField(
