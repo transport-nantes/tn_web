@@ -11,11 +11,13 @@ from django.views.generic import ListView, FormView
 
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
-                    QuickPetitionSignupForm,
+                    QuickPetitionSignupForm, SubscribeUpdateForm,
                     FirstStepQuickMailingListSignupForm)
 from .models import MailingList, Petition
 from .events import (user_subscribe_count, subscriber_count,
-                     subscribe_user_to_list)
+                     subscribe_user_to_list, user_current_state,
+                     unsubscribe_user_from_list)
+from django.core.paginator import Paginator
 
 logger = logging.getLogger("django")
 
@@ -233,4 +235,67 @@ class MailingListListView(LoginRequiredMixin,
                                     for list in lists if not list.is_petition]
         context['petitions_lists'] = [(list, subscriber_count(list))
                                       for list in lists if list.is_petition]
+        return context
+
+
+class UserStatusView(LoginRequiredMixin, ListView):
+    model = MailingList
+    template_name = "mailing_list/mailing_list_user_status.html"
+    context_object_name = 'mailing_lists'
+    paginate_by = 10
+
+    def get_queryset(self):
+        """Create a list with all active mailing list
+        with the current state of the user"""
+        object_list = MailingList.objects.filter(
+            list_active=True, is_petition=False).order_by(
+            'mailing_list_name')
+        user = self.request.user
+        object_list_with_state = \
+            [(mailing_list, user_current_state(user, mailing_list).event_type,)
+             for mailing_list in object_list]
+        return object_list_with_state
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        """Create a list that contain the current page
+           the current page number with 4 numbers if
+           this is possible before and after the current
+           number."""
+        context["number_pagination_list"] = \
+            context["paginator"].get_elided_page_range(
+            number=context["page_obj"].number,
+            on_each_side=4, on_ends=0)
+        return context
+
+
+class MailingListToggleSubscription(LoginRequiredMixin, FormView):
+    template_name = 'mailing_list/validate_form.html'
+    form_class = SubscribeUpdateForm
+    success_url = reverse_lazy('mailing_list:user_status')
+
+    def get(self, request):
+        # redirect if the get request don't have a mailinglist
+        if not self.request.GET.get("mailinglist"):
+            return redirect(reverse_lazy("mailing_list:user_status"))
+        return super().get(request)
+
+    def form_valid(self, form):
+        mailing_list_id = form.cleaned_data['mailinglist']
+        user = self.request.user
+        mailing_list = get_object_or_404(MailingList, id=mailing_list_id)
+        current_state = user_current_state(user, mailing_list)
+        # check the current state and toggle the result
+        if current_state.event_type == "unsub":
+            subscribe_user_to_list(user, mailing_list)
+        else:
+            unsubscribe_user_from_list(user, mailing_list)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.GET.get("mailinglist"):
+            mailing_list_id = self.request.GET.get("mailinglist")
+            context["mailing_list"] = get_object_or_404(
+                MailingList, id=mailing_list_id)
         return context

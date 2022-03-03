@@ -1,0 +1,12 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block content %}
+<div class="container-fluid p-3">
+    <div class="row">
+        <div class="col-sm-12 col-md-10 mx-auto">
+            {% comment %} Create a list with mailing_list {% endcomment %}
+            {% include "mailing_list/status/list_m.html"  with div_title="Mes newsletters" base_list=mailing_lists%}
+        </div>
+    </div>
+</div>
+{% endblock %}

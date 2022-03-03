@@ -1,7 +1,8 @@
 from django.urls import path
 from django.conf import settings
 from .views import (MailingListSignup, QuickPetitionSignup, PetitionView,
-                    MailingListListView,  QuickMailingListSignup)
+                    MailingListListView,  QuickMailingListSignup,
+                    UserStatusView, MailingListToggleSubscription)
 
 app_name = 'mailing_list'
 urlpatterns = [
@@ -18,4 +19,9 @@ urlpatterns = [
          name='petition'),
 
     path('list', MailingListListView.as_view(), name='list_items'),
+
+    path('status', UserStatusView.as_view(), name='user_status'),
+    
+    path('toggle_subscription', MailingListToggleSubscription.as_view(),
+         name='toggle_subscription'),
 ]
