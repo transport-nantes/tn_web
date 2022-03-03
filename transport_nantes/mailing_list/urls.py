@@ -17,5 +17,5 @@ urlpatterns = [
          template_name='mailing_list/petition4.html'),
          name='petition'),
 
-    path('list', MailingListListView.as_view(), name='list_items')
+    path('list', MailingListListView.as_view(), name='list_items'),
 ]

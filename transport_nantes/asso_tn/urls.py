@@ -40,5 +40,5 @@ urlpatterns = [
             # hero_description="tout le monde est avec !",
         ),
         name='crowdfunding-2021',
-        )
+        ),
 ]
