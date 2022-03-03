@@ -1,4 +1,8 @@
-<form method="post" action="{% url 'mailing_list:toggle_subscription' %}">
+<form method="post"
+    {% if not is_from_token %}
+        action="{% url 'mailing_list:toggle_subscription' %}"
+    {% endif %}
+    >
     {% csrf_token %}
     <input type="hidden" id="mailinglist" name="mailinglist" value="{{mailing_list.id}}">
     {% comment %} If this is a unsub form show the back button {% endcomment %}
@@ -8,7 +12,11 @@
                     <button type="submit" class="btn navigation-button btn-lg btn-block">{{button_label}}</button>
             </div>
             <div class="col-md-6">
-                <a href="{% url 'mailing_list:user_status' %}" class="btn navigation-button btn-lg btn-block">Retour</a>
+                {% if back_index %}
+                    <a href="{% url 'index' %}" class="btn navigation-button btn-lg btn-block">Retour</a>
+                {% else %}
+                    <a href="{% url 'mailing_list:user_status' %}" class="btn navigation-button btn-lg btn-block">Retour</a>
+                {% endif %}
             </div>
         </div>
     {% else %}

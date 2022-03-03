@@ -7,8 +7,8 @@ from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.views.generic import ListView, FormView
-
+from django.views.generic import ListView, FormView, TemplateView
+from datetime import datetime, timezone
 from asso_tn.views import AssoView
 from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
                     QuickPetitionSignupForm, SubscribeUpdateForm,
@@ -17,7 +17,8 @@ from .models import MailingList, Petition
 from .events import (user_subscribe_count, subscriber_count,
                      subscribe_user_to_list, user_current_state,
                      unsubscribe_user_from_list)
-from django.core.paginator import Paginator
+from asso_tn.utils import token_valid
+from topicblog.models import TopicBlogEmailSendRecord
 
 logger = logging.getLogger("django")
 
@@ -299,3 +300,65 @@ class MailingListToggleSubscription(LoginRequiredMixin, FormView):
             context["mailing_list"] = get_object_or_404(
                 MailingList, id=mailing_list_id)
         return context
+
+
+class MailingListUnsubscribeWithToken(FormView):
+    form_class = SubscribeUpdateForm
+    success_url = reverse_lazy('mailing_list:unsubscribe_finish')
+    template_name = 'mailing_list/validate_form.html'
+
+    def get(self, *args, **kwargs):
+        token = self.kwargs['token']
+        if not token:
+            logger.info("Try to unsubscribe to mailist without token.")
+            return HttpResponseNotFound(
+                "<h1>Désolé, la page que vous recherchez est introuvable</h1>")
+        try:
+            id_user,  the_tb_email_send_record_id, persistent = token_valid(
+                token)
+        except ValueError:
+            logger.info("Invalid token when unsubscribe to mailist.")
+            return HttpResponseNotFound(
+                "<h1>Désolé, la page que vous recherchez est introuvable</h1>")
+        if (id_user is None or the_tb_email_send_record_id is None or
+                persistent == 0):
+            logger.info("Invalid token when unsubscribe to mailist.")
+            return HttpResponseNotFound(
+                "<h1>Désolé, la page que vous recherchez est introuvable</h1>")
+        return super().get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        token = self.kwargs['token']
+        email, the_tb_email_send_record_id, persistent = token_valid(
+            token)
+        context['user'] = get_object_or_404(User, email=email)
+        context['tb_email_send_record'] = get_object_or_404(
+            TopicBlogEmailSendRecord, id=the_tb_email_send_record_id)
+        context['mailing_list'] = context['tb_email_send_record'].mailinglist
+        # Check the current state and set context if the user is unsub
+        current_state = user_current_state(
+            context['user'], context['mailing_list'])
+        if current_state.event_type == "unsub":
+            context['is_unsub'] = True
+        # To know where this request is come from  because
+        # status page unsubscribe and token unsubscribe page
+        # share the same template, but the render is different
+        context['is_from_token'] = True
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        mailing_list_id = form.cleaned_data['mailinglist']
+        user = context['user']
+        mailing_list = get_object_or_404(MailingList, id=mailing_list_id)
+        unsubscribe_user_from_list(user, mailing_list)
+        # save the new TopicBlogEmailSendRecord unsubscribe date
+        context['tb_email_send_record'].unsubscribe_time = datetime.now(
+            timezone.utc)
+        context['tb_email_send_record'].save()
+        return super().form_valid(form)
+
+
+class UnsubscribeView(TemplateView):
+    template_name = "mailing_list/last_part_unsubscribe.html"

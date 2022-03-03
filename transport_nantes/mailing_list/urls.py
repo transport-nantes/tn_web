@@ -1,8 +1,8 @@
 from django.urls import path
-from django.conf import settings
 from .views import (MailingListSignup, QuickPetitionSignup, PetitionView,
                     MailingListListView,  QuickMailingListSignup,
-                    UserStatusView, MailingListToggleSubscription)
+                    UserStatusView, MailingListToggleSubscription,
+                    MailingListUnsubscribeWithToken, UnsubscribeView,)
 
 app_name = 'mailing_list'
 urlpatterns = [
@@ -21,7 +21,13 @@ urlpatterns = [
     path('list', MailingListListView.as_view(), name='list_items'),
 
     path('status', UserStatusView.as_view(), name='user_status'),
-    
+
     path('toggle_subscription', MailingListToggleSubscription.as_view(),
          name='toggle_subscription'),
+
+    path('unsubscribe/<str:token>', MailingListUnsubscribeWithToken.as_view(),
+         name='unsubscribe_token'),
+
+    path('unsubscribed', UnsubscribeView.as_view(),
+         name='unsubscribe_finish'),
 ]

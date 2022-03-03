@@ -2,15 +2,16 @@ from django.test import Client, LiveServerTestCase, TestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-from topicblog.models import TopicBlogItem
+from topicblog.models import TopicBlogItem, TopicBlogEmailSendRecord
 from datetime import datetime, timezone
 from .models import MailingList, MailingListEvent, Petition
 from django.contrib.auth.models import User
 from django.urls import reverse
 from .events import user_current_state
+from asso_tn.utils import make_timed_token
 
 
-class MailingListIntegrationTestCase(LiveServerTestCase):
+class MailingListStatusCodeTest(TestCase):
     def setUp(self):
         # Create MailingList (newsletter) object
         self.mailing_list_1 = MailingList.objects.create(
@@ -48,15 +49,16 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
             slug="slug2",
             petition1_md="First sentence 2",
         )
+
         self.user = User.objects.create_user(username='ml-staff',
                                                       password='ml-staff',
-                                                      email="staff@mail.com")
+                                                      email="duponun@test.fr")
         self.user.save()
         self.logged_client = Client()
         self.logged_client.login(username='ml-staff', password='ml-staff')
         self.superuser = User.objects.create_superuser(username='ml-admin',
                                                        password='ml-admin',
-                                                       email="admin@mail.com")
+                                                       email="admin@test.fr")
         self.superuser.save()
         self.admin_client = Client()
         self.admin_client.login(username='ml-admin', password='ml-admin')
@@ -89,132 +91,15 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         self.cookie_staff = \
             self.admin_client.cookies['sessionid'].value
 
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-extensions")
-        self.selenium = WebDriver(ChromeDriverManager().install(),
-                                  options=options)
-        self.selenium.implicitly_wait(5)
-
-    def tearDown(self):
-        # Close the browser
-        self.selenium.quit()
-
-    def testing_quick_form(self):
-        self.selenium.get('%s%s' % (self.live_server_url,
-                                    reverse("topicblog:view_item_by_slug",
-                                            kwargs={
-                                                "the_slug": self.home.slug
-                                            })))
-        email_input = self.selenium.find_element_by_id("id_email")
-        email_input.send_keys("nomail@nomail.fr")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        # pass the captcha only work on dev mod
-        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-        captcha_input.send_keys("PASSED")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        user = User.objects.filter(email="nomail@nomail.fr")[0]
-        self.assertIsNotNone(user,
-                             msg="The user is not created on quick sign up")
-        mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
-        self.assertIsNotNone(mailing_list_event,
-                             msg="The mailing event is not created"
-                                 "on quick sign up")
-
-        self.assertEqual(mailing_list_event.event_type, "sub",
-                         msg="The user is not sub on the default mailing list")
-
-    def testing_quick_form_fail_captcha(self):
-        self.selenium.get('%s%s' % (self.live_server_url,
-                                    reverse("topicblog:view_item_by_slug",
-                                            kwargs={
-                                                "the_slug": self.home.slug
-                                            })))
-        email_input = self.selenium.find_element_by_id("id_email")
-        email_input.send_keys("nomail@nomail.fr")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        # fail the capcha
-        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-        captcha_input.send_keys("Notgood")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        # pass the captcha only work on dev mod
-        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-        captcha_input.send_keys("PASSED")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        user = User.objects.filter(email="nomail@nomail.fr")[0]
-        self.assertIsNotNone(user,
-                             msg="The user is not created on quick sign up")
-        mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
-        self.assertIsNotNone(mailing_list_event,
-                             msg="The mailing event is not created"
-                                 "on quick sign up")
-
-        self.assertEqual(mailing_list_event.event_type, "sub",
-                         msg="The user is not sub on the default mailing list")
-
-    def testing_acces_with_get_to_the_quick_form(self):
-        self.selenium.get('%s%s' % (self.live_server_url,
-                                    reverse("mailing_list:quick_signup")))
-        index_url = f"{self.live_server_url}{reverse('index')}#newsletter"
-        self.assertEqual(self.selenium.current_url, index_url,
-                         msg="User should be redirect to index page")
-
-    def testing_user_status_page_subscribe_to_newsletter(self):
-        old_event = user_current_state(self.user, self.mailing_list_2)
-        self.assertEqual(old_event.event_type, "unsub")
-        self.selenium.get('%s%s' % (self.live_server_url,
-                          reverse("mailing_list:user_status")))
-        self.selenium.add_cookie(
-            {'name': 'sessionid', 'value': self.cookie_user,
-             'secure': False, 'path': '/'})
-        self.selenium.get('%s%s' % (self.live_server_url,
-                          reverse("mailing_list:user_status")))
-        self.selenium.find_element_by_css_selector(
-            f"#id-ml-{self.mailing_list_2.id} form button[type=submit]"
-        ).click()
-        a_html = \
-            self.selenium.find_element_by_css_selector(
-                f"#id-ml-{self.mailing_list_2.id} div a").get_attribute(
-                    'innerHTML')
-        new_event = user_current_state(self.user, self.mailing_list_2)
-        # Check if the event is updated
-        self.assertEqual(new_event.event_type, "sub",
-                         msg="The event is not update")
-        self.assertEqual(a_html, "Se désabonner", msg="The page is not update")
-
-    def testing_user_status_page_unsubscribe_to_newsletter(self):
-        old_event = user_current_state(self.user, self.mailing_list_1)
-        self.assertEqual(old_event.event_type, "sub")
-        self.selenium.get('%s%s' % (self.live_server_url,
-                          reverse("mailing_list:user_status")))
-        self.selenium.add_cookie(
-            {'name': 'sessionid', 'value': self.cookie_user,
-             'secure': False, 'path': '/'})
-        self.selenium.get('%s%s' % (self.live_server_url,
-                          reverse("mailing_list:user_status")))
-        self.selenium.find_element_by_css_selector(
-            f"#id-ml-{self.mailing_list_1.id} a").click()
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        button_html = self.selenium.find_element_by_css_selector(
-            f"#id-ml-{self.mailing_list_1.id} div button").get_attribute(
-                'innerHTML')
-        new_event = user_current_state(self.user, self.mailing_list_2)
-        # Check if the event is updated
-        self.assertEqual(new_event.event_type, "unsub",
-                         msg="The event is not update")
-        self.assertEqual(button_html, "S'abonner",
-                         msg="The page is not update")
-
-
-class MailingListStatusCodeTest(TestCase):
-    def setUp(self):
-        MailingListIntegrationTestCase.setUp(self)
+        # Create a TopicBlogEmailSendRecord object
+        self.tb_send_email_record = TopicBlogEmailSendRecord(
+            mailinglist=self.mailing_list_1,
+            recipient=self.user,
+            open_time=datetime.now(),
+            click_time=datetime.now(),
+            unsubscribe_time=datetime.now(),
+        )
+        self.tb_send_email_record.save()
 
     def test_mailing_list_list_signup(self):
         url = reverse("mailing_list:list_signup")
@@ -285,14 +170,14 @@ class MailingListStatusCodeTest(TestCase):
 
     def test_mailing_list_event_model_str_function(self):
         self.assertEqual(self.mailing_event_1.__str__(),
-                         ("U=  <staff@mail.com> (), L=news1 (token1)"
+                         ("U=  <duponun@test.fr> (), L=news1 (token1)"
                              " f=0 semaines, E=sub, "
                              f"{self.mailing_event_1.event_timestamp}"),
                          msg="Should return the the data :"
                              "U={u_fn} {u_ln} <{u_e}> ({u_commune}),"
                              " L={mlist}, E={event}, {ts}")
         self.assertEqual(self.mailing_event_2.__str__(),
-                         ("U=  <admin@mail.com> (), L=news2 (token2)"
+                         ("U=  <admin@test.fr> (), L=news2 (token2)"
                              " f=4 semaines, E=sub, "
                              f"{self.mailing_event_2.event_timestamp}"),
                          msg="Should return the the data :"
@@ -370,3 +255,188 @@ class MailingListStatusCodeTest(TestCase):
                              good_mailing_list_1)
         # Testing that both context is not the same
         self.assertNotEqual(good_mailing_list_0, good_mailing_list_1)
+
+    def testing_token_unsubscribe_bad_token(self):
+        """All user will have 404
+            For this test we use a list of dictionaries, that is composed of:
+            - client = the client of user (auth user, unauth and permited user)
+            - code = the statut code excepted
+            - message = the error message"""
+        users_expected = [
+            {"client": self.logged_client, "code": 404,
+             "msg": "bad token return 404"},
+            {"client": self.client, "code": 404,
+             "msg": "bad token return 404"},
+            {"client": self.admin_client, "code": 404,
+             "msg": "bad token return 404"},
+        ]
+        for user_type in users_expected:
+            response = user_type["client"].get(
+                reverse("mailing_list:unsubscribe_token",
+                        kwargs={
+                            "token": "bad token"
+                        }))
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+
+class MailingListIntegrationTestCase(LiveServerTestCase):
+    def setUp(self):
+        MailingListStatusCodeTest.setUp(self)
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
+        self.selenium = WebDriver(ChromeDriverManager().install(),
+                                  options=options)
+        self.selenium.implicitly_wait(5)
+
+    def tearDown(self):
+        # Close the browser
+        self.selenium.quit()
+
+    def testing_quick_form(self):
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        email_input = self.selenium.find_element_by_id("id_email")
+        email_input.send_keys("dupondupon@test.fr")
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        # pass the captcha only work on dev mod
+        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
+        captcha_input.send_keys("PASSED")
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        user = User.objects.filter(email="dupondupon@test.fr")[0]
+        self.assertIsNotNone(user,
+                             msg="The user is not created on quick sign up")
+        mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+        self.assertIsNotNone(mailing_list_event,
+                             msg="The mailing event is not created"
+                                 "on quick sign up")
+
+        self.assertEqual(mailing_list_event.event_type, "sub",
+                         msg="The user is not sub on the default mailing list")
+
+    def testing_quick_form_fail_captcha(self):
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        email_input = self.selenium.find_element_by_id("id_email")
+        email_input.send_keys("dupondupon@test.fr")
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        # fail the capcha
+        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
+        captcha_input.send_keys("Notgood")
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        # pass the captcha only work on dev mod
+        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
+        captcha_input.send_keys("PASSED")
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        user = User.objects.filter(email="dupondupon@test.fr")[0]
+        self.assertIsNotNone(user,
+                             msg="The user is not created on quick sign up")
+        mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+        self.assertIsNotNone(mailing_list_event,
+                             msg="The mailing event is not created"
+                                 "on quick sign up")
+
+        self.assertEqual(mailing_list_event.event_type, "sub",
+                         msg="The user is not sub on the default mailing list")
+
+    def testing_acces_with_get_to_the_quick_form(self):
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("mailing_list:quick_signup")))
+        index_url = f"{self.live_server_url}{reverse('index')}#newsletter"
+        self.assertEqual(self.selenium.current_url, index_url,
+                         msg="User should be redirect to index page")
+
+    def testing_user_status_page_subscribe_to_newsletter(self):
+        old_event = user_current_state(self.user, self.mailing_list_2)
+        self.assertEqual(old_event.event_type, "unsub")
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("mailing_list:user_status")))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_user,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("mailing_list:user_status")))
+        self.selenium.find_element_by_css_selector(
+            f"#id-ml-{self.mailing_list_2.id} form button[type=submit]"
+        ).click()
+        a_html = \
+            self.selenium.find_element_by_css_selector(
+                f"#id-ml-{self.mailing_list_2.id} div a").get_attribute(
+                    'innerHTML')
+        new_event = user_current_state(self.user, self.mailing_list_2)
+        # Check if the event is updated
+        self.assertEqual(new_event.event_type, "sub",
+                         msg="The event is not update")
+        self.assertEqual(a_html, "Se désabonner", msg="The page is not update")
+
+    def testing_user_status_page_unsubscribe_to_newsletter(self):
+        old_event = user_current_state(self.user, self.mailing_list_1)
+        self.assertEqual(old_event.event_type, "sub")
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("mailing_list:user_status")))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_user,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                          reverse("mailing_list:user_status")))
+        self.selenium.find_element_by_css_selector(
+            f"#id-ml-{self.mailing_list_1.id} a").click()
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        button_html = self.selenium.find_element_by_css_selector(
+            f"#id-ml-{self.mailing_list_1.id} div button").get_attribute(
+                'innerHTML')
+        new_event = user_current_state(self.user, self.mailing_list_2)
+        # Check if the event is updated
+        self.assertEqual(new_event.event_type, "unsub",
+                         msg="The event is not update")
+        self.assertEqual(button_html, "S'abonner",
+                         msg="The page is not update")
+
+    def testing_token_unsubscribe_with_token(self):
+        old_event = user_current_state(self.user.id, self.mailing_list_1)
+        self.assertEqual(old_event.event_type, "sub")
+        token = make_timed_token(
+            self.user.email, 1080, 1234,
+            tb_email_send_record_id=self.tb_send_email_record .id)
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("mailing_list:unsubscribe_token",
+                                            kwargs={
+                                                "token": token
+                                            })))
+        self.selenium.find_element_by_css_selector(
+            "form button[type=submit]").click()
+        # check the last url
+        last_url = (f"{self.live_server_url}"
+                    f"{reverse('mailing_list:unsubscribe_finish')}")
+        self.assertEqual(self.selenium.current_url, last_url,
+                         msg="Should redirect to the "
+                             "to mailing_list:unsubscribe_finish")
+        # Check if the event is updated
+        new_event = user_current_state(self.user, self.mailing_list_1)
+        self.assertEqual(new_event.event_type, "unsub",
+                         msg="The event is not update")
+        # check the message when go back to same link
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("mailing_list:unsubscribe_token",
+                                            kwargs={
+                                                "token": token
+                                            })))
+        title_text = self.selenium.find_element_by_css_selector(
+            ".container-fluid h5.alert").get_attribute(
+            'innerHTML')
+        self.assertEqual(title_text,
+                         "Vous êtes déja désabonné à cette newsletter",
+                         msg="User can't unsubscribe again")

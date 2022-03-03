@@ -1,0 +1,16 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load mpanels %}
+{% block app_content %}
+<div class="container pt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <p>Vous avez bien été désinscrit de la newsletter.</p>
+        </div>
+    </div>
+    <div class="row pt-4">
+	{% show_projects %}
+    </div>
+</div>
+{% show_donate %}
+{% show_volunteer %}
+{% endblock %}

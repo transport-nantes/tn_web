@@ -11,9 +11,19 @@
 		{% if form.errors %}
 			<p class="text-danger">{{ form.errors }}</p>
 		{% endif %}
-		<h5 class="alert alert-danger text-center">Vous êtes sur le point de vous désinscire de la newsletter</h5>
-		<p>Newsletter :  {{mailing_list.mailing_list_name}}</p>
-        {% include "mailing_list/status/hidden_form.html"  with unsubscribe=True button_label="Confirmer"  %}
+        {% if is_unsub %}
+			<h5 class="alert alert-danger text-center">Vous êtes déja désabonné à cette newsletter</h5>
+			<p>Newsletter :  {{mailing_list.mailing_list_name}}</p>
+			<a href="{% url 'index' %}" class="btn navigation-button btn-lg">Retour</a>
+		{% else %}
+		    <h5 class="alert alert-danger text-center">Vous êtes sur le point de vous désinscire de la newsletter</h5>
+		    <p>Newsletter :  {{mailing_list.mailing_list_name}}</p>
+            {% if is_from_token %}
+                {% include "mailing_list/status/hidden_form.html"  with unsubscribe=True back_index=True button_label="Confirmer"  %}
+            {% else %}
+                {% include "mailing_list/status/hidden_form.html"  with unsubscribe=True button_label="Confirmer"  %}
+            {% endif %}
+        {% endif %}
 	</div>
     </div>
     <div class="row pt-4">

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from functools import wraps
 import logging
 
@@ -14,7 +14,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 logger = logging.getLogger("django")
 
 
-def make_timed_token(email, minutes, persistent=0, test_value_now=None):
+def make_timed_token(email, minutes, persistent=0, test_value_now=None,
+                     tb_email_send_record_id=0):
     """Make a URL-safe timed token that's valid for minutes minutes.
 
     This is meant for use with confirmation mails to avoid having to
@@ -34,19 +35,25 @@ def make_timed_token(email, minutes, persistent=0, test_value_now=None):
 
     The test_value_now is for testing and should not normally be set.
 
+    The tb_email_send_record_id is there to identify the mailing_list
+    and to populate unsubscribe_time of the TopicBlogEmailSendRecord
+    object if the user unsubscribe to the mailing list.
+
     """
     secret = settings.SECRET_KEY
     rand_value = secrets.token_urlsafe(20)
     if test_value_now is not None:
         now = test_value_now
     else:
-        now = datetime.datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
     soon_seconds = int_to_base36(int(now + 60 * minutes))
     persistent_str = int_to_base36(int(persistent))
-    hmac = salted_hmac(soon_seconds + persistent_str, rand_value + str(email)).hexdigest()[:20]
-    token = '{rnd}|{e}|{t}|{p}|{h}'.format(
+    hmac = salted_hmac(soon_seconds + persistent_str,
+                       rand_value + str(email)).hexdigest()[:20]
+    token = '{rnd}|{e}|{tbesri}|{t}|{p}|{h}'.format(
         rnd=rand_value,
         e=email,
+        tbesri=tb_email_send_record_id,
         t=soon_seconds,
         p=persistent_str,
         h=hmac)
@@ -58,11 +65,14 @@ def token_valid(encoded_timed_token, test_value_now=None):
     """Validate a timed token.
 
     Return the email of the user for which the token is valid, if the
-    token is valid.  Return None if the token is not (either because
+    token is valid.Return None if the token is not (either because
     it is malformed or because it has expired).
 
     If the token is valid, also return the persistent integer.  If the
     token is not valid, persistent will be zero.
+
+    If the token is valid, and the_tb_email_send_record_id is not equal to 0
+    we also return the_tb_email_send_record_id.
 
     The test_value_now is for testing and should not normally be set.
 
@@ -72,19 +82,27 @@ def token_valid(encoded_timed_token, test_value_now=None):
     except (TypeError, ValueError):
         logger.info(f"token_valid: invalid token ({encoded_timed_token})")
         return (None, 0)
-    the_rand_value, the_email, the_soon, the_persistent, the_hmac = \
-        timed_token.split('|')
+
+    (the_rand_value, the_email, the_tb_email_send_record_id,
+        the_soon, the_persistent, the_hmac) = timed_token.split('|')
     computed_hmac = salted_hmac(the_soon + the_persistent,
-                                the_rand_value + str(the_email)).hexdigest()[:20]
+                                the_rand_value + str(
+                                    the_email)).hexdigest()[:20]
     if computed_hmac != the_hmac:
         return (None, 0,)
     if test_value_now is not None:
         now = test_value_now
     else:
-        now = datetime.datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
     if now > base36_to_int(the_soon):
         return (None, 0)
-    return (the_email, base36_to_int(the_persistent),)
+    if not the_tb_email_send_record_id.isnumeric():
+        return (None, 0)
+    elif int(the_tb_email_send_record_id) == 0:
+        return (the_email, base36_to_int(the_persistent),)
+    else:
+        return (the_email, int(the_tb_email_send_record_id),
+                base36_to_int(the_persistent),)
 
 
 class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
