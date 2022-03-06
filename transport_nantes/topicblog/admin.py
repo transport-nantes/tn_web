@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress
+from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
 
 
 class TopicBlogItemAdmin(admin.ModelAdmin):
@@ -16,6 +16,11 @@ class TopicBlogPressAdmin(admin.ModelAdmin):
     pass
 
 
+class TopicBlogLauncherAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
 admin.site.register(TopicBlogPress, TopicBlogPressAdmin)
+admin.site.register(TopicBlogLauncher, TopicBlogLauncherAdmin)
