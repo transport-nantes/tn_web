@@ -52,6 +52,9 @@ urlpatterns = [
     path('admin/e/list/<slug:the_slug>/', views.TopicBlogEmailList.as_view(),
          name='list_emails_by_slug'),
 
+    path('admin/e/send/<slug:the_slug>/', views.TopicBlogEmailSend.as_view(),
+         name='send_email'),
+
     path('ajax/get-slug-dict/', views.get_slug_dict,
          name="get_slug_dict"),
     path('ajax/get-url-list/', views.get_url_list,

@@ -392,6 +392,12 @@ class TopicBlogEmailView(TopicBlogBaseView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['context_appropriate_base_template'] = 'topicblog/base_email.html'
+        tb_object = context['page']
+        user = self.request.user
+        if user.has_perm('topicblog.tbe.may_send_self') or \
+           (user.has_perm('topicblog.tbe.may_send') \
+            and tb_object.publisher != user):
+            context['sendable'] = True
         return context
 
 
@@ -416,3 +422,81 @@ class TopicBlogEmailList(TopicBlogBaseList):
             return ['topicblog/topicblogemail_list_one.html'] + names
         else:
             return names
+
+class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
+    """Notes to Benjamin and Mickael:
+
+    This view isn't implemented yet.  Here's what I think you should do:
+
+    1.  On GET, display a form.  That form should (for now) just show
+    the mailing_lists available in a dropdown list and let the user
+    choose one.  Once a mailing_list is chosen, enable a send button.
+    Pushing the send button will POST to the same url.
+
+    2.  On POST, send the mail.  This means you do the following:
+        (i)  Get the list of users from the mailing_list by calling
+             subscribed_users() from mailing_list/events.py.  Note that
+             that function doesn't exist yet, but it should be a really,
+             really simple function for you to write based on the other
+             functions in the file.  You should make a single commit
+             with that function and tests for that function.
+        (ii) For each user in the list:
+
+             Compute a timed_token (function already exists,
+             make_timed_token() in asso_tn/utils.py).  Given it a
+             three-week timeout so as not to over-think.  Pass the
+             TopicBlogEmailSendRecord pk_id in persistent.  If someone
+             comes back after expiration, we can ask them to respond
+             to a new query (not for today).  In the footer of the
+             base email template (note: this is 30 seconds, you just
+             write "<div><div><p><a href={% url
+             ... %}>unsubscribe</a></div></div>" with maybe some
+             arguments to the divs and such.  DO NOT spend time now
+             fiddling with making it look just right.  There's a
+             difference between unworldly user interaction paradigms
+             and simply not being pretty yet.  The latter is easily
+             remedied in a second commit, the former is trickier.
+             This is a commit.
+
+             Also compute the url (the path already exists) to view
+             this email on the web.  Put that in the context, too, and
+             make sure you add a link at the top of the email base
+             template, just above the content.  That's another commit.
+
+             Render the email, pass it off to SES for sending, and
+             write a record to TopicBlogEmailSendRecord.  This is
+             another commit.
+
+             Now write a function that serves a beacon.  A beacon
+             means you have a non-threatening path (NOT
+             /tb/e/beacon/<value>/ but rather /tb/e/i/<value>/ -- and
+             value is going to be another timed_token that encodes the
+             pk_id of the TopicBlogEmailSendRecord) that returns a
+             one-pixel background-colour gif.  We can change it later,
+             that will work for now.  This is a commit.
+
+             Now go back to the above and add a beacon to the email
+             base template.  Give it a ten year time-out, which is
+             nine years and six months more than we probably need.
+             That means you generate the beacon value and pass it in
+             so that the image (/tb/e/i/<value>) has the right value.
+             This is a commit.
+
+             Note that the two timed tokens encode the email address
+             to which we sent the mail and the pk_id of the
+             TopicBlogEmailSendRecord, so the beacon function or the
+             unsub page can easily look up the send record.  The
+             beacon function should update
+             TopicBlogEmailSendRecord.open_time.  Clicks should lead
+             to setting TopicBlogEmailSendRecord.click_time.  In both
+             cases, only if not already set, since what we want is the
+             time of the first view, the first click.  This is a
+             commit.
+
+             If the user validates an unsub having clicked in from an
+             email, then we have the timed token handy and we should
+             set TopicBlogEmailSendRecord.unsubscribe_time if it's not
+             already set (and call unsubscribe_user_from_list()).
+
+    """
+    pass
