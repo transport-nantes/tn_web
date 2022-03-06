@@ -690,22 +690,22 @@ class TopicBlogPress(TopicBlogObjectBase):
     """
     class Meta:
         permissions = (
-            # The simpleset permission allows a user to view TBPresss
+            # The simpleset permission allows a user to view TBPress
             # that are draft or retired.
-            ("tbp.may_view", "May view unpublished TopicBlogPresss"),
+            ("tbp.may_view", "May view unpublished TopicBlogPress"),
 
             # Granting edit permission to users does not in itself
             # permit them to publish or retire, so it is reasonably
             # safe.
-            ("tbp.may_edit", "May create and modify TopicBlogPresss"),
+            ("tbp.may_edit", "May create and modify TopicBlogPress"),
 
             # Finally, we can grant users permission to publish, to
             # self-publish (implies tbp_may_publish), to send, and to
             # self-send.
-            ("tbp.may_publish", "May publish TopicBlogPresss"),
-            ("tbp.may_publish_self", "May publish own TopicBlogPresss"),
+            ("tbp.may_publish", "May publish TopicBlogPress"),
+            ("tbp.may_publish_self", "May publish own TopicBlogPress"),
             ("tbp.may_send", "May send TopicBlogPresss"),
-            ("tbp.may_send_self", "May send own TopicBlogPresss"),
+            ("tbp.may_send_self", "May send own TopicBlogPress"),
         )
 
     subject = models.CharField(max_length=80, blank=True)
