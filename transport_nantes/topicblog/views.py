@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequired
-from .models import TopicBlogItem, TopicBlogEmail
+from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
@@ -497,6 +497,160 @@ class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
              email, then we have the timed token handy and we should
              set TopicBlogEmailSendRecord.unsubscribe_time if it's not
              already set (and call unsubscribe_user_from_list()).
+
+    """
+    pass
+
+
+######################################################################
+# TopicBlogPress
+
+class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbp.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbp.may_view')
+        return super().has_permission()
+
+class TopicBlogPressEdit(TopicBlogBaseEdit):
+    model = TopicBlogPress
+    template_name = 'topicblog/tb_item_edit.html'
+    form_class = TopicBlogItemForm
+
+
+class TopicBlogPressView(TopicBlogBaseView):
+    model = TopicBlogPress
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context_appropriate_base_template'] = 'topicblog/base_press.html'
+        tb_object = context['page']
+        user = self.request.user
+        if user.has_perm('topicblog.tbp.may_send_self') or \
+           (user.has_perm('topicblog.tbp.may_send') \
+            and tb_object.publisher != user):
+            context['sendable'] = True
+        return context
+
+
+class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
+                            TopicBlogBaseViewOne):
+    model = TopicBlogPress
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context_appropriate_base_template'] = 'topicblog/base_press.html'
+        return context
+
+
+class TopicBlogPressList(PermissionRequiredMixin,
+                         TopicBlogBaseList):
+    model = TopicBlogPress
+    permission_required = 'topicblog.tbp.may_view'
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        print(names)
+        if 'the_slug' in self.kwargs:
+            return ['topicblog/topicblogpress_list_one.html'] + names
+        else:
+            return names
+
+class TopicBlogPressSend(LoginRequiredMixin, TemplateView):
+    """Notes to Benjamin and Mickael:
+
+    This view isn't implemented yet.  Here's what I think you should do:
+
+    1.  On GET, display a form.  That form should (for now) just show
+    the mailing_lists available in a dropdown list and let the user
+    choose one.  Once a mailing_list is chosen, enable a send button.
+    Pushing the send button will POST to the same url.
+
+    Soon-ish, we should add a "press" flag to mailing lists, but
+    that's not today.  Our goal today is got move.  Just, in the back
+    of your head, think that we'll eventually filter on a press flag.
+
+    2.  On POST, send the mail.  This means you do the following:
+        (i)  Get the list of users from the mailing_list by calling
+             subscribed_users() from mailing_list/events.py.  Note that
+             that function doesn't exist yet, but it should be a really,
+             really simple function for you to write based on the other
+             functions in the file.  You should make a single commit
+             with that function and tests for that function.
+        (ii) For each user in the list:
+
+             Compute a timed_token (function already exists,
+             make_timed_token() in asso_tn/utils.py).  Given it a
+             three-week timeout so as not to over-think.  Pass the
+             TopicBlogPressSendRecord pk_id in persistent.  If someone
+             comes back after expiration, we can ask them to respond
+             to a new query (not for today).  In the footer of the
+             base press template (note: this is 30 seconds, you just
+             write "<div><div><p><a href={% url
+             ... %}>unsubscribe</a></div></div>" with maybe some
+             arguments to the divs and such.  DO NOT spend time now
+             fiddling with making it look just right.  There's a
+             difference between unworldly user interaction paradigms
+             and simply not being pretty yet.  The latter is easily
+             remedied in a second commit, the former is trickier.
+             This is a commit.
+
+             Also compute the url (the path already exists) to view
+             this press on the web.  Put that in the context, too, and
+             make sure you add a link at the top of the press base
+             template, just above the content.  That's another commit.
+
+             Render the press, pass it off to SES for sending, and
+             write a record to TopicBlogPressSendRecord.  This is
+             another commit.
+
+             Now write a function that serves a beacon.  A beacon
+             means you have a non-threatening path (NOT
+             /tb/e/beacon/<value>/ but rather /tb/e/i/<value>/ -- and
+             value is going to be another timed_token that encodes the
+             pk_id of the TopicBlogPressSendRecord) that returns a
+             one-pixel background-colour gif.  We can change it later,
+             that will work for now.  This is a commit.
+
+             Now go back to the above and add a beacon to the press
+             base template.  Give it a ten year time-out, which is
+             nine years and six months more than we probably need.
+             That means you generate the beacon value and pass it in
+             so that the image (/tb/e/i/<value>) has the right value.
+             This is a commit.
+
+             Note that the two timed tokens encode the press address
+             to which we sent the mail and the pk_id of the
+             TopicBlogPressSendRecord, so the beacon function or the
+             unsub page can easily look up the send record.  The
+             beacon function should update
+             TopicBlogPressSendRecord.open_time.  Clicks should lead
+             to setting TopicBlogPressSendRecord.click_time.  In both
+             cases, only if not already set, since what we want is the
+             time of the first view, the first click.  This is a
+             commit.
+
+             If the user validates an unsub having clicked in from an
+             press, then we have the timed token handy and we should
+             set TopicBlogPressSendRecord.unsubscribe_time if it's not
+             already set (and call unsubscribe_user_from_list()).
+
+             Hints for the future: once this is working, we're going
+             to improve it with things like our logo in the mail, the
+             date and other press release type things.  Also, the
+             unsub button will have some special press-like features,
+             like letting journalists specify the specific lists to
+             which they want to be subscribed.  Maybe you care about
+             pedestrians but not about inter-city buses, and maybe we
+             some day have lists for those.
 
     """
     pass
