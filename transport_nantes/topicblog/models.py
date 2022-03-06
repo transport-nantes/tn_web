@@ -133,7 +133,7 @@ class TopicBlogObjectBase(models.Model):
 
     def __str__(self):
         if self.slug:
-            return f'{str(self.slug)} - {str(self.title)} - ' + \
+            return f'{str(self.slug)} - ' + \
                 f'ID : {str(self.id)}'
         else:
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
@@ -803,3 +803,87 @@ class TopicBlogPressClicks(models.Model):
                               on_delete=models.PROTECT)
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
+
+
+######################################################################
+# TopicBlogLauncher
+
+class TopicBlogLauncher(TopicBlogObjectBase):
+    """Represent a launcher release.
+
+    This can be rendered as an email to be sent or as a web page that
+    the user clicks (or shares) with exactly the same content.
+
+    Note that many fields are nullable in order to permit saving
+    drafts during composition.  Publication and sending, however, must
+    validate that all necessary fields are provided.
+
+    This model must be marked immutable.  That's hard to enforce, but
+    changes must only be spelling and typographical fixes.  If we send
+    a mail, we can't have the web version change in the mean time.
+
+    The header_image only displays on the website, not in email.  A
+    good way to make an email stay unread is to begin with an image so
+    that the user doesn't see what's coming.
+
+    """
+    class Meta:
+        permissions = (
+            # The simpleset permission allows a user to view TBLauncher
+            # that are draft or retired.
+            ("tbla.may_view", "May view unpublished TopicBlogLauncher"),
+
+            # Granting edit permission to users does not in itself
+            # permit them to publish or retire, so it is reasonably
+            # safe.
+            ("tbla.may_edit", "May create and modify TopicBlogLauncher"),
+
+            # Finally, we can grant users permission to publish, to
+            # self-publish (implies tbla_may_publish), to send, and to
+            # self-send.
+            ("tbla.may_publish", "May publish TopicBlogLauncher"),
+            ("tbla.may_publish_self", "May publish own TopicBlogLauncher"),
+            ("tbla.may_send", "May send TopicBlogLaunchers"),
+            ("tbla.may_send_self", "May send own TopicBlogLauncher"),
+        )
+
+    headline = models.CharField(max_length=80, blank=True)
+    launcher_text_md = models.TextField(blank=True)
+    launcher_image = models.ImageField(
+        upload_to='launcher/', blank=True,
+        help_text='résolution recommandée : 667x667')
+    launcher_image_alt_text = models.CharField(max_length=100, blank=True)
+
+    # The article to which this slug points.
+    article_slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
+
+    # Campaign name.  This is free text.  The intent is that two
+    # launchers to the same campaign may not be displayed
+    # simultaneously.
+    campaign_name = models.CharField(max_length=80, blank=True)
+
+    # Plus slug, template, title, and comment fields, provided through
+    # abstract base class.
+
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse("topicblog:view_launcher_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse("topicblog:view_launcher_by_pkid_only",
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse("topicblog:edit_launcher_by_pkid",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_launcher",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
