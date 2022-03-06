@@ -403,3 +403,11 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
 
 class TopicBlogEmailList(TopicBlogBaseList):
     model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_view'
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        if 'the_slug' in self.kwargs:
+            return ['topicblog/topicblogemail_list_one.html'] + names
+        else:
+            return names
