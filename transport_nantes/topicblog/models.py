@@ -664,3 +664,121 @@ class TopicBlogEmailClicks(models.Model):
                               on_delete=models.PROTECT)
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
+
+
+######################################################################
+# TopicBlogPress
+
+class TopicBlogPress(TopicBlogObjectBase):
+    """Represent a press release.
+
+    This can be rendered as an email to be sent or as a web page that
+    the user clicks (or shares) with exactly the same content.
+
+    Note that many fields are nullable in order to permit saving
+    drafts during composition.  Publication and sending, however, must
+    validate that all necessary fields are provided.
+
+    This model must be marked immutable.  That's hard to enforce, but
+    changes must only be spelling and typographical fixes.  If we send
+    a mail, we can't have the web version change in the mean time.
+
+    The header_image only displays on the website, not in email.  A
+    good way to make an email stay unread is to begin with an image so
+    that the user doesn't see what's coming.
+
+    """
+    class Meta:
+        permissions = (
+            # The simpleset permission allows a user to view TBPresss
+            # that are draft or retired.
+            ("tbp.may_view", "May view unpublished TopicBlogPresss"),
+
+            # Granting edit permission to users does not in itself
+            # permit them to publish or retire, so it is reasonably
+            # safe.
+            ("tbp.may_edit", "May create and modify TopicBlogPresss"),
+
+            # Finally, we can grant users permission to publish, to
+            # self-publish (implies tbp_may_publish), to send, and to
+            # self-send.
+            ("tbp.may_publish", "May publish TopicBlogPresss"),
+            ("tbp.may_publish_self", "May publish own TopicBlogPresss"),
+            ("tbp.may_send", "May send TopicBlogPresss"),
+            ("tbp.may_send_self", "May send own TopicBlogPresss"),
+        )
+
+    subject = models.CharField(max_length=80, blank=True)
+    header_image = models.ImageField(
+        upload_to='header/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+
+    # Content #######################################################
+    body_text_1_md = models.TextField(blank=True)
+    body_image_1 = models.ImageField(
+        upload_to='body/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+    body_image_1_alt_text = models.CharField(max_length=100, blank=True)
+
+    # Plus slug, template, title, comment, and social media fields,
+    # provided through abstract base class.
+
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse("topicblog:view_press_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse("topicblog:view_press_by_pkid_only",
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse("topicblog:edit_press_by_pkid",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_press",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+
+
+
+class TopicBlogPressSendRecord(models.Model):
+
+    """Represent the fact that we sent an press.
+    """
+    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
+    mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
+    recipient = models.ForeignKey(User, on_delete=models.PROTECT)
+    send_time = models.DateTimeField(auto_now=True)
+    # Open time is the time of the first instance of a beacon responding.
+    open_time = models.DateTimeField()
+    # Click time is the time of the first instance of a link being clicked.
+    click_time = models.DateTimeField()
+    # Unsubscribe time is the first instance of a user clicking the
+    # unsubscribe button, whether the unsubscribe is successful or
+    # not.  Note that we still have to send the user to the
+    # appropriate mailinglist unsubscribe page with user_id filled in
+    # (so that no press confirmation is required, which would be safer
+    # but would annoy most people).
+    unsubscribe_time = models.DateTimeField()
+
+
+class TopicBlogPressClicks(models.Model):
+
+    """Represent the fact that an press was clicked.
+
+    Note that TopicBlogPressSendRecord will record the first click,
+    but here we want to record all clicks that happen and where they
+    lead.
+
+    """
+    press = models.ForeignKey(TopicBlogPressSendRecord,
+                              on_delete=models.PROTECT)
+    click_time = models.DateTimeField()
+    click_url = models.CharField(max_length=1024, blank=False)
