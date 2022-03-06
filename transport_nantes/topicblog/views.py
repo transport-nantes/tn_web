@@ -391,7 +391,7 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'asso_tn/base_mobilitain.html'
+        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
         return context
 
 
@@ -401,7 +401,7 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'asso_tn/base_mobilitain.html'
+        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
         return context
 
 
@@ -411,6 +411,7 @@ class TopicBlogEmailList(TopicBlogBaseList):
 
     def get_template_names(self):
         names = super().get_template_names()
+        print(names)
         if 'the_slug' in self.kwargs:
             return ['topicblog/topicblogemail_list_one.html'] + names
         else:

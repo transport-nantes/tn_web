@@ -339,7 +339,8 @@ class TopicBlogItem(TopicBlogObjectBase):
     cta_3_label = models.CharField(max_length=100, blank=True)
 
     def get_absolute_url(self):
-        """This function is called on creation of the item"""
+        """Provide a link to view this object (by slug and id).
+        """
         if self.slug:
             return reverse("topicblog:view_item_by_pkid",
                            kwargs={"pkid": self.pk,
@@ -349,8 +350,8 @@ class TopicBlogItem(TopicBlogObjectBase):
                            kwargs={"pkid": self.pk})
 
     def get_edit_url(self):
-        """This function returns a link leading to
-        the edition page of an item."""
+        """Provide a link to edit this object (by slug and id).
+        """
         if not self.slug:
             return reverse("topicblog:edit_item_by_pkid",
                            kwargs={"pkid": self.pk})
@@ -603,6 +604,30 @@ class TopicBlogEmail(TopicBlogObjectBase):
 
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
+
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse("topicblog:view_email_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse("topicblog:view_email_by_pkid_only",
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse("topicblog:edit_email_by_pkid",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_email",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+
 
 
 class TopicBlogEmailSendRecord(models.Model):

@@ -1,0 +1,67 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load utm %}
+
+{% comment %}
+Note that we need the slug|default:'--sans-slug--' goofiness because
+the template render will try to generate URLs even in the cases where we
+deactivate the button, and will fail to find a path mapping when the slug
+is empty.  Django sees an empty string and trims it when looking for patterns.
+
+Maybe there's a better way, I just haven't found it yet.
+{% endcomment %}
+
+{% block body %}{% if user.is_staff %}
+  <div class="container-fluid pl-3 py-1">{% visit_overview %}</div>
+{% endif %}
+{% if user.is_staff %}
+  {% if topicblog_admin  %}
+<div class="container-fluid pl-5 py-3">
+    <div class="row">
+	<p>
+	    <a type="button" class="btn btn-outline-info btn-sm"
+	       href="{% url 'topic_blog:list_emails_by_slug' page.slug|default:'--sans-slug--' %}">Liste</a>
+	    {% if page.publication_date %}
+	    	publiée {{ page.publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }}
+	    {% else %}
+			{% if page.first_publication_date %}
+				publiée {{ page.first_publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }} (retirée)
+			{% else %}
+				(brouillon)
+			{% endif %}
+			{% if page.is_publishable %}
+				<form
+				action="{% url 'topicblog:view_email_by_pkid' pkid page.slug|default:'--sans-slug--' %}"
+				method="POST">
+					{% csrf_token %}
+					<input type="submit" class="btn btn-outline-info btn-sm" value="Publier">
+				</form>
+			{% endif %}
+	    {% endif %}
+
+	    <a type="button" class="btn btn-outline-info btn-sm"
+	       href="{{ page.get_edit_url }}">Modifier</a>
+
+	    {% if page.publication_date %}
+	    <a type="button" class="btn btn-outline-info btn-sm"
+	       href="{% url 'topic_blog:view_email_by_slug' page.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
+	    {% if page.servable %}
+	    <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
+	       href="">Retirer</a>
+	    {% else %}
+	    <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
+	       href="">Republier</a>
+	    {% endif %}{% endif %}
+	</p>
+    </div>
+</div>
+  {% elif sendable %}{% comment %}
+Sendable and not topicblog_admin, so viewing published page, so can
+offer to send.
+{% endcomment %}<div class="container-fluid pl-5 py-3">
+    <div class="row">
+	<a type="button" class="btn btn-warning" area-disabled="true" href="{% url 'topic_blog:send_email' page.slug %}">Envoyer</a>
+    </div>
+</div>
+  {% endif %}
+{% endif %}{{ block.super }}
+{% endblock body %}
