@@ -10,9 +10,13 @@
 		</div>
 		<div class="col-sm-6">
 			<h3>TBv2</h3>
-			<p>
-				<a class="nav-link" href="{% url 'topic_blog:new_item' %}">Créer un nouveu</a>
-				<a class="nav-link" href="{% url 'topic_blog:list_items' %}">Voir la liste</a>
+			<p>Pages de blog :
+			    [<a href="{% url 'topic_blog:new_item' %}">créer</a>]
+			    [<a href="{% url 'topic_blog:list_items' %}">lister</a>]
+			</p>
+			<p>Emails :
+			    [<a href="{% url 'topic_blog:new_email' %}">créer</a>]
+			    [<a href="{% url 'topic_blog:list_emails' %}">lister</a>]
 			</p>
 		</div>
 		<div class="col-sm-6">
