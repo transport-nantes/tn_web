@@ -88,8 +88,8 @@ class TopicBlogTemplate(models.Model):
 class TopicBlogObjectBase(models.Model):
 
     """
-    Represent all that is common in various the various
-    TopicBlogObjects (Item, Email, etc.).
+    Represent fundamental TopicBlogObjects concepts excepting
+    social media.
     """
 
     class Meta:
@@ -129,6 +129,34 @@ class TopicBlogObjectBase(models.Model):
     #
     # Encode the basic structure of a TBItem's presentation.
     template_name = models.CharField(max_length=80, blank=True)
+
+
+    def __str__(self):
+        if self.slug:
+            return f'{str(self.slug)} - {str(self.title)} - ' + \
+                f'ID : {str(self.id)}'
+        else:
+            return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
+
+
+    def get_servable_status(self):
+        """Return True if page is user visible, False otherwise."""
+        if self.publication_date is None or \
+                datetime.now(timezone.utc) < self.publication_date:
+            return False
+        return True
+
+
+class TopicBlogObjectSocialBase(TopicBlogObjectBase):
+
+    """
+    Represent all that is common in various the various
+    TopicBlogObjects that contain social media metadata and are
+    directly servable (Item, Email, etc.).
+    """
+
+    class Meta:
+        abstract = True
 
     # The HTML document <title>.
     title = models.CharField(max_length=100, blank=True)
@@ -197,18 +225,11 @@ class TopicBlogObjectBase(models.Model):
         else:
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
-    def get_servable_status(self):
-        """Return True if page is user visible, False otherwise."""
-        if self.publication_date is None or \
-                datetime.now(timezone.utc) < self.publication_date:
-            return False
-        return True
-
 
 ######################################################################
 # TopicBlogItem
 
-class TopicBlogItem(TopicBlogObjectBase):
+class TopicBlogItem(TopicBlogObjectSocialBase):
 
     """Represent an item in the TopicBlog.
 
@@ -540,7 +561,7 @@ class TopicBlogItem(TopicBlogObjectBase):
 ######################################################################
 # TopicBlogEmail
 
-class TopicBlogEmail(TopicBlogObjectBase):
+class TopicBlogEmail(TopicBlogObjectSocialBase):
     """Represent an email.
 
     This can be rendered as an email to be sent or as a web page that
@@ -669,7 +690,7 @@ class TopicBlogEmailClicks(models.Model):
 ######################################################################
 # TopicBlogPress
 
-class TopicBlogPress(TopicBlogObjectBase):
+class TopicBlogPress(TopicBlogObjectSocialBase):
     """Represent a press release.
 
     This can be rendered as an email to be sent or as a web page that
