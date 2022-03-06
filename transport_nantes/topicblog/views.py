@@ -389,6 +389,11 @@ class TopicBlogEmailEdit(TopicBlogBaseEdit):
 class TopicBlogEmailView(TopicBlogBaseView):
     model = TopicBlogEmail
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context_appropriate_base_template'] = 'asso_tn/base_mobilitain.html'
+        return context
+
 
 class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
                             TopicBlogBaseViewOne):
@@ -397,7 +402,6 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['context_appropriate_base_template'] = 'asso_tn/base_mobilitain.html'
-        print(context)
         return context
 
 
