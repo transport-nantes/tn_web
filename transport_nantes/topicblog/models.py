@@ -887,3 +887,11 @@ class TopicBlogLauncher(TopicBlogObjectBase):
             return reverse("topicblog:edit_launcher",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
+
+    def set_social_context(self, context):
+        """We don't need this function here, but I don't see (today) an easy
+        way to avoid it getting called from the base view without a
+        rather extensive refactor.
+
+        """
+        return context

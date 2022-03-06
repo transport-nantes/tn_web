@@ -9,6 +9,8 @@ urlpatterns = [
          name='view_email_by_slug'),
     path('p/<slug:the_slug>/', views.TopicBlogPressView.as_view(),
          name='view_press_by_slug'),
+    path('la/<slug:the_slug>/', views.TopicBlogLauncherView.as_view(),
+         name='view_launcher_by_slug'),
 
     path('admin/t/view/<int:pkid>/', views.TopicBlogItemViewOne.as_view(),
          name='view_item_by_pkid_only'),
@@ -16,6 +18,8 @@ urlpatterns = [
          name='view_email_by_pkid_only'),
     path('admin/p/view/<int:pkid>/', views.TopicBlogPressViewOne.as_view(),
          name='view_press_by_pkid_only'),
+    path('admin/la/view/<int:pkid>/', views.TopicBlogLauncherViewOne.as_view(),
+         name='view_launcher_by_pkid_only'),
 
     path('admin/t/view/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogItemViewOne.as_view(),
@@ -26,6 +30,9 @@ urlpatterns = [
     path('admin/p/view/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogPressViewOne.as_view(),
          name='view_press_by_pkid'),
+    path('admin/la/view/<int:pkid>/<slug:the_slug>/',
+         views.TopicBlogLauncherViewOne.as_view(),
+         name='view_launcher_by_pkid'),
 
     path('admin/t/new/', views.TopicBlogItemEdit.as_view(),
          name='new_item'),
@@ -33,6 +40,8 @@ urlpatterns = [
          name='new_email'),
     path('admin/p/new/', views.TopicBlogPressEdit.as_view(),
          name='new_press'),
+    path('admin/la/new/', views.TopicBlogLauncherEdit.as_view(),
+         name='new_launcher'),
 
     path('admin/t/edit/<int:pkid>/', views.TopicBlogItemEdit.as_view(),
          name='edit_item_by_pkid'),
@@ -40,6 +49,8 @@ urlpatterns = [
          name='edit_email_by_pkid'),
     path('admin/p/edit/<int:pkid>/', views.TopicBlogPressEdit.as_view(),
          name='edit_press_by_pkid'),
+    path('admin/la/edit/<int:pkid>/', views.TopicBlogLauncherEdit.as_view(),
+         name='edit_launcher_by_pkid'),
 
     path('admin/t/edit/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogItemEdit.as_view(),
@@ -50,6 +61,9 @@ urlpatterns = [
     path('admin/p/edit/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogPressEdit.as_view(),
          name='edit_press'),
+    path('admin/la/edit/<int:pkid>/<slug:the_slug>/',
+         views.TopicBlogLauncherEdit.as_view(),
+         name='edit_launcher'),
 
     path('admin/t/edit/<slug:the_slug>/', views.TopicBlogItemEdit.as_view(),
          name='edit_item_by_slug'),
@@ -57,6 +71,8 @@ urlpatterns = [
          name='edit_email_by_slug'),
     path('admin/p/edit/<slug:the_slug>/', views.TopicBlogPressEdit.as_view(),
          name='edit_press_by_slug'),
+    path('admin/la/edit/<slug:the_slug>/', views.TopicBlogLauncherEdit.as_view(),
+         name='edit_launcher_by_slug'),
 
     path('admin/t/list/', views.TopicBlogItemList.as_view(),
          name='list_items'),
@@ -64,6 +80,8 @@ urlpatterns = [
          name='list_emails'),
     path('admin/p/list/', views.TopicBlogPressList.as_view(),
          name='list_press'),
+    path('admin/la/list/', views.TopicBlogLauncherList.as_view(),
+         name='list_launcher'),
 
     path('admin/t/list/<slug:the_slug>/', views.TopicBlogItemList.as_view(),
          name='list_items_by_slug'),
@@ -71,6 +89,8 @@ urlpatterns = [
          name='list_emails_by_slug'),
     path('admin/p/list/<slug:the_slug>/', views.TopicBlogPressList.as_view(),
          name='list_press_by_slug'),
+    path('admin/la/list/<slug:the_slug>/', views.TopicBlogLauncherList.as_view(),
+         name='list_launcher_by_slug'),
 
     path('admin/e/send/<slug:the_slug>/', views.TopicBlogEmailSend.as_view(),
          name='send_email'),

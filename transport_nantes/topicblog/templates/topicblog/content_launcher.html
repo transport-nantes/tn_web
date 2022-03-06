@@ -1,0 +1,71 @@
+{% extends 'topicblog/base_launcher.html' %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+     {{ block.super }}
+
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+
+     {% endif %}
+
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 class="hero-title">{{ page.header_title }}</h1>
+          <p class="hero-description">{{ page.header_description }}</p>
+     </div>
+</div>
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url 'topic_blog:view_item_by_slug' page.slug %}">
+		<div class="shadow-md">
+		    <img class="rounded"
+			 src="{{ page.launcher_image }}"
+			 alt="{{ page.launcher_image_alt_text }}"
+			 style="width:100%">
+		</div>
+		<div class="caption pt-2">
+		    <h3 class="font-weight-light"
+			style="font-variant: all-small-caps;
+			       font-size: 150%;">{{ page.headline }}</h3>
+		    <p>
+			{% tn_markdown page.launcher_text_md %}
+		    </p>
+		</div>
+	    </a>
+	</div>
+    </div>
+     </div>
+</div>
+{% endblock content %}

@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequired
-from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress
+from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
@@ -380,7 +380,8 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
             return user.has_perm('topicblog.tbe.may_view')
         return super().has_permission()
 
-class TopicBlogEmailEdit(TopicBlogBaseEdit):
+class TopicBlogEmailEdit(PermissionRequiredMixin,
+                         TopicBlogBaseEdit):
     model = TopicBlogEmail
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
@@ -520,7 +521,8 @@ class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
             return user.has_perm('topicblog.tbp.may_view')
         return super().has_permission()
 
-class TopicBlogPressEdit(TopicBlogBaseEdit):
+class TopicBlogPressEdit(PermissionRequiredMixin,
+                         TopicBlogBaseEdit):
     model = TopicBlogPress
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
@@ -654,3 +656,61 @@ class TopicBlogPressSend(LoginRequiredMixin, TemplateView):
 
     """
     pass
+
+
+######################################################################
+# TopicBlogLauncher
+
+class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbla.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbla.may_view')
+        return super().has_permission()
+
+class TopicBlogLauncherEdit(PermissionRequiredMixin,
+                            TopicBlogBaseEdit):
+    model = TopicBlogLauncher
+    template_name = 'topicblog/tb_launcher_edit.html'
+    form_class = TopicBlogItemForm
+
+
+class TopicBlogLauncherView(TopicBlogBaseView):
+    model = TopicBlogLauncher
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context_appropriate_base_template'] = 'topicblog/base_launcher.html'
+        tb_object = context['page']
+        user = self.request.user
+        return context
+
+
+class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
+                            TopicBlogBaseViewOne):
+    model = TopicBlogLauncher
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class TopicBlogLauncherList(TopicBlogBaseList):
+    model = TopicBlogLauncher
+    permission_required = 'topicblog.tbla.may_view'
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        print(names)
+        if 'the_slug' in self.kwargs:
+            return ['topicblog/topicbloglauncher_list_one.html'] + names
+        else:
+            return names
