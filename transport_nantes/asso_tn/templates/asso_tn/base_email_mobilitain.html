@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="https://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title></title>
+    {% comment %}
+        Some CSS and PNG sizing resets for Microsoft Outlook on Windows
+        hidden inside conditional comments (the <!--[if mso]> bits)
+        src : https://webdesign.tutsplus.com/articles/creating-a-simple-responsive-html-email--webdesign-12978
+    {% endcomment %}
+    <!--[if mso]>
+    <style>
+        table {border-collapse:collapse;border-spacing:0;border:none;margin:0;}
+        div, td {padding:0;}
+        div {margin:0 !important;}
+    </style>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        table, td, div, h1, p {
+            font-family: Arial, sans-serif;
+        }
+        @media screen and (max-width: 530px) {
+            .unsub {
+                display: block;
+                padding: 8px;
+                margin-top: 14px;
+                border-radius: 6px;
+                background-color: #555555;
+                text-decoration: none !important;
+                font-weight: bold;
+            }
+            .col-lge {
+                max-width: 100% !important;
+            }
+        }
+        @media screen and (min-width: 531px) {
+            .col-sml {
+                max-width: 27% !important;
+            }
+            .col-lge {
+                max-width: 73% !important;
+            }
+        }
+        a:link.donation-button {
+            color: white;
+            font-weight: 600;
+            background-color: #5BC2E7;
+            border-radius: 0;
+        }
+        a:visited.donation-button {
+            color: white;
+        }
+        a:hover.donation-button {
+            color: white;
+        }
+        .donation-button {
+            background-color: #5BC2E7;
+            color:white;
+            font-weight: 600;
+        }
+        .btn.donation-button:hover {
+            color:white;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #212529;
+            text-align: center;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            text-decoration: none;
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/46b82563d9.js" crossorigin="anonymous"></script>
+</head>
+<body style="margin:0;padding:0;word-spacing:normal;background-color:#939297;">
+    <div role="article" aria-roledescription="email" lang="fr"
+    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#939297;">
+        {% comment %}
+        This scaffold is necessary so that our email will be centered across all email clients.
+        We create a 100% wide table, and then set the border and border-spacing to zero.
+        Then we create a row and table cell with no padding which has align="center" set so that its contents will be centered.
+        {% endcomment %}
+        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+            <tr>
+                <td align="center" style="padding:0;">
+                {% comment %}
+                Before adding our main content container, we need to set up a Ghost Table:
+                a rigid table with a fixed width that only renders in Outlook because it’s hidden
+                inside some special Outlook-only conditional comments. We need to do this because
+                our main container is going to use the CSS max-width property, and not all versions
+                of Outlook for Windows support it. Without max-width support, the main container
+                would explode to full-width when viewed in Outlook for Windows, so we need to contain it.
+                {% endcomment %}
+                    <!--[if mso]>
+                        <table role="presentation" align="center" style="width:600px;">
+                        <tr>
+                        <td>
+                    <![endif]-->
+                        {% block content %}{% endblock content %}
+                    <!--[if mso]>
+                        </td>
+                        </tr>
+                        </table>
+                    <![endif]-->
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

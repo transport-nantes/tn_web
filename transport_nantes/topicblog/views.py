@@ -352,7 +352,6 @@ class TopicBlogItemViewOne(TopicBlogItemViewOnePermissions,
 
 class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogItem
-
     permission_required = 'topicblog.tbi.may_view'
 
     def get_template_names(self):
@@ -366,6 +365,21 @@ class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
 ######################################################################
 # TopicBlogEmail
 
+class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbe.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbe.may_view')
+        return super().has_permission()
+
 class TopicBlogEmailEdit(TopicBlogBaseEdit):
     model = TopicBlogEmail
     template_name = 'topicblog/tb_item_edit.html'
@@ -376,8 +390,15 @@ class TopicBlogEmailView(TopicBlogBaseView):
     model = TopicBlogEmail
 
 
-class TopicBlogEmailViewOne(TopicBlogBaseViewOne):
+class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
+                            TopicBlogBaseViewOne):
     model = TopicBlogEmail
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context_appropriate_base_template'] = 'asso_tn/base_mobilitain.html'
+        print(context)
+        return context
 
 
 class TopicBlogEmailList(TopicBlogBaseList):

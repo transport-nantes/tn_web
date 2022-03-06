@@ -1,0 +1,74 @@
+{% extends context_appropriate_base_template %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+     {{ block.super }}
+
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+
+     {% endif %}
+
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image mt-n3">
+     <div class="hero-text">
+          <h1 class="hero-title">{{ page.header_title }}</h1>
+          <p class="hero-description">{{ page.header_description }}</p>
+     </div>
+</div>
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+          {% tn_markdown page.body_text_1_md %}
+          {% if page.cta_1_slug|length > 0 %}
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
+		  class="btn donation-button my-3 centered-inline-button">
+		   {{ page.cta_1_label }}
+		   <i class="fa fa-arrow-right"" aria-hidden="true"></i>
+	       </a>
+          {% endif %}
+          {# Body image, if any #}
+          {% if page.body_image|length > 0 %}
+               <img src="{{ page.body_image.url }}"
+                    alt="{{ page.body_image_alt_text }}"
+                    class="w-100 my-4">
+          {% endif %}
+          {# Second part, if any. #}
+          {% tn_markdown page.body_text_2_md %}
+          {% if page.cta_2_slug|length > 0 %}
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}"
+		  class="btn donation-button my-3 centered-inline-button ">
+		   {{ page.cta_2_label }}
+		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
+	       </a>
+          {% endif %}
+     </div>
+</div>
+{% endblock content %}
