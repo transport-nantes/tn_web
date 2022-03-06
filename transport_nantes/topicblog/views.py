@@ -684,6 +684,12 @@ class TopicBlogLauncherEdit(PermissionRequiredMixin,
 
 
 class TopicBlogLauncherView(TopicBlogBaseView):
+    """This view is a bit curious.  In real life, TBLauncher's will be
+    inserted into pages via a templatetag.  But for the purpose of
+    editing and viewing them, we need a single page that displays
+    them.  That is this page.
+
+    """
     model = TopicBlogLauncher
 
     def get_context_data(self, **kwargs):

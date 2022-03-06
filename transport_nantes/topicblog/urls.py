@@ -1,6 +1,14 @@
 from django.urls import path
 from . import views
 
+"""
+Mnemonics:
+  * t  = TBItem (history)
+  * e  = TBEmail
+  * p  = TBPress
+  * la = TBLauncher (because a solo "l" looks a bit like a 1)
+"""
+
 app_name = 'topic_blog'
 urlpatterns = [
     path('t/<slug:the_slug>/', views.TopicBlogItemView.as_view(),
