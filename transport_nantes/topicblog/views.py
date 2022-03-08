@@ -17,7 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 
 from asso_tn.utils import StaffRequired
-from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
+from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
+                     TopicBlogLauncher)
 from .forms import TopicBlogItemForm
 
 logger = logging.getLogger("django")
@@ -97,7 +98,7 @@ class TopicBlogBaseView(TemplateView):
             tb_object = self.model.objects.filter(
                 slug=kwargs['the_slug'],
                 publication_date__isnull=False
-                ).order_by("date_modified").last()
+            ).order_by("date_modified").last()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_object is None:
@@ -336,6 +337,7 @@ class TopicBlogItemViewOnePermissions(PermissionRequiredMixin):
     Default behaviour is at class level and doesn't allow a
     per-method precision.
     """
+
     def has_permission(self) -> bool:
         user = self.request.user
         if self.request.method == 'POST':
@@ -372,6 +374,7 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
     Default behaviour is at class level and doesn't allow a
     per-method precision.
     """
+
     def has_permission(self) -> bool:
         user = self.request.user
         if self.request.method == 'POST':
@@ -379,6 +382,7 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
         elif self.request.method == 'GET':
             return user.has_perm('topicblog.tbe.may_view')
         return super().has_permission()
+
 
 class TopicBlogEmailEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
@@ -392,12 +396,13 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_email.html'
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbe.may_send_self') or \
-           (user.has_perm('topicblog.tbe.may_send') \
-            and tb_object.publisher != user):
+           (user.has_perm('topicblog.tbe.may_send')
+                and tb_object.publisher != user):
             context['sendable'] = True
         return context
 
@@ -408,7 +413,8 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_email.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_email.html'
         return context
 
 
@@ -423,6 +429,7 @@ class TopicBlogEmailList(TopicBlogBaseList):
             return ['topicblog/topicblogemail_list_one.html'] + names
         else:
             return names
+
 
 class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
     """Notes to Benjamin and Mickael:
@@ -513,6 +520,7 @@ class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
     Default behaviour is at class level and doesn't allow a
     per-method precision.
     """
+
     def has_permission(self) -> bool:
         user = self.request.user
         if self.request.method == 'POST':
@@ -520,6 +528,7 @@ class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
         elif self.request.method == 'GET':
             return user.has_perm('topicblog.tbp.may_view')
         return super().has_permission()
+
 
 class TopicBlogPressEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
@@ -533,12 +542,13 @@ class TopicBlogPressView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_press.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_press.html'
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbp.may_send_self') or \
-           (user.has_perm('topicblog.tbp.may_send') \
-            and tb_object.publisher != user):
+           (user.has_perm('topicblog.tbp.may_send')
+                and tb_object.publisher != user):
             context['sendable'] = True
         return context
 
@@ -549,7 +559,8 @@ class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_press.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_press.html'
         return context
 
 
@@ -565,6 +576,7 @@ class TopicBlogPressList(PermissionRequiredMixin,
             return ['topicblog/topicblogpress_list_one.html'] + names
         else:
             return names
+
 
 class TopicBlogPressSend(LoginRequiredMixin, TemplateView):
     """Notes to Benjamin and Mickael:
@@ -668,6 +680,7 @@ class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
     Default behaviour is at class level and doesn't allow a
     per-method precision.
     """
+
     def has_permission(self) -> bool:
         user = self.request.user
         if self.request.method == 'POST':
@@ -675,6 +688,7 @@ class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
         elif self.request.method == 'GET':
             return user.has_perm('topicblog.tbla.may_view')
         return super().has_permission()
+
 
 class TopicBlogLauncherEdit(PermissionRequiredMixin,
                             TopicBlogBaseEdit):
@@ -694,14 +708,15 @@ class TopicBlogLauncherView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = 'topicblog/base_launcher.html'
+        context['context_appropriate_base_template'] = \
+            'topicblog/base_launcher.html'
         tb_object = context['page']
         user = self.request.user
         return context
 
 
 class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
-                            TopicBlogBaseViewOne):
+                               TopicBlogBaseViewOne):
     model = TopicBlogLauncher
 
     def get_context_data(self, **kwargs):
