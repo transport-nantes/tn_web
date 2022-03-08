@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Max
 from django.db.models import Q
 
-from .models import MailingListEvent
+from .models import MailingList, MailingListEvent
 
 
 def subscribe_user_to_list(user, mailing_list) -> MailingListEvent:
@@ -13,7 +13,6 @@ def subscribe_user_to_list(user, mailing_list) -> MailingListEvent:
         mailing_list=mailing_list,
         event_type=MailingListEvent.EventType.SUBSCRIBE)
     subscribe.save()
-
 
 
 def unsubscribe_user_from_list(user, mailing_list) -> MailingListEvent:
@@ -82,3 +81,23 @@ def subscriber_count(mailing_list):
     users_subscribed = user_states.filter(
         Q(event_type=MailingListEvent.EventType.SUBSCRIBE)).count()
     return users_subscribed
+
+
+def get_subcribed_users_email_list(mailing_list: MailingList) -> list:
+    """Return a list of email addresses of users subscribed to this list.
+    """
+    # Returns a set of user PK that subscribed to this list at least once.
+    set_of_once_subscribed_users = set(MailingListEvent.objects.filter(
+        mailing_list__mailing_list_token=mailing_list.mailing_list_token
+        ).values_list("user", flat=True))
+    # Get the list of subscribed users.
+    subscribed_users = []
+    for user_id in set_of_once_subscribed_users:
+        user = User.objects.get(pk=user_id)
+        latest_event = user_current_state(
+            user,
+            mailing_list)
+        if latest_event.event_type == "sub":
+            subscribed_users.append(user.email)
+
+    return subscribed_users
