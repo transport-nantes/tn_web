@@ -1,12 +1,15 @@
 from collections import Counter
 from datetime import datetime, timezone
 import logging
+from django.conf import settings
+from django.core import mail
 
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseServerError
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
@@ -15,8 +18,11 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
+from django.utils.html import strip_tags
 
-from asso_tn.utils import StaffRequired
+from asso_tn.utils import StaffRequired, make_timed_token
+from mailing_list.events import get_subcribed_users_email_list
+from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher)
 from .forms import TopicBlogItemForm, TopicBlogEmailSendForm
@@ -518,6 +524,121 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["tbe_slug"] = self.kwargs['the_slug']
         return context
 
+    def get_last_published_email(self, tbe_slug: str) -> TopicBlogEmail:
+        """Gets the TBEmail object with the most recent publication date
+        for a given slug."""
+        tbe_object = TopicBlogEmail.objects.filter(
+            slug=tbe_slug,
+            publication_date__isnull=False
+            ).order_by('-publication_date').first()
+        return tbe_object
+
+    def form_valid(self, form):
+        tbe_slug = self.kwargs['the_slug']
+        tbe_object = self.get_last_published_email(tbe_slug)
+
+        if tbe_object is None:
+            logger.info(f"No published TBEmail object found for '{tbe_slug}'")
+            raise Http404(
+                f"Pas d'email publié trouvé pour le slug '{tbe_slug}'")
+
+        mailing_list_token = form.cleaned_data['mailing_list']
+        # The recipient list is extracted from a MailingList.
+        mailing_list = MailingList.objects.get(
+            mailing_list_token=mailing_list_token)
+        mailing_list: MailingList
+        recipient_list = get_subcribed_users_email_list(mailing_list)
+
+        for recipient in recipient_list:
+            custom_email = self.prepare_email(
+                pkid=tbe_object.id,
+                the_slug=tbe_slug,
+                recipient=[recipient],
+                mailing_list=mailing_list,)
+
+            logger.info(f"Successfully prepared email to {recipient}")
+            custom_email.send(fail_silently=False)
+
+        return super().form_valid(form)
+
+    def prepare_email(self, pkid: int, the_slug: str, recipient: list,
+                      mailing_list: MailingList) \
+            -> mail.EmailMultiAlternatives:
+        """
+        Creates a sendable email object from a TBEmail with a mail
+        client-friendly template, given a pkid, a slug and a mail adress.
+        """
+        if pkid < 0 or the_slug is None:
+            logger.info(f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
+            return HttpResponseServerError()
+
+        # Preparing the email
+        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
+        self.template_name = tb_email.template_name
+        context = dict()
+        context["context_appropriate_base_template"] = \
+            "topicblog/base_email.html"
+        context["email"] = tb_email
+
+        try:
+            email = self._create_email_object(tb_email, context, recipient)
+        except Exception as e:
+            logger.info(
+                f"Error while creating EmailMultiAlternatives object: {e}")
+            raise Exception(
+                f"Error while creating EmailMultiAlternatives object: {e}")
+
+        return email
+
+    def _create_email_object(self, tb_email: TopicBlogEmail, context: dict,
+                             recipient_list: list,
+                             from_email: str = settings.DEFAULT_FROM_EMAIL) \
+            -> mail.EmailMultiAlternatives:
+        """
+        To send emails to multiple persons, django send_mail function isn't
+        enough, we need to create a EmailMultiAlternatives object to be able,
+        for example to put recipients in BCC field or add attachments.
+        It also improves the performances by reusing the same connexion to SMTP
+        server.
+        Doc :
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
+        https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-alternative-content-types
+        """
+        # HTML message is the one displayed in mail client
+        html_message = render_to_string(
+            tb_email.template_name, context=context)
+        # In cases where the HTML message isn't accepted, a plain text
+        # message is displayed in the mail client.
+        plain_text_message = strip_tags(html_message)
+
+        email = mail.EmailMultiAlternatives(
+            subject=tb_email.subject,
+            body=plain_text_message,
+            from_email=from_email,
+            to=recipient_list,
+        )
+        email.attach_alternative(html_message, "text/html")
+
+        return email
+
+    def _set_email_context(self, recipient: list, mailing_list: MailingList,
+                           slug: str) -> dict:
+        """
+        Sets the context for the email to be sent.
+        """
+        context = dict()
+        context["context_appropriate_base_template"] = \
+            "topicblog/base_email.html"
+        # TODO: create a unsub link
+        args = (recipient, slug, mailing_list)  # TODO: Add missing args
+        # The make_timed_token function isn't ready yet (8/3/22)
+        context["unsub_link"] = make_timed_token(*args)
+
+        # TODO: Create a template tag to have redirect links embedded in the
+        # email.
+
+        return context
 
 
 ######################################################################
