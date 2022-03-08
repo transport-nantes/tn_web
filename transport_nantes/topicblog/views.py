@@ -710,8 +710,6 @@ class TopicBlogLauncherView(TopicBlogBaseView):
         context = super().get_context_data(**kwargs)
         context['context_appropriate_base_template'] = \
             'topicblog/base_launcher.html'
-        tb_object = context['page']
-        user = self.request.user
         return context
 
 
