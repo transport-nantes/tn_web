@@ -1,0 +1,13 @@
+{% extends 'topicblog/content.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <form class="col-10 mx-auto"
+    action="{% url 'topicblog:send_email' tbe_slug %}"
+    method="POST">{% csrf_token %}
+        {{form|crispy}}
+        <button type="submit" class="btn navigation-button">Envoyer</button>
+    </form>
+
+{% endblock content %}
