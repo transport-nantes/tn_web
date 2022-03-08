@@ -387,6 +387,7 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
 class TopicBlogEmailEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
     model = TopicBlogEmail
+    permission_required = 'topicblog.tbe.may_edit'
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
 
@@ -418,20 +419,20 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
         return context
 
 
-class TopicBlogEmailList(TopicBlogBaseList):
+class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogEmail
     permission_required = 'topicblog.tbe.may_view'
 
     def get_template_names(self):
         names = super().get_template_names()
-        print(names)
         if 'the_slug' in self.kwargs:
             return ['topicblog/topicblogemail_list_one.html'] + names
         else:
             return names
 
 
-class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
+class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
+                         TemplateView):
     """Notes to Benjamin and Mickael:
 
     This view isn't implemented yet.  Here's what I think you should do:
@@ -507,6 +508,7 @@ class TopicBlogEmailSend(LoginRequiredMixin, TemplateView):
              already set (and call unsubscribe_user_from_list()).
 
     """
+    permission_required = 'topicblog.tbe.may_send'
     pass
 
 
@@ -533,6 +535,7 @@ class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
 class TopicBlogPressEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
     model = TopicBlogPress
+    permission_required = 'topicblog.tbp.may_edit'
     template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
 
@@ -571,14 +574,14 @@ class TopicBlogPressList(PermissionRequiredMixin,
 
     def get_template_names(self):
         names = super().get_template_names()
-        print(names)
         if 'the_slug' in self.kwargs:
             return ['topicblog/topicblogpress_list_one.html'] + names
         else:
             return names
 
 
-class TopicBlogPressSend(LoginRequiredMixin, TemplateView):
+class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
+                         TemplateView):
     """Notes to Benjamin and Mickael:
 
     This view isn't implemented yet.  Here's what I think you should do:
@@ -667,6 +670,7 @@ class TopicBlogPressSend(LoginRequiredMixin, TemplateView):
              some day have lists for those.
 
     """
+    permission_required = 'topicblog.tbp.may_send'
     pass
 
 
@@ -693,6 +697,7 @@ class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
 class TopicBlogLauncherEdit(PermissionRequiredMixin,
                             TopicBlogBaseEdit):
     model = TopicBlogLauncher
+    permission_required = 'topicblog.tbla.may_edit'
     template_name = 'topicblog/tb_launcher_edit.html'
     form_class = TopicBlogItemForm
 
@@ -722,13 +727,12 @@ class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
         return context
 
 
-class TopicBlogLauncherList(TopicBlogBaseList):
+class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_view'
 
     def get_template_names(self):
         names = super().get_template_names()
-        print(names)
         if 'the_slug' in self.kwargs:
             return ['topicblog/topicbloglauncher_list_one.html'] + names
         else:
