@@ -56,7 +56,7 @@
 	    <a href="{% url 'topic_blog:view_item_by_slug' page.slug %}">
 		<div class="shadow-md">
 		    <img class="rounded"
-			 src="{{ page.launcher_image }}"
+			 src="{{ page.launcher_image.url }}"
 			 alt="{{ page.launcher_image_alt_text }}"
 			 style="width:100%">
 		</div>
