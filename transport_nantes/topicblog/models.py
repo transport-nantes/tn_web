@@ -144,6 +144,17 @@ class TopicBlogObjectBase(models.Model):
             return False
         return True
 
+    def get_image_fields(self) -> list:
+        """
+        Return the names of fields that are Django ImageFields
+        """
+        all_fields = self._meta.get_fields()
+        image_fields = list()
+        for field in all_fields:
+            if isinstance(field, models.ImageField):
+                image_fields.append(field.name)
+
+        return image_fields
 
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
@@ -543,17 +554,6 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
 
         return slug_fields
 
-    def get_image_fields(self) -> list:
-        """
-        Return the names of fields that are Django ImageFields
-        """
-        all_fields = self._meta.get_fields()
-        image_fields = list()
-        for field in all_fields:
-            if isinstance(field, models.ImageField):
-                image_fields.append(field.name)
-
-        return image_fields
 
 
 ######################################################################
@@ -840,6 +840,44 @@ class TopicBlogLauncher(TopicBlogObjectBase):
             ("tbla.may_send", "May send TopicBlogLaunchers"),
             ("tbla.may_send_self", "May send own TopicBlogLauncher"),
         )
+    # Content Type ##################################################
+    #
+    # The content types match existing templates with their content type.
+    # "content type": [list of templates available for this type]
+    # The templates in the list must :
+    # 1) Exist in the templates/ directory
+    # 2) be configurated in self.template_config
+    # Default values for template_config ###########################
+    template_config_default = {
+        "optional_fields_for_publication": (),
+        # Fields that, if required for publication, the requirement is
+        # satisfied by providing any one of them.
+        "one_of_fields_for_publication": [],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [],
+    }
+    template_config = {
+        'topicblog/content_launcher.html': {
+            'user_template_name': 'Classic',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'headline': True,
+                'article_slug:': True,
+                'campaign_name': True,
+                'launcher_text_md:': True,
+                'launcher_image':True,
+                'launcher_image_alt_text':True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
 
     headline = models.CharField(max_length=80, blank=True)
     launcher_text_md = models.TextField(blank=True)
