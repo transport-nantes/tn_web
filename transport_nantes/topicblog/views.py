@@ -416,6 +416,7 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
         context = super().get_context_data(**kwargs)
         context['context_appropriate_base_template'] = \
             'topicblog/base_email.html'
+        self.template_name = 'topicblog/content_email.html'
         return context
 
 
