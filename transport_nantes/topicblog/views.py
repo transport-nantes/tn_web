@@ -26,7 +26,8 @@ from mailing_list.events import get_subcribed_users_email_list
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher)
-from .forms import TopicBlogItemForm, TopicBlogEmailSendForm
+from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
+                    TopicBlogLauncher, TopicBlogLauncherForm)
 
 logger = logging.getLogger("django")
 
@@ -76,7 +77,6 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
                 tb_existing.first_publication_date
         else:
             tb_existing = None
-
         if hasattr(self, "form_post_process"):
             tb_object = self.form_post_process(tb_object, tb_existing, form)
 
@@ -390,8 +390,8 @@ class TopicBlogEmailView(TopicBlogBaseView):
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbe.may_send_self') or \
-           (user.has_perm('topicblog.tbe.may_send')
-                and tb_object.publisher != user):
+           (user.has_perm('topicblog.tbe.may_send') and
+                tb_object.publisher != user):
             context['sendable'] = True
         return context
 
@@ -656,7 +656,6 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         """
         pass
 
-
 ######################################################################
 # TopicBlogPress
 
@@ -695,8 +694,8 @@ class TopicBlogPressView(TopicBlogBaseView):
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbp.may_send_self') or \
-           (user.has_perm('topicblog.tbp.may_send')
-                and tb_object.publisher != user):
+           (user.has_perm('topicblog.tbp.may_send') and
+                tb_object.publisher != user):
             context['sendable'] = True
         return context
 
@@ -844,7 +843,34 @@ class TopicBlogLauncherEdit(PermissionRequiredMixin,
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_edit'
     template_name = 'topicblog/tb_launcher_edit.html'
-    form_class = TopicBlogItemForm
+    form_class = TopicBlogLauncherForm
+
+    def form_post_process(self, tb_launcher, tb_existing, form):
+        """
+        Perform any post-processing of the form.
+        Following args are defined in TopicBlogEditBase.form_valid()
+            tb_launcher: topicblog launcher object created from the form's POST
+            tb_existing: topicblog launcher object retrieved from the
+            database if we are editing an existing object. None otherwise.
+            form: form from request.POST
+        """
+
+        # If we are editing an existing topicblog email object, the
+        # ImageField values won't be copied over -- they aren't
+        # included in the rendered form.  Checking the "clear" box
+        # in the form will still clear the image fields if needed.
+        #
+        # This is largely because we're using FormView instead of
+        # CreateView / UpdateView.
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            tb_existing: TopicBlogLauncher
+            image_fields = tb_existing.get_image_fields()
+            for field in image_fields:
+                if field in form.cleaned_data and \
+                        form.cleaned_data[field] is None:
+                    setattr(tb_launcher, field, getattr(tb_existing, field))
+        return tb_launcher
 
 
 class TopicBlogLauncherView(TopicBlogBaseView):

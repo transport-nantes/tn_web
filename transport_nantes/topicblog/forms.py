@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import TopicBlogItem
+from .models import TopicBlogItem, TopicBlogLauncher
 from mailing_list.models import MailingList
 
 
@@ -57,3 +57,42 @@ class TopicBlogEmailSendForm(forms.Form):
         choices=all_mailing_lists,
         label="Liste d'envoi",
         required=True)
+
+
+class TopicBlogLauncherForm(ModelForm):
+    """
+    Generates a form to create and edit TopicsBlog Launchers objects.
+    """
+
+    class Meta:
+        model = TopicBlogLauncher
+        # Admins can still edit those values
+        exclude = ('first_publication_date', 'publisher', 'user',
+                   'publication_date')
+
+    field_order = ['slug', 'article_slug', 'campaign_name',
+                   'headline', 'template_name', 'launcher_text_md',
+                   'launcher_image', 'launcher_image_alt_text']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance: TopicBlogLauncher
+
+        # When an item is published, its slug becomes frozen (unmodifiable).
+        if self.instance.publication_date:
+            self.fields['slug'].widget.attrs['readonly'] = True
+
+        def get_template_list(self) -> list:
+
+            templates = self.instance.template_config
+            template_list = \
+                [(None, "Selectionnez un template ...")]
+            for template, value in templates.items():
+                template_list.append((template, value["user_template_name"]))
+
+            return template_list
+
+        template_list = get_template_list(self)
+        self.fields['template_name'] = forms.ChoiceField(
+            choices=template_list,
+            initial=self.instance.template_name)
