@@ -130,14 +130,12 @@ class TopicBlogObjectBase(models.Model):
     # Encode the basic structure of a TBItem's presentation.
     template_name = models.CharField(max_length=80, blank=True)
 
-
     def __str__(self):
         if self.slug:
             return f'{str(self.slug)} - ' + \
                 f'ID : {str(self.id)}'
         else:
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
-
 
     def get_servable_status(self):
         """Return True if page is user visible, False otherwise."""
@@ -626,7 +624,6 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
-
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
         """
@@ -648,7 +645,6 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             return reverse("topicblog:edit_email",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
-
 
 
 class TopicBlogEmailSendRecord(models.Model):
@@ -744,7 +740,6 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
-
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
         """
@@ -766,7 +761,6 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
             return reverse("topicblog:edit_press",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
-
 
 
 class TopicBlogPressSendRecord(models.Model):
@@ -855,7 +849,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     launcher_image_alt_text = models.CharField(max_length=100, blank=True)
 
     # The article to which this slug points.
-    article_slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
+    article_slug = models.SlugField(max_length=90, allow_unicode=True,
+                                    blank=True)
 
     # Campaign name.  This is free text.  The intent is that two
     # launchers to the same campaign may not be displayed
@@ -864,7 +859,6 @@ class TopicBlogLauncher(TopicBlogObjectBase):
 
     # Plus slug, template, title, and comment fields, provided through
     # abstract base class.
-
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -895,3 +889,6 @@ class TopicBlogLauncher(TopicBlogObjectBase):
 
         """
         return context
+
+    def __str__(self):
+        return f"{self.headline} - ID : {self.pk}"
