@@ -1,10 +1,10 @@
 from django import template
 from django.utils.safestring import mark_safe
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 register = template.Library()
 
-page_donation = reverse("stripe_app:stripe")
+page_donation = reverse_lazy("stripe_app:stripe")
 
 
 @register.simple_tag
