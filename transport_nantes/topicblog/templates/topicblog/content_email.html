@@ -45,13 +45,13 @@
           <p class="hero-description">{{ page.header_description }}</p>
      </div>
 </div>
-     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 mx-auto mt-5">
           {% tn_markdown page.body_text_1_md %}
           {% if page.cta_1_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
 		  class="btn donation-button my-3 centered-inline-button">
 		   {{ page.cta_1_label }}
-		   <i class="fa fa-arrow-right"" aria-hidden="true"></i>
+		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
 	       </a>
           {% endif %}
           {# Body image, if any #}
