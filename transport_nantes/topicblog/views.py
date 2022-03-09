@@ -19,7 +19,7 @@ from django.urls import reverse, reverse_lazy
 from asso_tn.utils import StaffRequired
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher)
-from .forms import TopicBlogItemForm
+from .forms import TopicBlogItemForm, TopicBlogEmailSendForm
 
 logger = logging.getLogger("django")
 
@@ -432,7 +432,7 @@ class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
 
 
 class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
-                         TemplateView):
+                         FormView):
     """Notes to Benjamin and Mickael:
 
     This view isn't implemented yet.  Here's what I think you should do:
@@ -509,7 +509,15 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
 
     """
     permission_required = 'topicblog.tbe.may_send'
-    pass
+    form_class = TopicBlogEmailSendForm
+    template_name = 'topicblog/topicblogemail_send_form.html'
+    success_url = "/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tbe_slug"] = self.kwargs['the_slug']
+        return context
+
 
 
 ######################################################################
