@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -405,6 +406,7 @@ class TopicBlogEmailView(TopicBlogBaseView):
         context = super().get_context_data(**kwargs)
         context['context_appropriate_base_template'] = \
             'topicblog/base_email.html'
+        self.template_name = 'topicblog/content_email.html'
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbe.may_send_self') or \
@@ -604,6 +606,8 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["context_appropriate_base_template"] = \
             "topicblog/base_email.html"
         context["email"] = tb_email
+        hostname = get_current_site(self.request).domain
+        context["host"] = hostname
 
         try:
             email = self._create_email_object(tb_email, context, recipient)
@@ -632,7 +636,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         """
         # HTML message is the one displayed in mail client
         html_message = render_to_string(
-            tb_email.template_name, context=context)
+            tb_email.template_name, context=context, request=self.request)
         # In cases where the HTML message isn't accepted, a plain text
         # message is displayed in the mail client.
         plain_text_message = strip_tags(html_message)
