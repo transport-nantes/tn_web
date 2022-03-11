@@ -78,13 +78,13 @@ class TBETest(TestCase):
         users_expected_0 = [
             {"client": self.user_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
@@ -143,7 +143,7 @@ class TBETest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
-        # with good pkid but item don't have slug
+        # with good pkid but item have no slug
         users_expected_1 = [
             {"client": self.user_client, "code": 403,
              "msg": "Normal users can't access this page."},
@@ -151,7 +151,7 @@ class TBETest(TestCase):
              "msg": "The page should return 302 if not auth"},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the"
-             " good pkid and the item don't have slug"},
+             " good pkid and the item have no slug"},
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
@@ -377,13 +377,13 @@ class TBPTest(TestCase):
         users_expected_0 = [
             {"client": self.user_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
@@ -442,7 +442,7 @@ class TBPTest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
-        # with good pkid but item don't have slug
+        # with good pkid but item have no slug
         users_expected_1 = [
             {"client": self.user_client, "code": 403,
              "msg": "Normal users can't access this page."},
@@ -450,7 +450,7 @@ class TBPTest(TestCase):
              "msg": "The page should return 302 if not auth"},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the"
-             " good pkid and the item don't have slug"},
+             " good pkid and the item have no slug"},
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
@@ -678,13 +678,13 @@ class TBLATest(TestCase):
         users_expected_0 = [
             {"client": self.user_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the the good"
-             " slug and the topicblog is publied"},
+             " slug."},
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
@@ -877,7 +877,7 @@ class TBLATest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
-        # with good pkid but item don't have slug
+        # with good pkid but item have no slug
         users_expected_1 = [
             {"client": self.user_client, "code": 403,
              "msg": "Normal users can't access this page."},
@@ -885,7 +885,7 @@ class TBLATest(TestCase):
              "msg": "The page should return 302 if not auth"},
             {"client": self.staff_client, "code": 200,
              "msg": "The page MUST return 200 if we provide the"
-             " good pkid and the item don't have slug"},
+             " good pkid and the item have no slug"},
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
@@ -911,6 +911,137 @@ class TBLATest(TestCase):
                 reverse("topicblog:view_launcher_by_pkid_only",
                         kwargs={
                             "pkid": 999999999,
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+    def test_edit_launcher_by_pkid(self):
+        """"For this test we use a list of dictionaries, that is composed of:
+            - client = the client of user (auth user, unauth and staff user)
+            - code = the statut code that should return for this user (varie)
+            - message = the error message (varie)"""
+
+        # with good pkid but item have a slug
+        users_expected_0 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth."},
+            {"client": self.staff_client, "code": 404,
+             "msg": "The page MUST return 404 if we provide the"
+             " good pkid but the item have a slug"},
+        ]
+        for user_type in users_expected_0:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher_by_pkid",
+                        kwargs={
+                            "pkid": self.launcher_with_slug.id,
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+        # with good pkid and item have no slug
+        users_expected_1 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth."},
+            {"client": self.staff_client, "code": 200,
+             "msg": "The page MUST return 200 if we provide the"
+             " good pkid a slug"},
+        ]
+        for user_type in users_expected_1:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher_by_pkid",
+                        kwargs={
+                            "pkid": self.launcher_without_slug.id,
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+        # with bad pkid
+        users_expected_2 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth"},
+            {"client": self.staff_client, "code": 404,
+             "msg": "The page MUST return 404 if we provide the"
+             " wrong pkid."},
+        ]
+        for user_type in users_expected_2:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher_by_pkid",
+                        kwargs={
+                            "pkid": 999999999,
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+    def test_edit_launcher(self):
+        """"For this test we use a list of dictionaries, that is composed of:
+            - client = the client of user (auth user, unauth and staff user)
+            - code = the statut code that should return for this user (varie)
+            - message = the error message (varie)"""
+
+        # with good pkid and good slug
+        users_expected_0 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth"},
+            {"client": self.staff_client, "code": 200,
+             "msg": "The page MUST return 200 if we provide the"
+             " good pkid and the good slug"},
+        ]
+        for user_type in users_expected_0:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher",
+                        kwargs={
+                            "pkid": self.launcher_with_slug.id,
+                            "the_slug": self.launcher_with_slug.slug,
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+        # with good pkid bad slug
+        users_expected_1 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth"},
+            {"client": self.staff_client, "code": 404,
+             "msg": "The page MUST return 404 if we provide the"
+             " good pkid and and the wrong slug"},
+        ]
+        for user_type in users_expected_1:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher",
+                        kwargs={
+                            "pkid": self.launcher_with_slug.id,
+                            "the_slug": "bad-slug",
+                        })
+            )
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+        # with bad pkid and bad slug
+        users_expected_2 = [
+            {"client": self.user_client, "code": 403,
+             "msg": "Normal users can't access this page."},
+            {"client": self.client, "code": 302,
+             "msg": "The page should return 302 if not auth"},
+            {"client": self.staff_client, "code": 404,
+             "msg": "The page should return 404 if we don't provide"
+             " good pkid and slug."},
+        ]
+        for user_type in users_expected_2:
+            response = user_type["client"].get(
+                reverse("topicblog:edit_launcher",
+                        kwargs={
+                            "pkid": 999999999,
+                            "the_slug": "bad-slug",
                         })
             )
             self.assertEqual(response.status_code,
