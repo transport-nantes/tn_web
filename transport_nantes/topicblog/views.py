@@ -22,7 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
 
-from asso_tn.utils import StaffRequired, token_valid
+from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
                                  unsubscribe_user_from_list)
 from mailing_list.models import MailingList
@@ -613,7 +613,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
                 the_slug=tbe_slug,
                 recipient=[recipient],
                 mailing_list=mailing_list,
-                send_record=send_record.id)
+                send_record_id=send_record.id)
 
             logger.info(f"Successfully prepared email to {recipient}")
             custom_email.send(fail_silently=False)
@@ -622,11 +622,13 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         return super().form_valid(form)
 
     def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record: int) \
+                      mailing_list: MailingList, send_record_id: int) \
             -> mail.EmailMultiAlternatives:
         """
         Creates a sendable email object from a TBEmail with a mail
         client-friendly template, given a pkid, a slug and a mail adress.
+
+        send_record is the pk_id of the TopicBlogEmailSendRecord
         """
         if pkid < 0 or the_slug is None:
             logger.info(f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
@@ -635,17 +637,8 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         # Preparing the email
         tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
         self.template_name = tb_email.template_name
-        # The context statements will be moved to a _set_context method
-        # once all the features are implemented.
-        context = dict()
-        context["context_appropriate_base_template"] = \
-            "topicblog/base_email.html"
-        context["email"] = tb_email
-        context["host"] = get_current_site(self.request).domain
 
-        # The unsubscribe link is created with the send_record and the
-        # user's email hidden in a token.
-        context["unsub_link"] = self.get_unsubscribe_link()
+        context = self._set_email_context(recipient, send_record_id, tb_email)
 
         try:
             email = self._create_email_object(tb_email, context, recipient)
@@ -689,22 +682,22 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
 
         return email
 
-    def _set_email_context(self, recipient: list, mailing_list: MailingList,
-                           slug: str) -> dict:
+    def _set_email_context(
+            self, recipient: list, send_record_id: int,
+            tb_email: TopicBlogEmail) -> dict:
         """
         Sets the context for the email to be sent.
         """
         context = dict()
         context["context_appropriate_base_template"] = \
             "topicblog/base_email.html"
+        context["email"] = tb_email
         context["host"] = get_current_site(self.request).domain
-        # TODO: create a unsub link
-        # args = (recipient, slug, mailing_list)  # TODO: Add missing args
-        # The make_timed_token function isn't ready yet (10/3/22)
-        # context["unsub_link"] = make_timed_token(*args)
 
-        # TODO: Create a template tag to have redirect links embedded in the
-        # email.
+        # The unsubscribe link is created with the send_record and the
+        # user's email hidden in a token.
+        context["unsub_link"] = \
+            self.get_unsubscribe_link(recipient[0], send_record_id)
 
         return context
 
@@ -723,11 +716,17 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         send_record.save()
         return send_record
 
-    def get_unsubscribe_link(self) -> str:
+    def get_unsubscribe_link(self, email: str, send_record_id: int) -> str:
         """
         Create a link to unsubscribe the user from the mailing list.
         """
-        pass
+        email = email
+        k_minutes_in_six_months = 60*24*30*6
+        token = make_timed_token(
+            email, k_minutes_in_six_months, int_key=send_record_id)
+        url = reverse("topicblog:email-unsub", kwargs={"token": token})
+        unsub_link = f"{get_current_site(self.request).domain}{url}"
+        return unsub_link
 
 
 class UnsubscribeFromMailingListView(TemplateView):
