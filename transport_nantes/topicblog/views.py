@@ -25,10 +25,10 @@ from asso_tn.utils import StaffRequired
 from mailing_list.events import get_subcribed_users_email_list
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
-                     TopicBlogLauncher)
+                     TopicBlogLauncher, TopicBlogEmailSendRecord)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
-                    TopicBlogLauncher, TopicBlogLauncherForm,
-                    TopicBlogEmailForm, TopicBlogPressForm)
+                    TopicBlogLauncherForm, TopicBlogEmailForm,
+                    TopicBlogPressForm)
 
 logger = logging.getLogger("django")
 
@@ -602,21 +602,25 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         # We create and send an email for each recipient, each with
         # custom informations (like the unsubscribe link).
         for recipient in recipient_list:
+            send_record = self.create_send_record(
+                slug=tbe_slug,
+                mailing_list=mailing_list,
+                recipient=recipient)
             custom_email = self.prepare_email(
                 pkid=tbe_object.id,
                 the_slug=tbe_slug,
                 recipient=[recipient],
-                mailing_list=mailing_list,)
+                mailing_list=mailing_list,
+                send_record=send_record.id)
 
             logger.info(f"Successfully prepared email to {recipient}")
             custom_email.send(fail_silently=False)
             logger.info(f"Successfully sent email to {recipient}")
-            self.create_send_record()  # Not implemented yet
 
         return super().form_valid(form)
 
     def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList) \
+                      mailing_list: MailingList, send_record: int) \
             -> mail.EmailMultiAlternatives:
         """
         Creates a sendable email object from a TBEmail with a mail
@@ -635,16 +639,19 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["context_appropriate_base_template"] = \
             "topicblog/base_email.html"
         context["email"] = tb_email
-        hostname = get_current_site(self.request).domain
-        context["host"] = hostname
+        context["host"] = get_current_site(self.request).domain
+
+        # The unsubscribe link is created with the send_record and the
+        # user's email hidden in a token.
+        context["unsub_link"] = self.get_unsubscribe_link()
 
         try:
             email = self._create_email_object(tb_email, context, recipient)
         except Exception as e:
-            logger.info(
-                f"Error while creating EmailMultiAlternatives object: {e}")
-            raise Exception(
-                f"Error while creating EmailMultiAlternatives object: {e}")
+            message = \
+                f"Error while creating EmailMultiAlternatives object: {e}"
+            logger.info(message)
+            raise Exception(message)
 
         return email
 
@@ -699,9 +706,24 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
 
         return context
 
-    def create_send_record(self, *args):
+    def create_send_record(self,  slug: str, mailing_list: MailingList,
+                           recipient: str) -> TopicBlogEmailSendRecord:
         """
         Create a new TBEmailSentRecord object.
+        """
+        recipient_user_object = User.objects.get(email=recipient)
+        send_record = TopicBlogEmailSendRecord(
+            slug=slug,
+            mailinglist=mailing_list,
+            recipient=recipient_user_object,
+            send_time=datetime.now(timezone.utc)
+        )
+        send_record.save()
+        return send_record
+
+    def get_unsubscribe_link(self) -> str:
+        """
+        Create a link to unsubscribe the user from the mailing list.
         """
         pass
 

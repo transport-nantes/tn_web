@@ -7,8 +7,8 @@ from mailing_list.models import MailingList
 from mailing_list.events import (get_subcribed_users_email_list,
                                  unsubscribe_user_from_list,
                                  subscribe_user_to_list)
-
-from .models import TopicBlogEmail, TopicBlogItem
+from topicblog.views import TopicBlogEmailSend
+from .models import TopicBlogEmail, TopicBlogItem, TopicBlogEmailSendRecord
 
 
 class Test(TestCase):
@@ -998,3 +998,15 @@ class TopicBlogEmailTest(TestCase):
         # The last email is the no_permissions_user
         self.assertEqual(get_subcribed_users_email_list(self.mailing_list)[0],
                          self.no_permissions_user.email)
+
+    # Selenium / db re-entrancy bug, cf. #560
+    # def test_create_send_record(self):
+    #     # Create a new send record
+    #     TopicBlogEmailSend.create_send_record(
+    #         self,
+    #         slug=self.email_article.slug,
+    #         mailing_list=self.mailing_list,
+    #         recipient=self.superuser.email)
+
+    #     # Check that the send record is created
+    #     self.assertEqual(1, TopicBlogEmailSendRecord.objects.count())
