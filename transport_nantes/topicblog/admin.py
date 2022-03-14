@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import TopicBlogItem, TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
+from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogEmailSendRecord,
+                     TopicBlogPress, TopicBlogLauncher)
 
 
 class TopicBlogItemAdmin(admin.ModelAdmin):
@@ -20,7 +21,16 @@ class TopicBlogLauncherAdmin(admin.ModelAdmin):
     pass
 
 
+class TopicBlogEmailSendRecordAdmin(admin.ModelAdmin):
+    readonly_fields = ('pk', 'send_time',)
+
+    list_display = ("mailinglist", "recipient", "send_time", "slug")
+    list_filter = ("mailinglist", "recipient", "send_time", "slug")
+    search_fields = ("mailinglist", "recipient", "send_time", "slug")
+
+
 admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
 admin.site.register(TopicBlogPress, TopicBlogPressAdmin)
 admin.site.register(TopicBlogLauncher, TopicBlogLauncherAdmin)
+admin.site.register(TopicBlogEmailSendRecord, TopicBlogEmailSendRecordAdmin)
