@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-
 from django.contrib.auth.models import Permission, User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -126,6 +125,13 @@ class TBIEditStatusCodeTest(TestCase):
             body_text_3_md="body 3",
             template_name=self.template_name,
             title="Test-title")
+        # Create the default mailing_list
+        self.mailing_list_default = MailingList.objects.create(
+            mailing_list_name="general-quarterly",
+            mailing_list_token="general-quarterly",
+            contact_frequency_weeks=12,
+            list_active=True,
+        )
 
     def test_item_with_slug_edit(self):
         """ Test status codes for the edit page of an item with a slug

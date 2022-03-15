@@ -5,6 +5,7 @@ from django.test import LiveServerTestCase, Client
 from selenium.webdriver.support.ui import Select
 from django.urls import reverse
 from .models import TopicBlogItem
+from mailing_list.models import MailingList
 from selenium.webdriver.chrome.options import Options
 
 
@@ -47,6 +48,13 @@ class TestsTopicItemForm(LiveServerTestCase):
             view_permission,
             publish_permission,
         )
+        # Create the default mailing_list
+        self.mailing_list_default = MailingList.objects.create(
+            mailing_list_name="general-quarterly",
+            mailing_list_token="general-quarterly",
+            contact_frequency_weeks=12,
+            list_active=True,
+        )
         self.user_editor_two.is_staff = True
         self.user_editor_two.save()
         # Create client for user
@@ -78,8 +86,9 @@ class TestsTopicItemForm(LiveServerTestCase):
         # Close the browser
         self.selenium.quit()
 
-    def fill_the_form_and_publish(self, slug, title, body_1="body 1", body_2="body 2",
-                                  body_3="body 3", edit=False):
+    def fill_the_form_and_publish(self, slug, title, body_1="body 1",
+                                  body_2="body 2", body_3="body 3",
+                                  edit=False):
         """Fill the topicblog item form and publish
         """
         if not edit:
@@ -144,7 +153,8 @@ class TestsTopicItemForm(LiveServerTestCase):
                           reverse("topic_blog:new_item")))
         slug = 'test-slug-editor'
         self.fill_the_form_and_publish(slug, 'title item')
-        # Check if the item is on the databse and the publication should equal to none.
+        # Check if the item is on the databse and
+        # the publication should SHOULD equal to none.
         item_editor = TopicBlogItem.objects.filter(
             slug="test-slug-editor")[0]
         self.assertIsNotNone(item_editor,
@@ -251,7 +261,8 @@ class TestsTopicItemForm(LiveServerTestCase):
         body_app_content = self.selenium.find_element_by_id("app_content")
         body_html = body_app_content.get_attribute('innerHTML')
         self.assertHTMLEqual(
-            body_html, "<p>new setence 1</p><p>new setence 2</p><p>new setence 3</p>",
+            body_html,
+            "<p>new setence 1</p><p>new setence 2</p><p>new setence 3</p>",
             msg="The body innerHTML is not the same"
                 " as what we send to the form")
 
@@ -268,7 +279,8 @@ class TestsTopicItemForm(LiveServerTestCase):
         select = Select(self.selenium.find_element_by_name("template"))
         select.select_by_value("topicblog/content.html")
         self.selenium.find_element_by_name("sauvegarder").click()
-        # Check if the item is on the databse and get the data for faking the publish
+        # Check if the item is on the databse and
+        # get the data for faking the publish
         item_unpublishable = TopicBlogItem.objects.filter(
             slug="unpublishable")[0]
 
