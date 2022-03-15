@@ -7,7 +7,7 @@
     action="{% url 'topicblog:send_email' tbe_slug %}"
     method="POST">{% csrf_token %}
         {{form|crispy}}
-        <button type="submit" class="btn navigation-button">Envoyer</button>
+        <button name="send-to-mailing-list" type="submit" class="btn navigation-button">Envoyer</button>
     </form>
 
 {% endblock content %}

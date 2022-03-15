@@ -1,11 +1,21 @@
-from selenium.webdriver.chrome.webdriver import WebDriver
-from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime, timedelta, timezone
+
+from django.conf import settings
 from django.contrib.auth.models import Permission, User
-from django.test import LiveServerTestCase, Client
-from selenium.webdriver.support.ui import Select
+from django.core import mail
+from django.test import Client, LiveServerTestCase, TestCase
 from django.urls import reverse
-from .models import TopicBlogItem
+from mailing_list.events import (get_subcribed_users_email_list,
+                                 subscribe_user_to_list)
+from mailing_list.models import MailingList
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+
+from .models import TopicBlogEmail, TopicBlogItem
 
 
 class TestsTopicItemForm(LiveServerTestCase):
@@ -286,3 +296,137 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.assertEqual(response_0.status_code, 500,
                          msg="try to pubilsh unpublishable item should return"
                              "HttpResponseServerError(code 500)")
+
+
+class TopicBlogEmailFormTest(LiveServerTestCase, TestCase):
+    """
+    Test the form to send TBEmails through email.
+    """
+
+    @classmethod
+    def setUpClass(self):
+        super().setUpClass()
+        settings.DEBUG = True
+        # Creation of users
+        self.superuser = User.objects.create_superuser(
+            username="test_user",
+            email="admin@mobilitain.fr",
+            password="test_password")
+        self.no_permissions_user = User.objects.create_user(
+            username="user_without_permissions",
+            email="test@mobilitain.fr"
+        )
+        # Creation of content (article + mailinglist)
+        self.email_article = TopicBlogEmail.objects.create(
+            subject="Test subject",
+            user=self.superuser,
+            body_text_1_md="Test body text 1",
+            slug="test-email",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            template_name="topicblog/content_email.html",
+            title="Test title")
+        self.mailing_list = MailingList.objects.create(
+            mailing_list_name="the_mailing_list_name",
+            mailing_list_token="the_mailing_list_token",
+            contact_frequency_weeks=12,
+            list_active=True)
+        self.mailing_list.save()
+        # Because we can be redirected to index, we create a TBItem to load the
+        # page properly
+        self.index_page = TopicBlogItem.objects.create(
+            slug="index",
+            date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            user=self.superuser,
+            body_text_1_md="body 1",
+            body_text_2_md="body 2",
+            body_text_3_md="body 3",
+            template_name="topicblog/content.html",
+            title="Test-title")
+
+        # Subscription of users to the mailing list
+        subscribe_user_to_list(self.superuser, self.mailing_list)
+        subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
+
+        # Retrieval of session cookies to allow Selenium to
+        # act as a logged user
+        self.no_permissions_client = Client()
+        self.admin_client = Client()
+        self.admin_client.login(
+            username=self.superuser.username,
+            password="test_password")
+        self.admin_cookie = self.admin_client.cookies['sessionid'].value
+        self.no_permissions_client.login(
+            username=self.no_permissions_user.username,
+            password="test_password")
+        # Make the client get a session id
+        # Superuser's session id doesn't need that
+        self.no_permissions_client.get("/")
+        self.no_permissions_cookie = \
+            self.no_permissions_client.cookies['sessionid'].value
+
+        # Selenium setup
+        options = Options()
+        # options.add_argument("--headless")
+        # options.add_argument("--disable-extensions")
+        self.driver = WebDriver(ChromeDriverManager().install(),
+                                options=options)
+
+        self.driver.implicitly_wait(10)
+
+    def tearDown(self):
+        self.driver.quit()
+        super().tearDown()
+
+    def act_as(self, sessionid: str) -> WebDriver:
+        """
+        Return a selenium driver that acts as a given user.
+        """
+        # Loads the dashboard, because it's a page that doesn't
+        # have any permissions or requirements.
+        self.driver.get('%s%s' % (self.live_server_url,
+                                  reverse("dashboard:index")))
+        self.driver.add_cookie(
+            {'name': 'sessionid', 'value': sessionid,
+             'secure': False, 'path': '/'})
+        self.driver.get('%s%s' % (self.live_server_url,
+                                  reverse("dashboard:index")))
+        return self.driver
+
+    def test_send_email_to_mailing_list(self):
+        """
+        Gets the sending form and send a mail to a given
+        mailing list.
+        """
+        # Go to the sending form as admin
+        self.driver = self.act_as(self.admin_cookie)
+        url = self.live_server_url + reverse(
+            "topic_blog:send_email", args=[self.email_article.slug])
+
+        print("Before getting the form :", MailingList.objects.all())
+        self.driver.get(url)
+        WebDriverWait(self.driver, 2).until(
+            lambda driver: driver.find_element_by_tag_name('body'))
+        print("After getting the form :", MailingList.objects.all())
+        # Select the mailing list in the form's dropdown
+        dropdown = Select(self.driver.find_element(By.ID, "id_mailing_list"))
+        dropdown.select_by_visible_text("the_mailing_list_name")
+
+        # Confirm selection
+        self.driver.find_element(By.NAME, "send-to-mailing-list").click()
+
+        # Wait until the success page is loaded
+        WebDriverWait(self.driver, 10).until(
+            EC.title_is(self.index_page.title)
+            )
+
+        # 2 : one for the superuser and one for the no_perm_user
+        number_of_recipients = \
+            len(get_subcribed_users_email_list(self.mailing_list))
+
+        self.assertEqual(number_of_recipients, 2)
+
+        # test that a mail has been sent to the 2 subscribers
+        self.assertEqual(len(mail.outbox), number_of_recipients)

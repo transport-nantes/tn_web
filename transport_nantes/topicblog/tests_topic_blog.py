@@ -1012,3 +1012,12 @@ class TopicBlogEmailTest(TestCase):
         # The last email is the no_permissions_user
         self.assertEqual(get_subcribed_users_email_list(self.mailing_list)[0],
                          self.no_permissions_user.email)
+
+    def test_tbe_send_form_status_code(self):
+        url = reverse('topic_blog:send_email',
+                      args=[self.email_article.slug])
+
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
