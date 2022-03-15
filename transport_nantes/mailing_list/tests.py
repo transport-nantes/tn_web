@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from .models import MailingList, MailingListEvent, Petition
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .events import user_current_state
+from .events import user_current_state, subscribe_user_to_list
 
 
 class MailingListIntegrationTestCase(LiveServerTestCase):
@@ -163,6 +163,51 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         index_url = f"{self.live_server_url}{reverse('index')}#newsletter"
         self.assertEqual(self.selenium.current_url, index_url,
                          msg="User should be redirect to index page")
+
+    def testing_quick_form_auth_user(self):
+        # check the first status of the user
+        old_event = user_current_state(self.user, self.mailing_list_default)
+        self.assertEqual(old_event.event_type, "unsub")
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_user,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        self.selenium.find_element_by_css_selector(
+            f"form button[type=submit]"
+        ).click()
+        # Check the new status of the user
+        new_event = user_current_state(self.user, self.mailing_list_default)
+        self.assertEqual(new_event.event_type, "sub")
+
+    def testing_quick_form_auth_user_already_sub(self):
+        # Change the status of the user and check the status
+        subscribe_user_to_list(self.user, self.mailing_list_default)
+        last_event = user_current_state(self.user, self.mailing_list_default)
+        self.assertEqual(last_event.event_type, "sub")
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_user,
+             'secure': False, 'path': '/'})
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    reverse("topicblog:view_item_by_slug",
+                                            kwargs={
+                                                "the_slug": self.home.slug
+                                            })))
+        self.selenium.find_element_by_link_text(
+            "Voir la liste des newsletters").click()
 
     def testing_user_status_page_subscribe_to_newsletter(self):
         old_event = user_current_state(self.user, self.mailing_list_2)

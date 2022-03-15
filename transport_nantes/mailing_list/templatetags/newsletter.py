@@ -1,10 +1,11 @@
 from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-
+from mailing_list.models import MailingList
 from mailing_list.forms import (FirstStepQuickMailingListSignupForm, 
                                 QuickPetitionSignupForm)
-  
+from django.shortcuts import get_object_or_404
+from mailing_list.events import user_current_state  
 register = template.Library()
 
 
@@ -27,6 +28,10 @@ def show_mailing_list(context, **kwargs):
     form = FirstStepQuickMailingListSignupForm(
         initial={"mailinglist": mailinglist})
     context['form'] = form
+    # Check if the user is auth and add data to the context
+    if context['user'].is_authenticated:
+        context['mailing_list'] = get_object_or_404(MailingList,mailing_list_token=mailinglist)
+        context['user_current_state'] = user_current_state(context['user'],context['mailing_list']).event_type
     return context
 
 
