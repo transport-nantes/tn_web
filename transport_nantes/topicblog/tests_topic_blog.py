@@ -881,19 +881,6 @@ class TBIView(TestCase):
              "msg": "The page must return 200 the user is staff"}
         ]
 
-    def test_get_slug_suggestions(self):
-        for user_type in self.users_expected:
-            response = user_type["client"].get(
-                f"{reverse('topicblog:get_slug_suggestions')}"
-                "?partial_slug=alt"
-            )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
-
-        # test the result of the staff user
-        self.assertJSONEqual(str(response.content, encoding='utf8'),
-                             ['test-slug-no-alt'])
-
     def test_get_slug_dict(self):
         for user_type in self.users_expected:
             response = user_type["client"].get(

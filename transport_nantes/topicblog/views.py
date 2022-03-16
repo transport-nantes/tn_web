@@ -222,26 +222,6 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
 
 
 @StaffRequired
-def get_slug_suggestions(request):
-    """Return a JSON list of suggested slugs.
-
-    This is a helper function for the AJAX call to get the list of
-    suggested slugs.  It is called from the template.
-
-    """
-    partial_slug = request.GET.get('partial_slug')
-    slug_list = TopicBlogItem.objects.filter(
-        slug__contains=partial_slug).order_by("-id")[:20]
-    slug_list = slug_list.values_list('slug', flat=True)
-    # Why did we use set instead of applying DISTINCT() ?
-    # Because Django doesn't support DISTINCT(*field) on
-    # databases other than Postgres. We tried to use raw queries
-    # but it proved to be unsuccessful.
-    slug_list = set(slug_list)
-    return JsonResponse(list(slug_list), safe=False)
-
-
-@StaffRequired
 def get_slug_dict(request):
     """Return a list of all existing slugs"""
     qs = TopicBlogItem.objects.order_by('slug').values('slug')
