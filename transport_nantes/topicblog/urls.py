@@ -109,8 +109,6 @@ urlpatterns = [
          name="get_slug_dict"),
     path('ajax/get-url-list/', views.get_url_list,
          name="get_url_list"),
-    path('ajax/get-slug-suggestions/', views.get_slug_suggestions,
-         name="get_slug_suggestions"),
 ]
 
 # Need topic creation.
