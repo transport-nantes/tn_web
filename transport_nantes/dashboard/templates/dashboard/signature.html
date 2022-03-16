@@ -1,0 +1,52 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}
+
+<form action="{% url 'dashboard:signature' %}" method="get"
+class="d-flex flex-column col-10 col-md-6 mx-auto mb-4">
+    {{ form|crispy }}
+    <input type="submit" value="Générer ma signature" class="btn donation-button" />
+</form>
+
+<div id="signature-code" class="d-flex col-10 col-md-6 mx-auto mb-4">
+    <code>
+        &lt;table border=&quot;0&quot;&gt;
+        &lt;tbody&gt;
+            &lt;tr&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;th scope=&quot;col&quot; colspan=&quot;3&quot; width=&quot;100&quot; height=&quot;auto&quot; style=&quot;padding-right:10px&quot;&gt;
+                    &lt;a href=&quot;https://www.mobilitains.fr/?utm_source=email-sig&amp;utm_medium=20220307&amp;utm_campaign=email-signature&amp;utm_term={{ request.GET.first_name|default:request.user.first_name }}&amp;utm_content=text&quot;&gt;&lt;img src=&quot;https://static.mobilitains.fr/asso_tn/mail_signature_Icon-Mobilitains.png&quot; alt=&quot;Logo Mobilitains&quot; style=&quot;width:70px;height:auto;&quot;&gt;&lt;/a&gt;
+                &lt;/th&gt;
+                &lt;td style=&quot;padding-left:10px;&quot;&gt;
+                    &lt;p style=&quot;font-family: &apos;Montserrat&apos;, sans-serif; line-height:12px;&quot;&gt;
+                        &lt;a style=&quot;color:#42526e;&quot;&gt;&lt;strong&gt;{{ request.GET.first_name|default:request.user.first_name }} {{ request.GET.last_name|default:request.user.last_name }}&lt;/strong&gt;&lt;/a&gt;
+                        &lt;br&gt;
+                        &lt;a style=&quot;font-size: 13px;color: #42526e;line-height:30px;&quot;&gt;{{ request.GET.role|default:"Fonction" }} / {{ request.GET.phone_number|default:"Téléphone" }}&lt;/a&gt;
+                        &lt;br&gt;
+                        &lt;a style=&quot;font-family: &apos;Montserrat&apos;, sans-serif;font-size: 13px;line-height:30px;text-decoration:underline;color:#42526e;&quot; href=&quot;https://www.mobilitains.fr/?utm_source=email-sig&amp;utm_medium=20220307&amp;utm_campaign=email-signature&amp;utm_term={{ first_name }}&amp;utm_content=text&quot;&gt;&lt;strong&gt;Mobilitains.fr&lt;/strong&gt;&lt;/a&gt;
+                        &lt;br&gt;
+                        &lt;a href=&quot;https://www.facebook.com/Mobilitains&quot;&gt;&lt;img src=&quot;https://static.mobilitains.fr/asso_tn/mail_signature_Icon-fb.png&quot; alt=&quot;Facebook Mobilitains&quot; style=&quot;width:26px;height:auto;&quot;&gt;&lt;/a&gt;
+                        &lt;a href=&quot;https://www.linkedin.com/company/transport-nantes/&quot;&gt;&lt;img src=&quot;https://static.mobilitains.fr/asso_tn/mail_signature_Icon-in.png&quot; alt=&quot;Linkedin Mobilitains&quot; style=&quot;width:26px;height:auto;&quot;&gt;&lt;/a&gt;
+                        &lt;a href=&quot;https://twitter.com/mobilitains&quot;&gt;&lt;img src=&quot;https://static.mobilitains.fr/asso_tn/mail_signature_Icon-tw.png&quot; alt=&quot;Twitter Mobilitains&quot; style=&quot;width:26px;height:auto;&quot;&gt;&lt;/a&gt;
+                    &lt;/p&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;br&gt;
+&lt;table&gt;
+        &lt;tbody&gt;&lt;tr&gt;
+            &lt;td align=&quot;center&quot; width=&quot;250&quot; height=&quot;25&quot; bgcolor=&quot;#42526e&quot; style=&quot;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; color: #ffffff; display: block;&quot;&gt;
+                &lt;a href=&quot;https://www.mobilitains.fr/?utm_source=email-sig&amp;utm_medium=20220307&amp;utm_campaign=email-signature&amp;utm_term={{ first_name }}&amp;utm_content=text&quot; style=&quot;color: #ffffff; font-size:13px; font-weight: bold; font-family:&apos;Montserrat&apos;, sans-serif; text-decoration: none; line-height:25px; width:100%; display:inline-block&quot;&gt;
+                    Faites le choix de votre mobilité
+                &lt;/a&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;&lt;/table&gt;
+
+    </code>
+</div>
+
+{% endblock app_content %}

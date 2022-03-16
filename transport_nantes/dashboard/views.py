@@ -1,8 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 from asso_tn.utils import StaffRequiredMixin
 from django.urls import reverse_lazy
 
-# Create your views here.
+from .forms import SignatureForm
+
 
 class DashboardIndex(StaffRequiredMixin, TemplateView):
     """Present dashboard index.
@@ -19,3 +22,8 @@ class DashboardIndex(StaffRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         return context
 
+
+class SignatureView(LoginRequiredMixin, FormView):
+    """Form to generate a mail signature"""
+    template_name = 'dashboard/signature.html'
+    form_class = SignatureForm
