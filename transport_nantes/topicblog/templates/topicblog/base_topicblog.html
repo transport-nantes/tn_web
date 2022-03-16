@@ -36,20 +36,19 @@ Maybe there's a better way, I just haven't found it yet.
 				</form>
 			{% endif %}
 	    {% endif %}
+		<p>
+			<a type="button" class="btn btn-outline-info btn-sm"
+			href="{{ page.get_edit_url }}">Modifier</a>
 
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{{ page.get_edit_url }}">Modifier</a>
-
-	    {% if page.publication_date %}
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{% url 'topic_blog:view_item_by_slug' page.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
-	    {% if page.servable %}
-	    <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-	       href="">Retirer</a>
-	    {% else %}
-	    <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
-	       href="">Republier</a>
-	    {% endif %}{% endif %}
+			{% if page.publication_date %}
+			
+				<a type="button" class="btn btn-outline-info btn-sm"
+				href="{% url 'topic_blog:view_item_by_slug' page.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
+				<a type="button" class="btn btn-outline-info btn-sm"
+				href="{% url 'topicblog:retire_item_by_pkid' page.id page.slug %}">Retirer</a>
+			
+			{% endif %}
+		</p>
 	</p>
     </div>
 </div>

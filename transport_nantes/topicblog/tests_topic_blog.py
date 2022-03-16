@@ -724,6 +724,68 @@ class TBIViewStatusCodeTests(TestCase):
                              user_type["code"], msg=user_type["msg"])
 
 
+class TBIRetireViewTests(TestCase):
+    """
+    Test the retire view of the TopicBlogItemView.
+    """
+
+    def setUp(self):
+        TBIEditStatusCodeTest.setUp(self)
+        retire_permission = Permission.objects.get(codename="tbi.may_retire")
+        self.user_permited.user_permissions.add(retire_permission)
+        self.user_permited.save()
+
+    def test_item_retirement(self):
+        """
+        Tests the retirement of an TopicBlogItem aka setting its
+        publication_date to None.
+        """
+        self.assertTrue(self.item_with_slug.publication_date is not None)
+        url = reverse("topicblog:retire_item_by_pkid",
+                      args=[
+                          self.item_with_slug.id,
+                          self.item_with_slug.slug
+                        ])
+        response = self.user_permited_client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.item_with_slug.refresh_from_db()
+        self.assertTrue(self.item_with_slug.publication_date is None)
+
+    def test_tbiretirement_status_code(self):
+        """Test the status code for different log status and permissions"""
+        users_expected = [
+            {"client": self.client, "code": 403,
+             "msg": "The page MUST return 403 to normal users."},
+            {"client": self.unauth_client, "code": 302,
+             "msg": "This page redirects to login for unauth users"},
+            {"client": self.user_permited_client, "code": 302,
+             "msg": "The page MUST return 302 to users with the "
+                    "tbi.may_retire permission."},
+        ]
+
+        url = reverse("topicblog:retire_item_by_pkid",
+                      kwargs={
+                          "pkid": self.item_with_slug.id,
+                          "the_slug": self.item_with_slug.slug
+                      })
+        for user_type in users_expected:
+            response = user_type["client"].get(url)
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
+
+        # Make sure the 302 redirects to the login page for unauth users.
+        login_url = reverse("authentication:login") + "?next=" + url
+        response = self.unauth_client.get(url)
+        self.assertRedirects(response, login_url, status_code=302,
+                             target_status_code=200)
+
+        # Make sure the 302 redirects to the same item page for allowed users.
+        response = self.user_permited_client.get(url)
+        self.assertRedirects(response, self.item_with_slug.get_absolute_url(),
+                             status_code=302,
+                             target_status_code=200)
+
+
 class TBIListStatusCodeTests(TestCase):
     """
     Test the status code of the TopicBlogItemList view

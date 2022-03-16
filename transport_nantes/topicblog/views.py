@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -352,6 +353,24 @@ class TopicBlogItemViewOne(TopicBlogItemViewOnePermissions,
     model = TopicBlogItem
 
 
+class TopicBlogItemRetireView(PermissionRequiredMixin, View):
+    """
+    Retire a TopicBlogItem.
+
+    """
+    model = TopicBlogItem
+    permission_required = 'topicblog.tbi.may_retire'
+
+    def get(self, request, *args, **kwargs):
+        slug = kwargs["the_slug"]
+        pkid = kwargs["pkid"]
+        tb_item = self.model.objects.get(pk=pkid, slug=slug)
+        tb_item.publication_date = None
+        tb_item.save()
+
+        return HttpResponseRedirect(tb_item.get_absolute_url())
+
+
 class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogItem
     permission_required = 'topicblog.tbi.may_view'
@@ -518,7 +537,6 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         context["tbe_slug"] = self.kwargs['the_slug']
         return context
-
 
 
 ######################################################################

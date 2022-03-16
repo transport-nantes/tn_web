@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from django.urls import reverse_lazy
 from . import settings_local
 import sys
 
@@ -188,6 +189,7 @@ USE_L10N = False
 USE_TZ = True
 # TODO: stay on same page if authorised to do so.
 LOGIN_REDIRECT_URL = 'index'
+LOGIN_URL = reverse_lazy("authentication:login")
 #LOGOUT_REDIRECT_URL = 'index'
 
 # Static files (CSS, JavaScript, Images)

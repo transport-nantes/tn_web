@@ -250,6 +250,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
             # self-publish (implies tbi_may_publish)
             ("tbi.may_publish", "May publish TopicBlogItems"),
             ("tbi.may_publish_self", "May publish own TopicBlogItems"),
+            ("tbi.may_retire", "May retire TopicBlogItems"),
         )
 
     # Content Type ##################################################
