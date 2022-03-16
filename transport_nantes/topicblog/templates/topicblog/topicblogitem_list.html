@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="container-fluid pl-5 py-3">
+	<a href="{% url 'topicblog:new_item' %}" class="btn btn-outline-info mb-3">+ Ajouter un nouveau contenu</a>
     {% for object in object_list %}
     <p>
 	<strong>
