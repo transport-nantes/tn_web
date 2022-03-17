@@ -598,6 +598,51 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             ("tbe.may_send", "May send TopicBlogEmails"),
             ("tbe.may_send_self", "May send own TopicBlogEmails"),
         )
+    # Plus slug, template, title, comment, and social media fields,
+    # provided through abstract base class.
+
+    template_config_default = {
+        "optional_fields_for_publication": (
+            'header_image', 'header_description',
+            'cta_1_slug', 'cta_1_label',
+            'cta_2_slug', 'cta_2_label',
+            'body_image_1', 'body_image_1_alt_text',
+            'body_image_2', 'body_image_2_alt_text',
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image'
+        ),
+        "one_of_fields_for_publication": [
+            ['header_title', 'header_description'],
+            ['body_text_1_md', 'body_text_2_md'],
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+            ['body_image_1', 'body_image_1_alt_text'],
+            ['body_image_2', 'body_image_2_alt_text'],
+            ['cta_1_slug', 'cta_1_label'],
+            ['cta_2_slug', 'cta_2_label'],
+        ],
+    }
+    template_config = {
+        'topicblog/content_email.html': {
+            'user_template_name': 'Classic',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'subject': True,
+                'body_text_1_md': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
 
     subject = models.CharField(max_length=80, blank=True)
     header_image = models.ImageField(
@@ -867,8 +912,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
                 'article_slug:': True,
                 'campaign_name': True,
                 'launcher_text_md:': True,
-                'launcher_image':True,
-                'launcher_image_alt_text':True,
+                'launcher_image': True,
+                'launcher_image_alt_text': True,
             },
             "optional_fields_for_publication":
                 template_config_default['optional_fields_for_publication'],
