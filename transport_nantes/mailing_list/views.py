@@ -17,7 +17,6 @@ from .models import MailingList, Petition
 from .events import (user_subscribe_count, subscriber_count,
                      subscribe_user_to_list, user_current_state,
                      unsubscribe_user_from_list)
-from django.core.paginator import Paginator
 
 logger = logging.getLogger("django")
 
@@ -50,7 +49,7 @@ class MailingListSignup(FormView):
         try:
             user.refresh_from_db()
         except ObjectDoesNotExist:
-            print('ObjectDoesNotExist')
+            logger.error('ObjectDoesNotExist')
             pass            # I'm not sure this can ever happen.
         if user is None or user.pk is None:
             user = User.objects.filter(
@@ -87,42 +86,44 @@ class QuickMailingListSignup(FormView):
     form_class = FirstStepQuickMailingListSignupForm
 
     def form_valid(self, form):
-        self.good_form = form
-        if isinstance(form, FirstStepQuickMailingListSignupForm):
-            form = QuickMailingListSignupForm()
-            form["email"].initial = self.good_form.cleaned_data['email']
-            form["mailinglist"].initial = \
-                self.good_form.cleaned_data['mailinglist']
-            return render(self.request, self.template_name, {"form": form})
-        elif isinstance(form, QuickMailingListSignupForm):
-            self.template_name = "mailing_list/merci_m.html"
-            """Process a valid MailingListSignupForm.
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            email = form.cleaned_data.get('email', user.email)
+        else:
+            user = None
+            email = form.cleaned_data['email']
+        mailinglist = form.cleaned_data['mailinglist']
+        captcha = form.cleaned_data.get('captcha', None)
+        if captcha is None and not self.request.user.is_authenticated:
+            # No captcha and don't know the user, so ask for proof of
+            # humanity.
+            next_form = QuickMailingListSignupForm()
+            next_form["email"].initial = email
+            next_form["mailinglist"].initial = mailinglist
+            return render(self.request, self.template_name,
+                          {"form": next_form})
 
-            This method is called when valid form data has been POSTed.
-            It returns an HttpResponse.
-            """
-            # Get user or None.
-            user = User.objects.filter(
-                email=form.cleaned_data['email']).first()
-            if user is None:
-                user = User()   # New user.
+        self.template_name = "mailing_list/merci_m.html"
+        # Maybe we don't know the user.
+        if not user:
+            try:
+                user = User.objects.get(email=email)
+            except ObjectDoesNotExist:
+                user = User()
                 user.username = get_random_string(20)
-                user.email = form.cleaned_data['email']
+                user.email = email
                 logger.info(f"Created new user with email {user.email}")
                 user.save()
-            mailing_list = form.cleaned_data['mailinglist']
-            # If we don't find this, we should 500.
-            try:
-                mailing_list_obj = MailingList.objects.get(
-                    mailing_list_token=mailing_list)
-            except ObjectDoesNotExist:
-                logger.info(
-                    f"Failed to find mailing_list_token={mailing_list}")
-                return HttpResponseServerError()
-            subscribe_user_to_list(user, mailing_list_obj)
-            return render(self.request, self.template_name, {})
-
-        return HttpResponseServerError()
+        # If we can't find the mailinglist, that's our bug.
+        try:
+            mailing_list_obj = MailingList.objects.get(
+                mailing_list_token=mailinglist)
+        except ObjectDoesNotExist:
+            logger.info(
+                f"Failed to find mailing_list_token={mailinglist}")
+            return HttpResponseServerError()
+        subscribe_user_to_list(user, mailing_list_obj)
+        return render(self.request, self.template_name, {})
 
     def form_invalid(self, form):
         """Display the correct form.
@@ -130,10 +131,16 @@ class QuickMailingListSignup(FormView):
         form, extract the email address from the incoming form, and
         then display the correct thing.  I think.
         """
-        if isinstance(form, QuickMailingListSignupForm):
-            form["email"].initial = self.request.POST["email"]
-            form["mailinglist"].initial = self.request.POST["mailinglist"]
-            return render(self.request, self.template_name, {'form': form})
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            email = form.cleaned_data.get('email', user.email)
+        else:
+            email = None
+        mailinglist = self.request.POST['mailinglist']
+        next_form = QuickMailingListSignupForm()
+        next_form["email"].initial = email
+        next_form["mailinglist"].initial = mailinglist
+        return render(self.request, self.template_name, {'form': next_form})
 
     def get(self, request, *args, **kwargs):
         form = FirstStepQuickMailingListSignupForm()
