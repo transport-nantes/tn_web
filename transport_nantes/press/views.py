@@ -8,8 +8,7 @@ from .form import PressMentionForm
 class PressMentionListView(ListView):
     model = PressMention
     template_name = "press/press_list_view.html"
-    queryset = PressMention.objects.all().order_by(
-        '-article_publication_date')[:4]
+    queryset = PressMention.objects.all()[:4]
     context_object_name = 'press_mention_list'
 
 
@@ -17,7 +16,6 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
     model = PressMention
     template_name = "press/press_list.html"
     queryset = PressMention.objects.all()
-    ordering = ['-article_publication_date']
     context_object_name = 'press_mention_list'
     paginate_by = 20
     permission_required = 'press.press-editor'
