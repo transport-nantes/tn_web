@@ -19,9 +19,7 @@ urlpatterns = [
          name='petition'),
 
     path('list', MailingListListView.as_view(), name='list_items'),
-
     path('status', UserStatusView.as_view(), name='user_status'),
-    
     path('toggle_subscription', MailingListToggleSubscription.as_view(),
          name='toggle_subscription'),
 ]

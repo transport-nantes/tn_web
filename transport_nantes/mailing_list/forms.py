@@ -67,7 +67,7 @@ class SubscribeUpdateForm(Form):
 
 
 class FirstStepQuickMailingListSignupForm(Form):
-    email = forms.EmailField(label="Adresse mél", required=True)
+    email = forms.EmailField(label="Adresse mél", required=False)
     mailinglist = forms.CharField(
         max_length=100,
         required=True,

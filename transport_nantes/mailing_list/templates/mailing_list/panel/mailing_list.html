@@ -11,12 +11,12 @@
 		{% if form.non_field_errors %}
 		<p>{{ form.non_field_errors }}</p>
 		{% endif %}
-		{% for field in form %}
+		{% for field in form %}{%if not user.is_authenticated or field.name != "email" %}
 		<div class="fieldWrapper">
 		    {{ field.errors }}
 		    {{ field|as_crispy_field }}
 		</div>
-		{% for error in field.error_messages %}
+		{% endif %}{% for error in field.error_messages %}
 		<p style="color: red">{{ error }}</p>
 		{% endfor %}
 		{% endfor %}
