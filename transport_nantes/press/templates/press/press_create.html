@@ -1,5 +1,5 @@
-{% extends 'asso_tn/base_mobilitain.html' %} 
-{% load crispy_forms_tags %} 
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid pl-5 py-3">
   <div class="row">
@@ -13,8 +13,13 @@
               </button>
             </h2>
           </div>
-          <div id="publication-liste" class="collapse show"  aria-labelledby="headingOne" data-parent="#accordion">
-            <div class="card-body">{% include 'press/table_list.html' %}</div>
+          <div id="publication-liste" class="collapse"  aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="text-center mt-3">
+                <a href="{% url 'press:list_items' %}" target="_blank" class="btn navigation-button">Liste complète</a>
+            </div>
+            <div class="card-body">
+                {% include 'press/table_list.html' %}
+            </div>
           </div>
         </div>
       </div>
