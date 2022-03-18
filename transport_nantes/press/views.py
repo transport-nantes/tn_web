@@ -1,5 +1,5 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import PressMention
+from .models import PressMention, OpenGraphTwitter
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from .form import PressMentionForm
@@ -8,8 +8,9 @@ from .form import PressMentionForm
 class PressMentionListView(ListView):
     model = PressMention
     template_name = "press/press_list_view.html"
-    queryset = PressMention.objects.all()[:4]
-    context_object_name = 'press_mention_list'
+    queryset = OpenGraphTwitter.objects.all().order_by(
+            "-date_time")[:5]
+    context_object_name = 'open_graph_twitter_list'
 
 
 class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):

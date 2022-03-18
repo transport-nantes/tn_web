@@ -1,22 +1,12 @@
 {% extends 'asso_tn/base_mobilitain.html' %} {% block content %}
 <div class="container-fluid pl-5 py-3">
-  <div class="row">
-    {%for press_mention in press_mention_list %}
-    <div class="col-md-3">
-      <div class="card">
-        <h5 class="card-header text-center">
-          {{ press_mention.article_title }}
-        </h5>
-        <div class="card-body">
-          <p class="card-text text-justify">
-            {{ press_mention.article_summary }}
-          </p>
-        </div>
-        <div class="card-footer text-center">
-          <a href="{{press_mention.article_link}}" class="btn navigation-button" target="_blank"
-            >Voir l'article
-          </a>
-        </div>
+  <div class="card-deck">
+    {%for press_mention in open_graph_twitter_list %}
+    <div class="card">
+      <img src="{% firstof press_mention.og_image press_mention.twitter_image %}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <p class="blockquote-footer">{{ press_mention.press_mention.article_publication_date }}</p>
+        <h5>{{ press_mention.press_mention.article_title }}</h5>
       </div>
     </div>
     {% endfor %}
