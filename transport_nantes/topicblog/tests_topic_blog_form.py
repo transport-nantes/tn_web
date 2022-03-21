@@ -376,3 +376,39 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
 
         # Check if the emails have been sent (one for each subscribed user)
         self.assertEqual(len(mail.outbox), 2)
+
+    def test_unsubscribe_to_mailing_list(self):
+        # We make sure the user is subscribed to the mailing list
+        sub_user_list = get_subcribed_users_email_list(self.mailing_list)
+        self.assertIn(self.no_permissions_user.email, sub_user_list)
+
+        # Create an event as if we actually sent an email
+        send_record = TopicBlogEmailSendRecord.objects.create(
+            slug=self.email_article.slug,
+            mailinglist=self.mailing_list,
+            recipient=self.no_permissions_user,
+        )
+        # Create a token that is embedded in the unsubscribe url
+        token = make_timed_token(
+            string_key=self.no_permissions_user.email,
+            minutes=10,
+            int_key=send_record.id)
+        # Get on the unsubscribe url
+        url = self.live_server_url + \
+            reverse("topicblog:email-unsub", args=[token])
+        self.browser.get(url)
+
+        # Confirm unsubscription
+        self.browser.find_element_by_xpath(
+            '//button[normalize-space()="Oui"]').click()
+
+        # Make sure we produced the appropriate event
+        unsubscription = MailingListEvent.objects.all().last()
+        self.assertIsNotNone(unsubscription)
+        self.assertEqual(unsubscription.event_type, "unsub")
+        self.assertEqual(unsubscription.user, self.no_permissions_user)
+        self.assertEqual(unsubscription.mailing_list, self.mailing_list)
+
+        # Make sure the user is not in the mailing list anymore
+        sub_user_list = get_subcribed_users_email_list(self.mailing_list)
+        self.assertNotIn(self.no_permissions_user.email, sub_user_list)
