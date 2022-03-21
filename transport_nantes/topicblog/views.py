@@ -5,10 +5,11 @@ from django.conf import settings
 from django.core import mail
 
 from django.db.models import Count, Max
-from django.http import Http404, HttpResponseServerError
+from django.http import (Http404, HttpResponseBadRequest,
+                         HttpResponseServerError)
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
@@ -21,8 +22,9 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
 
-from asso_tn.utils import StaffRequired
-from mailing_list.events import get_subcribed_users_email_list
+from asso_tn.utils import StaffRequired, token_valid
+from mailing_list.events import (get_subcribed_users_email_list,
+                                 unsubscribe_user_from_list)
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher, TopicBlogEmailSendRecord)
@@ -726,6 +728,58 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         Create a link to unsubscribe the user from the mailing list.
         """
         pass
+
+
+class UnsubscribeFromMailingListView(TemplateView):
+    """
+    View to unsubscribe a user from a mailing list.
+    """
+    template_name = "topicblog/unsubscribe_from_mailing_list.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        token = context['token']
+        email, send_record_id = token_valid(token)
+
+        if email is None or send_record_id is None:
+            logger.info(f"Token {token} is invalid")
+            raise Http404()
+
+        context["send_record_mailing_list"] = \
+            TopicBlogEmailSendRecord.objects.get(
+                pk=send_record_id).mailinglist.mailing_list_name
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post method to unsubscribe the user from the mailing list.
+        """
+        token = kwargs.get("token", None)
+        if not token:
+            return HttpResponseBadRequest()
+        try:
+            email, send_record_id = token_valid(token)
+        except ValueError:
+            logger.info(f"Token {token} is invalid")
+            raise Http404()
+        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
+        send_record: TopicBlogEmailSendRecord
+        now = datetime.now(timezone.utc)
+        unsubscribe_user_from_list(
+            send_record.recipient, send_record.mailinglist)
+        if send_record.click_time is None:
+            send_record.click_time = now
+        if send_record.unsubscribe_time is None:
+            send_record.unsubscribe_time = now
+
+        send_record.save()
+        context = dict(
+            confirmed_unsub=True,
+            send_record_mailing_list=send_record.mailinglist.mailing_list_name
+        )
+        logger.info(f"{email} unsubscribed from {send_record.mailinglist}")
+        return render(request, self.template_name, context=context)
 
 ######################################################################
 # TopicBlogPress
