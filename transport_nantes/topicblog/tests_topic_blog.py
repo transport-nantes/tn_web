@@ -1019,3 +1019,11 @@ class TopicBlogEmailTest(TestCase):
             response = user_type["client"].get(url)
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+    def test_unsubscribe_invalid_token_status_code(self):
+        url = reverse('topicblog:email-unsub',
+                      args=["invalid_token"])
+
+        for user_type in self.no_perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(response.status_code, 404)
