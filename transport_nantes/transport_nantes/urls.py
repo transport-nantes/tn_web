@@ -22,7 +22,7 @@ from transport_nantes.settings import ROLE
 
 urlpatterns = [
     path('', TopicBlogItemView.as_view(),
-         {'the_slug': 'ligne-johanna-rolland-pour-plus-de-mobilite'},
+         {'the_slug': 'index'},
          name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
