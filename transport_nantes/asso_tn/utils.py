@@ -10,8 +10,17 @@ from django.utils.crypto import secrets
 from django.utils.http import base36_to_int, int_to_base36
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from hashlib import sha1, sha256
+
 
 logger = logging.getLogger("django")
+
+
+# Don't reveal our secret key, but we'd like something that is
+# nonetheless our secret so that we can validate timed tokens we
+# created.  SHA1 is broken (with great effort), but we'll wrap it in
+# SHA256 below.
+hashed_secret = sha1(settings.SECRET_KEY.encode()).hexdigest()
 
 
 def make_timed_token(string_key, minutes, int_key=0, test_value_now=None):
@@ -42,12 +51,17 @@ def make_timed_token(string_key, minutes, int_key=0, test_value_now=None):
     The test_value_now is for testing and should not normally be set.
 
     Note that we, and therefore anyone, can reverse the token.  The
-    data inserted is not secure or hidden.  We can't even guarantee
-    that we created the token unless there exists a private
-    relationship between string_key and int_key.
+    data inserted is not secure or hidden.  Our use of our hashed
+    secret key provides some guarantee that we created the token
+    ourselves, but cryptography is hard, oiur crypto is not peer
+    reviewed, and we simply don't expect a sufficiently powerful
+    adversary to worry further.  A private relationship between
+    string_key and int_key provides added comfort that the client
+    should check.
 
     """
     rand_value = secrets.token_urlsafe(20)
+    hash_rand = sha256((rand_value + hashed_secret).encode()).hexdigest()
     if test_value_now is not None:
         now = test_value_now
     else:
@@ -56,8 +70,9 @@ def make_timed_token(string_key, minutes, int_key=0, test_value_now=None):
     int_key_str = int_to_base36(int(int_key))
     hmac = salted_hmac(soon_seconds + int_key_str, rand_value + str(string_key)
                        ).hexdigest()[:20]
-    token = '{rnd}|{e}|{t}|{p}|{h}'.format(
+    token = '{rnd}|{hr}|{e}|{t}|{p}|{h}'.format(
         rnd=rand_value,
+        hr=hash_rand,
         e=string_key,
         t=soon_seconds,
         p=int_key_str,
@@ -84,8 +99,12 @@ def token_valid(encoded_timed_token, test_value_now=None):
     except (TypeError, ValueError):
         logger.info(f"token_valid: invalid token ({encoded_timed_token})")
         return (None, 0)
-    the_rand_value, the_string_key, the_soon, the_int_key, the_hmac = \
+    (the_rand_value, the_hash_rand, the_string_key,
+     the_soon, the_int_key, the_hmac) = \
         timed_token.split('|')
+    hash_rand = sha256((the_rand_value + hashed_secret).encode()).hexdigest()
+    if hash_rand != the_hash_rand:
+        return (None, 0)
     computed_hmac = salted_hmac(the_soon + the_int_key,
                                 the_rand_value + str(the_string_key)).hexdigest()[:20]
     if computed_hmac != the_hmac:
