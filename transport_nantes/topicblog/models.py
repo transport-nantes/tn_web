@@ -770,6 +770,42 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
             ("tbp.may_send_self", "May send own TopicBlogPress"),
         )
 
+    template_config_default = {
+        "optional_fields_for_publication": (
+            'header_image', 'header_description',
+            'body_image', 'body_image_alt_text',
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image'
+        ),
+        "one_of_fields_for_publication": [
+            ['header_title', 'header_description'],
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+            ['body_image_1', 'body_image_1_alt_text'],
+        ],
+    }
+    template_config = {
+        'topicblog/content_press.html': {
+            'user_template_name': 'Classic',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'subject': True,
+                'body_text_1_md': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
+
     subject = models.CharField(max_length=80, blank=True)
     header_image = models.ImageField(
         upload_to='header/', blank=True,

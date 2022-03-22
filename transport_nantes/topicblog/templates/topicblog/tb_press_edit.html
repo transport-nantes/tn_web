@@ -1,0 +1,69 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
+{% block app_content %}
+<div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
+    <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+	<div class="container">
+	  <ul class="nav nav-tabs" role="tablist">
+	    <li class="nav-item">
+	      <a class="nav-link active" data-toggle="tab" href="#form_admin">Admin</a>
+	    </li>
+	    <li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_social">Social</a>
+	    </li>
+		<li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_notes">Notes</a>
+	    </li>
+	  </ul>
+	  <!-- Tab panes -->
+	  <div class="tab-content">
+	    <div id="form_admin" class="container tab-pane active"><br>
+			{% for field in form %}
+				{% if field.name in form_admin %}
+						<div class="fieldWrapper">
+							{{ field.errors }}
+							{{ field|as_crispy_field }}
+							{% comment %}{% if field.help_text %}
+								<p class="help">{{ field.help_text|safe }}</p>
+							{% endif %}{% endcomment %}
+						</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	    <div id="form_social" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_social %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% comment %}{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}{% endcomment %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+		<div id="form_notes" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_notes %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
+						{% comment %}{% if field.help_text %}
+							<p class="help">{{ field.help_text|safe }}</p>
+						{% endif %}{% endcomment %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+	  </div>
+		<div id="button-container" class="d-flex container justify-content-around">
+			<input class="btn navigation-button mt-3" type="reset" value="Réinitialiser">
+			<a href="{% url 'topicblog:list_press' %}" class="btn navigation-button mt-3">Retour à la liste</a>
+			<input class="btn navigation-button mt-3" type="submit" value="Sauvegarder" name="sauvegarder">
+		</div>
+	</div>
+    </form>
+</div>
+{% endblock %}
