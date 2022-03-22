@@ -23,8 +23,7 @@ class Test(TestCase):
         # Create a base template
         self.template_name = "topicblog/content.html"
         # Create an Item with a slug, ID = 1
-        self.main_page_slug_name = ("ligne-johanna-rolland-"
-                                    "pour-plus-de-mobilite")
+        self.main_page_slug_name = ("index")
         self.item_with_slug = TopicBlogItem.objects.create(
             slug=self.main_page_slug_name,
             date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
