@@ -47,27 +47,11 @@
 </div>
      <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
           {% tn_markdown page.body_text_1_md %}
-          {% if page.cta_1_slug|length > 0 %}
-               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
-		  class="btn donation-button my-3 centered-inline-button">
-		   {{ page.cta_1_label }}
-		   <i class="fa fa-arrow-right"" aria-hidden="true"></i>
-	       </a>
-          {% endif %}
           {# Body image, if any #}
-          {% if page.body_image|length > 0 %}
-               <img src="{{ page.body_image.url }}"
-                    alt="{{ page.body_image_alt_text }}"
+          {% if page.body_image_1 %}
+               <img src="{{ page.body_image_1.url }}"
+                    alt="{{ page.body_image_1_alt_text }}"
                     class="w-100 my-4">
-          {% endif %}
-          {# Second part, if any. #}
-          {% tn_markdown page.body_text_2_md %}
-          {% if page.cta_2_slug|length > 0 %}
-               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}"
-		  class="btn donation-button my-3 centered-inline-button ">
-		   {{ page.cta_2_label }}
-		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
-	       </a>
           {% endif %}
      </div>
 </div>
