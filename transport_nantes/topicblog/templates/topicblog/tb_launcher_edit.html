@@ -3,6 +3,13 @@
 {% block app_content %}
 
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
+    <h2 class="text-center">Lanceurs</h2>
+	{% if tb_object.id and user.is_superuser %}
+		<div class="text-center">
+			<h5>Vous modifiez l'élément suivant :</h5>
+			<p>id : {{tb_object.id}}, slug de l'article : {{tb_object.article_slug}}, nom de la campagne : {{tb_object.campaign_name}}, gros titre : {{tb_object.headline}}</p>
+		</div>
+	{% endif %}
     <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}

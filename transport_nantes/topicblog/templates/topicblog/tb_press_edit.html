@@ -2,7 +2,14 @@
 {% load crispy_forms_tags %}
 {% block app_content %}
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
-    <form id="edition_form" class="d-flex flex-column justify-content-center" method="post" enctype="multipart/form-data">
+	<h2 class="text-center">Commmuniqués de presse</h2>
+	{% if tb_object.id and user.is_superuser %}
+		<div class="text-center">
+			<h5>Vous modifiez l'élément suivant :</h5>
+			<p>id : {{tb_object.id}}, slug : {{tb_object.slug}}, titre : {{tb_object.title}}, sujet : {{tb_object.subject}}</p>
+		</div>
+	{% endif %}
+	<form id="edition_form" class="d-flex flex-column justify-content-center" method="post" enctype="multipart/form-data">
         {% csrf_token %}
 	<div class="container">
 	  <ul class="nav nav-tabs" role="tablist">
