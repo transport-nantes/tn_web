@@ -570,7 +570,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
             # the only one with a publication date. For now it picks the
             # most recent.
             publication_date__isnull=False
-            )
+        )
         if len(tbe_object) > 1:
             raise ValueError(
                 "There is more than one TBEmail with slug {} and a not-null "
@@ -707,6 +707,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
 
 ######################################################################
 # TopicBlogPress
+
 
 class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
     """Custom Permission class to require different permissions

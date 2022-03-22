@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
-from .models import TopicBlogItem, TopicBlogLauncher, TopicBlogEmail, TopicBlogPress
+from .models import (TopicBlogItem, TopicBlogLauncher,
+                     TopicBlogEmail, TopicBlogPress)
 from mailing_list.models import MailingList
 
 
@@ -134,6 +135,7 @@ class TopicBlogEmailForm(ModelForm):
         self.fields['template_name'] = forms.ChoiceField(
             choices=template_list,
             initial=self.instance.template_name)
+
 
 class TopicBlogPressForm(ModelForm):
     """
