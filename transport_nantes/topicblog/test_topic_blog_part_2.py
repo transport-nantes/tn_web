@@ -446,6 +446,8 @@ class TBETest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+
 class TBPTest(TestCase):
     def setUp(self):
 
@@ -874,6 +876,8 @@ class TBPTest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+
 class TBLATest(TestCase):
     def setUp(self):
 

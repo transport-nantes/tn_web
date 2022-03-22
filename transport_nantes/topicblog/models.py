@@ -156,6 +156,7 @@ class TopicBlogObjectBase(models.Model):
 
         return image_fields
 
+
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
     """
@@ -273,29 +274,29 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     # Default values for template_config ###########################
     template_config_default = {
         "optional_fields_for_publication": (
-                'header_image', 'header_description',
-                'cta_1_slug', 'cta_1_label',
-                'cta_2_slug', 'cta_2_label',
-                'cta_3_slug', 'cta_3_label',
-                'body_image', 'body_image_alt_text',
-                'twitter_title', 'twitter_description',
-                'twitter_image', 'og_title',
-                'og_description', 'og_image'
-            ),
+            'header_image', 'header_description',
+            'cta_1_slug', 'cta_1_label',
+            'cta_2_slug', 'cta_2_label',
+            'cta_3_slug', 'cta_3_label',
+            'body_image', 'body_image_alt_text',
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image'
+        ),
         # Fields that, if required for publication, the requirement is
         # satisfied by providing any one of them.
         "one_of_fields_for_publication": [
-                ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
-                ['header_title', 'header_description'],
-            ],
+            ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
+            ['header_title', 'header_description'],
+        ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
         "dependent_field_names": [
-                ['cta_1_slug', 'cta_1_label'],
-                ['cta_2_slug', 'cta_2_label'],
-                ['cta_3_slug', 'cta_3_label'],
-                ['body_image', 'body_image_alt_text'],
-            ],
+            ['cta_1_slug', 'cta_1_label'],
+            ['cta_2_slug', 'cta_2_label'],
+            ['cta_3_slug', 'cta_3_label'],
+            ['body_image', 'body_image_alt_text'],
+        ],
     }
     template_config = {
         'topicblog/content.html': {
@@ -553,7 +554,6 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
                 slug_fields.append(field.name)
 
         return slug_fields
-
 
 
 ######################################################################
