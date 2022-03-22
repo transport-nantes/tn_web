@@ -28,7 +28,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncher, TopicBlogLauncherForm,
-                    TopicBlogEmailForm)
+                    TopicBlogEmailForm, TopicBlogPressForm)
 
 logger = logging.getLogger("django")
 
@@ -729,8 +729,47 @@ class TopicBlogPressEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
     model = TopicBlogPress
     permission_required = 'topicblog.tbp.may_edit'
-    template_name = 'topicblog/tb_item_edit.html'
-    form_class = TopicBlogItemForm
+    template_name = 'topicblog/tb_press_edit.html'
+    form_class = TopicBlogPressForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_admin"] = ["slug", "template_name", "title", "subject",
+                                 "header_title", "header_description",
+                                 "header_image", "body_text_1_md",
+                                 "body_image_1", "body_image_1_alt_text"]
+        context["form_social"] = ["social_description", "twitter_title",
+                                  "twitter_description", "twitter_image",
+                                  "og_title", "og_description", "og_image", ]
+        context["form_notes"] = ["author_notes"]
+        return context
+
+    def form_post_process(self, tb_press, tb_existing, form):
+        """
+        Perform any post-processing of the form.
+        Following args are defined in TopicBlogEditBase.form_valid()
+            tb_press : topicblog press object created from the form's POST
+            tb_existing : topicblog press object retrieved from the
+            database if we are editing an existing object. None otherwise.
+            form : form from request.POST
+        """
+
+        # If we are editing an existing topicblog email object, the
+        # ImageField values won't be copied over -- they aren't
+        # included in the rendered form.  Checking the "clear" box
+        # in the form will still clear the image fields if needed.
+        #
+        # This is largely because we're using FormView instead of
+        # CreateView / UpdateView.
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            tb_existing: TopicBlogLauncher
+            image_fields = tb_existing.get_image_fields()
+            for field in image_fields:
+                if field in form.cleaned_data and \
+                        form.cleaned_data[field] is None:
+                    setattr(tb_press, field, getattr(tb_existing, field))
+        return tb_press
 
 
 class TopicBlogPressView(TopicBlogBaseView):
