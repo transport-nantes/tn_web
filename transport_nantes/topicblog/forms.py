@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.utils.functional import lazy
 from .models import TopicBlogItem, TopicBlogLauncher, TopicBlogEmail
 from mailing_list.models import MailingList
 
@@ -44,17 +45,26 @@ class TopicBlogEmailSendForm(forms.Form):
     Generates a form that shows available mailing lists to send
     a given TBEmail.
     """
+    choices = [(None, "Selectionnez une liste d'envoi ...")]
     # Get a list of mailing lists with their names and tokens
     all_mailing_lists = MailingList.objects.all().values(
         "mailing_list_name", "mailing_list_token")
-    all_mailing_lists = \
-        [(item["mailing_list_token"], item["mailing_list_name"])
-         for item in all_mailing_lists]
-    # Add a default value
-    all_mailing_lists.insert(0, (None, "Selectionnez une liste d'envoi ..."))
+
+    # This weird syntax is to prevent this form to be computed
+    # before the mailing lists are available in test runner.
+    # In GitHub Action, the import of Topicblog.views also
+    # imports this form while not needed. This is a workaround.
+    def add_mailing_lists_to_choices(
+            choices: list, all_mailing_lists: list) -> list:
+        all_mailing_lists = \
+            [(item["mailing_list_token"], item["mailing_list_name"])
+             for item in all_mailing_lists]
+        choices.append(all_mailing_lists)
+        return choices
 
     mailing_list = forms.ChoiceField(
-        choices=all_mailing_lists,
+        choices=lazy(
+            add_mailing_lists_to_choices, list)(choices, all_mailing_lists),
         label="Liste d'envoi",
         required=True)
 
