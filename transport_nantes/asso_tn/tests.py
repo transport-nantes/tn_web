@@ -13,18 +13,19 @@ class TimedTokenTest(TestCase):
         not after.
 
         """
-        EMAIL = "joe@example.com"
-        EXPIRY_MINUTES = 2
-        EXPIRY_SECONDS = EXPIRY_MINUTES * 60
-        NOW = datetime.datetime.now().timestamp()
+        k_email = "joe@example.com"
+        k_expiry_minutes = 2
+        k_expiry_seconds = k_expiry_minutes * 60
+        k_now = datetime.datetime.now().timestamp()
         for persisted in [0, 1]:
-            token = make_timed_token(EMAIL, EXPIRY_MINUTES, persisted, NOW)
-            now_response = token_valid(token, NOW)
-            self.assertEqual(now_response[0], EMAIL)
+            token = make_timed_token(k_email, k_expiry_minutes,
+                                     persisted, k_now)
+            now_response = token_valid(token, k_now)
+            self.assertEqual(now_response[0], k_email)
             self.assertEqual(now_response[1], persisted)
-            before_response = token_valid(token, NOW + EXPIRY_SECONDS - 1)
-            self.assertEqual(before_response[0], EMAIL)
+            before_response = token_valid(token, k_now + k_expiry_seconds - 1)
+            self.assertEqual(before_response[0], k_email)
             self.assertEqual(before_response[1], persisted)
-            after_response = token_valid(token, NOW + EXPIRY_SECONDS + 1)
+            after_response = token_valid(token, k_now + k_expiry_seconds + 1)
             self.assertEqual(after_response[0], None)
             self.assertEqual(after_response[1], 0)
