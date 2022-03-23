@@ -19,6 +19,9 @@
 <script src="{% static 'topicblog/clean_slug_field.js' %}" defer></script>
 <script src="{% static 'topicblog/clear_file_inputs.js' %}" defer></script>
 <script src="{% static 'topicblog/same_slug_warning.js' %}" defer></script>
+{% if tb_object.id %}
+	<script src="{% static 'topicblog/edit_slug_warning.js' %}" defer></script>
+{% endif %}
 {% comment "about json_script" %}
 The context variable slug_fields is a Python list passed into the html document
 in a script tag under the provided css ID thanks to the |json_script filter.
