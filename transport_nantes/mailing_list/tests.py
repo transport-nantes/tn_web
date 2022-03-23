@@ -2,6 +2,8 @@ from django.test import Client, LiveServerTestCase, TestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from topicblog.models import TopicBlogItem
 from datetime import datetime, timezone
 from .models import MailingList, MailingListEvent, Petition
@@ -130,21 +132,29 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
     #         msg="The user is not subscribed to the default mailing list")
 
     def testing_quick_form_logged_in(self):
+        # Get on mobilitains website
         self.selenium.get('%s%s' % (self.live_server_url,
                                     reverse("topicblog:view_item_by_slug",
                                             kwargs={
                                                 "the_slug": self.home.slug
                                             })))
-        email_input = self.selenium.find_element_by_id("id_email")
-        email_input.send_keys("dupontdupont@example.fr")
+        # Add a session cookie to the browser (refused if not already on the
+        # website)
+        self.selenium.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_user,
+             'secure': False, 'path': '/'})
+        # Refresh the page to get the proper display
+        self.selenium.refresh()
+        # because we're already logged in, we're subbed to the default
+        # list without captcha
         self.selenium.find_element_by_css_selector(
             "form button[type=submit]").click()
-        # pass the captcha only work on dev mod
-        captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-        captcha_input.send_keys("PASSED")
-        self.selenium.find_element_by_css_selector(
-            "form button[type=submit]").click()
-        user = User.objects.filter(email="admin@mail.com").first()
+        # We wait until next page is loaded (confirmation page)
+        WebDriverWait(self.selenium, 5).until(
+            EC.url_contains(reverse("mailing_list:quick_signup"))
+        )
+        # We used the self.user's cookie to connect to the website
+        user = User.objects.filter(email=self.user.email).first()
         self.assertIsNotNone(
             user,
             msg="The user created during setUp does not exist")
