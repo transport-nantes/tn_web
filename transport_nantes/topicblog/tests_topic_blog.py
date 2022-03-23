@@ -937,7 +937,7 @@ class TopicBlogEmailTest(TestCase):
         self.admin_client.force_login(self.superuser)
         self.no_permissions_client.force_login(self.no_permissions_user)
 
-        # Anonymous users are invited tol og in and from there, you
+        # Anonymous users are invited to log in and from there, you
         # land either on 403 Forbidden or 200 OK depending on the
         # user's permissions.
         self.perm_needed_responses = [
@@ -1010,3 +1010,12 @@ class TopicBlogEmailTest(TestCase):
 
     #     # Check that the send record is created
     #     self.assertEqual(1, TopicBlogEmailSendRecord.objects.count())
+
+    def test_send_email_status_code(self):
+        url = reverse('topicblog:send_email',
+                      args=[self.email_article.slug])
+
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])

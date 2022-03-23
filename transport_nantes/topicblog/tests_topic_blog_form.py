@@ -1,10 +1,16 @@
+from datetime import datetime, timezone
 from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth.models import Permission, User
 from django.test import LiveServerTestCase, Client
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
 from django.urls import reverse
-from .models import TopicBlogItem
+from django.core import mail
+from asso_tn.utils import make_timed_token
+
+from mailing_list.events import get_subcribed_users_email_list, subscribe_user_to_list
+from mailing_list.models import MailingList, MailingListEvent
+from .models import TopicBlogEmail, TopicBlogEmailSendRecord, TopicBlogItem
 from selenium.webdriver.chrome.options import Options
 
 
@@ -286,3 +292,87 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.assertEqual(response_0.status_code, 500,
                          msg="try to pubilsh unpublishable item should return"
                              "HttpResponseServerError(code 500)")
+
+
+class TopicBlogEmailSeleniumTests(LiveServerTestCase):
+    """
+    Test the email sending form and actual sending.
+    """
+    def setUp(self):
+        # Setup the users
+        self.superuser = User.objects.create_superuser(
+            username="test_user",
+            email="admin@mobilitain.fr",
+            password="test_password")
+        self.no_permissions_user = User.objects.create_user(
+            username="user_without_permissions",
+            email="test@mobilitain.fr"
+        )
+        # Setup content
+        self.email_article = TopicBlogEmail.objects.create(
+            subject="Test subject",
+            user=self.superuser,
+            body_text_1_md="Test body text 1",
+            slug="test-email",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            template_name="topicblog/content_email.html",
+            title="Test title")
+        # Setup mailing list
+        self.mailing_list = MailingList.objects.create(
+            mailing_list_name="the_mailing_list_name",
+            mailing_list_token="the_mailing_list_token",
+            contact_frequency_weeks=12,
+            list_active=True)
+        # Add the 2 users to the list of subscribed users to the mailing list
+        subscribe_user_to_list(self.superuser, self.mailing_list)
+        subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
+
+        # Session cookie retrieval to then connect as the user in
+        # Selenium later
+        self.no_permissions_client = Client()
+        self.admin_client = Client()
+        self.admin_client.force_login(self.superuser)
+        self.no_permissions_client.force_login(self.no_permissions_user)
+
+        self.cookie_admin = self.admin_client.cookies['sessionid'].value
+        self.cookie_normal_user =  \
+            self.no_permissions_client.cookies['sessionid'].value
+
+        # Selenium Setup
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
+        self.browser = WebDriver(ChromeDriverManager().install(),
+                                 options=options)
+        self.browser.implicitly_wait(5)
+        self.neutral_url = \
+            self.live_server_url + reverse("authentication:login")
+
+    def test_send_email(self):
+        # Get on mobilitains.fr
+        self.browser.get(self.neutral_url)
+        # Add the admin cookie to browser to be able to connect as the admin
+        self.browser.add_cookie(
+            {'name': 'sessionid', 'value': self.cookie_admin,
+                'secure': False, 'path': '/'})
+        # Tested url
+        url = self.live_server_url + reverse("topicblog:send_email",
+                                             args=[self.email_article.slug])
+        # Go to the send email page
+        self.browser.get(url)
+
+        # Select the mailing list in the dropdown menu
+        Select(self.browser.find_element_by_name("mailing_list")
+               ).select_by_visible_text(self.mailing_list.mailing_list_name)
+
+        # Confirm choice and send email
+        self.browser.find_element_by_xpath("/html/body/form/button").click()
+
+        # Wait until redirected to index
+        WebDriverWait(self.browser, 10).until(
+            lambda driver: driver.current_url ==
+            self.live_server_url + reverse("index"))
+
+        # Check if the emails have been sent (one for each subscribed user)
+        self.assertEqual(len(mail.outbox), 2)
