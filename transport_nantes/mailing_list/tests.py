@@ -120,7 +120,7 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
     #     self.assertIsNotNone(
     #         user,
     #         msg="The user was not created during mailing list signup")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
     #     self.assertIsNotNone(mailing_list_event,
     #                          msg="The mailing event is not created"
     #                              "on quick sign up")
@@ -144,11 +144,11 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         captcha_input.send_keys("PASSED")
         self.selenium.find_element_by_css_selector(
             "form button[type=submit]").click()
-        user = User.objects.filter(email="admin@mail.com")[0]
+        user = User.objects.filter(email="admin@mail.com").first()
         self.assertIsNotNone(
             user,
             msg="The user created during setUp does not exist")
-        mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+        mailing_list_event = MailingListEvent.objects.filter(user=user).first()
         self.assertIsNotNone(mailing_list_event,
                              msg="The mailing event was not created "
                                  "on quick sign up")
@@ -179,7 +179,7 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
     #     user = User.objects.filter(email="nomail@nomail.fr").first()
     #     self.assertIsNotNone(user,
     #                          msg="The user is not created on quick sign up")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
     #     self.assertIsNotNone(mailing_list_event,
     #                          msg="The mailing event is not created"
     #                              "on quick sign up")
@@ -210,7 +210,7 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
     #     user = User.objects.filter(email="nomail@nomail.fr").first()
     #     self.assertIsNotNone(user,
     #                          msg="The user is not created on quick sign up")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user)[0]
+    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
     #     self.assertIsNotNone(mailing_list_event,
     #                          msg="The mailing event is not created"
     #                              "on quick sign up")
