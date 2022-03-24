@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
+from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.generic.base import TemplateView
@@ -24,7 +25,8 @@ from django.utils.html import strip_tags
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
-                                 unsubscribe_user_from_list)
+                                 unsubscribe_user_from_list,
+                                 user_subscribe_count)
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
                      TopicBlogLauncher, TopicBlogEmailSendRecord)
@@ -779,6 +781,21 @@ class UnsubscribeFromMailingListView(TemplateView):
         )
         logger.info(f"{email} unsubscribed from {send_record.mailinglist}")
         return render(request, self.template_name, context=context)
+
+
+@perm_required("topicblog.tbe.may_send")
+def get_number_of_recipients(request, *args, **kwargs):
+    """
+    Return the number of recipients for a given mailing list.
+    """
+    mailing_list_token = kwargs.get("mailing_list_token", None)
+    if not mailing_list_token:
+        return HttpResponseBadRequest()
+    mailing_list = get_object_or_404(MailingList,
+                                     mailing_list_token=mailing_list_token)
+    number_of_recipients = user_subscribe_count(mailing_list)
+    return JsonResponse({"count": number_of_recipients})
+
 
 ######################################################################
 # TopicBlogPress
