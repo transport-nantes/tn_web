@@ -45,18 +45,17 @@ class TopicBlogEmailSendForm(forms.Form):
     Generates a form that shows available mailing lists to send
     a given TBEmail.
     """
-
+    # Get a list of mailing lists with their names and tokens
     all_mailing_lists = MailingList.objects.all().values(
         "mailing_list_name", "mailing_list_token")
     all_mailing_lists = \
         [(item["mailing_list_token"], item["mailing_list_name"])
-            for item in all_mailing_lists]
+         for item in all_mailing_lists]
     # Add a default value
-    all_mailing_lists.insert(
-        0, (None, "Selectionnez une liste d'envoi ..."))
+    all_mailing_lists.insert(0, (None, "Selectionnez une liste d'envoi ..."))
 
     mailing_list = forms.ChoiceField(
-        choices=[],
+        choices=all_mailing_lists,
         label="Liste d'envoi",
         required=True)
 
