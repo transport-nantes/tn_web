@@ -46,17 +46,14 @@ class TopicBlogEmailSendForm(forms.Form):
     a given TBEmail.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.all_mailing_lists = MailingList.objects.all().values(
-            "mailing_list_name", "mailing_list_token")
-        self.all_mailing_lists = \
-            [(item["mailing_list_token"], item["mailing_list_name"])
-             for item in self.all_mailing_lists]
-        # Add a default value
-        self.all_mailing_lists.insert(
-            0, (None, "Selectionnez une liste d'envoi ..."))
-        self.fields["mailing_list"].choices = self.all_mailing_lists
+    all_mailing_lists = MailingList.objects.all().values(
+        "mailing_list_name", "mailing_list_token")
+    all_mailing_lists = \
+        [(item["mailing_list_token"], item["mailing_list_name"])
+            for item in all_mailing_lists]
+    # Add a default value
+    all_mailing_lists.insert(
+        0, (None, "Selectionnez une liste d'envoi ..."))
 
     mailing_list = forms.ChoiceField(
         choices=[],
