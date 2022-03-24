@@ -2,7 +2,9 @@ from django.conf import settings
 from django.template import Template, Context
 from django.test import TestCase
 from django.urls import reverse_lazy
-
+from django.contrib.auth.models import User
+from topicblog.models import TopicBlogItem,TopicBlogLauncher
+from datetime import datetime, timezone
 
 class TBEmailTemplateTagsTests(TestCase):
 
@@ -94,3 +96,62 @@ class TBEmailTemplateTagsTests(TestCase):
         expected_template = " ".join(expected_template.split())
 
         self.assertEqual(rendered_template, expected_template)
+
+
+class TBLauncherTemplateTagsTests(TestCase):
+
+    def setUp(self):
+        self.admin = \
+            User.objects.create_superuser(username='test-user',
+                                          password='test-pass')
+        self.admin.save()
+        self.item = TopicBlogItem.objects.create(
+            slug="home",
+            date_modified=datetime.now(timezone.utc),
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            user=self.admin,
+            template_name="topicblog/content.html",
+            title="Test-title")
+        self.item.save()
+        self.launcher = TopicBlogLauncher.objects.create(
+            slug="slug",
+            launcher_image="picture.png",
+            launcher_image_alt_text="picture",
+            launcher_text_md="laucher text",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            user=self.admin,
+            article_slug=self.item.slug,
+            template_name="topicblog/content_launcher.html",
+            headline="Headline")
+        self.launcher.save()
+
+    def test_launcher(self):
+        url = reverse_lazy("topic_blog:view_item_by_slug",
+                           args=[self.launcher.article_slug])
+        expected_template =\
+            f"""<div class="col-10 col-sm-6 col-lg-3">
+                    <div class="thumbnail">
+                        <a href="{url}">
+                            <div class="shadow-md">
+                                <img class="rounded"
+                                src="{self.launcher.launcher_image.url}"
+                                alt="{self.launcher.launcher_image_alt_text}"
+                                style="width:100%">
+                            </div>
+                            <div class="caption pt-2">
+                                <h3 class="font-weight-light">
+                                {self.launcher.headline}
+                                </h3>
+                                <p>{self.launcher.launcher_text_md}</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>"""
+        template_string = (
+            "{% load launcher %}"
+            "{% launcher slug %}")
+        context = Context({"slug": self.launcher.slug})
+        rendered_template = Template(template_string).render(context)
+        self.assertHTMLEqual(rendered_template, expected_template)
