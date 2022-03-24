@@ -1000,16 +1000,16 @@ class TopicBlogEmailTest(TestCase):
                          self.no_permissions_user.email)
 
     # Selenium / db re-entrancy bug, cf. #560
-    # def test_create_send_record(self):
-    #     # Create a new send record
-    #     TopicBlogEmailSend.create_send_record(
-    #         self,
-    #         slug=self.email_article.slug,
-    #         mailing_list=self.mailing_list,
-    #         recipient=self.superuser.email)
+    def test_create_send_record(self):
+        # Create a new send record
+        TopicBlogEmailSend.create_send_record(
+            self,
+            slug=self.email_article.slug,
+            mailing_list=self.mailing_list,
+            recipient=self.superuser.email)
 
-    #     # Check that the send record is created
-    #     self.assertEqual(1, TopicBlogEmailSendRecord.objects.count())
+        # Check that the send record is created
+        self.assertEqual(1, TopicBlogEmailSendRecord.objects.count())
 
     def test_send_email_status_code(self):
         url = reverse('topicblog:send_email',
