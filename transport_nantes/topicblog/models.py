@@ -626,7 +626,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
         ],
     }
     template_config = {
-        'topicblog/content_email.html': {
+        'topicblog/content_email_client.html': {
             'user_template_name': 'Classic',
             'active': True,
             "fields": {
@@ -690,6 +690,18 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             return reverse("topicblog:edit_email",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
+
+    def get_participating_field_names(self) -> set:
+        return TopicBlogItem.get_participating_field_names(self)
+
+    def get_missing_publication_field_names(self) -> set:
+        return TopicBlogItem.get_missing_publication_field_names(self)
+
+    def is_publishable(self) -> bool:
+        return TopicBlogItem.is_publishable(self)
+
+    def publish(self):
+        return TopicBlogItem.publish(self)
 
 
 class TopicBlogEmailSendRecord(models.Model):
