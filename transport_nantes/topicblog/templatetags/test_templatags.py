@@ -112,6 +112,8 @@ class TBLauncherTemplateTagsTests(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             user=self.admin,
             template_name="topicblog/content.html",
+            body_text_1_md="body 1",
+            header_image="picture.png",
             title="Test-title")
         self.item.save()
         self.launcher = TopicBlogLauncher.objects.create(
@@ -146,4 +148,30 @@ class TBLauncherTemplateTagsTests(TestCase):
         self.assertIn(link, rendered_template)
         self.assertIn(image, rendered_template)
         self.assertIn(title, rendered_template)
+        self.assertIn(text, rendered_template)
+
+
+class TBItemTeaserTemplateTagsTests(TestCase):
+
+    def setUp(self):
+        TBLauncherTemplateTagsTests.setUp(self)
+
+    def test_item_teaser(self):
+        url = reverse_lazy("topic_blog:view_item_by_slug",
+                           args=[self.item.slug])
+        link = f'<a href="{url}" class="btn donation-button btn-lg" >'
+        title = \
+            f'<h2 class="card-title text-white">{self.item.header_title}</h2>'
+        item_description = self.item.header_description
+        descrition = \
+            f'<p class="card-text text-white">{item_description}</p>'
+        text = f'<p>{ self.item.body_text_1_md}</p>'
+        template_string = (
+            "{% load item_teaser %}"
+            "{% item_teaser slug %}")
+        context = Context({"slug": self.item.slug})
+        rendered_template = Template(template_string).render(context)
+        self.assertIn(link, rendered_template)
+        self.assertIn(title, rendered_template)
+        self.assertIn(descrition, rendered_template)
         self.assertIn(text, rendered_template)
