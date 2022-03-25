@@ -115,7 +115,7 @@ class TopicBlogEmailForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.instance: TopicBlogLauncher
+        self.instance: TopicBlogEmail
 
         def get_template_list(self) -> list:
 
@@ -146,7 +146,7 @@ class TopicBlogPressForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.instance: TopicBlogLauncher
+        self.instance: TopicBlogPress
 
         def get_template_list(self) -> list:
 
