@@ -1,7 +1,11 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block app_content %}
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
+	{% if tb_object.id %}
+		<script src="{% static 'topicblog/edit_slug_warning.js' %}" defer></script>
+	{% endif %}
 	<h2 class="text-center">Commmuniqués de presse</h2>
 	{% if tb_object.id and user.is_superuser %}
 		<div class="text-center">
