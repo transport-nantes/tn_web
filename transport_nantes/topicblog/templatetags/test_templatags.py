@@ -130,28 +130,20 @@ class TBLauncherTemplateTagsTests(TestCase):
     def test_launcher(self):
         url = reverse_lazy("topic_blog:view_item_by_slug",
                            args=[self.launcher.article_slug])
-        expected_template =\
-            f"""<div class="col-10 col-sm-6 col-lg-3">
-                    <div class="thumbnail">
-                        <a href="{url}">
-                            <div class="shadow-md">
-                                <img class="rounded"
-                                src="{self.launcher.launcher_image.url}"
-                                alt="{self.launcher.launcher_image_alt_text}"
-                                style="width:100%">
-                            </div>
-                            <div class="caption pt-2">
-                                <h3 class="font-weight-light">
-                                {self.launcher.headline}
-                                </h3>
-                                <p>{self.launcher.launcher_text_md}</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>"""
+        link = f'<a href="{url}">'
+        img = self.launcher.launcher_image.url
+        alt = self.launcher.launcher_image_alt_text
+        image = \
+            f'<img class="rounded" src="{img}" alt="{alt}" style="width:100%">'
+        title = \
+            f'<h3 class="font-weight-light">{ self.launcher.headline }</h3>'
+        text = f'<p>{ self.launcher.launcher_text_md }</p>'
         template_string = (
             "{% load launcher %}"
             "{% launcher slug %}")
         context = Context({"slug": self.launcher.slug})
         rendered_template = Template(template_string).render(context)
-        self.assertHTMLEqual(rendered_template, expected_template)
+        self.assertIn(link, rendered_template)
+        self.assertIn(image, rendered_template)
+        self.assertIn(title, rendered_template)
+        self.assertIn(text, rendered_template)
