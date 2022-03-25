@@ -1,0 +1,13 @@
+<div class="container-fluid p-0">
+    <div class="card text-center">
+         <img src="{{ item.header_image.url }}" class="card-img custom-card-image-overlay" alt="header_image">
+         <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center image-overlay-dark">
+           <h2 class="card-title text-white">{{ item.header_title }}</h2>
+           <p class="card-text text-white">{{ item.header_description }}</p>
+         </div>
+    </div>
+    <div class="p-4">
+         <p>{{ item.body_text_1_md|truncatewords:50 }}</p>
+         <a href="{% url 'topic_blog:view_item_by_slug' item.slug %}" class="btn donation-button btn-lg" >en lire plus <i class="fa fa-arrow-right"></i></a>
+    </div>
+</div>

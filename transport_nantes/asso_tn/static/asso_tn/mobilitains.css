@@ -254,6 +254,9 @@ a:hover:hover.cta-button {
 .image-overlay-background-red {
     background: #FA4616;
 }
+.image-overlay-dark {
+    background-color: rgba(0,0,0,0.5);
+}
 .image-overlay-bottom-left {
     position: absolute;
     bottom: 8px;
@@ -289,6 +292,11 @@ a:hover:hover.cta-button {
 }
 .image-overlay-small-text {
     font-size: 70%;
+}
+.custom-card-image-overlay{
+    object-fit: cover;
+    width: 100%;
+    height: 250px;
 }
 .smallcap {
     font-variant: small-caps;
