@@ -79,10 +79,6 @@ class TopicBlogLauncherForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.instance: TopicBlogLauncher
 
-        # When an item is published, its slug becomes frozen (unmodifiable).
-        if self.instance.publication_date:
-            self.fields['slug'].widget.attrs['readonly'] = True
-
         def get_template_list(self) -> list:
 
             templates = self.instance.template_config
