@@ -1,0 +1,23 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+{% load launcher %}
+{% load item_teaser %}
+{% block content %}
+{% item_teaser 'ligne-johanna-rolland-pour-plus-de-mobilite' %}
+<div class="background-ad-hoc-blue">
+    <div class="d-flex flex-column p-4 p-xl-5">
+        <h2>Les projets Mobilitains</h2>
+        <div class="row">
+            {% launcher "la-mobilité-régionale" %}
+            {% launcher "grande-mobilité" %}
+            {% launcher "vélopolitain" %}
+            {% launcher "ligne-johanna-rolland" %}
+        </div>
+        {% show_mailing_list mailinglist="general-quarterly" title="Restez en contact !" %}
+        {% item_teaser 'qui-sommes-nous' %}
+        {% show_volunteer %}
+    </div>
+</div>
+{% endblock %}

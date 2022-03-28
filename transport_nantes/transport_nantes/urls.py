@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from asso_tn.views import AssoView
 from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -24,6 +25,8 @@ urlpatterns = [
     path('', TopicBlogItemView.as_view(),
          {'the_slug': 'index'},
          name='index'),
+    path('index2', AssoView.as_view(template_name='asso_tn/index.html',),
+                              name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),
