@@ -10,33 +10,6 @@ from mailing_list.events import (get_subcribed_users_email_list,
 from topicblog.views import TopicBlogEmailSend
 from .models import TopicBlogEmail, TopicBlogItem, TopicBlogEmailSendRecord
 
-
-class Test(TestCase):
-
-    def test_main_page_status_code(self):
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 404)
-
-        self.user = User.objects.create_user(username='test-user',
-                                             password='test-pass')
-        self.user.save()
-        # Create a base template
-        self.template_name = "topicblog/content.html"
-        # Create an Item with a slug, ID = 1
-        self.main_page_slug_name = ("index")
-        self.item_with_slug = TopicBlogItem.objects.create(
-            slug=self.main_page_slug_name,
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
-            publication_date=datetime.now(timezone.utc),
-            first_publication_date=datetime.now(timezone.utc),
-            user=self.user,
-            template_name=self.template_name,
-            title="Test-title")
-
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-
-
 class TBIEditStatusCodeTest(TestCase):
 
     def setUp(self):
