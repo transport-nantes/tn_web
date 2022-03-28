@@ -8,6 +8,9 @@
     </div>
     <div class="p-4">
          <p>{{ item.body_text_1_md|truncatewords:50 }}</p>
-         <a href="{% url 'topic_blog:view_item_by_slug' item.slug %}" class="btn donation-button btn-lg" >en lire plus <i class="fa fa-arrow-right"></i></a>
+         {% comment %} For avoiding the django.urls.exceptions.NoReverseMatch: Reverse for 'view_item_by_slug if the item is not in the database. {% endcomment %}
+         {% if item.slug %}
+               <a href="{% url 'topic_blog:view_item_by_slug' item.slug %}" class="btn donation-button btn-lg" >en lire plus <i class="fa fa-arrow-right"></i></a>
+         {% endif %}
     </div>
 </div>
