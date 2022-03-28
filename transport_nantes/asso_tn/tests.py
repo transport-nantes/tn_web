@@ -29,3 +29,9 @@ class TimedTokenTest(TestCase):
             after_response = token_valid(token, k_now + k_expiry_seconds + 1)
             self.assertEqual(after_response[0], None)
             self.assertEqual(after_response[1], 0)
+
+class TestIndex(TestCase):
+
+    def test_index_page(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
