@@ -1,6 +1,17 @@
 <div class="col-12 col-sm-6 col-lg-3">
 	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_item_by_slug' launcher.article_slug %}">
+		{% comment %}
+	    If the launcher slug does not reference a launcher in the
+	    database, the templatetag will pass None to this template
+	    instead of passing a valid launcher object.  That
+	    shouldn't happen, but if it does, we'd like not to have
+	    the entire page fail.  So instead display a short error
+	    with no link.
+
+	    Note that it would be worse than linking to nowhere: the
+	    reverse url lookup would see an empty argument, conclude
+	    no argument, and so 500.
+	        {% endcomment %} {% if launcher.article_slug %}<a href="{% url 'topic_blog:view_item_by_slug' launcher.article_slug %}">{% else %} 404 {% endif %}
 			<div class="shadow-md">
 				<img class="rounded" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}" style="width:100%">
 			</div>
@@ -8,6 +19,8 @@
 				<h3 class="font-weight-light">{{ launcher.headline }}</h3>
 				<p>{{ launcher.launcher_text_md }}</p>
 			</div>
-	    </a>
+		{% if launcher.article_slug %}
+	    	</a>
+		{% endif %}
 	</div>
 </div>
