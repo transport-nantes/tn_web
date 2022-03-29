@@ -979,7 +979,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     # launcher to the same campaign without risk that they interfere
     # with each other.
     campaign_name = models.CharField(max_length=80, blank=True)
-
+    # The numbers of words that will be displayed on an item_teaser templatetags
+    teaser_words = models.IntegerField(default=50, blank=False)
     # Plus slug, template, title, and comment fields, provided through
     # abstract base class.
 

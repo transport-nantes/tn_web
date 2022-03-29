@@ -7,7 +7,18 @@
          </div>
     </div>
     <div class="p-4">
-         <p>{{ item.body_text_1_md|truncatewords:50 }}</p>
+      {% comment %}
+        If the launcher slug does not reference a launcher in the
+        database or doesn't have a teaser_words set we display
+        the teaser text with a default 50 truncatewords.
+        That shouldn't happen, but if it does, we'd like not to have
+        the entire page fail.
+      {% endcomment %}
+      {% if launcher.teaser_words %}
+        <p>{{ item.body_text_1_md|truncatewords:launcher.teaser_words }}</p>
+      {% else %}
+        <p>{{ item.body_text_1_md|truncatewords:50 }}</p>
+      {% endif %}
 		{% comment %}
 	    If the launcher slug does not reference a launcher in the
 	    database, the templatetag will pass None to this template
@@ -19,7 +30,11 @@
 	    Note that it would be worse than linking to nowhere: the
 	    reverse url lookup would see an empty argument, conclude
 	    no argument, and so 500.
-	        {% endcomment %} {% if item.slug %}
-               <a href="{% url 'topic_blog:view_item_by_slug' item.slug %}" class="btn donation-button btn-lg" >en lire plus <i class="fa fa-arrow-right"></i></a>{% else %}404{%endif %}
+	  {% endcomment %} 
+    {% if item.slug %}
+      <a href="{% url 'topic_blog:view_item_by_slug' item.slug %}" class="btn donation-button btn-lg" >en lire plus <i class="fa fa-arrow-right"></i></a>
+    {% else %}
+      404
+    {%endif %}
     </div>
 </div>
