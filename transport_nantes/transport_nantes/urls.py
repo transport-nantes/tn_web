@@ -26,7 +26,7 @@ urlpatterns = [
          {'the_slug': 'index'},
          name='index'),
     path('index2', AssoView.as_view(template_name='asso_tn/index.html',),
-                              name='index'),
+         name='index2'),
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
     path('captcha/', include('captcha.urls')),
