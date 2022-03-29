@@ -163,15 +163,15 @@ class TBItemTeaserTemplateTagsTests(TestCase):
         title = \
             f'<h2 class="card-title text-white">{self.item.header_title}</h2>'
         item_description = self.item.header_description
-        descrition = \
+        description = \
             f'<p class="card-text text-white">{item_description}</p>'
         text = f'<p>{ self.item.body_text_1_md}</p>'
         template_string = (
-            "{% load item_teaser %}"
+            "{% load launcher %}"
             "{% item_teaser slug %}")
-        context = Context({"slug": self.item.slug})
+        context = Context({"slug": self.launcher.slug})
         rendered_template = Template(template_string).render(context)
         self.assertIn(link, rendered_template)
         self.assertIn(title, rendered_template)
-        self.assertIn(descrition, rendered_template)
+        self.assertIn(description, rendered_template)
         self.assertIn(text, rendered_template)
