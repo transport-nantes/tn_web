@@ -3,8 +3,9 @@ from django.template import Template, Context
 from django.test import TestCase
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from topicblog.models import TopicBlogItem,TopicBlogLauncher
+from topicblog.models import TopicBlogItem, TopicBlogLauncher
 from datetime import datetime, timezone
+
 
 class TBEmailTemplateTagsTests(TestCase):
 
@@ -159,13 +160,13 @@ class TBItemTeaserTemplateTagsTests(TestCase):
     def test_item_teaser(self):
         url = reverse_lazy("topic_blog:view_item_by_slug",
                            args=[self.item.slug])
-        link = f'<a href="{url}" class="btn donation-button btn-lg" >'
+        link = f'<a href="{url}"'
         title = \
             f'<h2 class="card-title text-white">{self.item.header_title}</h2>'
         item_description = self.item.header_description
         descrition = \
             f'<p class="card-text text-white">{item_description}</p>'
-        text = f'<p>{ self.item.body_text_1_md}</p>'
+        text = f"<p class='teaser-text'>{ self.item.body_text_1_md}</p>"
         template_string = (
             "{% load item_teaser %}"
             "{% item_teaser slug %}")
