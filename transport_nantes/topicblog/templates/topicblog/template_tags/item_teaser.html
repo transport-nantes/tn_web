@@ -7,7 +7,7 @@
          </div>
     </div>
     <div class="p-4 d-flex flex-column">
-         <p class='teaser-text'>{{ item.body_text_1_md|truncatewords:50 }}</p>
+         <p class='teaser-text'>{{ item.body_text_1_md|truncatewords:truncate_after }}</p>
 		{% comment %}
 	    If the launcher slug does not reference a launcher in the
 	    database, the templatetag will pass None to this template
