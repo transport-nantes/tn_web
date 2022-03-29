@@ -884,22 +884,14 @@ class TopicBlogPressClicks(models.Model):
 # TopicBlogLauncher
 
 class TopicBlogLauncher(TopicBlogObjectBase):
-    """Represent a launcher release.
+    """Represent a launcher (project square, campaign entry point).
 
-    This can be rendered as an email to be sent or as a web page that
-    the user clicks (or shares) with exactly the same content.
-
-    Note that many fields are nullable in order to permit saving
-    drafts during composition.  Publication and sending, however, must
-    validate that all necessary fields are provided.
-
-    This model must be marked immutable.  That's hard to enforce, but
-    changes must only be spelling and typographical fixes.  If we send
-    a mail, we can't have the web version change in the mean time.
-
-    The header_image only displays on the website, not in email.  A
-    good way to make an email stay unread is to begin with an image so
-    that the user doesn't see what's coming.
+    We use this to represent panels that point to articles about
+    campaigns.  We also use it for teasers to incite users to visit
+    other campaigns.  The primary goal of a TBLauncher, whether
+    rendered as a class square launcher or rendered as a teaser, is to
+    incite the visitor to read more of our site, to click more, to
+    engage more.
 
     """
     class Meta:
@@ -918,8 +910,6 @@ class TopicBlogLauncher(TopicBlogObjectBase):
             # self-send.
             ("tbla.may_publish", "May publish TopicBlogLauncher"),
             ("tbla.may_publish_self", "May publish own TopicBlogLauncher"),
-            ("tbla.may_send", "May send TopicBlogLaunchers"),
-            ("tbla.may_send_self", "May send own TopicBlogLauncher"),
         )
     # Content Type ##################################################
     #
@@ -967,13 +957,15 @@ class TopicBlogLauncher(TopicBlogObjectBase):
         help_text='résolution recommandée : 667x667')
     launcher_image_alt_text = models.CharField(max_length=100, blank=True)
 
-    # The article to which this slug points.
+    # The TBItem to which this slug points.
     article_slug = models.SlugField(max_length=90, allow_unicode=True,
                                     blank=True)
 
     # Campaign name.  This is free text.  The intent is that two
     # launchers to the same campaign may not be displayed
-    # simultaneously.
+    # simultaneously.  Thus, it's a way of providing more than one
+    # launcher to the same campaign without risk that they interfere
+    # with each other.
     campaign_name = models.CharField(max_length=80, blank=True)
 
     # Plus slug, template, title, and comment fields, provided through
