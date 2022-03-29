@@ -9,10 +9,11 @@
 
 {% block content %}
 
-    <form id="send-email-form" class="col-10 mx-auto"
+    <form id="send-email-form" class="col-10 mx-auto mt-2"
     action="{% url 'topicblog:send_email' tbe_slug %}"
     method="POST">{% csrf_token %}
         {{form|crispy}}
+        <p class="text-muted small">Nombre de destinataires : <span id="nb-recipients">0</span></p>
         <button id="send-email-btn" type="submit" class="btn navigation-button">Envoyer</button>
     </form>
 
