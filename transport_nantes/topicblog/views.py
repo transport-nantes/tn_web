@@ -68,6 +68,7 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
             tb_object = self.model()
             context = super().get_context_data(**kwargs)
         context['tb_object'] = tb_object
+        context["slug_fields"] = tb_object.get_slug_fields()
         return context
 
     def form_valid(self, form):
@@ -273,8 +274,6 @@ class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
                                   "twitter_description", "twitter_image",
                                   "og_title", "og_description", "og_image"]
         context["form_notes"] = ["author_notes"]
-
-        context["slug_fields"] = tb_item.get_slug_fields()
 
         return context
 
