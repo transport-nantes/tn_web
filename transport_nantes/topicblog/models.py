@@ -156,7 +156,17 @@ class TopicBlogObjectBase(models.Model):
 
         return image_fields
 
+    def get_slug_fields(self) -> list:
+        """
+        Return the names of fields that are Django SlugFields
+        """
+        all_fields = self._meta.get_fields()
+        slug_fields = list()
+        for field in all_fields:
+            if isinstance(field, models.SlugField):
+                slug_fields.append(field.name)
 
+        return slug_fields
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
     """
@@ -543,17 +553,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
                     fields.add('og_image')
         return fields
 
-    def get_slug_fields(self) -> list:
-        """
-        Return the names of fields that are Django SlugFields
-        """
-        all_fields = self._meta.get_fields()
-        slug_fields = list()
-        for field in all_fields:
-            if isinstance(field, models.SlugField):
-                slug_fields.append(field.name)
 
-        return slug_fields
 
 
 ######################################################################
