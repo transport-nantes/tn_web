@@ -9,14 +9,14 @@ class PressMentionTestCase(TestCase):
         # Create two Pressmention object
         self.journal_report	 = PressMention.objects.create(
             newspaper_name = "journal",
-            article_link = "https://journal.com",
+            article_link = "https://www.example.com/article/1",
             article_title = "titre",
             article_summary = "description",
             article_publication_date = datetime.now(timezone.utc),
         )
         self.journal_report_1	 = PressMention.objects.create(
             newspaper_name = "journal 1",
-            article_link = "https://journal1.com",
+            article_link = "https://www.example.com/article/2",
             article_title = "titre 1",
             article_summary = "description 1",
             article_publication_date = datetime.now(timezone.utc),
