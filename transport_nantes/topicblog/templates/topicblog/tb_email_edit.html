@@ -2,10 +2,21 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block app_content %}
+<script src="{% static 'topicblog/clean_slug_field.js' %}" defer></script>
+{% if tb_object.id %}
+	<script src="{% static 'topicblog/edit_slug_warning.js' %}" defer></script>
+{% endif %}
+{% comment "about json_script" %}
+    The context variable slug_fields is a Python list passed into the html document
+    in a script tag under the provided css ID thanks to the |json_script filter.
+    See documentation :
+    https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
+    It can be then parsed into a Javascript array. Using it spares an Ajax call.
+    This particular instance is used to get the ids of the slug fields in the form.
+    It is retrieved inside clean_slug_field.js
+{% endcomment %}
+{{slug_fields|json_script:"slug_fields"}}
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
-	{% if tb_object.id %}
-		<script src="{% static 'topicblog/edit_slug_warning.js' %}" defer></script>
-	{% endif %}
 	<h2 class="text-center">Emails</h2>
 	{% if tb_object.id and user.is_superuser %}
 		<div class="text-center">
