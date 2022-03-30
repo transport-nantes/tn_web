@@ -22,7 +22,7 @@ class UTM(models.Model):
 
     """
     # The URL without ? arguments.
-    base_url = models.CharField(max_length=200, blank=False)
+    base_url = models.CharField(max_length=300, blank=False)
     # A cookie that is unique to visitors for a while so that we can
     # stitch together multiple visits.
     session_id = models.CharField(max_length=200, blank=False)
