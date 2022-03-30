@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, Form
 from captcha.fields import CaptchaField
 from .models import MailingList
+from crispy_forms.helper import FormHelper
 
 
 class MailingListMMCF(forms.ModelMultipleChoiceField):
@@ -67,11 +68,17 @@ class SubscribeUpdateForm(Form):
 
 
 class FirstStepQuickMailingListSignupForm(Form):
-    email = forms.EmailField(label="Adresse mél", required=False)
+    email = forms.EmailField(required=False, widget=forms.EmailInput(
+        attrs={'placeholder': 'Votre adresse e-mail *'}))
     mailinglist = forms.CharField(
         max_length=100,
         required=True,
         widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
 
 # Like MailingListSignupForm, but only requests email.
 
