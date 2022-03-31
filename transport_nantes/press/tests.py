@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from .models import PressMention
+from topicblog.models import TopicBlogItem
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import  User,Permission
 from django.urls import reverse
@@ -21,7 +22,6 @@ class PressMentionTestCase(TestCase):
             article_summary = "description 1",
             article_publication_date = datetime.now(timezone.utc),
         )
-        # Create a user
         self.user = User.objects.create_user(username='user',
                                              password='password')
         self.user.save()
@@ -40,7 +40,8 @@ class PressMentionTestCase(TestCase):
         self.client.login(username='user', password='password')
         self.user_permited_client.login(
             username='press-staff', password='press-staff')
-
+    
+        # Create a user
     def test_model_str_function(self):
         self.assertEqual(self.journal_report.__str__(),"journal titre",
                          msg="Should return the newspaper name"
@@ -119,7 +120,7 @@ class PressMentionTestCase(TestCase):
             response = user_type["client"].get(reverse("press:new_item"))
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
-    
+
     def test_update_view_press(self):
         """Only user with press-editor permission should have acces to this page
             For this test we use a list of dictionaries, that is composed of:
@@ -163,3 +164,21 @@ class PressMentionTestCase(TestCase):
                         }))
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+    def test_post_new_press_mention(self):
+        complete_url = "https://beta.mobilitains.fr/"
+        self.user_permited_client.post(reverse("press:new_item"),
+            {'newspaper_name':'test_post','article_link':complete_url,
+             'article_title':'test','article_summary':'mini sum',
+             'article_publication_date':'2022-03-31'})
+        new_press_mention = PressMention.objects.filter(
+            newspaper_name__iexact="test_post").get()
+        self.assertEqual(new_press_mention.og_title,
+                         "Les Mobilitains  - "
+                         "Pour une mobilité multimodale")
+        self.assertEqual(new_press_mention.og_description,
+                         "Nous agissons pour une mobilité plus fluide, "
+                         "plus sécurisée et plus vertueuse des villes et"
+                         " des périphéries.")
+        self.assertIn("pont-rousseau-1",new_press_mention.og_image.url)
+        self.assertIn(".jpg",new_press_mention.og_image.url)
