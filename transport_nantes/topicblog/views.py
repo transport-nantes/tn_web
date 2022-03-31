@@ -694,7 +694,19 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
             "topicblog/base_email.html"
         context["email"] = tb_email
         context["host"] = get_current_site(self.request).domain
-
+        # Create a full path url if cta slug is set
+        if context["email"].cta_1_slug:
+            context["cta_1_slug_url"] = \
+                self.request.build_absolute_uri(
+                    reverse_lazy("topic_blog:view_item_by_slug",
+                                 args=[context["email"].cta_1_slug])
+            )
+        if context["email"].cta_2_slug:
+            context["cta_2_slug_url"] = \
+                self.request.build_absolute_uri(
+                    reverse_lazy("topic_blog:view_item_by_slug",
+                                 args=[context["email"].cta_2_slug])
+            )
         # The unsubscribe link is created with the send_record and the
         # user's email hidden in a token.
         context["unsub_link"] = \

@@ -41,21 +41,18 @@ def email_body_text_md(text: str) -> str:
 
 
 @register.simple_tag
-def email_cta_button(slug: str, label: str) -> str:
-    html_template = """
+def email_cta_button(url: str, label: str) -> str:
+    html_template = f"""
     <tr>
         <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
         background-color:#ffffff;text-align:center;">
             <p>
-                <a href="{slug}" class="btn
+                <a href="{url}" class="btn
                 donation-button btn-lg">
                 {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                 </a>
             </p>
         </td>
     </tr>
-    """.format(
-        slug=reverse_lazy("topic_blog:view_item_by_slug", args=[slug]),
-        label=label
-        )
+    """
     return mark_safe(html_template)

@@ -35,8 +35,8 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             </p>
         </td>
     </tr> <!-- End of Body_1-->
-    {% if email.cta_1_slug %}
-        {% email_cta_button email.cta_1_slug email.cta_1_label %}
+    {% if cta_1_slug_url %}
+        {% email_cta_button cta_1_slug_url email.cta_1_label %}
     {% endif %}
     {% if email.body_image_1 %}
         {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
@@ -45,8 +45,8 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     {% if email.body_image_2 %}
         {% email_full_width_image email.body_image_2.url email.body_image_2_alt_text %}
     {% endif %}
-    {% if  email.cta_2_slug %}
-        {% email_cta_button email.cta_2_slug email.cta_2_label %}
+    {% if  cta_2_slug_url %}
+        {% email_cta_button cta_2_slug_url email.cta_2_label %}
     {% endif %}
     <tr> <!-- Footer -->
         <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">

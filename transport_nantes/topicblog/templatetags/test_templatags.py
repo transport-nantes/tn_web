@@ -67,29 +67,27 @@ class TBEmailTemplateTagsTests(TestCase):
 
     def test_email_cta_button(self):
 
-        slug = "index"
+        url = \
+            reverse_lazy("topic_blog:view_item_by_slug", args=["index"])
         label = "Go to the homepage"
-        expected_template = """
+        expected_template = f"""
         <tr>
             <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
             background-color:#ffffff;text-align:center;">
                 <p>
-                    <a href="{slug}" class="btn
+                    <a href="{url}" class="btn
                     donation-button btn-lg">
                     {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                     </a>
                 </p>
             </td>
         </tr>
-        """.format(
-            slug=reverse_lazy("topic_blog:view_item_by_slug", args=[slug]),
-            label=label
-        )
+        """
 
         template_string = (
             "{% load email_tags %}"
-            "{% email_cta_button slug label %}")
-        context = Context({"slug": slug, "label": label})
+            "{% email_cta_button url label %}")
+        context = Context({"url": url, "label": label})
         rendered_template = Template(template_string).render(context)
         # Get rid of the whitespaces
         rendered_template = " ".join(rendered_template.split())
