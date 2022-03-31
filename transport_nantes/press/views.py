@@ -11,6 +11,8 @@ import requests
 import logging
 
 logger = logging.getLogger("django")
+
+
 class PressMentionListView(ListView):
     model = PressMention
     template_name = "press/press_list_view.html"
@@ -49,20 +51,22 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     form_class = PressMentionForm
     success_url = reverse_lazy('press:new_item')
     permission_required = 'press.press-editor'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["press_mention_list"] = PressMention.objects.all().order_by(
             "-article_publication_date")[:5]
         context["newspaper_name_list"] = PressMention.objects.distinct(
-            ).order_by('newspaper_name').values_list(
-                'newspaper_name', flat=True)
+        ).order_by('newspaper_name').values_list(
+            'newspaper_name', flat=True)
         return context
 
     def form_valid(self, form):
         page = requests.get(form.cleaned_data['article_link'])
         tree = html.fromstring(page.content.decode("utf-8"))
         og_title = tree.xpath('//meta[@property="og:title"]/@content')
-        og_description = tree.xpath('//meta[@property="og:description"]/@content')
+        og_description = tree.xpath(
+            '//meta[@property="og:description"]/@content')
         og_image = tree.xpath('//meta[@property="og:image"]/@content')
         form.instance.og_title = og_title[0]
         form.instance.og_description = og_description[0]
@@ -75,6 +79,8 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
             file_name = og_image[0].split('/')[-1]
             form.instance.og_image.save(file_name, files.File(fp))
         return super().form_valid(form)
+
+
 class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
     model = PressMention
     template_name = "press/press_update.html"
@@ -85,8 +91,8 @@ class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["newspaper_name_list"] = PressMention.objects.distinct(
-            ).order_by('newspaper_name').values_list(
-                'newspaper_name', flat=True)
+        ).order_by('newspaper_name').values_list(
+            'newspaper_name', flat=True)
         return context
 
 
