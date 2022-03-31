@@ -1,4 +1,5 @@
 {% extends 'topicblog/base_email.html' %}
+{% load newsletter %}
 
 {% block app_content %}
 
@@ -7,9 +8,10 @@
     <form method="post" action="{% url "topicblog:email-unsub" token %}"
     class="d-flex flex-column flex-wrap col-10 col-md-6 mx-auto">
         {% csrf_token %}
-        <h1 class="d-flex text-center">
-            Voulez vous vraiment vous désabonner de la liste de diffusion "{{send_record_mailing_list}}" ?
-        </h1>
+        <h2>Désinscription</h2>
+	<p>
+            Vraiment vous désabonner de la liste "{{send_record_mailing_list}}"&nbsp;?
+        </p>
         <div class="d-flex flex-row flex-wrap col-6 mx-auto mt-3 justify-content-around">
             <button class="btn navigation-button" type="submit">Oui</button>
             <a class="btn navigation-button" href="{% url "index" %}">Non</a>
@@ -17,9 +19,11 @@
     </form>
 {% else %}
 {# POST #}
-    <h1 class="d-flex col-10 col-md-6 mx-auto text-center">
-        Vous vous êtes désabonné(e) de la liste de diffusion "{{send_record_mailing_list}}"
-    </h1>
+    <h2 class="d-flex col-10 col-md-6 mx-auto text-center">
+        C'est fait.</h2>
+
+    <p>Si jamais vous le regrettez déjà, voilà comme faire pas en arrière&nbsp;:</p>
+    {% show_mailing_list mailinglist="send_record_mailing_list" %}
 {% endif %}
 
 {% endblock app_content %}
