@@ -3,14 +3,14 @@ from django.views.generic import (ListView, CreateView, UpdateView,
 from .models import PressMention
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from .form import PressMentionForm
+from .form import PressMentionForm, PressMentionSearch
 import requests
 from lxml import html
 from django.core import files
 from io import BytesIO
 import requests
 import logging
-
+from datetime import date
 logger = logging.getLogger("django")
 
 
@@ -31,12 +31,29 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["search_form"] = PressMentionSearch()
         context["number_pagination_list"] = \
             context["paginator"].get_elided_page_range(
             number=context["page_obj"].number,
             on_each_side=4, on_ends=0)
         if self.request.GET.get("newspaper_name"):
             context["is_not_full"] = True
+            context["search_form"].fields["newspaper_name_search"].initial = \
+                self.request.GET.get("newspaper_name")
+        if self.request.GET.get("search"):
+            context["is_not_full"] = True
+            context["search_form"].fields["newspaper_name_search"].initial = \
+                self.request.GET.get("newspaper_name_search")
+            context["search_form"].fields["article_link"].initial = \
+                self.request.GET.get("article_link")
+            context["search_form"].fields["article_title"].initial = \
+                self.request.GET.get("article_title")
+            context["search_form"].fields["article_summary"].initial = \
+                self.request.GET.get("article_summary")
+            context["search_form"].fields["article_date_start"].initial = \
+                self.request.GET.get("article_date_start")
+            context["search_form"].fields["article_date_end"].initial = \
+                self.request.GET.get("article_date_end")
         return context
 
     def get_queryset(self):
@@ -44,6 +61,31 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
             name = self.request.GET.get("newspaper_name")
             if name:
                 return PressMention.objects.filter(newspaper_name=name)
+        if self.request.GET.get("search"):
+            news_paper = self.request.GET.get("newspaper_name_search")
+            link = self.request.GET.get("article_link")
+            title = self.request.GET.get("article_title")
+            summary = self.request.GET.get("article_summary")
+            start_date = self.request.GET.get("article_date_start")
+            end_date = self.request.GET.get("article_date_end")
+            if start_date > end_date and end_date:
+                temp_var = start_date
+                start_date = end_date
+                end_date = temp_var
+            elif start_date and not end_date:
+                end_date = date.today()
+            elif end_date and not start_date:
+                start_date = end_date
+            else:
+                start_date = date(2000, 1, 1)
+                end_date = date.today()
+
+            return PressMention.objects.filter(
+                newspaper_name__contains=news_paper,
+                article_link__contains=link,
+                article_title__contains=title,
+                article_summary__contains=summary,
+                article_publication_date__range=(start_date, end_date))
         return super().get_queryset()
 
 
