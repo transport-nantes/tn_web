@@ -237,7 +237,134 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
         context['social'] = social
         return context
+    
+    def is_publishable(self) -> bool:
+        """
+        Return True if the object may be published.
 
+        An object may be published if it has no missing required fields,
+        as defined in self.template_config
+        """
+        missing_fields = self.get_missing_publication_field_names()
+        if missing_fields:
+            logger.info(f"Can't publish, missing {missing_fields}")
+            return False
+        return True
+
+    def publish(self):
+        """
+        If publishable, set object publication and return True.
+        Else do nothing and return False.
+
+        The caller is responsable for retiring any same-slug object that
+        is already published.
+
+        It would manifestly be better to do the two together in a transaction.
+        Cf. https://docs.djangoproject.com/en/3.2/topics/db/transactions/
+
+        """
+        if self.is_publishable():
+            now_timestamp = datetime.now(timezone.utc)
+            if self.first_publication_date is None:
+                self.first_publication_date = now_timestamp
+                self.publication_date = now_timestamp
+            else:
+                self.publication_date = now_timestamp
+            return True
+        else:
+            return False
+
+    def get_missing_publication_field_names(self) -> set:
+        """
+        This function returns a list of all missing fields
+        for publication.
+
+        If no content is present in any of the content dedicated
+        fields (eg. 'body_text_1_md', 'body_text_2_md', 'body_text_3_md',
+        'body_image'), 'content' is also added to the list.
+        """
+        template = self.template_name
+        template_cfg = self.template_config[template]
+        optional_fields = template_cfg['optional_fields_for_publication']
+        missing_field_names = set()
+        required_field_names = self.get_participating_field_names().\
+            difference(optional_fields)
+
+        for field_name in required_field_names:
+            if not getattr(self, field_name):
+                missing_field_names.add(field_name)
+
+        # This will mark all fields in each set as missing if the set
+        # constraint isn't satisfied.  This is something to signal to
+        # users.  Getting this feedback perfect requires some thought
+        # and experience using the tool.
+        #
+        # Of course, for now we aren't even providing feedback, so
+        # this comment is ahead of its time.
+        for field_name_set in template_cfg['one_of_fields_for_publication']:
+            one_provided = False
+            for field_name in field_name_set:
+                if field_name not in missing_field_names:
+                    one_provided = True
+            if one_provided:
+                missing_field_names = missing_field_names.difference(
+                    field_name_set)
+            else:
+                missing_field_names = missing_field_names.union(field_name_set)
+
+        # This checks that dependent fields are either provided or not
+        # together.  If a user provides some but not others, we'll
+        # indicate that the entire set is missing, which isn't perfect
+        # but is something we can sort later if it becomes confusing
+        # for users.  Initially, we should just make sure that our
+        # user instructions note that we do this.
+        for dependent_field_name_set in template_cfg["dependent_field_names"]:
+            all_provided = True
+            all_missing = True
+            for field_name in dependent_field_name_set:
+                if getattr(self, field_name):
+                    all_missing = False
+                else:
+                    all_provided = False
+            if not (all_provided or all_missing):
+                missing_field_names = missing_field_names.union(
+                    dependent_field_name_set)
+
+        return missing_field_names
+
+    def get_participating_field_names(self) -> set:
+        """
+        Return the names of fields that participate in this TopicBlogObject
+        based on the Template it uses.
+
+        This only provides user-settable fields.
+        """
+        template = self.template_name
+        template_cfg = self.template_config[template]
+
+        fields = set()
+        for field_name, value in template_cfg["fields"].items():
+            if value:
+                if field_name == "slug":
+                    fields.add('slug')
+                    continue
+                if field_name == "title":
+                    fields.add('title')
+                    continue
+                if field_name == "header":
+                    fields.add('header_image')
+                    fields.add('header_title')
+                    fields.add('header_description')
+                    continue
+                if field_name == "social_media":
+                    fields.add('twitter_title')
+                    fields.add('twitter_description')
+                    fields.add('twitter_image')
+                    fields.add('og_title')
+                    fields.add('og_description')
+                    fields.add('og_image')
+                    continue
+        return fields
     def __str__(self):
         if self.slug:
             return f'{str(self.slug)} - {str(self.title)} - ' + \
@@ -291,7 +418,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
             'body_image', 'body_image_alt_text',
             'twitter_title', 'twitter_description',
             'twitter_image', 'og_title',
-            'og_description', 'og_image'
+            'og_description', 'og_image',
         ),
         # Fields that, if required for publication, the requirement is
         # satisfied by providing any one of them.
@@ -401,160 +528,44 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
 
-    def is_publishable(self) -> bool:
-        """
-        Return True if the item may be published.
-
-        An item may be published if it has no missing required fields,
-        as defined in self.template_config
-        """
-        missing_fields = self.get_missing_publication_field_names()
-        if missing_fields:
-            logger.info(f"Can't publish, missing {missing_fields}")
-            return False
-        return True
-
-    def publish(self):
-        """
-        If publishable, set item publication and return True.
-        Else do nothing and return False.
-
-        The caller is responsable for retiring any same-slug item that
-        is already published.
-
-        It would manifestly be better to do the two together in a transaction.
-        Cf. https://docs.djangoproject.com/en/3.2/topics/db/transactions/
-
-        """
-        if self.is_publishable():
-            now_timestamp = datetime.now(timezone.utc)
-            if self.first_publication_date is None:
-                self.first_publication_date = now_timestamp
-                self.publication_date = now_timestamp
-            else:
-                self.publication_date = now_timestamp
-            return True
-        else:
-            return False
-
-    def get_missing_publication_field_names(self) -> set:
-        """
-        This function returns a list of all missing fields
-        for publication.
-
-        If no content is present in any of the content dedicated
-        fields (eg. 'body_text_1_md', 'body_text_2_md', 'body_text_3_md',
-        'body_image'), 'content' is also added to the list.
-        """
-        template = self.template_name
-        template_cfg = self.template_config[template]
-        optional_fields = template_cfg['optional_fields_for_publication']
-        missing_field_names = set()
-        required_field_names = self.get_participating_field_names().\
-            difference(optional_fields)
-
-        for field_name in required_field_names:
-            if not getattr(self, field_name):
-                missing_field_names.add(field_name)
-
-        # This will mark all fields in each set as missing if the set
-        # constraint isn't satisfied.  This is something to signal to
-        # users.  Getting this feedback perfect requires some thought
-        # and experience using the tool.
-        #
-        # Of course, for now we aren't even providing feedback, so
-        # this comment is ahead of its time.
-        for field_name_set in template_cfg['one_of_fields_for_publication']:
-            one_provided = False
-            for field_name in field_name_set:
-                if field_name not in missing_field_names:
-                    one_provided = True
-            if one_provided:
-                missing_field_names = missing_field_names.difference(
-                    field_name_set)
-            else:
-                missing_field_names = missing_field_names.union(field_name_set)
-
-        # This checks that dependent fields are either provided or not
-        # together.  If a user provides some but not others, we'll
-        # indicate that the entire set is missing, which isn't perfect
-        # but is something we can sort later if it becomes confusing
-        # for users.  Initially, we should just make sure that our
-        # user instructions note that we do this.
-        for dependent_field_name_set in template_cfg["dependent_field_names"]:
-            all_provided = True
-            all_missing = True
-            for field_name in dependent_field_name_set:
-                if getattr(self, field_name):
-                    all_missing = False
-                else:
-                    all_provided = False
-            if not (all_provided or all_missing):
-                missing_field_names = missing_field_names.union(
-                    dependent_field_name_set)
-
-        return missing_field_names
 
     def get_participating_field_names(self) -> set:
         """
-        Return the names of fields that participate in this TopicBlogItem
+        Return the names of fields that participate in this TopicBlogObject
         based on the Template it uses.
 
         This only provides user-settable fields.
         """
+        fields = super().get_participating_field_names()
         template = self.template_name
         template_cfg = self.template_config[template]
-
-        fields = set()
         for field_name, value in template_cfg["fields"].items():
-            if value:
-                if field_name == "slug":
-                    fields.add('slug')
-                    continue
-                if field_name == "title":
-                    fields.add('title')
-                    continue
-                if field_name == "header":
-                    fields.add('header_image')
-                    fields.add('header_title')
-                    fields.add('header_description')
-                    continue
-                if field_name == "body_text_1_md":
-                    fields.add('body_text_1_md')
-                    continue
-                if field_name == "body_text_2_md":
-                    fields.add('body_text_2_md')
-                    continue
-                if field_name == "body_text_3_md":
-                    fields.add('body_text_3_md')
-                    continue
-                if field_name == "cta_1":
-                    fields.add('cta_1_slug')
-                    fields.add('cta_1_label')
-                    continue
-                if field_name == "cta_2":
-                    fields.add('cta_2_slug')
-                    fields.add('cta_2_label')
-                    continue
-                if field_name == "cta_3":
-                    fields.add('cta_3_slug')
-                    fields.add('cta_3_label')
-                    continue
-                if field_name == "body_image":
-                    fields.add('body_image')
-                    fields.add('body_image_alt_text')
-                    continue
-                if field_name == "social_media":
-                    fields.add('twitter_title')
-                    fields.add('twitter_description')
-                    fields.add('twitter_image')
-                    fields.add('og_title')
-                    fields.add('og_description')
-                    fields.add('og_image')
+            if field_name == "body_text_1_md":
+                fields.add('body_text_1_md')
+                continue
+            if field_name == "body_text_2_md":
+                fields.add('body_text_2_md')
+                continue
+            if field_name == "body_text_3_md":
+                fields.add('body_text_3_md')
+                continue
+            if field_name == "cta_1":
+                fields.add('cta_1_slug')
+                fields.add('cta_1_label')
+                continue
+            if field_name == "cta_2":
+                fields.add('cta_2_slug')
+                fields.add('cta_2_label')
+                continue
+            if field_name == "cta_3":
+                fields.add('cta_3_slug')
+                fields.add('cta_3_label')
+                continue
+            if field_name == "body_image":
+                fields.add('body_image')
+                fields.add('body_image_alt_text')
+                continue
         return fields
-
-
-
 
 ######################################################################
 # TopicBlogEmail
@@ -603,6 +614,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
 
     template_config_default = {
         "optional_fields_for_publication": (
+            'header_title',
             'header_image', 'header_description',
             'cta_1_slug', 'cta_1_label',
             'cta_2_slug', 'cta_2_label',
@@ -610,11 +622,10 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             'body_image_2', 'body_image_2_alt_text',
             'twitter_title', 'twitter_description',
             'twitter_image', 'og_title',
-            'og_description', 'og_image'
+            'og_description', 'og_image',
         ),
         "one_of_fields_for_publication": [
             ['header_title', 'header_description'],
-            ['body_text_1_md', 'body_text_2_md'],
         ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
@@ -690,19 +701,44 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             return reverse("topicblog:edit_email",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
-
+    
     def get_participating_field_names(self) -> set:
-        return TopicBlogItem.get_participating_field_names(self)
+        """
+        Return the names of fields that participate in this TopicBlogObject
+        based on the Template it uses.
 
-    def get_missing_publication_field_names(self) -> set:
-        return TopicBlogItem.get_missing_publication_field_names(self)
-
-    def is_publishable(self) -> bool:
-        return TopicBlogItem.is_publishable(self)
-
-    def publish(self):
-        return TopicBlogItem.publish(self)
-
+        This only provides user-settable fields.
+        """
+        fields = super().get_participating_field_names()
+        template = self.template_name
+        template_cfg = self.template_config[template]
+        for field_name, value in template_cfg["fields"].items():
+            if field_name == "subject":
+                fields.add('subject')
+                continue
+            if field_name == "body_text_1_md":
+                fields.add('body_text_1_md')
+                continue
+            if field_name == "body_text_2_md":
+                fields.add('body_text_2_md')
+                continue
+            if field_name == "cta_1":
+                fields.add('cta_1_slug')
+                fields.add('cta_1_label')
+                continue
+            if field_name == "cta_2":
+                fields.add('cta_2_slug')
+                fields.add('cta_2_label')
+                continue
+            if field_name == "body_image_1":
+                fields.add('body_image_1')
+                fields.add('body_image_1_alt_text')
+                continue
+            if field_name == "body_image_2":
+                fields.add('body_image_2')
+                fields.add('body_image_2_alt_text')
+                continue
+        return fields
 
 class TopicBlogEmailSendRecord(models.Model):
 
@@ -784,6 +820,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
 
     template_config_default = {
         "optional_fields_for_publication": (
+            'header_title',
             'header_image', 'header_description',
             'body_image', 'body_image_alt_text',
             'twitter_title', 'twitter_description',
@@ -855,6 +892,28 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
 
+    def get_participating_field_names(self) -> set:
+        """
+        Return the names of fields that participate in this TopicBlogObject
+        based on the Template it uses.
+
+        This only provides user-settable fields.
+        """
+        fields = super().get_participating_field_names()
+        template = self.template_name
+        template_cfg = self.template_config[template]
+        for field_name, value in template_cfg["fields"].items():
+            if field_name == "subject":
+                fields.add('subject')
+                continue
+            if field_name == "body_text_1_md":
+                fields.add('body_text_1_md')
+                continue
+            if field_name == "body_image_1":
+                fields.add('body_image_1')
+                fields.add('body_image_1_alt_text')
+                continue
+        return fields
 
 class TopicBlogPressSendRecord(models.Model):
 
