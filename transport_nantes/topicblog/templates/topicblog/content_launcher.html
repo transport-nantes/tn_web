@@ -61,12 +61,18 @@
         {% if page.article_slug %}
             <a href="{% url 'topic_blog:view_item_by_slug' page.article_slug %}" class="text-decoration-none">
         {% endif %}
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{{ page.launcher_image.url }}"
-			 alt="{{ page.launcher_image_alt_text }}"
-			 style="width:100%">
-		</div>
+        {% comment %}
+        This page only happens during launcher development.
+        launcher_image is required for launcher templatetags
+        {% endcomment %}
+        {% if page.launcher_image %}
+            <div class="shadow-md">
+                <img class="rounded"
+                src="{{ page.launcher_image.url }}"
+                alt="{{ page.launcher_image_alt_text }}"
+                style="width:100%">
+            </div>
+        {% endif %}
 		<div class="caption pt-2">
 		    <h3 class="font-weight-light"
 			style="font-variant: all-small-caps;
