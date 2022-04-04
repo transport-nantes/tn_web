@@ -54,10 +54,10 @@
 		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
 	       </a>
           {% endif %}
-          {# Body image, if any #}
-          {% if page.body_image|length > 0 %}
-               <img src="{{ page.body_image.url }}"
-                    alt="{{ page.body_image_alt_text }}"
+          {# First body image, if any #}
+          {% if page.body_image_1 %}
+               <img src="{{ page.body_image_1.url }}"
+                    alt="{{ page.body_image_1_alt_text }}"
                     class="w-100 my-4">
           {% endif %}
           {# Second part, if any. #}
@@ -68,6 +68,12 @@
 		   {{ page.cta_2_label }}
 		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
 	       </a>
+          {% endif %}
+          {# Second body image, if any #}
+          {% if page.body_image_2 %}
+               <img src="{{ page.body_image_2.url }}"
+                    alt="{{ page.body_image_2_alt_text }}"
+                    class="w-100 my-4">
           {% endif %}
      </div>
 </div>
