@@ -167,6 +167,8 @@ class TopicBlogObjectBase(models.Model):
                 slug_fields.append(field.name)
 
         return slug_fields
+
+
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
     """
@@ -237,7 +239,7 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
         context['social'] = social
         return context
-    
+
     def is_publishable(self) -> bool:
         """
         Return True if the object may be published.
@@ -365,6 +367,7 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
                     fields.add('og_image')
                     continue
         return fields
+
     def __str__(self):
         if self.slug:
             return f'{str(self.slug)} - {str(self.title)} - ' + \
@@ -528,7 +531,6 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
 
-
     def get_participating_field_names(self) -> set:
         """
         Return the names of fields that participate in this TopicBlogObject
@@ -569,6 +571,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
 
 ######################################################################
 # TopicBlogEmail
+
 
 class TopicBlogEmail(TopicBlogObjectSocialBase):
     """Represent an email.
@@ -701,7 +704,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             return reverse("topicblog:edit_email",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})
-    
+
     def get_participating_field_names(self) -> set:
         """
         Return the names of fields that participate in this TopicBlogObject
@@ -739,6 +742,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
                 fields.add('body_image_2_alt_text')
                 continue
         return fields
+
 
 class TopicBlogEmailSendRecord(models.Model):
 
@@ -914,6 +918,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
                 fields.add('body_image_1_alt_text')
                 continue
         return fields
+
 
 class TopicBlogPressSendRecord(models.Model):
 
