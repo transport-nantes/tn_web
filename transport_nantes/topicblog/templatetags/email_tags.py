@@ -40,14 +40,20 @@ def email_body_text_md(text: str) -> str:
     return mark_safe(html_template)
 
 
-@register.simple_tag
-def email_cta_button(slug: str, label: str) -> str:
+@register.simple_tag(takes_context=True)
+def email_cta_button(context: dict, slug: str, label: str) -> str:
+    tbe_path = reverse_lazy(
+        "topicblog:view_item_by_slug",
+        kwargs={"the_slug": slug}
+    )
+    host = context["request"].get_host()
+    scheme = context["request"].scheme
     html_template = """
     <tr>
         <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
         background-color:#ffffff;text-align:center;">
             <p>
-                <a href="{slug}" class="btn
+                <a href="{scheme}://{host}{tbe_path}" class="btn
                 donation-button btn-lg">
                 {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                 </a>
@@ -55,7 +61,8 @@ def email_cta_button(slug: str, label: str) -> str:
         </td>
     </tr>
     """.format(
-        slug=reverse_lazy("topic_blog:view_item_by_slug", args=[slug]),
-        label=label
-        )
+        scheme=scheme,
+        host=host,
+        tbe_path=tbe_path,
+        label=label)
     return mark_safe(html_template)
