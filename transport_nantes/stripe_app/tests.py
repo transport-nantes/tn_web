@@ -220,35 +220,35 @@ class TestStripeAppSelenium(LiveServerTestCase):
         self.browser.find_element_by_id('id_postal_code').send_keys('12345')
         self.browser.find_element_by_id('id_city').send_keys('City')
         # Check the consent box
-        self.browser.find_element_by_xpath(
-            '/html/body/div[4]/form/div[8]/div/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='id_data_collect']").click()
 
     def fill_amount_form_sub_20euros(self):
         """Fill the amount form with a monthly sub of 20 euros"""
         # Select "Je donne tous les mois"
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[1]/div/div[2]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='id_donation_type_1']").click()
         # Select '20€'
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[2]/div/div[3]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='subscription_amount_rb_2']").click()
 
     def fill_amount_form_onetime_preset_amount(self):
         """Fill the amount form with a one time payment"""
         # Select "Je donne une fois"
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[1]/div/div[1]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='id_donation_type_0']").click()
         # Select the 2nd choice (preset amount)
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[3]/div/div[2]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='payment_amount_rb_1']").click()
 
     def fill_amount_form_onetime_free_amount(self):
         """Fill the amount form with a one time payment"""
         # Select "Je donne une fois"
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[1]/div/div[1]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='id_donation_type_0']").click()
         # Select the 4th choice (free amount)
-        self.browser.find_element_by_xpath(
-            '/html/body/div[3]/form/div[3]/div/div[4]/label').click()
+        self.browser.find_element_by_css_selector(
+            "label[for='payment_amount_rb_1']").click()
         # Fill the free amount
         self.browser.find_element_by_id('free_amount').send_keys('15')
 
