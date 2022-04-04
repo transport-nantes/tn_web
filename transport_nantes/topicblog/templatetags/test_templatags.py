@@ -1,10 +1,12 @@
 from django.conf import settings
+from django.http import HttpRequest
 from django.template import Template, Context
 from django.test import TestCase
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from topicblog.models import TopicBlogItem,TopicBlogLauncher
+from topicblog.models import TopicBlogItem, TopicBlogLauncher
 from datetime import datetime, timezone
+
 
 class TBEmailTemplateTagsTests(TestCase):
 
@@ -74,7 +76,7 @@ class TBEmailTemplateTagsTests(TestCase):
             <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
             background-color:#ffffff;text-align:center;">
                 <p>
-                    <a href="{slug}" class="btn
+                    <a href="http://127.0.0.1:8000{slug}" class="btn
                     donation-button btn-lg">
                     {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                     </a>
@@ -89,7 +91,15 @@ class TBEmailTemplateTagsTests(TestCase):
         template_string = (
             "{% load email_tags %}"
             "{% email_cta_button slug label %}")
-        context = Context({"slug": slug, "label": label})
+
+        def mock_get_host():
+            return "127.0.0.1:8000"
+        http_request = HttpRequest()
+        http_request.get_host = mock_get_host
+        context = Context(
+            {
+                "slug": slug, "label": label, "request": http_request
+            })
         rendered_template = Template(template_string).render(context)
         # Get rid of the whitespaces
         rendered_template = " ".join(rendered_template.split())
