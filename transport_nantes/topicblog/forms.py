@@ -39,7 +39,7 @@ class TopicBlogItemForm(ModelForm):
 class TopicBlogEmailSendForm(forms.Form):
     """
     Generates a form that shows available mailing lists to send
-    a given TBEmail.
+    a given sendable TopicBlog object.
     """
 
     def __init__(self, *args, **kwargs):
