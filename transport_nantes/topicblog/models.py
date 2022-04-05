@@ -841,7 +841,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         ],
     }
     template_config = {
-        'topicblog/content_press.html': {
+        'topicblog/content_press_mail_client.html': {
             'user_template_name': 'Classic',
             'active': True,
             "fields": {
