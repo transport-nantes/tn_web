@@ -1,0 +1,54 @@
+{% extends 'topicblog/base_email_client.html' %}
+{% load static %}
+{% load email_tags %}
+
+{% block email_content %}
+
+{% comment %} This table is the main container{% endcomment %}
+<table role="presentation"
+style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+    <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
+        <a href="{{ request.scheme }}://{{ host }}{% url 'topicblog:view_press_by_slug' page.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">
+            Voir sur le site web
+        </a>
+    </tr>
+    <tr>
+        {# These rows handle the logo display #}
+        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#ffffff;">
+            <a href="https://www.mobilitains.fr/" style="text-decoration:none;">
+                {% if logo_path %}
+                    <img src="{{ logo_path }}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% else %}
+                    <img src="{% static 'asso_tn/M-logo_colored-32.png' %}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% endif %}
+            </a>
+        </td> <!-- End Logo -->
+    </tr>
+    <tr> {# Title and Body_1 #}
+        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
+            <p><b>Communiqué de presse</b></p>
+            <p class="small text-muted">Le {{ page.publication_date|date:"j F Y" }},</p>
+            <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
+                {{ page.title }}
+            </h1>
+            <p style="margin:0;">
+                {{ page.body_text_1_md }}
+            </p>
+            {% if page.body_image_1 %}
+                {% email_full_width_image page.body_image_1.url page.body_image_1_alt_text %}
+            {% endif %}
+        </td>
+    </tr> <!-- End of Body_1-->
+    <tr> <!-- Footer -->
+        <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+            <p style="margin:0;font-size:14px;line-height:20px;">
+                &reg; Mobilitains 2022<br>
+                <a class="unsub" href="{{ request.scheme }}://{{ unsub_link }}" style="color:#cccccc;text-decoration:underline;">Se désabonner</a>
+            </p>
+        </td>
+    </tr> <!-- End of Footer -->
+</table>
+
+{% endblock email_content %}
