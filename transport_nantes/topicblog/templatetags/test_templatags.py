@@ -76,9 +76,9 @@ class TBEmailTemplateTagsTests(TestCase):
             <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
             background-color:#ffffff;text-align:center;">
                 <p>
-                    <a href="http://127.0.0.1:8000{slug}" class="btn
-                    donation-button btn-lg">
-                    {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
+                    <a href="http://127.0.0.1:8000{slug}" class="btn donation-button btn-lg" 
+                    style="background-color: #5BC2E7;color:white;font-weight: 600;">
+                        {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                     </a>
                 </p>
             </td>
