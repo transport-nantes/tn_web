@@ -1,7 +1,6 @@
 from django.test import TestCase, Client
 from .models import PressMention
-from topicblog.models import TopicBlogItem
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from django.contrib.auth.models import User, Permission
 from django.urls import reverse
 
