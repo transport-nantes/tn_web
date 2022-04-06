@@ -2,6 +2,7 @@ from django import forms
 from .models import PressMention
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, ButtonHolder, Submit, HTML
+from datetime import date
 
 
 class PressMentionForm(forms.ModelForm):
@@ -16,7 +17,8 @@ class PressMentionForm(forms.ModelForm):
         widget=forms.Textarea)
     article_publication_date = forms.DateField(
         label="Date de pubication de l'article",
-        widget=forms.TextInput(attrs={'type': 'date'}))
+        widget=forms.TextInput(attrs={'type': 'date'}),
+        initial=date.today())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
