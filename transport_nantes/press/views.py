@@ -1,4 +1,5 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import (ListView, CreateView, UpdateView,
+                                  DeleteView, DetailView)
 from .models import PressMention
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -49,7 +50,6 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
 class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     template_name = "press/press_create.html"
     form_class = PressMentionForm
-    success_url = reverse_lazy('press:new_item')
     permission_required = 'press.press-editor'
 
     def get_context_data(self, **kwargs):
@@ -100,4 +100,10 @@ class PressMentionDeleteView(PermissionRequiredMixin, DeleteView):
     model = PressMention
     template_name = "press/press_delete.html"
     success_url = reverse_lazy('press:list_items')
+    permission_required = 'press.press-editor'
+
+
+class PressMentionDetailView(PermissionRequiredMixin, DetailView):
+    model = PressMention
+    template_name = "press/press_detail.html"
     permission_required = 'press.press-editor'

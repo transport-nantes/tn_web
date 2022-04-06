@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (PressMentionListViewAdmin, PressMentionUpdateView,
                     PressMentionListView, PressMentionCreateView,
-                    PressMentionDeleteView)
+                    PressMentionDeleteView, PressMentionDetailView)
 
 app_name = 'press'
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('new/', PressMentionCreateView.as_view(), name='new_item'),
     path('update/<int:pk>', PressMentionUpdateView.as_view(), name='update_item'),
     path('delete/<int:pk>', PressMentionDeleteView.as_view(), name='delete_item'),
+    path('detail/<int:pk>', PressMentionDetailView.as_view(), name='detail_item'),
 ]
