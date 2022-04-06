@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+from urllib.parse import urlparse
 
 
 class PressMention(models.Model):
@@ -24,3 +26,9 @@ class PressMention(models.Model):
 
     def __str__(self):
         return f"{self.newspaper_name} {self.article_title}"
+
+    def get_absolute_url(self):
+        return reverse("press:detail_item", kwargs={"pk": self.pk})
+
+    def get_domaine_of_link(self):
+        return urlparse(self.article_link).netloc

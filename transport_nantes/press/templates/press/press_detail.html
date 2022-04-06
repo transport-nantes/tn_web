@@ -1,0 +1,40 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% block content %}
+<div class="container-fluid pl-5 py-3">
+    <div>
+        <a href="{% url 'press:new_item' %}" class="btn btn-outline-info mb-3">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="{% url 'press:list_items' %}" class="btn btn-outline-info mb-3">
+            <i class="fas fa-list"></i>
+        </a>
+    </div>
+    <div class="row">
+        <div class="card mb-3 p-0 col-6 col-md-4">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="{{ object.og_image.url }}" style="object-fit: cover;width: 100%;height: 250px;
+                    " class="card-img" alt="{{ object.newspaper_name }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <a href="{{ object.article_link }}" class="stretched-link text-muted text-decoration-none font-weight-bold">{{ object.get_domaine_of_link }}</a>
+                        <h5 class="card-title">{{ object.og_title }}</h5>
+                        <p class="card-text">{{ object.og_description|truncatewords:50 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card mb-3 p-0 col-6 col-md-4">
+            <img src="{{ object.og_image.url }}" class="card-img" alt="{{ object.newspaper_name }}">
+            <div class="card-body">
+                <a href="{{ object.article_link }}" class="stretched-link text-muted text-decoration-none font-weight-bold">{{ object.get_domaine_of_link }}</a>
+                <h5 class="card-title">{{ object.og_title }}</h5>
+                <p class="card-text">{{ object.og_description|truncatewords:50 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
