@@ -15,6 +15,9 @@ class PressMentionTestCase(TestCase):
             article_title="titre",
             article_summary="description",
             article_publication_date=datetime.now(timezone.utc),
+            og_title="og title",
+            og_description="og description",
+            og_image="image.png",
         )
         self.journal_report_1 = PressMention.objects.create(
             newspaper_name="journal 1",
@@ -22,6 +25,9 @@ class PressMentionTestCase(TestCase):
             article_title="titre 1",
             article_summary="description 1",
             article_publication_date=datetime.now(timezone.utc),
+            og_title="og title 1",
+            og_description="og description 1",
+            og_image="image1.png",
         )
         self.user = User.objects.create_user(username='user',
                                              password='password')
@@ -188,3 +194,27 @@ class PressMentionTestCase(TestCase):
                          " des périphéries.")
         self.assertIn("pont-rousseau-1", new_press_mention.og_image.url)
         self.assertIn(".jpg", new_press_mention.og_image.url)
+
+    def test_detail_view_press(self):
+        """Only user with press-editor permission should have access to this page
+            For this test we use a list of dictionaries, that is composed of:
+            - client = the client of user (auth user, unauth and permited user)
+            - code = the excepted statut code
+            - message = the error message"""
+        users_expected = [
+            {"client": self.client, "code": 403,
+             "msg": "Auth user without permission can't access to this page"},
+            {"client": self.unauth_client, "code": 302,
+             "msg": "Unauth user have access to create view."},
+            {"client": self.user_permited_client, "code": 200,
+             "msg": "Auth user with permission have access to create view"},
+        ]
+        for user_type in users_expected:
+            response = \
+                user_type["client"].get(reverse(
+                    "press:detail_item",
+                    kwargs={
+                        "pk": self.journal_report.id,
+                    }))
+            self.assertEqual(response.status_code,
+                             user_type["code"], msg=user_type["msg"])
