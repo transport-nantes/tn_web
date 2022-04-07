@@ -4,7 +4,7 @@
 <div class="container-fluid pl-5 py-3">
     <p>
     <strong>
-        <a href="{% url listall_object_url %}">
+        <a href="{% url listall_object_url %}?active={{request.GET.from}}">
 	    <i class="fa fa-arrow-left" aria-hidden="true"></i>
 	    {{ slug }}
 	</a>
