@@ -2,10 +2,19 @@
 
 {% block content %}
 <div class="container-fluid pl-5 py-3">
+    <div class="d-flex flex-column mb-4">
+        <strong>
+            <a href="{% url "dashboard:index" %}">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                Tableau de bord
+            </a>
+        </strong>
+        <a href="{% url new_object_url %}" class="btn btn-outline-info mb-3 mt-2 mr-auto">+ Nouveau...</a>
+    </div>
     {% for object in object_list %}
     <p>
 	<strong>
-	    <a href="{% url 'topic_blog:list_emails_by_slug' object.slug|default:'--sans-slug--' %}">
+	    <a href="{% url listone_object_url object.slug|default:'--sans-slug--' %}">
 		{{ object.slug }}</a>
 	</strong>
 	<span class="text-muted">

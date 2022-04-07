@@ -4,14 +4,14 @@
 <div class="container-fluid pl-5 py-3">
     <p>
     <strong>
-        <a href="{% url 'topic_blog:list_launcher' %}">
+        <a href="{% url listall_object_url %}">
 	    <i class="fa fa-arrow-left" aria-hidden="true"></i>
 	    {{ slug }}
 	</a>
     </strong>
     {% if servable_object %}
     <a type="button" class="btn btn-outline-info btn-sm"
-       href="{% url 'topic_blog:view_launcher_by_slug' servable_object.slug %}">Visualiser (usager)</a>
+       href="{% url viewbyslug_object_url servable_object.slug %}">Visualiser (usager)</a>
     {% endif %}
     </p>
     {% for object in object_list %}

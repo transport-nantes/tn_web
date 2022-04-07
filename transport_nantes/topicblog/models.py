@@ -130,6 +130,15 @@ class TopicBlogObjectBase(models.Model):
     # Encode the basic structure of a TBItem's presentation.
     template_name = models.CharField(max_length=80, blank=True)
 
+    # The urls to create a new object of this class' children is a property
+    # that has to be set in each new subclass.
+    # It is expected to be a string with 'app:name' format. e.g.:
+    # 'topicblog:new_item'
+    new_object_url = None
+    listone_object_url = None
+    listall_object_url = None
+    viewbyslug_object_url = None
+
     def __str__(self):
         if self.slug:
             return f'{str(self.slug)} - ' + \
@@ -509,6 +518,11 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     cta_3_slug = models.SlugField(max_length=90, blank=True)
     cta_3_label = models.CharField(max_length=100, blank=True)
 
+    new_object_url = 'topicblog:new_item'
+    listone_object_url = 'topicblog:list_items_by_slug'
+    listall_object_url = 'topicblog:list_items'
+    viewbyslug_object_url = 'topicblog:view_item_by_slug'
+
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
         """
@@ -682,6 +696,11 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
 
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
+
+    new_object_url = 'topicblog:new_email'
+    listone_object_url = 'topicblog:list_emails_by_slug'
+    listall_object_url = 'topicblog:list_emails'
+    viewbyslug_object_url = 'topicblog:view_email_by_slug'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -874,6 +893,11 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
+    new_object_url = 'topicblog:new_press'
+    listone_object_url = 'topicblog:list_press_by_slug'
+    listall_object_url = 'topicblog:list_press'
+    viewbyslug_object_url = 'topicblog:view_press_by_slug'
+
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
         """
@@ -1048,6 +1072,11 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     teaser_chars = models.IntegerField(default=50, blank=False)
     # Plus slug, template, title, and comment fields, provided through
     # abstract base class.
+
+    new_object_url = 'topicblog:new_launcher'
+    listone_object_url = 'topicblog:list_launcher_by_slug'
+    listall_object_url = 'topicblog:list_launcher'
+    viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
