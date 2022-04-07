@@ -2,19 +2,40 @@
 
 {% block content %}
 <div class="container-fluid pl-5 py-3">
+    <div class="mb-3">
+        <strong><a href="{% url "dashboard:index" %}">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            Tableau de bord
+        </a></strong>
+    </div>
     <div class="d-flex flex-column mb-4">
-        <strong>
-            <a href="{% url "dashboard:index" %}">
-                <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                Tableau de bord
-            </a>
-        </strong>
+        <div class="mr-auto mb-3">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                {% if active == "articles" %}{% endif %}
+                <a class="nav-link {% if request.GET.active == "articles" %}active{% endif %}"
+                href="{% url 'topicblog:list_items' %}?active=articles">Articles</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.GET.active == "emails" %}active{% endif %}"
+                href="{% url 'topicblog:list_emails' %}?active=emails">Emails</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.GET.active == "cp" %}active{% endif %}"
+                href="{% url 'topicblog:list_press' %}?active=cp">Communiqués de presse</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.GET.active == "launcher" %}active{% endif %}"
+                href="{% url 'topicblog:list_launcher' %}?active=launcher">Lanceurs</a>
+              </li>
+            </ul>
+        </div>
         <a href="{% url new_object_url %}" class="btn btn-outline-info mb-3 mt-2 mr-auto">+ Nouveau...</a>
     </div>
     {% for object in object_list %}
     <p>
 	<strong>
-	    <a href="{% url listone_object_url object.slug|default:'--sans-slug--' %}">
+	    <a href="{% url listone_object_url object.slug|default:'--sans-slug--' %}?from={{request.GET.active}}">
 		{{ object.slug }}</a>
 	</strong>
 	<span class="text-muted">

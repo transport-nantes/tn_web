@@ -12,19 +12,19 @@
 			<h3>TBv2</h3>
 			<p>Pages de blog :
 			    [<a href="{% url 'topic_blog:new_item' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_items' %}">lister</a>]
+			    [<a href="{% url 'topic_blog:list_items' %}?active=articles">lister</a>]
 			</p>
 			<p>Emails :
 			    [<a href="{% url 'topic_blog:new_email' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_emails' %}">lister</a>]
+			    [<a href="{% url 'topic_blog:list_emails' %}?active=emails">lister</a>]
 			</p>
 			<p>Commmuniqués de presse :
 			    [<a href="{% url 'topic_blog:new_press' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_press' %}">lister</a>]
+			    [<a href="{% url 'topic_blog:list_press' %}?active=cp">lister</a>]
 			</p>
 			<p>Lanceurs :
 			    [<a href="{% url 'topic_blog:new_launcher' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_launcher' %}">lister</a>]
+			    [<a href="{% url 'topic_blog:list_launcher' %}?active=launcher">lister</a>]
 			</p>
 		</div>
 		<div class="col-sm-6">
