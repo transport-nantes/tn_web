@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery
 from django.db.models import Q
 
 from .models import MailingList, MailingListEvent
@@ -55,13 +55,14 @@ def user_subscribe_count(mailing_list):
     that individual users might subscribe and unsubscribe multiple
     times.  Other (future) events could happen as well.
     """
-    user_states = MailingListEvent.objects.filter(
-        Q(event_type=MailingListEvent.EventType.SUBSCRIBE) |
-        Q(event_type=MailingListEvent.EventType.UNSUBSCRIBE),
-        mailing_list=mailing_list).values(
-            'user').annotate(latest=Max('event_timestamp'))
-    users_subscribed = user_states.filter(
-        Q(event_type=MailingListEvent.EventType.SUBSCRIBE)).count()
+    users_subscribed = User.objects.annotate(
+        latest_action=Subquery(
+            MailingListEvent.objects.filter(
+                mailing_list=mailing_list,
+                user=OuterRef('pk')
+            ).order_by('-event_timestamp').values('event_type')[:1]
+        )
+    ).filter(latest_action='sub').count()
     return users_subscribed
 
 
