@@ -1,3 +1,5 @@
+{% load markdown %}
+
 <div class="container-fluid p-0">
     <div class="card text-center">
          <img src="{{ item.header_image.url }}" class="card-img custom-card-image-overlay" alt="header_image">
@@ -14,11 +16,13 @@
         That shouldn't happen, but if it does, we'd like not to have
         the entire page fail.
       {% endcomment %}
+      <div class="teaser-text">
       {% if launcher.teaser_words %}
-        <p class="teaser-text">{{ item.body_text_1_md|truncatewords:launcher.teaser_words }}</p>
+        {% tn_markdown item.body_text_1_md|truncatechars:launcher.teaser_words %}
       {% else %}
-        <p class="teaser-text">{{ item.body_text_1_md|truncatewords:50 }}</p>
+        {% tn_markdown item.body_text_1_md|truncatechars:300 %}
       {% endif %}
+      </div>
 		{% comment %}
 	    If the launcher slug does not reference a launcher in the
 	    database, the templatetag will pass None to this template

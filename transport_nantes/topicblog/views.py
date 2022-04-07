@@ -748,6 +748,7 @@ class UnsubscribeFromMailingListView(TemplateView):
         context["send_record_mailing_list"] = \
             TopicBlogEmailSendRecord.objects.get(
                 pk=send_record_id).mailinglist.mailing_list_name
+        context["user_email"] = email
 
         return context
 

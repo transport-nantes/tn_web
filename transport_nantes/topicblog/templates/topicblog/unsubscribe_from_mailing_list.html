@@ -1,4 +1,5 @@
 {% extends 'topicblog/base_email.html' %}
+{% load launcher %}
 
 {% block app_content %}
 
@@ -8,17 +9,17 @@
     class="d-flex flex-column flex-wrap col-10 col-md-6 mx-auto">
         {% csrf_token %}
         <h1 class="d-flex text-center">
-            Voulez vous vraiment vous désabonner de la liste de diffusion "{{send_record_mailing_list}}" ?
+            Désinscrire {{ user_email }} de "{{send_record_mailing_list}}" ?
         </h1>
-        <div class="d-flex flex-row flex-wrap col-6 mx-auto mt-3 justify-content-around">
+        <div class="d-flex col-6 mx-auto my-3 justify-content-center">
             <button class="btn navigation-button" type="submit">Oui</button>
-            <a class="btn navigation-button" href="{% url "index" %}">Non</a>
         </div>
+        {% item_teaser 'qui-sommes-nous' %}
     </form>
 {% else %}
 {# POST #}
     <h1 class="d-flex col-10 col-md-6 mx-auto text-center">
-        Vous vous êtes désabonné(e) de la liste de diffusion "{{send_record_mailing_list}}"
+        Vous vous êtes désabonné(e) de la liste "{{send_record_mailing_list}}"
     </h1>
 {% endif %}
 
