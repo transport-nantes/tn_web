@@ -131,7 +131,7 @@ class TBLauncherTemplateTagsTests(TestCase):
             launcher_image="picture.png",
             launcher_image_alt_text="picture",
             launcher_text_md="laucher text",
-            teaser_words=20,
+            teaser_chars=20,
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.admin,
@@ -176,12 +176,13 @@ class TBItemTeaserTemplateTagsTests(TestCase):
         item_description = self.item.header_description
         description = \
             f'<p class="card-text text-white">{item_description}</p>'
-        text = f'<p class="teaser-text">{ self.item.body_text_1_md}</p>'
+        text = f'<div class="teaser-text"> <p>{ self.item.body_text_1_md}</p>'
         template_string = (
             "{% load launcher %}"
             "{% item_teaser slug %}")
         context = Context({"slug": self.launcher.slug})
         rendered_template = Template(template_string).render(context)
+        rendered_template = " ".join(rendered_template.split())
         self.assertIn(link, rendered_template)
         self.assertIn(title, rendered_template)
         self.assertIn(description, rendered_template)
