@@ -30,6 +30,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
                 {{ email.title }}
             </h1>
+            <p style='color: #6c757d'>Le {{ email.first_publication_date|date:"d M Y"  }},</p>
             <p style="margin:0;">
                 {{ email.body_text_1_md }}
             </p>

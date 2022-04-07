@@ -46,6 +46,12 @@
      </div>
 </div>
      <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 mx-auto mt-5">
+          <p class="text-muted">Le {{ page.first_publication_date|date:"d M Y"  }},
+               {% if page.first_publication_date < page.publication_date %}
+               <br />
+               <span>Mis à jour le {{ page.publication_date|date:"d M Y"  }}</span>
+               {% endif %}
+          </p>
           {% tn_markdown page.body_text_1_md %}
           {% if page.cta_1_slug|length > 0 %}
                <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
