@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Max, OuterRef, Subquery
-from django.db.models import Q
-
+from django.db.models import Max, Q,  OuterRef, Subquery
 from .models import MailingList, MailingListEvent
 
 
