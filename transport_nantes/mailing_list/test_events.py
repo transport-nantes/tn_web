@@ -63,11 +63,19 @@ class EventsTest(TestCase):
             event_timestamp=self.base_time + datetime.timedelta(3),
             event_type=MailingListEvent.EventType.SUBSCRIBE)
         MailingListEvent.objects.create(
-            user=alice, mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(5),
+            user=alice, mailing_list=cat_list,
+            event_timestamp=self.base_time,
             event_type=MailingListEvent.EventType.SUBSCRIBE)
+        MailingListEvent.objects.create(
+            user=bob, mailing_list=cat_list,
+            event_timestamp=self.base_time,
+            event_type=MailingListEvent.EventType.SUBSCRIBE)
+        MailingListEvent.objects.create(
+            user=bob, mailing_list=cat_list,
+            event_timestamp=self.base_time + datetime.timedelta(5),
+            event_type=MailingListEvent.EventType.UNSUBSCRIBE)
         self.assertEqual(user_subscribe_count(dog_list), 2)
-        self.assertEqual(user_subscribe_count(cat_list), 0)
+        self.assertEqual(user_subscribe_count(cat_list), 1)
 
     def test_subscriber_count(self):
         alice = User.objects.get(username='Alice')
