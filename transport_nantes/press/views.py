@@ -104,7 +104,14 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        page = requests.get(form.cleaned_data['article_link'])
+        try:
+            # Check if the website is accessible
+            page = requests.get(form.cleaned_data['article_link'])
+        except Exception as e:
+                logger.error(f"Exeption when saving Pressmention {e}.")
+                form._errors['article_link'] = \
+                    ['Le liens est incorrect ou le site web est indisponible.']
+                return super().form_invalid(form)
         tree = html.fromstring(page.content.decode("utf-8"))
         og_title = tree.xpath('//meta[@property="og:title"]/@content')
         og_description = tree.xpath(
@@ -114,7 +121,10 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
         form.instance.og_description = og_description[0]
         resp = requests.get(og_image[0])
         if resp.status_code != requests.codes.ok:
-            logger.error(f"The url of the open graph image is not good.")
+            logger.error("The link of the open graph image may be dead, or doesn't exist.")
+            form._errors['article_link'] = \
+                ['Le site ne contient pas de meta données Open Graph valide.']
+            return super().form_invalid(form)
         else:
             fp = BytesIO()
             fp.write(resp.content)
