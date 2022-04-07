@@ -206,6 +206,11 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
             context['servable_object'] = qs.filter(
                 publication_date__lte=datetime.now(timezone.utc)).order_by(
                     '-publication_date').first()
+        context["new_object_url"] = self.model.new_object_url
+        context["listone_object_url"] = self.model.listone_object_url
+        context["listall_object_url"] = self.model.listall_object_url
+        context["viewbyslug_object_url"] = self.model.viewbyslug_object_url
+
         return context
 
     def get_queryset(self, *args, **kwargs):
@@ -221,6 +226,13 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
                            date_modified=Max('date_modified'),
                            publication_date=Max('publication_date')) \
                  .order_by('-date_modified')
+
+    def get_template_names(self):
+        names = super().get_template_names()
+        if 'the_slug' in self.kwargs:
+            return ['topicblog/topicblogbase_list_one.html'] + names
+        else:
+            return ['topicblog/topicblogbase_list.html'] + names
 
 
 ######################################################################
@@ -347,13 +359,6 @@ class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogItem
     permission_required = 'topicblog.tbi.may_view'
 
-    def get_template_names(self):
-        names = super().get_template_names()
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicblogitem_list_one.html'] + names
-        else:
-            return names
-
 
 ######################################################################
 # TopicBlogEmail
@@ -463,13 +468,6 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
 class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogEmail
     permission_required = 'topicblog.tbe.may_view'
-
-    def get_template_names(self):
-        names = super().get_template_names()
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicblogemail_list_one.html'] + names
-        else:
-            return names
 
 
 class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
@@ -899,13 +897,6 @@ class TopicBlogPressList(PermissionRequiredMixin,
     model = TopicBlogPress
     permission_required = 'topicblog.tbp.may_view'
 
-    def get_template_names(self):
-        names = super().get_template_names()
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicblogpress_list_one.html'] + names
-        else:
-            return names
-
 
 class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
                          FormView):
@@ -1258,10 +1249,3 @@ class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
 class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_view'
-
-    def get_template_names(self):
-        names = super().get_template_names()
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicbloglauncher_list_one.html'] + names
-        else:
-            return names
