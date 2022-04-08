@@ -3,21 +3,23 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 m-2">
       {%for press_mention in press_mention_list %}
       <div class="col my-1">
-        <div class="card h-100">
-        <div class="row no-gutters">
-          <div class="col-md-4">
-              <img src="{{press_mention.og_image.url }}" style="object-fit: cover;width: 100%;height: 250px;" class="card-img" alt="{{press_mention.newspaper_name }}">
+        <div class="card mb-3 p-0 h-100">
+          {% if  press_mention.og_image %}
+          <img src="{{ press_mention.og_image.url }}" class="card-img" alt="{{ press_mention.newspaper_name }}" style="height: 150px;">
+          {% else %}
+              {% comment %}
+              SHOULD NOT happen but if the website doesn't have
+              open graph image we don't display the image
+              {% endcomment %}
+              <p>Pas d'image</p>
+          {% endif %}
+          <div class="card-body">
+              <a href="{{ press_mention.article_link }}" class="stretched-link text-muted text-decoration-none font-weight-bold">{{ press_mention.get_domaine_of_link }}</a>
+              <h5 class="card-title">{{ press_mention.og_title }}</h5>
+              <p class="card-text">{{ press_mention.og_description|truncatewords:10 }}</p>
           </div>
-          <div class="col-md-8">
-              <div class="card-body">
-                  <a href="{{press_mention.article_link }}" class="stretched-link text-muted text-decoration-none font-weight-bold">{{press_mention.get_domaine_of_link }}</a>
-                  <h5 class="card-title">{{press_mention.og_title }}</h5>
-                  <p class="card-text">{{press_mention.og_description|truncatewords:10 }}</p>
-              </div>
-          </div>
+        </div>
       </div>
-      </div>
-    </div>
       {% endfor %}
     </div>
 </div>
