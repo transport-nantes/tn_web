@@ -19,12 +19,12 @@
       <tr>
         <td>
           {% if page_obj.paginator %}
-            <a href="{% url 'press:list_items' %}?newspaper_name={{ press_mention.newspaper_name|urlencode }}" class="btn navigation-button">{{ press_mention.newspaper_name }}</a>
+            <a href="{% url 'press:list_items' %}?newspaper_name={{ press_mention.newspaper_name|urlencode }}">{{ press_mention.newspaper_name }}</a>
           {% else %}
-            <a href="{% url 'press:list_items' %}?newspaper_name={{ press_mention.newspaper_name|urlencode }}" target="_blank" class="btn navigation-button">{{ press_mention.newspaper_name }}</a>
+            <a href="{% url 'press:list_items' %}?newspaper_name={{ press_mention.newspaper_name|urlencode }}" target="_blank">{{ press_mention.newspaper_name }}</a>
           {% endif %}
         </td>
-        <td><a href="{{press_mention.article_link }}" target="_blank" class="btn navigation-button">{{ press_mention.article_title }}</a></td>
+        <td><a href="{{press_mention.article_link }}" target="_blank">{{ press_mention.article_title }}</a></td>
         <td>{{ press_mention.article_summary }}</td>
         <td>{{ press_mention.og_title }}</td>
         <td>{{ press_mention.og_description }}</td>
@@ -50,8 +50,8 @@
 </div>
 {% for press_mention in press_mention_list %}
   <div class="d-block d-md-none border border-secondary m-1 rounded p-2">
-    <p class="font-weight-bold">{{ press_mention.newspaper_name }}</p>
-    <p>titre : {{ press_mention.article_title }}</p>
+    <p class="font-weight-bold"><a href="{% url 'press:list_items' %}?newspaper_name={{ press_mention.newspaper_name|urlencode }}" target="_blank">{{ press_mention.newspaper_name }}</a></p>
+    <p>titre : <a href="{{press_mention.article_link }}" target="_blank">{{ press_mention.article_title }}</a></p>
     <p>description : {{ press_mention.article_summary|truncatewords:10 }}</p>
     <p>Og title : {{ press_mention.og_title }}</p>
     <p>Og description : {{ press_mention.og_description }}</p>
