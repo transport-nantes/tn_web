@@ -1,8 +1,8 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
-{% load crispy_forms_tags %} 
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container-fluid pl-5 py-3">
-	<a href="{% url 'press:new_item' %}" class="btn btn-outline-info mb-3"><i class="fas fa-plus"></i></a>
+	<a href="{% url 'press:new_item' %}" class="btn btn-outline-info mb-3" data-toggle="tooltip" data-placement="bottom" title="Ajouter un nouvel élément"><i class="fas fa-plus"></i></a>
 	<div>
 		{% crispy search_form %}
 	</div>
@@ -44,3 +44,10 @@
 	</nav>
 </div>
 {% endblock content %}
+{% block localscripts %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+{% endblock localscripts %}
