@@ -116,11 +116,18 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
         og_description = tree.xpath(
             '//meta[@property="og:description"]/@content')
         og_image = tree.xpath('//meta[@property="og:image"]/@content')
-        form.instance.og_title = og_title[0]
-        form.instance.og_description = og_description[0]
+        if not og_title or not og_description:
+            logger.error("This website doesn't have all open graph data.")
+            form._errors['article_link'] = \
+                ['Le site ne contient pas de meta données Open Graph valide.']
+            return super().form_invalid(form)
+        else:
+            form.instance.og_title = og_title[0]
+            form.instance.og_description = og_description[0]
         resp = requests.get(og_image[0])
         if resp.status_code != requests.codes.ok:
-            logger.error("The link of the open graph image may be dead, or doesn't exist.")
+            logger.error("The link of the open graph "
+                         "image may be dead, or doesn't exist.")
             form._errors['article_link'] = \
                 ['Le site ne contient pas de meta données Open Graph valide.']
             return super().form_invalid(form)
