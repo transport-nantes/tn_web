@@ -96,8 +96,7 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["press_mention_list"] = PressMention.objects.all().order_by(
-            "-article_publication_date")[:5]
+        context["press_mention_list"] = PressMention.objects.all()[:5]
         context["newspaper_name_list"] = PressMention.objects.distinct(
         ).order_by('newspaper_name').values_list(
             'newspaper_name', flat=True)
