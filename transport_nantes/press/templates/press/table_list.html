@@ -2,12 +2,15 @@
   <a href="{% url 'press:list_items' %}" class="btn navigation-button btn-lg my-3">Retour à la liste complète</a>
 {% endif %}
 <div class="table-responsive d-none d-md-block">
-  <table class="table table-bordered table-striped">
+  <table class="table table-bordered table-striped table-sm">
     <thead class="thead-dark">
       <tr>
         <th scope="col">Journal</th>
         <th scope="col">Titre</th>
         <th scope="col">Description</th>
+        <th scope="col">Og title</th>
+        <th scope="col">Og Description</th>
+        <th scope="col">Og Image</th>
         <th scope="col">Date</th>
       </tr>
     </thead>
@@ -23,6 +26,18 @@
         </td>
         <td><a href="{{press_mention.article_link }}" target="_blank" class="btn navigation-button">{{ press_mention.article_title }}</a></td>
         <td>{{ press_mention.article_summary }}</td>
+        <td>{{ press_mention.og_title }}</td>
+        <td>{{ press_mention.og_description }}</td>
+        <td>
+          {% if  press_mention.og_image %}
+            <img src="{{ press_mention.og_image.url }}" alt="{{ press_mention.article_title }}" style="width:200px;max-height: 200px;">
+          {% else %}
+          {% comment %}
+            SHOULD NOT happen but if the website doesn't have
+            open graph image we don't display the image
+          {% endcomment %}
+            <p>Pas d'image</p>
+          {% endif %}
         <td>{{ press_mention.article_publication_date|date:"d/m/Y" }}</td>
         <td>
           <a href="{% url 'press:update_item' press_mention.id%}" class="btn navigation-button m-1"><i class="fas fa-edit"></i></a>
@@ -36,8 +51,21 @@
 {% for press_mention in press_mention_list %}
   <div class="d-block d-md-none border border-secondary m-1 rounded p-2">
     <p class="font-weight-bold">{{ press_mention.newspaper_name }}</p>
-    <p>{{ press_mention.article_title }}</p>
-    <p>{{ press_mention.article_summary|truncatewords:10 }}</p>
+    <p>titre : {{ press_mention.article_title }}</p>
+    <p>description : {{ press_mention.article_summary|truncatewords:10 }}</p>
+    <p>Og title : {{ press_mention.og_title }}</p>
+    <p>Og description : {{ press_mention.og_description }}</p>
+    <div>
+      {% if  press_mention.og_image %}
+        <img src="{{ press_mention.og_image.url }}" alt="{{ press_mention.article_title }}" style="width:200px;max-height: 200px;">
+      {% else %}
+      {% comment %}
+        SHOULD NOT happen but if the website doesn't have
+        open graph image we don't display the image
+      {% endcomment %}
+        <p>Pas d'image</p>
+      {% endif %}
+    </div>
     <a href="{% url 'press:update_item' press_mention.id%}"><i class="fas fa-edit"></i></a>
     <a href="{% url 'press:delete_item' press_mention.id%}"><i class="fa fa-trash"></i></a>
   </div>
