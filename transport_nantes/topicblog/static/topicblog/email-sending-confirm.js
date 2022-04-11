@@ -20,7 +20,9 @@ async function get_number_of_recipients(mailing_list_token) {
 // This fires when we select a mailing list in the dropdown menu
 document.getElementById('id_mailing_list').addEventListener('change', function() {
     let mailing_list_token = this.value;
-    console.log(mailing_list_token);
+    // We uncheck the confirmation box if it was checked, to make sure user
+    // confirms its selection and not a previous one.
+    document.getElementById('id_confirmation_box').checked = false;
     if (!mailing_list_token) {
         document.getElementById('nb-recipients').innerHTML = "0";
         document.getElementById("send-email-btn").disabled = true;
@@ -47,16 +49,18 @@ document.getElementById('id_mailing_list').addEventListener('change', function()
 document.getElementById('send-email-btn').addEventListener('click', async function (event) {
     // Prevent the button to POST
     event.preventDefault();
-
-    number_of_recipients = parseInt(document.getElementById("nb-recipients").innerHTML);
-    if (number_of_recipients > 0) {
-        // Display a confirmation alert with OK and cancel,if OK is clicked, it evaluates to True.
-        if (confirm("Vous êtes sur le point d'envoyer un email à " + number_of_recipients + " destinataires.\n\n" +
-            "Êtes-vous sûr de vouloir continuer ?") == true) {
-            // If OK is clicked, we submit the form with a visual feedback
-            document.getElementById('send-email-btn').disabled = true;
-            document.getElementById('send-email-btn').innerHTML = 'Envoi en cours...';
+    console.log("Listener fired")
+    // Checks that the "id_confirmation_box" is checked
+    if (document.getElementById('id_confirmation_box').checked) {
+        number_of_recipients = parseInt(document.getElementById("nb-recipients").innerHTML);
+        if (number_of_recipients > 0) {
+            let send_button = document.getElementById('send-email-btn');
+            send_button.disabled = true;
+            send_button.innerHTML = 'Envoi en cours...';
             document.getElementById('send-email-form').submit();
-        };
+        }
+    } else {
+        alert("Veuillez cocher la case pour confirmer l'envoi de l'email");
+        return;
     }
 })
