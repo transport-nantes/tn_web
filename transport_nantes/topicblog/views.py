@@ -549,7 +549,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
     """
     permission_required = 'topicblog.tbe.may_send'
     form_class = TopicBlogEmailSendForm
-    template_name = 'topicblog/topicblogemail_send_form.html'
+    template_name = 'topicblog/topicblogbase_send_form.html'
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
     # itself eventually, or on the dashboard ?
@@ -559,6 +559,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         # The slug is then used to get the TBEmail we want to send.
         context["tbe_slug"] = self.kwargs['the_slug']
+        context["send_to_view"] = "topicblog:send_email"
         return context
 
     def get_last_published_email(self, tbe_slug: str) -> TopicBlogEmail:
@@ -990,7 +991,7 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
     """
     permission_required = 'topicblog.tbp.may_send'
     form_class = TopicBlogEmailSendForm
-    template_name = 'topicblog/topicblogpress_send_form.html'
+    template_name = 'topicblog/topicblogbase_send_form.html'
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
     # itself eventually, or on the dashboard ?
@@ -1000,6 +1001,7 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         # The slug is then used to get the TBEmail we want to send.
         context["tbe_slug"] = self.kwargs['the_slug']
+        context["send_to_view"] = "topicblog:send_press"
         return context
 
     def get_last_published_email(self, tbe_slug: str) -> TopicBlogEmail:
