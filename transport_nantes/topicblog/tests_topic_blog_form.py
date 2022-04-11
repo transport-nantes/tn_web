@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth.models import Permission, User
 from django.test import LiveServerTestCase, Client
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from django.urls import reverse
 from django.core import mail
@@ -366,6 +367,7 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
         Select(self.browser.find_element_by_name("mailing_list")
                ).select_by_visible_text(self.mailing_list.mailing_list_name)
 
+        self.browser.find_element(By.ID, "id_confirmation_box").click()
         # Confirm choice and send email
         self.browser.find_element_by_xpath("/html/body/form/button").click()
 
