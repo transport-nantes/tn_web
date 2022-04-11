@@ -19,11 +19,6 @@ urlpatterns = [
          name='view_press_by_slug'),
     path('la/<slug:the_slug>/', views.TopicBlogLauncherView.as_view(),
          name='view_launcher_by_slug'),
-    path('e/unsub/<str:token>/',
-         views.UnsubscribeFromMailingListView.as_view(),
-         name="email-unsub"),
-    path('mlp/<slug:the_slug>/', views.TopicBlogMailingListPitchView.as_view(),
-         name="view_mlp_by_slug"),
 
     path('admin/t/view/<int:pkid>/', views.TopicBlogItemViewOne.as_view(),
          name='view_item_by_pkid_only'),

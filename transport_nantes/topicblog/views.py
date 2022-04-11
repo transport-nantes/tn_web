@@ -9,7 +9,7 @@ from django.http import (Http404, HttpResponseBadRequest,
                          HttpResponseServerError)
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
@@ -23,9 +23,8 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
 
-from asso_tn.utils import StaffRequired, make_timed_token, token_valid
+from asso_tn.utils import StaffRequired, make_timed_token
 from mailing_list.events import (get_subcribed_users_email_list,
-                                 unsubscribe_user_from_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
@@ -733,62 +732,10 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
-        url = reverse("topicblog:email-unsub", kwargs={"token": token})
+        url = reverse("mailing_list:newsletter_unsubscribe",
+                      kwargs={"token": token})
         unsub_link = f"{get_current_site(self.request).domain}{url}"
         return unsub_link
-
-
-class UnsubscribeFromMailingListView(TemplateView):
-    """
-    View to unsubscribe a user from a mailing list.
-    """
-    template_name = "topicblog/unsubscribe_from_mailing_list.html"
-
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        token = context['token']
-        email, send_record_id = token_valid(token)
-
-        if email is None or send_record_id is None:
-            logger.info(f"Token {token} is invalid")
-            raise Http404()
-
-        context["send_record_mailing_list"] = \
-            TopicBlogEmailSendRecord.objects.get(
-                pk=send_record_id).mailinglist.mailing_list_name
-        context["user_email"] = email
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-        """
-        Post method to unsubscribe the user from the mailing list.
-        """
-        token = kwargs.get("token", None)
-        if not token:
-            return HttpResponseBadRequest()
-        try:
-            email, send_record_id = token_valid(token)
-        except ValueError:
-            logger.info(f"Token {token} is invalid")
-            raise Http404()
-        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
-        send_record: TopicBlogEmailSendRecord
-        now = datetime.now(timezone.utc)
-        unsubscribe_user_from_list(
-            send_record.recipient, send_record.mailinglist)
-        if send_record.click_time is None:
-            send_record.click_time = now
-        if send_record.unsubscribe_time is None:
-            send_record.unsubscribe_time = now
-
-        send_record.save()
-        context = dict(
-            confirmed_unsub=True,
-            send_record_mailing_list=send_record.mailinglist.mailing_list_name
-        )
-        logger.info(f"{email} unsubscribed from {send_record.mailinglist}")
-        return render(request, self.template_name, context=context)
 
 
 @perm_required("topicblog.tbe.may_send")
@@ -1159,7 +1106,8 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
-        url = reverse("topicblog:email-unsub", kwargs={"token": token})
+        url = reverse("mailing_list:newsletter_unsubscribe",
+                      kwargs={"token": token})
         unsub_link = f"{get_current_site(self.request).domain}{url}"
         return unsub_link
 
