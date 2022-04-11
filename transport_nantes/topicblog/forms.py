@@ -59,6 +59,10 @@ class TopicBlogEmailSendForm(forms.Form):
         label="Liste d'envoi",
         required=True)
 
+    confirmation_box = forms.BooleanField(
+        label="Confirmer l'envoi",
+        required=True)
+
 
 class TopicBlogLauncherForm(ModelForm):
     """
