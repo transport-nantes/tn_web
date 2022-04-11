@@ -1,6 +1,6 @@
 from django.urls import path
-from django.conf import settings
-from .views import (MailingListSignup, QuickPetitionSignup, PetitionView,
+from .views import (MailingListSignup, NewsletterUnsubscriptionView,
+                    QuickPetitionSignup, PetitionView,
                     MailingListListView,  QuickMailingListSignup,
                     UserStatusView, MailingListToggleSubscription)
 
@@ -22,4 +22,6 @@ urlpatterns = [
     path('status', UserStatusView.as_view(), name='user_status'),
     path('toggle_subscription', MailingListToggleSubscription.as_view(),
          name='toggle_subscription'),
+    path('unsub/<str:token>', NewsletterUnsubscriptionView.as_view(),
+         name='newsletter_unsubscribe'),
 ]

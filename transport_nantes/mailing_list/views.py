@@ -1,22 +1,27 @@
 import logging
-from django.contrib.auth.mixins import (PermissionRequiredMixin,
-                                        LoginRequiredMixin)
+from datetime import datetime, timezone
+
+from asso_tn.utils import token_valid
+from asso_tn.views import AssoView
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import (Http404, HttpResponseBadRequest, HttpResponseNotFound,
+                         HttpResponseServerError)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.views.generic import ListView, FormView
+from django.views.generic import FormView, ListView, TemplateView
+from topicblog.models import TopicBlogEmailSendRecord
 
-from asso_tn.views import AssoView
-from .forms import (MailingListSignupForm, QuickMailingListSignupForm,
-                    QuickPetitionSignupForm, SubscribeUpdateForm,
-                    FirstStepQuickMailingListSignupForm)
+from .events import (subscribe_user_to_list, subscriber_count,
+                     unsubscribe_user_from_list, user_current_state,
+                     user_subscribe_count)
+from .forms import (FirstStepQuickMailingListSignupForm, MailingListSignupForm,
+                    QuickMailingListSignupForm, QuickPetitionSignupForm,
+                    SubscribeUpdateForm)
 from .models import MailingList, Petition
-from .events import (user_subscribe_count, subscriber_count,
-                     subscribe_user_to_list, user_current_state,
-                     unsubscribe_user_from_list)
 
 logger = logging.getLogger("django")
 
@@ -314,3 +319,57 @@ class MailingListToggleSubscription(LoginRequiredMixin, FormView):
             context["mailing_list"] = get_object_or_404(
                 MailingList, id=mailing_list_id)
         return context
+
+
+class NewsletterUnsubscriptionView(TemplateView):
+
+    """
+    View to unsubscribe a user from a Newsletter mailing list.
+    """
+    template_name = "mailing_list/unsubscribe_from_mailing_list.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        token = context['token']
+        email, send_record_id = token_valid(token)
+
+        if email is None or send_record_id is None:
+            logger.info(f"Token {token} is invalid")
+            raise Http404()
+
+        context["send_record_mailing_list"] = \
+            TopicBlogEmailSendRecord.objects.get(
+                pk=send_record_id).mailinglist.mailing_list_name
+        context["user_email"] = email
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post method to unsubscribe the user from the mailing list.
+        """
+        token = kwargs.get("token", None)
+        if not token:
+            return HttpResponseBadRequest()
+        try:
+            email, send_record_id = token_valid(token)
+        except ValueError:
+            logger.info(f"Token {token} is invalid")
+            raise Http404()
+        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
+        send_record: TopicBlogEmailSendRecord
+        now = datetime.now(timezone.utc)
+        unsubscribe_user_from_list(
+            send_record.recipient, send_record.mailinglist)
+        if send_record.click_time is None:
+            send_record.click_time = now
+        if send_record.unsubscribe_time is None:
+            send_record.unsubscribe_time = now
+
+        send_record.save()
+        context = dict(
+            confirmed_unsub=True,
+            send_record_mailing_list=send_record.mailinglist.mailing_list_name
+        )
+        logger.info(f"{email} unsubscribed from {send_record.mailinglist}")
+        return render(request, self.template_name, context=context)

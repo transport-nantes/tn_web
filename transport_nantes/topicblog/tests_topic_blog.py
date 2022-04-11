@@ -7,8 +7,7 @@ from mailing_list.models import MailingList
 from mailing_list.events import (get_subcribed_users_email_list,
                                  unsubscribe_user_from_list,
                                  subscribe_user_to_list)
-from topicblog.views import TopicBlogEmailSend
-from .models import TopicBlogEmail, TopicBlogItem, TopicBlogEmailSendRecord
+from .models import TopicBlogEmail, TopicBlogItem
 
 
 class Test(TestCase):
@@ -1021,7 +1020,7 @@ class TopicBlogEmailTest(TestCase):
                              user_type["code"], msg=user_type["msg"])
 
     def test_unsubscribe_invalid_token_status_code(self):
-        url = reverse('topicblog:email-unsub',
+        url = reverse('mailing_list:newsletter_unsubscribe',
                       args=["invalid_token"])
 
         for user_type in self.no_perm_needed_responses:

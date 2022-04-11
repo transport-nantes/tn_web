@@ -15,6 +15,8 @@ from mailing_list.models import MailingList, MailingListEvent
 from .models import TopicBlogEmail, TopicBlogEmailSendRecord, TopicBlogItem
 from selenium.webdriver.chrome.options import Options
 
+from django.conf import settings
+
 
 class TestsTopicItemForm(LiveServerTestCase):
 
@@ -261,7 +263,7 @@ class TestsTopicItemForm(LiveServerTestCase):
         body_app_content = self.selenium.find_element_by_id("app_content")
         body_html = body_app_content.get_attribute('innerHTML')
         self.assertHTMLEqual(
-            body_html, 
+            body_html,
             "<p>new setence 1</p><p>new setence 2</p><p>new setence 3</p>",
             msg="The body innerHTML is not the same"
                 " as what we send to the form")
@@ -347,13 +349,15 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
 
         # Selenium Setup
         options = Options()
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         options.add_argument("--disable-extensions")
         self.browser = WebDriver(ChromeDriverManager().install(),
                                  options=options)
         self.browser.implicitly_wait(5)
         self.neutral_url = \
             self.live_server_url + reverse("authentication:login")
+
+        settings.DEBUG = True
 
     def test_send_email(self):
         # Get on mobilitains.fr
@@ -402,7 +406,7 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
             int_key=send_record.id)
         # Get on the unsubscribe url
         url = self.live_server_url + \
-            reverse("topicblog:email-unsub", args=[token])
+            reverse("mailing_list:newsletter_unsubscribe", args=[token])
         self.browser.get(url)
 
         # Confirm unsubscription

@@ -5,7 +5,7 @@
 
 {% if not confirmed_unsub %}
 {# GET #}
-    <form method="post" action="{% url "topicblog:email-unsub" token %}"
+    <form method="post" action="{% url "mailing_list:newsletter_unsubscribe" token %}"
     class="d-flex flex-column flex-wrap col-10 col-md-6 mx-auto">
         {% csrf_token %}
         <h1 class="d-flex text-center">
