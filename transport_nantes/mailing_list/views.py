@@ -123,6 +123,14 @@ class QuickMailingListSignup(FormView):
                 f"Failed to find mailing_list_token={mailinglist}")
             return HttpResponseServerError()
         subscribe_user_to_list(user, mailing_list_obj)
+
+        if mailing_list_obj.linked_article:
+            kwargs = {
+                "the_slug": mailing_list_obj.linked_article.slug,
+                }
+            url = (reverse_lazy("topicblog:view_item_by_slug", kwargs=kwargs)
+                   + '?just_subscribed=true')
+            return redirect(to=url)
         return render(self.request, self.template_name, {})
 
     def form_invalid(self, form):
