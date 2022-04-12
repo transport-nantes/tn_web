@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 import django.utils.timezone
 
 
@@ -43,6 +44,10 @@ class MailingList(models.Model):
     # order because you have an interest in something.  Privacy laws
     # pretty much prevent us from telling anyone who signed anyway.
     is_petition = models.BooleanField(default=False)
+    # User once they subscribe to a mailing_list, are redirected to the
+    # linked_article.
+    linked_article = models.ForeignKey('topicblog.TopicBlogItem', blank=True,
+                                       null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return '{name} ({token}) f={freq} semaines'.format(
