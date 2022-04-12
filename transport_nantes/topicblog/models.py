@@ -1110,3 +1110,73 @@ class TopicBlogLauncher(TopicBlogObjectBase):
 
     def __str__(self):
         return f"{self.headline} - ID : {self.pk}"
+
+
+class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
+    """
+    Mailist list pitch is a page that promotes a mailing
+    list to the user, in order to get them to subscribe.
+    """
+    class Meta:
+        verbose_name_plural = "Mailing list pitches"
+        permissions = (
+            ("tbmlp.may_view",
+             "May view unpublished TopicBlogMailingListPitch"),
+            ("tbmlp.may_edit",
+             "May create and modify TopicBlogMailingListPitch"),
+            ("tbmlp.may_publish",
+             "May publish TopicBlogMailingListPitch"),
+            ("tbmlp.may_publish_self",
+             "May publish own TopicBlogMailingListPitch"),
+        )
+
+    body_text_1_md = models.TextField(blank=True)
+    cta_1_slug = models.SlugField(max_length=90, allow_unicode=True,
+                                  blank=True)
+    cta_1_label = models.CharField(max_length=80, blank=True)
+    mailing_list = models.ForeignKey('mailing_list.MailingList',
+                                     on_delete=models.PROTECT)
+    subscription_form_title = models.CharField(max_length=80, blank=True)
+    subscription_form_button_label = models.CharField(max_length=80,
+                                                      blank=True)
+
+    template_config_default = {
+        "optional_fields_for_publication": (
+            'header_title',
+            'header_image', 'header_description',
+            'cta_1_slug', 'cta_1_label',
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image',
+        ),
+        "one_of_fields_for_publication": [
+            ['header_title', 'header_description'],
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+            ['cta_1_slug', 'cta_1_label'],
+        ],
+    }
+    template_config = {
+        'topicblog/content_mlp.html': {
+            'user_template_name': 'Classique',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'header': True,
+                'body_text_1_md': True,
+                'cta_1_slug:': True,
+                'cta_1_label': True,
+                'mailing_list:': True,
+                'social_media': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
