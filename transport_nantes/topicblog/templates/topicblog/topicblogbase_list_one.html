@@ -43,7 +43,7 @@
             Créé {{ object.date_modified|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
             <br>
             <a type="button" class="btn btn-outline-info btn-sm"
-            href="{{object.get_edit_url}}">Modifier</a>
+            href="{{object.get_edit_url}}?from={{request.GET.from}}">Modifier</a>
             <a type="button" class="btn btn-outline-info btn-sm"
             href="{{object.get_absolute_url}}">Visualiser</a>
         </p>
