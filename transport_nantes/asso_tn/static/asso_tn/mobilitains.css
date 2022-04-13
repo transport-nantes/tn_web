@@ -173,6 +173,19 @@ a:hover:hover.cta-button {
     padding-left: 0;
     padding-right: 0;
 }
+.fade-out {
+    animation: fadeOut 2s forwards;
+    animation-delay: 3s;
+}
+
+@keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+@-webkit-keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
 .font-weight-light {
     font-variant: all-small-caps;
     font-size: 150%;
