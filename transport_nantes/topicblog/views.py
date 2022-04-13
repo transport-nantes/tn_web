@@ -51,6 +51,7 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
 
     """
     login_url = reverse_lazy("authentication:login")
+    template_name = 'topicblog/topicblogbase_edit.html'
 
     def get_context_data(self, **kwargs):
         # In FormView, we must use the self.kwargs to retrieve the URL
@@ -69,6 +70,58 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
             context = super().get_context_data(**kwargs)
         context['tb_object'] = tb_object
         context["slug_fields"] = tb_object.get_slug_fields()
+
+        context = self.fill_form_tabs(context)
+        return context
+
+    def fill_form_tabs(self, context: dict) -> dict:
+        """Pass to context only the appropriate forms
+        e.g., if a form doesn't have any of the "form_content_b"'s fields
+        the form_content_b wont be displayed.
+        """
+        form = self.form_class()
+        possible_forms = {
+            "form_admin": [
+                "slug", "subject", "title", "template_name", 'template',
+                "header_title", "header_description", "header_image",
+                "mailing_list", "article_slug", "campaign_name",
+            ],
+            "form_content_a": [
+                "body_text_1_md", "cta_1_slug", 'body_image',
+                'body_image_alt_text', "cta_1_label", "body_image_1",
+                "body_image_1_alt_text", "headline", "launcher_text_md",
+                "launcher_image", "launcher_image_alt_text", "teaser_chars",
+                "subscription_form_title", "subscription_form_button_label",
+                "body_text_2_md", "cta_2_slug", "cta_2_label",
+            ],
+            "form_content_b": [
+                "body_image_2", "body_image_2_alt_text", 'body_text_3_md',
+                'cta_3_slug', 'cta_3_label',
+            ],
+            "form_social": ["social_description", "twitter_title",
+                            "twitter_description", "twitter_image",
+                            "og_title", "og_description", "og_image"],
+            "form_notes": ["author_notes"]
+        }
+        # Other fields is a catch-all that gets every field that should
+        # be included but isn't because not sorted in the get_context_data
+        # function
+        other_fields = []
+        # Add to context only the necessary forms
+        for form_field_name, _ in form.fields.items():
+            field_found = False
+            for form_name, _ in possible_forms.items():
+                if form_field_name in possible_forms[form_name]:
+                    context[form_name] = possible_forms[form_name]
+                    field_found = True
+                    break
+            if not field_found:
+                print("not found:", form_field_name)
+                other_fields.append(form_field_name)
+
+        if other_fields:
+            context["form_others"] = other_fields
+
         return context
 
     def form_valid(self, form):
@@ -263,31 +316,8 @@ class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
 
     """
     model = TopicBlogItem
-    template_name = 'topicblog/tb_item_edit.html'
     form_class = TopicBlogItemForm
-
     permission_required = 'topicblog.tbi.may_edit'
-
-    def get_context_data(self, **kwargs):
-
-        context = super().get_context_data(**kwargs)
-        tb_item = context['tb_object']
-
-        context["form_admin"] = ["slug", "template", "title", "header_image",
-                                 "header_title", "header_description",
-                                 "header_slug", "content_type"]
-        context["form_content_a"] = ["body_text_1_md", "cta_1_slug",
-                                     "cta_1_label", "body_text_2_md",
-                                     "cta_2_slug", "cta_2_label", ]
-        context["form_content_b"] = ["body_image", "body_image_alt_text",
-                                     "body_text_3_md", "cta_3_slug",
-                                     "cta_3_label", ]
-        context["form_social"] = ["social_description", "twitter_title",
-                                  "twitter_description", "twitter_image",
-                                  "og_title", "og_description", "og_image"]
-        context["form_notes"] = ["author_notes"]
-
-        return context
 
     def form_post_process(self, tb_item, tb_existing, form):
         """
@@ -384,29 +414,7 @@ class TopicBlogEmailEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
     model = TopicBlogEmail
     permission_required = 'topicblog.tbe.may_edit'
-    template_name = 'topicblog/tb_email_edit.html'
     form_class = TopicBlogEmailForm
-
-    def get_context_data(self, **kwargs):
-
-        context = super().get_context_data(**kwargs)
-        context["form_admin"] = ["slug", "subject", "title",
-                                 "header_title", "header_description",
-                                 "header_image", "template_name"]
-        context["form_content_a"] = ["body_text_1_md", "cta_1_slug",
-                                     "cta_1_label", "body_image_1",
-                                     "body_image_1_alt_text",
-                                     ]
-        context["form_content_b"] = ["body_text_2_md", "cta_2_slug",
-                                     "cta_2_label", "body_image_2",
-                                     "body_image_2_alt_text",
-                                     ]
-        context["form_social"] = ["social_description", "twitter_title",
-                                  "twitter_description", "twitter_image",
-                                  "og_title", "og_description", "og_image"]
-        context["form_notes"] = ["author_notes"]
-
-        return context
 
     def form_post_process(self, tb_email, tb_existing, form):
         """
@@ -821,20 +829,7 @@ class TopicBlogPressEdit(PermissionRequiredMixin,
                          TopicBlogBaseEdit):
     model = TopicBlogPress
     permission_required = 'topicblog.tbp.may_edit'
-    template_name = 'topicblog/tb_press_edit.html'
     form_class = TopicBlogPressForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form_admin"] = ["slug", "template_name", "title", "subject",
-                                 "header_title", "header_description",
-                                 "header_image", "body_text_1_md",
-                                 "body_image_1", "body_image_1_alt_text"]
-        context["form_social"] = ["social_description", "twitter_title",
-                                  "twitter_description", "twitter_image",
-                                  "og_title", "og_description", "og_image", ]
-        context["form_notes"] = ["author_notes"]
-        return context
 
     def form_post_process(self, tb_press, tb_existing, form):
         """
@@ -1192,7 +1187,6 @@ class TopicBlogLauncherEdit(PermissionRequiredMixin,
                             TopicBlogBaseEdit):
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_edit'
-    template_name = 'topicblog/tb_launcher_edit.html'
     form_class = TopicBlogLauncherForm
 
     def form_post_process(self, tb_launcher, tb_existing, form):

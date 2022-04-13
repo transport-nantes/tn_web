@@ -138,6 +138,11 @@ class TopicBlogObjectBase(models.Model):
     listone_object_url = None
     listall_object_url = None
     viewbyslug_object_url = None
+    # The description is meant to be a really short string description
+    # of what the object is supposed to render into.
+    # e.g. a TopicBlogItem is a "Page de blog"
+    # This is used as header in object-related forms
+    description_of_object = None
 
     def __str__(self):
         if self.slug:
@@ -522,6 +527,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_items_by_slug'
     listall_object_url = 'topicblog:list_items'
     viewbyslug_object_url = 'topicblog:view_item_by_slug'
+    description_of_object = 'Page de blog'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -701,6 +707,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_emails_by_slug'
     listall_object_url = 'topicblog:list_emails'
     viewbyslug_object_url = 'topicblog:view_email_by_slug'
+    description_of_object = 'Email'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -897,6 +904,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_press_by_slug'
     listall_object_url = 'topicblog:list_press'
     viewbyslug_object_url = 'topicblog:view_press_by_slug'
+    description_of_object = 'Communiqué de presse'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -1077,6 +1085,7 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     listone_object_url = 'topicblog:list_launcher_by_slug'
     listall_object_url = 'topicblog:list_launcher'
     viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
+    description_of_object = 'Lanceur'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).

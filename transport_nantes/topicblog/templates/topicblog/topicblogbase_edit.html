@@ -6,6 +6,7 @@
 {% load newsletter %}
 {% load crispy_forms_tags %}
 
+
 {% block meta_descr %}
 <meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
 {% endblock meta_descr %}
@@ -34,8 +35,8 @@ It is retrieved inside clean_slug_field.js
 {{slug_fields|json_script:"slug_fields"}}
 
 <div class="d-flex col-12 col-sm-10 col-lg-8 flex-column justify-content-center mx-auto">
-	<h2 class="text-center">Pages de blog</h2>
-	{% if tb_object.id and user.is_superuser %}
+	<h2 class="text-center">{{ tb_object.description_of_object }}</h2>
+    {% if tb_object.id and user.is_superuser %}
 		<div class="text-center">
 			<h5>Vous modifiez l'élément suivant :</h5>
 			<p>id : {{tb_object.id}}, slug : {{tb_object.slug}}, titre : {{tb_object.title}}</p>
@@ -45,21 +46,33 @@ It is retrieved inside clean_slug_field.js
         {% csrf_token %}
 	<div class="container">
 	  <ul class="nav nav-tabs" role="tablist">
+        {% if form_admin %}
 	    <li class="nav-item">
 	      <a class="nav-link active" data-toggle="tab" href="#form_admin">Admin</a>
-	    </li>
+	    </li>{% endif %}
+        {% if form_content_a %}
 	    <li class="nav-item">
 	      <a class="nav-link" data-toggle="tab" href="#form_content_a">Contenu (1)</a>
-	    </li>
+	    </li>{% endif %}
+        {% if form_content_b %}
 	    <li class="nav-item">
 	      <a class="nav-link" data-toggle="tab" href="#form_content_b">Contenu (2)</a>
-	    </li>
+	    </li>{% endif %}
+        {% if form_social %}
 	    <li class="nav-item">
 	      <a class="nav-link" data-toggle="tab" href="#form_social">Social</a>
-	    </li>
+	    </li>{% endif %}
+        {% if form_notes %}
 		<li class="nav-item">
 	      <a class="nav-link" data-toggle="tab" href="#form_notes">Notes</a>
-	    </li>
+	    </li>{% endif %}
+        {% if form_others %} {% comment %}
+        This pane shouldn't be shown : it's a catch-all if we forget to add 
+        a field name in the get_context data, it will appear here.
+        {% endcomment %}
+		<li class="nav-item">
+	      <a class="nav-link" data-toggle="tab" href="#form_others">Autres</a>
+	    </li>{% endif %}
 	  </ul>
 
 	  <!-- Tab panes -->
@@ -70,9 +83,6 @@ It is retrieved inside clean_slug_field.js
 						<div class="fieldWrapper">
 							{{ field.errors }}
 							{{ field|as_crispy_field }}
-							{% comment %}{% if field.help_text %}
-								<p class="help">{{ field.help_text|safe }}</p>
-							{% endif %}{% endcomment %}
 						</div>
 				{% endif %}
 			{% endfor %}
@@ -83,9 +93,6 @@ It is retrieved inside clean_slug_field.js
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% comment %}{% if field.help_text %}
-							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -96,9 +103,6 @@ It is retrieved inside clean_slug_field.js
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% comment %}{% if field.help_text %}
-							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -109,9 +113,6 @@ It is retrieved inside clean_slug_field.js
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% comment %}{% if field.help_text %}
-							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}{% endcomment %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -122,9 +123,16 @@ It is retrieved inside clean_slug_field.js
 					<div class="fieldWrapper">
 						{{ field.errors }}
 						{{ field|as_crispy_field }}
-						{% comment %}{% if field.help_text %}
-							<p class="help">{{ field.help_text|safe }}</p>
-						{% endif %}{% endcomment %}
+					</div>
+				{% endif %}
+			{% endfor %}
+	    </div>
+        <div id="form_others" class="container tab-pane fade"><br>
+			{% for field in form %}
+				{% if field.name in form_others %}
+					<div class="fieldWrapper">
+						{{ field.errors }}
+						{{ field|as_crispy_field }}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -132,11 +140,10 @@ It is retrieved inside clean_slug_field.js
 	  </div>
 		<div id="button-container" class="d-flex container justify-content-around">
 			<input class="btn navigation-button mt-3" type="button" value="Réinitialiser" onclick="window.location.href=window.location.href">
-			<a href="{% url 'topicblog:list_items' %}" class="btn navigation-button mt-3">Retour à la liste</a>
+			<a href="{% url tb_object.listall_object_url %}?active={{ request.GET.from }}" class="btn navigation-button mt-3">Retour à la liste</a>
 			<input class="btn navigation-button mt-3" type="submit" value="Sauvegarder" name="sauvegarder">
 		</div>
 	</div>
     </form>
 </div>
-
 {% endblock %}
