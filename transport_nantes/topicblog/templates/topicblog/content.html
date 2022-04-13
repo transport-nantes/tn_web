@@ -67,12 +67,20 @@
           <p class="hero-description">{{ page.header_description }}</p>
      </div>
 </div>
-
 <!-- Main container with the content of the article -->
 <div class="container-fluid py-5 px-0">
      {% block app_content %}
      <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
-          
+          {% if request.GET.just_subscribed == 'true' %}
+
+          <button id="just_subscribed_button" class="d-flex flex-row alert alert-dismissible fade-out mt-2 mb-2 mr-auto navigation-button" role="alert">
+               <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+               <p class="mx-auto mb-0" style="color:inherit;">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    Fait.<br/>
+               </p>
+          </button>
+          {% endif %}
           {# First paragraph of text #}
           {% tn_markdown page.body_text_1_md %} 
           {# First CTA, if any #}
