@@ -14,7 +14,7 @@ class TopicBlogItemForm(ModelForm):
         model = TopicBlogItem
         # Admins can still edit those values
         exclude = ('item_sort_key', 'servable', 'user',
-                   'publication_date')
+                   'publication_date', 'first_publication_date', 'publisher')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
