@@ -1189,3 +1189,32 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
                 template_config_default['dependent_field_names'],
         },
     }
+
+    new_object_url = 'topicblog:new_mlp'
+    listone_object_url = 'topicblog:list_mlp_by_slug'
+    listall_object_url = 'topicblog:list_mlp'
+    viewbyslug_object_url = 'topicblog:view_mlp_by_slug'
+    viewbyid_object_url = 'topicblog:view_mlp_by_pkid'
+    description_of_object = 'Pitch de mailing list'
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse("topicblog:view_mlp_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse("topicblog:view_mlp_by_pkid_only",
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse("topicblog:edit_mlp_by_pkid",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_mlp",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})

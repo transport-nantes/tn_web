@@ -1,0 +1,98 @@
+{% extends 'topicblog/base_mlp.html' %}
+
+{% block meta_descr %}
+<meta name="description" content="Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse des villes et des périphéries."/>
+{% endblock meta_descr %}
+{% load static %}
+{% load markdown %}
+{% load don %}
+{% load mpanels %}
+{% load newsletter %}
+{% block og_image_alt %}{% endblock og_image_alt %}
+{% block og_image_type %}{% endblock og_image_type %}
+{% block og_image_image %}{% endblock og_image_image %}
+{% block twitter_title %}Mobilitains - Pour une mobilité multimodale{% endblock twitter_title %}
+{% block twitter_description %}Nous agissons pour une mobilité plus fluide, plus sécurisée et plus vertueuse.{% endblock twitter_description %}
+
+
+{% block styles %}
+     {% comment %}
+       block.super allows us to add the content of parent block to the current block
+       Otherwise we would override the parent block
+     {% endcomment %}
+
+     {{ block.super }}
+
+     {% comment %}
+       This is mostly a copy pasted version of the block.super, adapted to TBv2
+       Inline styles should be avoided because they can be hard to edit for front
+       but we need the template engine to work on the background-image attribute.
+     {% endcomment %}
+     {% if page.header_image %}
+          <style>
+               .hero-image {
+               /*
+               Use "linear-gradient" to add a darken background effect to the
+               image (photographer.jpg). This will make the text easier to read
+               */
+               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+               url("{{ page.header_image.url }}");
+
+               /* Set a specific height */
+               height: 40%;
+
+               /* Position and center the image to scale nicely on all screens */
+               background-position: center;
+               background-repeat: no-repeat;
+               background-size: cover;
+               position: relative;
+               }
+          </style>
+
+     {% endif %}
+
+{% endblock styles %}
+
+{% block content %}
+<!-- Banner with the image above the written content -->
+<div class="hero-image">
+     <div class="hero-text">
+          <h1 class="hero-title">{{ page.header_title }}</h1>
+          <p class="hero-description">{{ page.header_description }}</p>
+     </div>
+</div>
+
+<!-- Main container with the content of the article -->
+<div class="container-fluid py-5 px-0">
+     {% block app_content %}
+     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
+          
+          {# First paragraph of text #}
+          {% tn_markdown page.body_text_1_md %} 
+          {# First CTA, if any #}
+          {% if page.cta_1_slug|length > 0 %}
+            <div class="d-flex mx-auto flex-nowrap">
+                <a href="{% url 'topicblog:view_item_by_slug' page.cta_1_slug %}" 
+                    class="btn donation-button my-3">
+                    {{ page.cta_1_label }}
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
+          {% endif %}
+          {% show_mailing_list  mailinglist=page.mailing_list.mailing_list_token title=page.subscription_form_title %}
+
+           
+     </div>
+
+     {% endblock app_content%}
+</div>
+     <div class="background-ad-hoc-blue">
+          <div class="d-flex flex-column p-4 p-xl-5">
+               {% show_projects %}
+               {% show_mailing_list  mailinglist="general-quarterly" title="Restez en contact !" %}
+               {% show_qui_sommes_nous %}
+              {% show_volunteer %}
+          </div>
+     </div>
+     
+{% endblock content %}

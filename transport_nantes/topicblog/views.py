@@ -28,11 +28,12 @@ from mailing_list.events import (get_subcribed_users_email_list,
                                  unsubscribe_user_from_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
-from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogPress,
-                     TopicBlogLauncher, TopicBlogEmailSendRecord)
+from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
+                     TopicBlogPress, TopicBlogLauncher,
+                     TopicBlogEmailSendRecord)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
-                    TopicBlogPressForm)
+                    TopicBlogMailingListPitchForm, TopicBlogPressForm)
 
 logger = logging.getLogger("django")
 
@@ -1245,3 +1246,44 @@ class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
 class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_view'
+
+
+class TopicBlogMailingListPitchView(TopicBlogBaseView):
+    model = TopicBlogMailingListPitch
+
+
+class TopicBlogMailingListPitchEdit(PermissionRequiredMixin,
+                                    TopicBlogBaseEdit):
+
+    model = TopicBlogMailingListPitch
+    permission_required = 'topicblog.tbmlp.may_edit'
+    form_class = TopicBlogMailingListPitchForm
+
+
+class TopicBlogMailingListPitchList(PermissionRequiredMixin,
+                                    TopicBlogBaseList):
+    model = TopicBlogMailingListPitch
+    permission_required = 'topicblog.tbmlp.may_view'
+
+
+class TopicBlogMailingListPitchViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.mlp.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.mlp.may_view')
+        return super().has_permission()
+
+
+class TopicBlogMailingListPitchViewOne(
+        TopicBlogMailingListPitchViewOnePermissions,
+        TopicBlogBaseViewOne):
+    model = TopicBlogMailingListPitch
