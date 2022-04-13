@@ -177,78 +177,6 @@ class TopicBlogObjectBase(models.Model):
 
         return slug_fields
 
-
-class TopicBlogObjectSocialBase(TopicBlogObjectBase):
-
-    """
-    Represent all that is common in various the various
-    TopicBlogObjects that contain social media metadata and are
-    directly servable (Item, Email, etc.).
-    """
-
-    class Meta:
-        abstract = True
-
-    # The HTML document <title>.
-    title = models.CharField(max_length=100, blank=True)
-    # The header is the (optional) large full-width image, possibly
-    # with some overlaying text, that appears at the top of many
-    # pages.
-    header_image = models.ImageField(
-        upload_to='header/', blank=True,
-        help_text='résolution recommandée : 1600x500')
-    header_title = models.CharField(max_length=80, blank=True)
-    header_description = models.CharField(max_length=120, blank=True)
-
-    # Social media ##################################################
-    #
-    # We'll want to encode somewhere the recommended image sizes for
-    # different social media.  And if the user only specs one social
-    # network, we should do our best to provide data for the others.
-
-    # Optional editor notes about what this social data is trying to do.
-    social_description = models.TextField(
-        blank=True,
-        help_text='Notes pour humains des objectifs (marketing) de la page')
-
-    twitter_title = models.CharField(max_length=80, blank=True)
-    twitter_description = models.TextField(blank=True)
-    twitter_image = models.ImageField(
-        upload_to='twitter/', blank=True,
-        help_text='2:1, résolution minimum : 300x157, max 4096x4096')
-    # Cf. https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image # noqa
-
-    og_title = models.CharField(max_length=80, blank=True)
-    og_description = models.TextField(blank=True)
-    og_image = models.ImageField(
-        upload_to='opengraph/', blank=True,
-        help_text='résolution recommandée : 1200x630')
-    # Cf. https://iamturns.com/open-graph-image-size/
-    # Cf. https://developers.facebook.com/docs/sharing/best-practices/
-    # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064 # noqa
-
-    author_notes = models.TextField(
-        help_text='Notes pour éditeurs : ne seront pas affichées sur le site',
-        verbose_name="Notes libres pour éditeurs",
-        blank=True, null=True)
-
-    def set_social_context(self, context):
-        """
-        inherited from original TB, it adds socials related
-        fields to the context["social"] entry of the context dict.
-        """
-        social = {}
-        social['twitter_title'] = self.twitter_title
-        social['twitter_description'] = self.twitter_description
-        social['twitter_image'] = self.twitter_image
-
-        social['og_title'] = self.og_title
-        social['og_description'] = self.og_description
-        social['og_image'] = self.og_image
-
-        context['social'] = social
-        return context
-
     def is_publishable(self) -> bool:
         """
         Return True if the object may be published.
@@ -376,6 +304,78 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
                     fields.add('og_image')
                     continue
         return fields
+
+
+class TopicBlogObjectSocialBase(TopicBlogObjectBase):
+
+    """
+    Represent all that is common in various the various
+    TopicBlogObjects that contain social media metadata and are
+    directly servable (Item, Email, etc.).
+    """
+
+    class Meta:
+        abstract = True
+
+    # The HTML document <title>.
+    title = models.CharField(max_length=100, blank=True)
+    # The header is the (optional) large full-width image, possibly
+    # with some overlaying text, that appears at the top of many
+    # pages.
+    header_image = models.ImageField(
+        upload_to='header/', blank=True,
+        help_text='résolution recommandée : 1600x500')
+    header_title = models.CharField(max_length=80, blank=True)
+    header_description = models.CharField(max_length=120, blank=True)
+
+    # Social media ##################################################
+    #
+    # We'll want to encode somewhere the recommended image sizes for
+    # different social media.  And if the user only specs one social
+    # network, we should do our best to provide data for the others.
+
+    # Optional editor notes about what this social data is trying to do.
+    social_description = models.TextField(
+        blank=True,
+        help_text='Notes pour humains des objectifs (marketing) de la page')
+
+    twitter_title = models.CharField(max_length=80, blank=True)
+    twitter_description = models.TextField(blank=True)
+    twitter_image = models.ImageField(
+        upload_to='twitter/', blank=True,
+        help_text='2:1, résolution minimum : 300x157, max 4096x4096')
+    # Cf. https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image # noqa
+
+    og_title = models.CharField(max_length=80, blank=True)
+    og_description = models.TextField(blank=True)
+    og_image = models.ImageField(
+        upload_to='opengraph/', blank=True,
+        help_text='résolution recommandée : 1200x630')
+    # Cf. https://iamturns.com/open-graph-image-size/
+    # Cf. https://developers.facebook.com/docs/sharing/best-practices/
+    # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064 # noqa
+
+    author_notes = models.TextField(
+        help_text='Notes pour éditeurs : ne seront pas affichées sur le site',
+        verbose_name="Notes libres pour éditeurs",
+        blank=True, null=True)
+
+    def set_social_context(self, context):
+        """
+        inherited from original TB, it adds socials related
+        fields to the context["social"] entry of the context dict.
+        """
+        social = {}
+        social['twitter_title'] = self.twitter_title
+        social['twitter_description'] = self.twitter_description
+        social['twitter_image'] = self.twitter_image
+
+        social['og_title'] = self.og_title
+        social['og_description'] = self.og_description
+        social['og_image'] = self.og_image
+
+        context['social'] = social
+        return context
 
     def __str__(self):
         if self.slug:
