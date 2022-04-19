@@ -183,7 +183,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'fr'
 TIME_ZONE = 'UTC'
-USE_I18N = False
+USE_I18N = True
 USE_L10N = False
 USE_TZ = True
 # TODO: stay on same page if authorised to do so.
