@@ -24,6 +24,13 @@ DEBUG = settings_local.DEBUG
 ROLE = settings_local.ROLE
 
 ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
+# Requirement for Django-debug-toolbar
+# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configure-internal-ips
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+    "0.0.0.0",
+]
 
 # Application definition
 
@@ -49,6 +56,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_countries',
     'press',
+    'debug_toolbar',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -57,6 +65,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
