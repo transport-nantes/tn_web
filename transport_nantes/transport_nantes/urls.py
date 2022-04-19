@@ -49,6 +49,7 @@ urlpatterns = [
     # path('??', include('velopolitain_observatoire.urls')),
     path("donation/", include('stripe_app.urls')),
     path("presse/", include('press.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
 
 if ROLE != 'production':
