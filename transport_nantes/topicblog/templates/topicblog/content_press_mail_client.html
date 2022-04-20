@@ -1,6 +1,7 @@
 {% extends 'topicblog/base_email_client.html' %}
 {% load static %}
 {% load email_tags %}
+{% load absolute_url %}
 
 {% block email_content %}
 
@@ -8,10 +9,11 @@
 <table role="presentation"
 style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
     <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
-        <a href="{{ request.scheme }}://{{ host }}{% url 'topicblog:view_press_by_slug' page.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">
+        <a href="{% absolute_url 'topicblog:view_press_by_slug' page.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">
             Voir sur le site web
         </a>
     </tr>
+    <img src="{% absolute_url 'topicblog:beacon_view' token %}.gif" alt="space" height="1" width="1">
     <tr>
         {# These rows handle the logo display #}
         <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#ffffff;">
@@ -45,7 +47,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
             <p style="margin:0;font-size:14px;line-height:20px;">
                 &reg; Mobilitains 2022<br>
-                <a class="unsub" href="{{ request.scheme }}://{{ unsub_link }}" style="color:#cccccc;text-decoration:underline;">Préférences Presse</a>
+                <a class="unsub" href="{% absolute_url 'mailing_list:press_subscription_management' token %}" style="color:#cccccc;text-decoration:underline;">Préférences Presse</a>
             </p>
         </td>
     </tr> <!-- End of Footer -->
