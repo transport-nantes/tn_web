@@ -1106,7 +1106,7 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
-        url = reverse("mailing_list:newsletter_unsubscribe",
+        url = reverse("mailing_list:press_subscription_management",
                       kwargs={"token": token})
         unsub_link = f"{get_current_site(self.request).domain}{url}"
         return unsub_link
