@@ -1,12 +1,13 @@
 from collections import Counter
 from datetime import datetime, timezone
 import logging
+from pathlib import Path
 from django.conf import settings
 from django.core import mail
 
 from django.db.models import Count, Max
 from django.http import (Http404, HttpResponseBadRequest,
-                         HttpResponseServerError)
+                         HttpResponseServerError, FileResponse)
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -15,7 +16,6 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -23,7 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
 
-from asso_tn.utils import StaffRequired, make_timed_token
+from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
@@ -700,12 +700,11 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["context_appropriate_base_template"] = \
             "topicblog/base_email.html"
         context["email"] = tb_email
-        context["host"] = get_current_site(self.request).domain
 
         # The unsubscribe link is created with the send_record and the
         # user's email hidden in a token.
-        context["unsub_link"] = \
-            self.get_unsubscribe_link(recipient[0], send_record_id)
+        context["token"] = \
+            self.get_unsubscribe_token(recipient[0], send_record_id)
 
         return context
 
@@ -724,18 +723,15 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         send_record.save()
         return send_record
 
-    def get_unsubscribe_link(self, email: str, send_record_id: int) -> str:
+    def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
         """
-        Create a link to unsubscribe the user from the mailing list.
+        Create a token to unsubscribe the user from the mailing list.
         """
         email = email
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
-        url = reverse("mailing_list:newsletter_unsubscribe",
-                      kwargs={"token": token})
-        unsub_link = f"{get_current_site(self.request).domain}{url}"
-        return unsub_link
+        return token
 
 
 @perm_required("topicblog.tbe.may_send")
@@ -1074,12 +1070,11 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["context_appropriate_base_template"] = \
             "topicblog/base_press.html"
         context["page"] = tb_email
-        context["host"] = get_current_site(self.request).domain
 
         # The unsubscribe link is created with the send_record and the
         # user's email hidden in a token.
-        context["unsub_link"] = \
-            self.get_unsubscribe_link(recipient[0], send_record_id)
+        context["token"] = \
+            self.get_unsubscribe_token(recipient[0], send_record_id)
 
         return context
 
@@ -1098,18 +1093,15 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
         send_record.save()
         return send_record
 
-    def get_unsubscribe_link(self, email: str, send_record_id: int) -> str:
+    def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
         """
-        Create a link to unsubscribe the user from the mailing list.
+        Create a token to unsubscribe the user from the mailing list.
         """
         email = email
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
-        url = reverse("mailing_list:press_subscription_management",
-                      kwargs={"token": token})
-        unsub_link = f"{get_current_site(self.request).domain}{url}"
-        return unsub_link
+        return token
 
 
 ######################################################################
@@ -1235,3 +1227,24 @@ class TopicBlogMailingListPitchViewOne(
         TopicBlogMailingListPitchViewOnePermissions,
         TopicBlogBaseViewOne):
     model = TopicBlogMailingListPitch
+
+
+def beacon_view(response, **kwargs):
+
+    # We remove the ".gif" from the end of the token
+    token = kwargs['token'][:-4]
+    email, send_record_id = token_valid(token)
+    if email and send_record_id:
+        # In case the token is valid, we update the open_time
+        send_record: TopicBlogEmailSendRecord
+        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
+        if not send_record.open_time:
+            send_record.open_time = datetime.now(timezone.utc)
+            send_record.save()
+            logger.info(f"{email} opened email (SR.id :{send_record.pk})")
+
+    path_to_beacon = (Path(__file__).parent.parent / "asso_tn" / "static" /
+                      "asso_tn" / "beacon.gif")
+    image = open(path_to_beacon, "rb")
+    response = FileResponse(image, content_type="image/gif")
+    return response

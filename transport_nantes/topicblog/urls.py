@@ -20,6 +20,9 @@ urlpatterns = [
     path('la/<slug:the_slug>/', views.TopicBlogLauncherView.as_view(),
          name='view_launcher_by_slug'),
 
+    path('e/i/<str:token>', views.beacon_view,
+         name='beacon_view'),
+
     path('admin/t/view/<int:pkid>/', views.TopicBlogItemViewOne.as_view(),
          name='view_item_by_pkid_only'),
     path('admin/e/view/<int:pkid>/', views.TopicBlogEmailViewOne.as_view(),
