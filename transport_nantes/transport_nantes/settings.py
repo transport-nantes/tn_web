@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_countries',
     'press',
     'debug_toolbar',
+    'photo',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
