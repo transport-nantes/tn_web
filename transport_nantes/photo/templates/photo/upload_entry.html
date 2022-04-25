@@ -1,0 +1,65 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load don %}
+{% load markdown %}
+
+{% block app_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 pb-3">
+            {# ####  This should be db-driven!  #### #}
+            <h1>Opération Piéton</h1>
+        </div>
+    </div>
+
+    <div class="row">
+	<div class="col-lg-12">
+	    <p>Hello.</p>
+	</div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <hr>
+            <p style="{color: var(--body-text-muted);" class="body-text-muted small" >
+               Pour signaler une omission ou une erreur, contactez-nous par <a href="https://twitter.com/Mobilitains" target="_blank">twitter</a> ou <a href="mailto:jevousaide@mobilitains.fr" target="_blank">mél</a>.
+            </p>
+            <p style="{color: var(--body-text-muted);" class="small">
+                <b>Si vous êtes élu, candidat, membre d'une liste ou d'un
+                    parti politique,</b> nous vous invitons à télécharger notre
+                liste de dix questions et de nous envoyer vos
+                réponses en cliquant
+                <a href={% url 'surveys:choose_commune' survey_id %}>ici</a>.
+            </p>
+            <hr>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <p class="small">
+                        Depuis 2020 l'association des Mobilitains s'est fixé comme objectif de
+                        contacter l'ensemble des candidats lors des campagnes
+			électorales. Les Mobilitains souhaitent mettre en
+                        avant les visions des différents candidats
+                        concernant leurs perspectives d’évolution au sujet
+                        de la mobilité dans leur région et sur le territoire
+			de la France métropolitaine.</p>
+                </div>
+            </div>
+            <p class="small"><em>
+                Association 1901, les Mobilitains militent pour
+                un système de transport équilibré dans la région
+                nantaise, au Pays de la Loire et sur tout le
+                territoire français.  Nous sommes soutenus à 100% par vous, nos
+                concitoyens, et c’est votre voix qui nous permet de porter
+                la nôtre. Faites un geste au niveau qui vous semble mieux
+                : donnez nous la force d’agir pour vous !</em>
+            </p>
+
+            <p align="center">
+                {% bouton_don_lg "J'adhère" %}
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
