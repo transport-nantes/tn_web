@@ -49,6 +49,24 @@ class MailingList(models.Model):
     linked_article = models.ForeignKey('topicblog.TopicBlogItem', blank=True,
                                        null=True, on_delete=models.SET_NULL)
 
+    # The mailing_list_type is a class that indicates us the type of
+    # the instance we're dealing with : a Newsletter, a petition or a
+    # press mailing list.
+    # Those types are used to set different unsubscription flows.
+
+    class MailingListType(models.TextChoices):
+        """This class is used to indicate the type of the mailing list.
+        """
+        NEWSLETTER = 'NEWSLETTER', 'Newsletter'
+        PETITION = 'PETITION', 'Petition'
+        PRESS = 'PRESS', 'Press'
+
+    mailing_list_type = models.CharField(
+        max_length=30,
+        choices=MailingListType.choices,
+        blank=True, null=True
+    )
+
     def __str__(self):
         return '{name} ({token}) f={freq} semaines'.format(
             name=self.mailing_list_name,
