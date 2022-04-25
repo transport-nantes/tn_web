@@ -3,10 +3,8 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth.models import Permission, User
 from django.test import LiveServerTestCase, Client
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support.ui import Select
 from django.urls import reverse
-from django.core import mail
 from asso_tn.utils import make_timed_token
 
 from mailing_list.events import (get_subcribed_users_email_list,
@@ -14,8 +12,6 @@ from mailing_list.events import (get_subcribed_users_email_list,
 from mailing_list.models import MailingList, MailingListEvent
 from .models import TopicBlogEmail, TopicBlogEmailSendRecord, TopicBlogItem
 from selenium.webdriver.chrome.options import Options
-
-from django.conf import settings
 
 
 class TestsTopicItemForm(LiveServerTestCase):
@@ -349,44 +345,13 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
 
         # Selenium Setup
         options = Options()
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         options.add_argument("--disable-extensions")
         self.browser = WebDriver(ChromeDriverManager().install(),
                                  options=options)
         self.browser.implicitly_wait(5)
         self.neutral_url = \
             self.live_server_url + reverse("authentication:login")
-
-        settings.DEBUG = True
-
-    def test_send_email(self):
-        # Get on mobilitains.fr
-        self.browser.get(self.neutral_url)
-        # Add the admin cookie to browser to be able to connect as the admin
-        self.browser.add_cookie(
-            {'name': 'sessionid', 'value': self.cookie_admin,
-                'secure': False, 'path': '/'})
-        # Tested url
-        url = self.live_server_url + reverse("topicblog:send_email",
-                                             args=[self.email_article.slug])
-        # Go to the send email page
-        self.browser.get(url)
-
-        # Select the mailing list in the dropdown menu
-        Select(self.browser.find_element_by_name("mailing_list")
-               ).select_by_visible_text(self.mailing_list.mailing_list_name)
-
-        self.browser.find_element(By.ID, "id_confirmation_box").click()
-        # Confirm choice and send email
-        self.browser.find_element_by_xpath("/html/body/form/button").click()
-
-        # Wait until redirected to index
-        WebDriverWait(self.browser, 10).until(
-            lambda driver: driver.current_url ==
-            self.live_server_url + reverse("index"))
-
-        # Check if the emails have been sent (one for each subscribed user)
-        self.assertEqual(len(mail.outbox), 2)
 
     def test_unsubscribe_to_mailing_list(self):
         # We make sure the user is subscribed to the mailing list
