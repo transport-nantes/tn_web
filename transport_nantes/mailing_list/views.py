@@ -7,6 +7,8 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Case, When, Subquery, OuterRef
+from django.db.models.expressions import Value
 from django.http import (Http404, HttpResponseBadRequest, HttpResponseNotFound,
                          HttpResponseServerError)
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,7 +23,7 @@ from .events import (subscribe_user_to_list, subscriber_count,
 from .forms import (FirstStepQuickMailingListSignupForm, MailingListSignupForm,
                     QuickMailingListSignupForm, QuickPetitionSignupForm,
                     SubscribeUpdateForm)
-from .models import MailingList, Petition
+from .models import MailingList, Petition, MailingListEvent
 
 logger = logging.getLogger("django")
 
@@ -373,3 +375,86 @@ class NewsletterUnsubscriptionView(TemplateView):
         )
         logger.info(f"{email} unsubscribed from {send_record.mailinglist}")
         return render(request, self.template_name, context=context)
+
+
+class PressSubscriptionManagementView(TemplateView):
+    """Allows management of Press subscriptions
+    Displays the current subscriptions to the different press Mailing lists
+    and allows the user to sub / unsub from a checkbox form.
+
+    Press mailing list are those whose attribute mailing_list_type is "PR"
+    """
+    template_name = "mailing_list/press_subscription_management.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        email, send_record_id = token_valid(kwargs["token"])
+        if email and send_record_id:
+            context["user"] = User.objects.get(email=email)
+            # Adds a .is_subbed property to the mailing lists
+            # This evaluates to true if the given user is subbed to
+            # the mailing list
+            context["press_subscription_list"] = \
+                MailingList.objects.filter(
+                    mailing_list_type="PRESS"
+                    ).order_by("-id"
+                    ).annotate(  # noqa
+                        is_subbed=Subquery(
+                            MailingListEvent.objects
+                            .filter(mailing_list=OuterRef('id'),
+                                    user=context["user"])
+                            .order_by('-event_timestamp')
+                            .annotate(is_subbed=Case(
+                                When(
+                                    event_type=MailingListEvent.EventType.SUBSCRIBE,  # noqa
+                                    then=Value(True)),
+                                default=Value(False))
+                            ).values('is_subbed')[:1])
+                    )
+        else:
+            context["press_subscription_list"] = \
+                MailingList.objects.filter(
+                    mailing_list_type="PRESS").order_by("-id")
+
+        context["token"] = kwargs["token"]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post method to update the user's press preferences
+        """
+        token = kwargs.get("token", None)
+        if not token:
+            return HttpResponseBadRequest()
+        try:
+            _, send_record_id = token_valid(token)
+        except ValueError:
+            logger.info(f"Token {token} is invalid")
+            raise Http404()
+        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
+        send_record: TopicBlogEmailSendRecord
+
+        # Retrieve from POST the list of mailing lists the user wants to
+        # subscribe to
+        data = dict(request.POST)
+        ml_id_to_subscribe_to = []
+        for key, _ in data.items():
+            if key.startswith("MAILING_LIST_ID_ITEM_TAG__"):
+                ml_id_to_subscribe_to.append(data[key][0])
+
+        press_ml_list_to_sub = MailingList.objects.filter(
+            mailing_list_type="PRESS", id__in=ml_id_to_subscribe_to)
+        press_ml_list_to_unsub = MailingList.objects.filter(
+            mailing_list_type="PRESS").exclude(id__in=ml_id_to_subscribe_to)
+
+        # Subscribes the user to the checked mailing lists
+        for ml in press_ml_list_to_sub:
+            subscribe_user_to_list(send_record.recipient, ml)
+
+        # Unsubscribes the user from the unchecked mailing lists
+        for ml in press_ml_list_to_unsub:
+            unsubscribe_user_from_list(send_record.recipient, ml)
+
+        return redirect(reverse_lazy(
+            "mailing_list:press_subscription_management",
+            kwargs={"token": token}) + "?confirmed_sub=true")
