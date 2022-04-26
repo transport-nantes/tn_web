@@ -12,7 +12,7 @@ database-driven concepts of which competition and so forth.
 
 app_name = 'photo'
 urlpatterns = [
-    path('upload/<str:categories>/', views.UploadEntry.as_view(),
+    path('upload/', views.UploadEntry.as_view(),
          name='upload'),
     path('confirmation/', views.Confirmation.as_view(),
          name='confirmation'),
