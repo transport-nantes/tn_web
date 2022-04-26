@@ -1,18 +1,18 @@
 import logging
-import os
+from django.http import HttpRequest
 from django.utils.crypto import get_random_string
 
 from django.views.generic.edit import FormView
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.contrib import auth
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.urls import reverse
-from django.utils.html import strip_tags
 from django.views.generic.base import TemplateView
 
 from authentication.forms import (EmailLoginForm, PasswordLoginForm,
@@ -131,36 +131,34 @@ def send_activation(request, email, remember_me):
     user know the mail is on its way, since the redirect is a GET.
 
     """
-    subject = 'sujet'
-    # Emails can have a HTML version and a plain text alternative.
-    # https://docs.djangoproject.com/en/3.2/topics/email/#send-mail
-    # You can pass html to the send_mail function through the
-    # html_message argument.
-    html_message = render_to_string(
-        'authentication/account_activation_email.html',
-        {  # request.build_absolute_uri(),
-            'scheme': request.scheme,
-            'host': request.get_host(),
-            'token': make_timed_token(email, 20),
-            'remember_me': remember_me,
-        })
-    plain_text_message = strip_tags(html_message)
-    if hasattr(settings, 'ROLE') and settings.ROLE in ['beta', 'production']:
-        try:
-            send_mail(
-                subject,
-                plain_text_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                html_message=html_message,
-                fail_silently=False)
-        except Exception as e:
-            logger.error(f"Error while sending mail to {email} : {e}")
+    try:
+        custom_email = prepare_email(email, request)
+        logger.info(f"Sending activation email to {email}")
+        custom_email.send(fail_silently=False)
+        logger.info(f"Activation email sent to {email}")
+    except Exception as e:
+        logger.error(f"Error while sending mail to {email} : {e}")
 
-    elif os.getenv('TEST_MODE', "0") == "0":
-        # Only print this in dev mode, which is the only time
-        # we'd care.
-        print(f"Sent message : \n{plain_text_message}")
+
+def prepare_email(email: str, request: HttpRequest) \
+        -> EmailMultiAlternatives:
+    """Create a sendable Email object"""
+    template = 'authentication/account_activation_email.html'
+    context = {
+        "request": request,
+        "token": make_timed_token(email, 20),
+        "host": get_current_site(request).domain,
+    }
+    html_message = render_to_string(template, context=context, request=request)
+    email = EmailMultiAlternatives(
+        subject='Votre lien de connexion à Mobilitains.fr',
+        body=render_to_string(template, context),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email],
+    )
+    email.attach_alternative(html_message, 'text/html')
+
+    return email
 
 
 class ActivationLoginView(TemplateView):
