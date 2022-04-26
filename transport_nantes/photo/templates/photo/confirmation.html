@@ -1,0 +1,10 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<div class="container">
+    <h1>Merci de votre participation !</h1>
+    <p>Vous voulez soumettre d'autres photos ?</p>
+    <a class="btn donation-button" href="{% url 'photo:upload' %}">Par ici !</a>
+<div>
+{% endblock app_content %}

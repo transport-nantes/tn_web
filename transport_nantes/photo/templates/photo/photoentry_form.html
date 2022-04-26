@@ -1,0 +1,20 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 pb-3">
+            {# ####  This should be db-driven!  #### #}
+            <h1>Formulaire de participation à l'Opération piéton</h1>
+            <form action="{% url 'photo:upload' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="btn donation-button" type="submit">Valider</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
