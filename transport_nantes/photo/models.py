@@ -1,7 +1,15 @@
 """Models for photo competition."""
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
+
+
+def validate_submitted_photo(value):
+    """Validates that the photo meets the minimum requirements"""
+    if value.height < 1000 or value.width < 1000:
+        raise ValidationError(
+            'La photo doit faire au moins 1000x1000 pixels.')
 
 
 class PhotoEntry(models.Model):
@@ -44,7 +52,8 @@ class PhotoEntry(models.Model):
     submitted_photo = models.ImageField(
         upload_to='photo/', blank=False,
         help_text='résolution minimale recommandée : 1800 x 1800',
-        verbose_name="Photo")
+        verbose_name="Photo",
+        validators=[validate_submitted_photo])
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
