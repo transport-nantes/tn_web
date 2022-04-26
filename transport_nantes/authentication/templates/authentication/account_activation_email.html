@@ -1,11 +1,63 @@
-{% autoescape off %}
-Bonjour,
+{% extends 'topicblog/base_email_client.html' %}
+{% load static %}
 
-Si toutefois vous n'avez pas demandé la création d'un compte, vous
-pouvez simplement supprimer ce mél.
+{% block email_content %}
+{% comment %} This table is the main container{% endcomment %}
+<table role="presentation"
+style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+    <tr>
+        {% comment "Logo" %}This row handles the logo display{% endcomment %}
+        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#ffffff;">
+            <a href="https://www.mobilitains.fr/" style="text-decoration:none;">
+                {% if logo_path %}
+                    <img src="{{ logo_path }}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% else %}
+                    <img src="{% static 'asso_tn/M-logo_colored-32.png' %}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% endif %}
+            </a>
+        </td> <!-- End Logo -->
+    </tr>
+    <tr> {% comment %} Title and Body_1 {% endcomment %}
+        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
+            <p style="margin:0;">
+                Bonjour,<br/>
+                <br />
+                Vous avez demandé à accéder au site mobilitains.fr<br />
+                Si toutefois vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer ce message.<br />
+            </p>
+        </td>
+    </tr> <!-- End of Body_1-->
+    <tr>
+        <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
+        background-color:#ffffff;text-align:center;">
+            <p>
+                <a href="{{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}" class="btn donation-button btn-lg" 
+                style="background-color: #5BC2E7;color:white;font-weight: 600;text-align: center;vertical-align: middle;
+                -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
+                border: 1px solid transparent;padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;
+                border-radius: .25rem;text-decoration: none;">
+                    Cliquez ici pour accéder à votre page <i class="fa fa-arrow-right" area-hidden="true"></i>
+                </a>
+            </p>
+        </td>
+    </tr>
+    <tr> {# plain text link #}
+        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;overflow-wrap: break-word;max-width: 150px;">
+            <p style="margin:0;font-size:14px">
+                Si vous avez des difficultés avec le bouton ci-dessus, vous pouvez également copier-coller le lien suivant dans votre barre d'adresse :<br />
+                {{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}
+            </p>
+        </td>
+    </tr>
+    <tr> <!-- Footer -->
+        <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+            <p style="margin:0;font-size:14px;line-height:20px;">
+                &reg; Mobilitains 2022<br>
+            </p>
+        </td>
+    </tr> <!-- End of Footer -->
+</table>
 
-{{ uri }}
-
-{{ scheme }}://{{ host }}{% url 'authentication:activate' token=token %}
-
-{% endautoescape %}
+{% endblock email_content %}
