@@ -81,8 +81,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_admin %}
 						<div class="fieldWrapper">
-							{{ field.errors }}
 							{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 						</div>
 				{% endif %}
 			{% endfor %}
@@ -91,8 +95,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_content_a %}
 					<div class="fieldWrapper">
-						{{ field.errors }}
 						{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -101,8 +109,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_content_b %}
 					<div class="fieldWrapper">
-						{{ field.errors }}
 						{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -111,8 +123,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_social %}
 					<div class="fieldWrapper">
-						{{ field.errors }}
 						{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -121,8 +137,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_notes %}
 					<div class="fieldWrapper">
-						{{ field.errors }}
 						{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 					</div>
 				{% endif %}
 			{% endfor %}
@@ -131,8 +151,12 @@ It is retrieved inside clean_slug_field.js
 			{% for field in form %}
 				{% if field.name in form_others %}
 					<div class="fieldWrapper">
-						{{ field.errors }}
 						{{ field|as_crispy_field }}
+						{% if field.errors %}
+							<div class="invalid-feedback" style="display: block;font-weight: bold;">
+								{{ field.errors }}
+							</div>
+						{% endif %}
 					</div>
 				{% endif %}
 			{% endfor %}
