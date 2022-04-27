@@ -13,7 +13,8 @@
 	    no argument, and so 500.
 	        {% endcomment %} {% if launcher.article_slug %}<a href="{% url 'topic_blog:view_item_by_slug' launcher.article_slug %}">{% else %} 404 {% endif %}
 			<div class="shadow-md">
-				<img class="rounded" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}" style="width:100%">
+				<img class="rounded" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}" width="435" height="435"
+				style="object-fit: cover; max-width: 100%; max-height:30vh;">
 			</div>
 			<div class="caption pt-2">
 				<h3 class="font-weight-light">{{ launcher.headline }}</h3>
