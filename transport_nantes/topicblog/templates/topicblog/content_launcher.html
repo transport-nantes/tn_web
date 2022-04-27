@@ -1,84 +1,13 @@
 {% extends 'topicblog/base_launcher.html' %}
-{% load static %}
-{% load markdown %}
-{% load don %}
-{% load mpanels %}
-{% load newsletter %}
-
-{% block styles %}
-     {% comment %}
-       block.super allows us to add the content of parent block to the current block
-       Otherwise we would override the parent block
-     {% endcomment %}
-     {{ block.super }}
-
-     {% if page.header_image %}
-          <style>
-               .hero-image {
-               /*
-               Use "linear-gradient" to add a darken background effect to the
-               image (photographer.jpg). This will make the text easier to read
-               */
-               background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-               url("{{ page.header_image.url }}");
-
-               /* Set a specific height */
-               height: 40%;
-
-               /* Position and center the image to scale nicely on all screens */
-               background-position: center;
-               background-repeat: no-repeat;
-               background-size: cover;
-               position: relative;
-               }
-          </style>
-
-     {% endif %}
-
-{% endblock styles %}
+{% load launcher %}
 
 {% block content %}
 <div class="container-fluid">
     <p>Cette page n'est pas privée mais n'est pas destinée au public.
 	Elle peut disparaître du jour au lendemain.
     </p>
-</div>
-     <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
-    <div class="col-md-3">
-	<div class="thumbnail">
-        {% comment %}
-        This page only happens during launcher development.
-        The slug that is used for the link is the article slug
-        and this field is required before publication.
-        {% endcomment %}
-        {% if page.article_slug %}
-            <a href="{% url 'topic_blog:view_item_by_slug' page.article_slug %}" class="text-decoration-none">
-        {% endif %}
-        {% comment %}
-        This page only happens during launcher development.
-        launcher_image is required for launcher templatetags
-        {% endcomment %}
-        {% if page.launcher_image %}
-            <div class="shadow-md">
-                <img class="rounded"
-                src="{{ page.launcher_image.url }}"
-                alt="{{ page.launcher_image_alt_text }}"
-                style="width:100%">
-            </div>
-        {% endif %}
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">{{ page.headline }}</h3>
-		    <p>
-			{% tn_markdown page.launcher_text_md %}
-		    </p>
-		</div>
-        {% if page.article_slug %}
-	        </a>
-        {% endif %}
-	</div>
-    </div>
-     </div>
+    {% launcher page.slug %}
+    <hr>
+    {% item_teaser page.slug %}
 </div>
 {% endblock content %}
