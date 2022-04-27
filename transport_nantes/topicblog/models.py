@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import logging
 
 from django.contrib.auth.models import User
+from django.forms import ValidationError
 from django.urls import reverse
 from django.db import models
 
@@ -990,6 +991,18 @@ class TopicBlogPressClicks(models.Model):
 
 ######################################################################
 # TopicBlogLauncher
+def validate_launcher_image(value):
+    """
+    Validates the launcher_image field.
+    """
+    if value is None:
+        return None
+    SIDE_SIZE_IN_PX = 435
+    if value.width < SIDE_SIZE_IN_PX or value.height < SIDE_SIZE_IN_PX:
+        raise ValidationError(
+            "L'image doit avoir une largeur et une hauteur "
+            f"d'au moins {SIDE_SIZE_IN_PX}px")
+
 
 class TopicBlogLauncher(TopicBlogObjectBase):
     """Represent a launcher (project square, campaign entry point).
@@ -1062,7 +1075,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     launcher_text_md = models.TextField(blank=True)
     launcher_image = models.ImageField(
         upload_to='launcher/', blank=True,
-        help_text='résolution recommandée : 667x667')
+        help_text='résolution recommandée : 667x667',
+        validators=[validate_launcher_image])
     launcher_image_alt_text = models.CharField(max_length=100, blank=True)
 
     # The TBItem to which this slug points.
