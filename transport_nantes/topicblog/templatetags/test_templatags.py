@@ -147,7 +147,7 @@ class TBLauncherTemplateTagsTests(TestCase):
         img = self.launcher.launcher_image.url
         alt = self.launcher.launcher_image_alt_text
         image = \
-            f'<img class="rounded" src="{img}" alt="{alt}" style="width:100%">'
+            f'<img class="rounded" src="{img}" alt="{alt}"'
         title = \
             f'<h3 class="font-weight-light">{ self.launcher.headline }</h3>'
         text = f'<p>{ self.launcher.launcher_text_md }</p>'
