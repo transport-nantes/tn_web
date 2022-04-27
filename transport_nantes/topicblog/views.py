@@ -1187,10 +1187,6 @@ class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
                                TopicBlogBaseViewOne):
     model = TopicBlogLauncher
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
 
 class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogLauncher
