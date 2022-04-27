@@ -60,10 +60,11 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
         # to self.kwargs.
         pk_id = self.kwargs.get('pkid', -1)
         slug = self.kwargs.get('the_slug', '')
-
         if pk_id > 0:
             tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
-            kwargs["form"] = self.form_class(instance=tb_object)
+            kwargs["form"] = kwargs.get(
+                "form",
+                self.form_class(instance=tb_object))
             context = super().get_context_data(**kwargs)
         else:
             tb_object = self.model()
