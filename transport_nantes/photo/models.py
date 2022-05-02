@@ -39,8 +39,8 @@ class PhotoEntry(models.Model):
         blank=True,
         verbose_name=("Comment cette photo est-elle en relation avec le "
                       "quartier des Hauts-Pavés ?"))
-    photo_location = models.CharField(
-        max_length=80, blank=True,
+    photo_location = models.TextField(
+        blank=True,
         verbose_name="Lieu de la photo")
     photo_kit = models.TextField(blank=True, verbose_name="Appareil photo")
     technical_notes = models.TextField(
