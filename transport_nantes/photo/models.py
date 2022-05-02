@@ -7,9 +7,11 @@ from django.db import models
 
 def validate_submitted_photo(value):
     """Validates that the photo meets the minimum requirements"""
-    if value.height < 1000 or value.width < 1000:
+    longest_side = max(value.width, value.height)
+    if longest_side < 1000:
         raise ValidationError(
-            'La photo doit faire au moins 1000x1000 pixels.')
+            'La plus grande dimension de la photo doit être supérieure '
+            'à 1000px.')
 
 
 class PhotoEntry(models.Model):
@@ -51,7 +53,7 @@ class PhotoEntry(models.Model):
         verbose_name="Commentaires du photographe")
     submitted_photo = models.ImageField(
         upload_to='photo/', blank=False,
-        help_text='résolution minimale recommandée : 1800 x 1800',
+        help_text="Largeur de la photo recommandée : 2000 px",
         verbose_name="Photo",
         validators=[validate_submitted_photo])
 
