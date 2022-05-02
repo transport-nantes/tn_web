@@ -10,6 +10,29 @@
             <form action="{% url 'photo:upload' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form|crispy }}
+                <p>
+                    <ul>
+                    <li>J'ai lu les
+                        <a href="{% url 'topicblog:view_item_by_slug' 'operation-pieton-participer' %}">
+                        règles et conditions</a></li>
+                    <li>Je comprends que la compétition n'aura pas de récompense
+                    pécuniaire, ni aux participants ni aux gagnants.</li>
+                    <li>Ma photo représente un élément de l'expérience piétonne.</li>
+                    <li>Je ne suis pas entré en infraction pour prendre la photo.</li>
+                    <li>La diffusion de l'image ne crée pas une infraction.</li>
+                    <li>La photo respecte le droit d'image et le droit de panorama
+                    d'autrui.</li>
+                    <li>Je reconnais que je cède gratuitement, pendant trois ans, un droit
+                    de diffusion non exclusif aux Mobilitains pour l'exploitation de la
+                    compétition ainsi que pour la diffusion des images retenues, et dans
+                    le contexte formel d'une exposition et dans le contexte informel du
+                    site web des Mobilitains qui afficherait les lauréats et mentions.
+                    Mon image pourrait également être diffusé sur réseaux sociaux dans ces
+                    mêmes buts.</li>
+                    <li>J'atteste que l'essentiel de la photo soumise est la mien,
+                    que toute manipulation éventuelle est technique, pas l'effet
+                    principal.</li>
+                    </ul>
                 <button class="btn donation-button" type="submit">Valider</button>
             </form>
         </div>
