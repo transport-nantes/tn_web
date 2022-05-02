@@ -50,7 +50,7 @@ class PhotoEntry(models.Model):
         verbose_name="Notes techniques")
     photographer_comments = models.TextField(
         blank=True,
-        verbose_name="Commentaires du photographe")
+        verbose_name="Vos commentaires sur la photo")
     submitted_photo = models.ImageField(
         upload_to='photo/', blank=False,
         help_text="Largeur de la photo recommandée : 2000 px",
