@@ -5,9 +5,10 @@ from .models import PhotoEntry
 class PhotoEntryForm(forms.ModelForm):
     class Meta:
         model = PhotoEntry
-        fields = ['category', 'relationship_to_competition', 'photo_location',
-                  'photo_kit', 'technical_notes', 'photographer_comments',
-                  'submitted_photo']
+        fields = ['category', 'submitted_photo', 'photo_location',
+                  'photographer_comments', 'relationship_to_competition',
+                  'photo_kit', 'technical_notes',
+                  ]
         widgets = {
             'category': forms.Select,
             'relationship_to_competition': forms.Textarea(
