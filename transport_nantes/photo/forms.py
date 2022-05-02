@@ -3,11 +3,18 @@ from .models import PhotoEntry
 
 
 class PhotoEntryForm(forms.ModelForm):
+
+    terms_and_condition_checkbox = forms.BooleanField(
+        label="Je certifie que :",
+        required=True,
+    )
+
     class Meta:
         model = PhotoEntry
         fields = ['category', 'submitted_photo', 'photo_location',
                   'photographer_comments', 'relationship_to_competition',
                   'photo_kit', 'technical_notes',
+                  'terms_and_condition_checkbox'
                   ]
         widgets = {
             'category': forms.Select,
