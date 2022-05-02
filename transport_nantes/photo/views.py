@@ -3,6 +3,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import (TemplateView, CreateView)
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import PhotoEntryForm
 from .models import PhotoEntry
 
 
@@ -11,9 +12,8 @@ class UploadEntry(LoginRequiredMixin, CreateView):
     Form to collect Photo entries
     """
     model = PhotoEntry
-    fields = ['category', 'submitted_photo', 'relationship_to_competition',
-              'photo_location', 'photo_kit', 'technical_notes',
-              'photographer_comments']
+    form_class = PhotoEntryForm
+
     success_url = reverse_lazy('photo:confirmation')
 
     def post(self, request, *args, **kwargs):
