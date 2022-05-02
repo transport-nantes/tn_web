@@ -15,7 +15,7 @@ class PhotoEntryForm(forms.ModelForm):
                     'placeholder': ("Exemples : j'y habite, j'y travaille,"
                                     " c'est compliqué, autre...")
                 }),
-            'photo_location': forms.TextInput,
+            'photo_location': forms.Textarea,
             'photo_kit': forms.TextInput,
             'technical_notes': forms.Textarea,
             'photographer_comments': forms.Textarea,
