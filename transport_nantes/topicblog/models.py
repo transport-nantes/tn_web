@@ -791,6 +791,10 @@ class TopicBlogEmailSendRecord(models.Model):
     # but would annoy most people).
     unsubscribe_time = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return (f"{self.slug} to {self.recipient.email} at"
+                f" {self.send_time.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
 
 class TopicBlogEmailClicks(models.Model):
 
