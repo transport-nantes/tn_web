@@ -33,7 +33,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
         background-color:#ffffff;text-align:center;">
             <p>
-                <a href="{{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}" class="btn donation-button btn-lg" 
+                <a href="{{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}?next={{ next_url}}" class="btn donation-button btn-lg" 
                 style="background-color: #5BC2E7;color:white;font-weight: 600;text-align: center;vertical-align: middle;
                 -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
                 border: 1px solid transparent;padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;
@@ -47,7 +47,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;overflow-wrap: break-word;max-width: 150px;">
             <p style="margin:0;font-size:14px">
                 Si vous avez des difficultés avec le bouton ci-dessus, vous pouvez également copier-coller le lien suivant dans votre barre d'adresse :<br />
-                {{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}
+                {{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}?next={{ next_url}}
             </p>
         </td>
     </tr>

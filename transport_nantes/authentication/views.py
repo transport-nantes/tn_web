@@ -1,5 +1,5 @@
 import logging
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.crypto import get_random_string
 
 from django.views.generic.edit import FormView
@@ -144,9 +144,11 @@ def prepare_email(email: str, request: HttpRequest) \
         -> EmailMultiAlternatives:
     """Create a sendable Email object"""
     template = 'authentication/account_activation_email.html'
+    next_url = request.GET.get('next', str())
     context = {
         "request": request,
         "token": make_timed_token(email, 20),
+        "next_url": next_url,
         "host": get_current_site(request).domain,
     }
     html_message = render_to_string(template, context=context, request=request)
@@ -169,6 +171,7 @@ class ActivationLoginView(TemplateView):
         context = super().get_context_data(**kwargs)
         token = self.kwargs.get('token', '')
         email, remember_me = token_valid(token)
+        self.next_url = self.request.GET.get('next', str())
         if email is None:
             logger.info(f"Invalid token : {token}")
             self.template_name = \
@@ -196,6 +199,12 @@ class ActivationLoginView(TemplateView):
             self.request.session.set_expiry(60*60*24*30)
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if getattr(self, 'next_url', None):
+            return HttpResponseRedirect(self.next_url)
+        return self.render_to_response(context)
 
 
 class DeauthView(LogoutView):
