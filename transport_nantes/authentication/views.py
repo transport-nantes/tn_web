@@ -14,6 +14,7 @@ from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.urls import reverse
 from django.views.generic.base import TemplateView
+from django.http import HttpResponseRedirect
 
 from authentication.forms import (EmailLoginForm, PasswordLoginForm,
                                   UserUpdateForm, ProfileUpdateForm)
@@ -147,6 +148,7 @@ def prepare_email(email: str, request: HttpRequest) \
     context = {
         "request": request,
         "token": make_timed_token(email, 20),
+        "next_url": request.GET.get('next', str()),
         "host": get_current_site(request).domain,
     }
     html_message = render_to_string(template, context=context, request=request)
@@ -165,15 +167,16 @@ class ActivationLoginView(TemplateView):
 
     template_name = "authentication/mail_confirmed.html"
 
-    def get_context_data(self, **kwargs):
+    def get(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         token = self.kwargs.get('token', '')
         email, remember_me = token_valid(token)
+        next_url = self.request.GET.get('next', '/') or "/"
         if email is None:
             logger.info(f"Invalid token : {token}")
             self.template_name = \
                 'authentication/account_activation_invalid.html'
-            return context
+            return self.render_to_response(context)
 
         user = User.objects.filter(email=email).first()
         if user is None:
@@ -195,7 +198,7 @@ class ActivationLoginView(TemplateView):
         else:
             self.request.session.set_expiry(60*60*24*30)
 
-        return context
+        return HttpResponseRedirect(next_url, status=302)
 
 
 class DeauthView(LogoutView):

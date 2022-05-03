@@ -184,7 +184,7 @@ class ActivationLoginViewTest(TestCase):
         response = self.client.get(
             reverse("authentication:activate", kwargs={"token": self.token})
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
         user_is_active = response.context["user"].is_active
         self.assertEqual(user_is_active, True)
