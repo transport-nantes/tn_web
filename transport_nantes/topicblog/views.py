@@ -2,11 +2,13 @@ from collections import Counter
 from datetime import datetime, timezone
 import logging
 from pathlib import Path
+import re
+import string
 from django.conf import settings
 from django.core import mail
 
 from django.db.models import Count, Max
-from django.http import (Http404, HttpResponseBadRequest,
+from django.http import (Http404, HttpResponseBadRequest, HttpResponseNotFound,
                          HttpResponseServerError, FileResponse)
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
@@ -16,6 +18,7 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -29,10 +32,12 @@ from mailing_list.events import (get_subcribed_users_email_list,
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogEmailSendRecord)
+                     TopicBlogEmailSendRecord, TopicBlogEmailClicks)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm)
+
+import lxml
 
 logger = logging.getLogger("django")
 
@@ -677,10 +682,30 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         # HTML message is the one displayed in mail client
         html_message = render_to_string(
             tb_email.template_name, context=context, request=self.request)
+
+        send_record_id = context["send_record_id"]
+
+        def make_tokenized_link(link: string) -> string:
+            """
+            Args:
+                link (string): a link
+
+            Returns:
+                string: a tokenized link
+            """
+            tokenized_link = make_timed_token(string_key=link,
+                                              minutes=60*24*365*10,
+                                              int_key=send_record_id)
+            tokenized_link = self.request.build_absolute_uri(
+                reverse("topicblog:email_clicks",
+                        args=[tokenized_link]))
+            return tokenized_link
+        html_message = lxml.html.rewrite_links(
+            html_message,
+            make_tokenized_link)
         # In cases where the HTML message isn't accepted, a plain text
         # message is displayed in the mail client.
         plain_text_message = strip_tags(html_message)
-
         email = mail.EmailMultiAlternatives(
             subject=tb_email.subject,
             body=plain_text_message,
@@ -701,6 +726,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
         context["context_appropriate_base_template"] = \
             "topicblog/base_email.html"
         context["email"] = tb_email
+        context["send_record_id"] = send_record_id
 
         # The unsubscribe link is created with the send_record and the
         # user's email hidden in a token.
@@ -1245,3 +1271,43 @@ def beacon_view(response, **kwargs):
     image = open(path_to_beacon, "rb")
     response = FileResponse(image, content_type="image/gif")
     return response
+
+
+class TopicBlogEmailClicksView(View):
+
+    def get(self, *args, **kwargs):
+        not_found_response = HttpResponseNotFound(
+            """"Désolé, notre lien magique s'est perdu en chemin ...
+            peut-être est-il cassé ou trop vieux ?"""
+        )
+        token = kwargs['token']
+        try:
+            url, send_record_id = token_valid(token)
+        except ValueError:
+            return not_found_response
+
+        if url and send_record_id:
+            send_record: TopicBlogEmailSendRecord
+            send_record = TopicBlogEmailSendRecord.objects.filter(
+                pk=send_record_id).first()
+            if not send_record:
+                logger.info(f"No send record found for id {send_record_id}")
+                return not_found_response
+            if not send_record.open_time:
+                send_record.open_time = datetime.now(timezone.utc)
+                send_record.save()
+                logger.info(f"{url} opened email (SR.id :{send_record.pk})")
+
+            if not send_record.click_time:
+                send_record.click_time = datetime.now(timezone.utc)
+                send_record.save()
+                logger.info(f"{url} clicked email (SR.id :{send_record.pk})")
+
+            TopicBlogEmailClicks.objects.create(
+                email=send_record,
+                click_url=url,
+                click_time=datetime.now(timezone.utc))
+
+            return HttpResponseRedirect(url)
+
+        return not_found_response

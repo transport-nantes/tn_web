@@ -22,6 +22,8 @@ urlpatterns = [
 
     path('e/i/<str:token>', views.beacon_view,
          name='beacon_view'),
+    path('e/r/<str:token>', views.TopicBlogEmailClicksView.as_view(),
+         name='email_clicks'),
 
     path('admin/t/view/<int:pkid>/', views.TopicBlogItemViewOne.as_view(),
          name='view_item_by_pkid_only'),
