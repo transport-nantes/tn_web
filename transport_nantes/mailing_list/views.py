@@ -337,14 +337,33 @@ class NewsletterUnsubscriptionView(TemplateView):
 
         if email is None or send_record_id is None:
             logger.info(f"Token {token} is invalid")
-            raise Http404()
+            raise Http404("Désolé, il semblerait qu'il y ait eu une erreur, "
+                          "veuillez vérifier que le lien est correct "
+                          "s'il vous plaît")
 
+        try:
+            send_record = TopicBlogEmailSendRecord.objects.get(
+                pk=send_record_id)
+        except ObjectDoesNotExist:
+            logger.info(f"Send record ID : {send_record_id} not found")
+            raise Http404("Désolé, nous n'avons pas retrouvé le contenu "
+                          "demandé, vérifiez que votre lien est correct "
+                          "s'il vous plaît.")
         context["send_record_mailing_list"] = \
-            TopicBlogEmailSendRecord.objects.get(
-                pk=send_record_id).mailinglist.mailing_list_name
+            send_record.mailinglist.mailing_list_name
         context["user_email"] = email
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = self.get_context_data(**kwargs)
+        except Http404:
+            return HttpResponseNotFound(
+                "Ce lien a perdu sa magie en cours de route, nous ne "
+                "comprenons plus ce qu'il veut dire ... Il est peut-être "
+                "trop vieux, ou invalide.")
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         """
