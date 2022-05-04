@@ -2,6 +2,7 @@ from collections import Counter
 from datetime import datetime, timezone
 import logging
 from pathlib import Path
+from django.apps import apps
 from django.conf import settings
 from django.core import mail
 
@@ -71,7 +72,7 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
             context = super().get_context_data(**kwargs)
         context['tb_object'] = tb_object
         context["slug_fields"] = tb_object.get_slug_fields()
-
+        context["model_name"] = self.model.__name__
         context = self.fill_form_tabs(context)
         return context
 
@@ -296,7 +297,11 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
 @StaffRequired
 def get_slug_dict(request):
     """Return a list of all existing slugs"""
-    qs = TopicBlogItem.objects.order_by('slug').values('slug')
+    model_name = request.GET.get('model_name', None)
+    if not model_name:
+        return JsonResponse({"error": "model_name is required"})
+    model = apps.get_model('topicblog', model_name)
+    qs = model.objects.order_by('slug').values('slug')
     dict_of_slugs = Counter([item['slug'] for item in qs])
     return JsonResponse(dict_of_slugs, safe=False)
 
