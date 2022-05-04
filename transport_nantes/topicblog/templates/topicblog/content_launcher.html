@@ -6,8 +6,8 @@
     <p>Cette page n'est pas privée mais n'est pas destinée au public.
 	Elle peut disparaître du jour au lendemain.
     </p>
-    {% launcher page.slug %}
+    {% launcher page.slug is_preview=True%}
     <hr>
-    {% item_teaser page.slug %}
+    {% item_teaser page.slug is_preview=True %}
 </div>
 {% endblock content %}
