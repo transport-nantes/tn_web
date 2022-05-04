@@ -20,8 +20,9 @@ class PhotoEntryForm(forms.ModelForm):
             'category': forms.Select,
             'relationship_to_competition': forms.Textarea(
                 attrs={
-                    'placeholder': ("Exemples : j'y habite, j'y travaille,"
-                                    " c'est compliqué, autre...")
+                    'placeholder': ("Exemples : J'y habite, J'y travaille,"
+                                    " C'est compliqué, Aucun mais je vous "
+                                    "adore, Autres...")
                 }),
             'photo_location': forms.Textarea,
             'photo_kit': forms.TextInput,
