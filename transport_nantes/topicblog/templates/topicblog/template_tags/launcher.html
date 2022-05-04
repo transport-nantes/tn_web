@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="col-md-3">
 	<div class="thumbnail">
 		{% comment %}
@@ -14,7 +16,11 @@
 	    {% endcomment %} 
 			{% if launcher.article_slug %}<a href="{% url 'topic_blog:view_item_by_slug' launcher.article_slug %}">{% else %} 404 {% endif %}
 			<div class="shadow-md tbla-container">
-				<img class="rounded" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}">
+				{% if launcher.launcher_image %}
+					<img class="rounded" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}">
+				{% else %}
+					<img class="rounded" src="{% static 'asso_tn/beacon.gif' %}" alt="No image provided">
+				{% endif %}
 			</div>
 			<div class="caption pt-2">
 				<h3 class="font-weight-light">{{ launcher.headline }}</h3>
