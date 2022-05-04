@@ -1,8 +1,13 @@
 // Calls server to get a list of all slugs and
 // how many of each slug there are.
+const MODEL_NAME = JSON.parse(document.getElementById('model_name').textContent);
+
 async function get_slug_dict() {
     data = await $.ajax({
         url: '/tb/ajax/get-slug-dict/',
+        data: {
+            model_name: MODEL_NAME
+        },
     })
     return data;
 }

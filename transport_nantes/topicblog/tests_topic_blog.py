@@ -884,7 +884,10 @@ class TBIView(TestCase):
     def test_get_slug_dict(self):
         for user_type in self.users_expected:
             response = user_type["client"].get(
-                reverse('topicblog:get_slug_dict')
+                reverse('topicblog:get_slug_dict',),
+                data={
+                    'model_name': 'TopicBlogItem'
+                }
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
