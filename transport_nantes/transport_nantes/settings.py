@@ -120,10 +120,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 PASSWORD_RESET_TIMEOUT_DAYS = 1
 
-if ROLE == 'dev':
+if 'EMAIL_BACKEND' in settings_local.__dict__:
+    EMAIL_BACKEND = settings_local.EMAIL_BACKEND
+elif ROLE == 'dev':
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     EMAIL_BACKEND = 'django_amazon_ses.EmailBackend'
+
 AWS_ACCESS_KEY_ID = settings_local.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = settings_local.AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION = settings_local.AWS_DEFAULT_REGION
