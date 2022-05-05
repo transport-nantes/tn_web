@@ -20,6 +20,7 @@ from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
+from django_ses.views import SESEventWebhookView
 
 urlpatterns = [
     path('', TopicBlogItemView.as_view(),
@@ -51,6 +52,8 @@ urlpatterns = [
     path("presse/", include('press.urls')),
     path("photo/", include('photo.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
+    path("ses/event-webhook/", SESEventWebhookView.as_view(),
+         name="ses_event_webhook"),
 ]
 
 if ROLE != 'production':
