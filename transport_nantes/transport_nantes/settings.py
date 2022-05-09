@@ -130,6 +130,7 @@ else:
 AWS_ACCESS_KEY_ID = settings_local.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = settings_local.AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION = settings_local.AWS_DEFAULT_REGION
+AWS_SES_REGION_ENDPOINT_URL = 'email.eu-central-1.amazonaws.com'
 DEFAULT_FROM_EMAIL = settings_local.DEFAULT_FROM_EMAIL
 
 LOGGING = {
