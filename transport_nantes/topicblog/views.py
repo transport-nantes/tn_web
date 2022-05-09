@@ -8,6 +8,7 @@ from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 
 from django.db.models import Count, Max
+from django.dispatch import receiver
 from django.http import (Http404, HttpResponseBadRequest,
                          HttpResponseServerError, FileResponse)
 from django.http import HttpResponseRedirect
@@ -24,6 +25,7 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
+from django_ses.signals import bounce_received
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
@@ -35,6 +37,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm)
+
 
 logger = logging.getLogger("django")
 
@@ -974,3 +977,18 @@ def beacon_view(response, **kwargs):
     image = open(path_to_beacon, "rb")
     response = FileResponse(image, content_type="image/gif")
     return response
+
+
+@receiver(bounce_received)
+def bounce_handler(sender, mail_obj, bounce_obj, raw_message, *args, **kwargs):
+    """Handle AWS SES bounces notifications
+
+    AWS Receiver
+    This function will run when a bounce is received from Amazon SES.
+    The signal is sent from django_ses' view.
+    For now it only logs the bounce while we think of a better way to
+    handle them.
+    """
+    logger.info("Bounce received !")
+    logger.info("This is bounce email object")
+    logger.info(f"The mail_obj : {mail_obj}")
