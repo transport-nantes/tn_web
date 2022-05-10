@@ -149,6 +149,11 @@ LOGGING = {
             '()': 'django.utils.log.ServerFormatter',
             'format': '[{server_time}] {message}',
             'style': '{',
+        },
+        'django.ses.extra': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}  Notification : {notification}',
+            'style': '{',
         }
     },
     'handlers': {
@@ -172,6 +177,12 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': settings_local.LOG_DIR + "tn_web.log",
             'formatter': 'django.server',
+        },
+        'django_ses_notification': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': settings_local.LOG_DIR + "tn_web-ses.log",
+            'formatter': 'django.ses.extra',
         }
     },
     'loggers': {
@@ -191,6 +202,11 @@ LOGGING = {
             'handlers': ['django.server'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'django_ses': {
+            'handlers': ['console', 'django_ses_notification'],
+            'level': 'INFO',
+            'propagate': True,
         },
     }
 }
