@@ -152,11 +152,22 @@ def prepare_email(email: str, request: HttpRequest) \
         "host": get_current_site(request).domain,
     }
     html_message = render_to_string(template, context=context, request=request)
+    # AWS SES reads the headers to check the presence of a configuration set.
+    # If one is found, the configuration set allows notifications
+    # regarding the email to be sent to the endpoints set in AWS (i.e. emails,
+    # https, etc ...).
+    # Depending on the event received (i.e. Bounce, delivery, rejected...),
+    # different endpoints can be notified.
+    # Without this header, the email is sent but no notification will be sent
+    # to the endpoints.
+    AWS_headers = {
+        "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME}
     email = EmailMultiAlternatives(
         subject='Votre lien de connexion à Mobilitains.fr',
         body=render_to_string(template, context),
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[email],
+        headers=AWS_headers,
     )
     email.attach_alternative(html_message, 'text/html')
 

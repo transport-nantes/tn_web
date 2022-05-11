@@ -390,11 +390,23 @@ class SendableObjectMixin:
         # message is displayed in the mail client.
         plain_text_message = strip_tags(html_message)
 
+        # AWS SES reads the headers to check the presence of a configuration
+        # set. If one is found, the configuration set allows notifications
+        # regarding the email to be sent to the endpoints set in AWS (i.e.
+        # emails, https, etc ...).
+        # Depending on the event received (i.e.Bounce, delivery, rejected...),
+        # different endpoints can be notified.
+        # Without this header, the email is sent but no notification will be
+        # sent to the endpoints.
+        AWS_headers = {
+            "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME}
+
         email = mail.EmailMultiAlternatives(
             subject=tb_object.subject,
             body=plain_text_message,
             from_email=from_email,
             to=recipient_list,
+            headers=AWS_headers,
         )
         email.attach_alternative(html_message, "text/html")
 
