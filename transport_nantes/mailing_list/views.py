@@ -150,7 +150,7 @@ class QuickMailingListSignup(FormView):
             user = self.request.user
             email = form.cleaned_data.get('email', user.email)
         else:
-            email = None
+            email = self.request.POST['email']
         mailinglist = self.request.POST['mailinglist']
         next_form = QuickMailingListSignupForm()
         next_form["email"].initial = email
