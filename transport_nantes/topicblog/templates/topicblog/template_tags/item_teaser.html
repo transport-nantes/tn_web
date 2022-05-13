@@ -11,16 +11,16 @@
     <div class="p-4 d-flex flex-column">
       {% comment %}
         If the launcher slug does not reference a launcher in the
-        database or doesn't have a teaser_chars set we display
+        database or doesn't have a teaser_words set we display
         the teaser text with a default 50 truncatewords.
         That shouldn't happen, but if it does, we'd like not to have
         the entire page fail.
       {% endcomment %}
       <div class="teaser-text">
-      {% if launcher.teaser_chars %}
-        {% tn_markdown item.body_text_1_md|truncatechars:launcher.teaser_chars %}
+      {% if launcher.teaser_words %}
+        {% tn_markdown item.body_text_1_md|truncatewords:launcher.teaser_words %}
       {% else %}
-        {% tn_markdown item.body_text_1_md|truncatechars:300 %}
+        {% tn_markdown item.body_text_1_md|truncatewords:50 %}
       {% endif %}
       </div>
 		{% comment %}
