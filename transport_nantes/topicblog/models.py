@@ -1091,7 +1091,7 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     campaign_name = models.CharField(max_length=80, blank=True)
     # The numbers of chars that will be displayed on an item_teaser
     # templatetag
-    teaser_chars = models.IntegerField(default=50, blank=False)
+    teaser_words = models.IntegerField(default=50, blank=False)
     # Plus slug, template, title, and comment fields, provided through
     # abstract base class.
 
