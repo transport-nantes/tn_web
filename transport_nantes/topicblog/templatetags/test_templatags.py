@@ -131,7 +131,7 @@ class TBLauncherTemplateTagsTests(TestCase):
             launcher_image="picture.png",
             launcher_image_alt_text="picture",
             launcher_text_md="laucher text",
-            teaser_words=20,
+            teaser_chars=20,
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.admin,
