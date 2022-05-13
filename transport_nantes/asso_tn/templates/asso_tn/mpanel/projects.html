@@ -24,6 +24,7 @@
 	</div>
     </div>
 {% endcomment %}
+{% comment %}
     <div class="col-md-3">
 	<div class="thumbnail">
 	    <a href="{% url "surveys:questions" "presidentielles-2022" %}">
@@ -41,6 +42,26 @@
 			Les candidat-e-s
 		    aux présidentielles sur leurs projets de soutien
 		    de la mobilité régionale</p>
+		</div>
+	    </a>
+	</div>
+    </div>
+{% endcomment %}
+    <div class="col-md-3">
+	<div class="thumbnail">
+	    <a href="{% url "topic_blog:view_item_by_slug" "operation-pieton" %}">
+		<div class="shadow-md">
+		    <img class="rounded"
+			 src="{% static 'asso_tn/jumping-guy-667.jpg' %}"
+			 alt="piéton mâle qui saute dans la rue"
+			 style="width:100%">
+		</div>
+		<div class="caption pt-2">
+		    <h3 class="font-weight-light"
+			style="font-variant: all-small-caps;
+			       font-size: 150%;">Opération piéton</h3>
+		    <p>
+			Participer à une compétition photo citoyen, ouverte à toutes et à tous</p>
 		</div>
 	    </a>
 	</div>
