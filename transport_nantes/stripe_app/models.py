@@ -87,6 +87,8 @@ class Donation(models.Model):
                                         default=None, null=True)
     originating_parameters = models.CharField(max_length=100,
                                               default=None, null=True)
+    donation_source = models.CharField(max_length=100,
+                                       default="stripe", null=False)
 
     def __str__(self):
 
