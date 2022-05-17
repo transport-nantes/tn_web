@@ -9,7 +9,7 @@
 <table role="presentation"
 style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
     <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
-        <a href="{% absolute_url 'topicblog:view_press_by_slug' page.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">
+        <a href="{% absolute_url 'topicblog:view_press_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">
             Voir sur le site web
         </a>
     </tr>
@@ -31,15 +31,15 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     <tr> {# Title and Body_1 #}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p><b>Communiqué de presse</b></p>
-            <p class="small text-muted">Le {{ page.publication_date|date:"j F Y" }},</p>
+            <p class="small text-muted">Le {{ email.publication_date|date:"j F Y" }},</p>
             <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
-                {{ page.title }}
+                {{ email.title }}
             </h1>
             <p style="margin:0;">
-                {{ page.body_text_1_md }}
+                {{ email.body_text_1_md }}
             </p>
-            {% if page.body_image_1 %}
-                {% email_full_width_image page.body_image_1.url page.body_image_1_alt_text %}
+            {% if email.body_image_1 %}
+                {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
             {% endif %}
         </td>
     </tr> <!-- End of Body_1-->

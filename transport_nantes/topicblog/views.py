@@ -5,6 +5,7 @@ from pathlib import Path
 from django.apps import apps
 from django.conf import settings
 from django.core import mail
+from django.core.exceptions import ImproperlyConfigured
 
 from django.db.models import Count, Max
 from django.http import (Http404, HttpResponseBadRequest,
@@ -290,6 +291,220 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
             return ['topicblog/topicblogbase_list.html'] + names
 
 
+class SendableObjectMixin:
+    """ Define the sending by email behaviour for TopicBlog Objects """
+
+    send_record_class = None
+    context_appropriate_base_template = None
+    base_model = None
+
+    def get_last_published_email(self, tb_slug: str) -> base_model:
+        """Get the TB object with the most recent publication date
+        for a given slug.
+        """
+        tb_objects = self.base_model.objects.filter(
+            slug=tb_slug,
+            # Not implemented yet, but a published TBObject should be
+            # the only one with a publication date. For now it picks the
+            # most recent.
+            publication_date__isnull=False
+        )
+        if len(tb_objects) > 1:
+            raise ValueError(
+                f"There is more than one {self.base_model.__name__} with slug"
+                f" {tb_slug} and a not-null publication date")
+        elif len(tb_objects) == 0:
+            raise ValueError(
+                f"There is no {self.base_model.__name__} with"
+                f" slug {tb_slug} and a not-null publication date")
+        return tb_objects[0]
+
+    def prepare_email(self, pkid: int, the_slug: str, recipient: list,
+                      mailing_list: MailingList, send_record_id: int) \
+            -> mail.EmailMultiAlternatives:
+        """
+        Creates a sendable email object from a TBobject with a mail
+        client-friendly template, given a pkid, a slug and a mail adress.
+
+        Keyword arguments:
+        pkid -- the id of the object to send
+        the_slug -- the slug of the object to send
+        recipient -- the list of recipients
+        mailing_list -- the mailing list to send a the object to
+        send_record_id -- the id of the send record attached to the email
+
+        Returns:
+        An EmailMultiAlternatives object ready to be sent.
+        """
+        if pkid < 0 or the_slug is None:
+            logger.info(f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
+            return HttpResponseServerError()
+
+        # Preparing the email
+        tb_email = self.base_model.objects.get(pk=pkid, slug=the_slug)
+        self.template_name = tb_email.template_name
+
+        context = self._set_email_context(recipient, send_record_id, tb_email)
+
+        try:
+            email = self._create_email_object(tb_email, context, recipient)
+        except Exception as e:
+            message = \
+                f"Error while creating EmailMultiAlternatives object: {e}"
+            logger.info(message)
+            raise Exception(message)
+
+        return email
+
+    def _create_email_object(self, tb_object, context: dict,
+                             recipient_list: list,
+                             from_email: str = settings.DEFAULT_FROM_EMAIL) \
+            -> mail.EmailMultiAlternatives:
+        """
+        To send emails to multiple persons, django send_mail function isn't
+        enough, we need to create a EmailMultiAlternatives object to be able,
+        for example to put recipients in BCC field or add attachments.
+        It also improves the performances by reusing the same connexion to SMTP
+        server.
+        Doc :
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
+        https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
+        https://docs.djangoproject.com/en/3.2/topics/email/#sending-alternative-content-types
+
+        Keyword arguments:
+        tb_object -- the TopicBlog object to send
+        context -- the context to use to render the email
+        recipient_list -- the list of recipients
+        from_email -- the sender email address
+
+        Returns:
+        An EmailMultiAlternatives object ready to be sent.
+        """
+        # HTML message is the one displayed in mail client
+        html_message = render_to_string(
+            tb_object.template_name, context=context, request=self.request)
+        # In cases where the HTML message isn't accepted, a plain text
+        # message is displayed in the mail client.
+        plain_text_message = strip_tags(html_message)
+
+        email = mail.EmailMultiAlternatives(
+            subject=tb_object.subject,
+            body=plain_text_message,
+            from_email=from_email,
+            to=recipient_list,
+        )
+        email.attach_alternative(html_message, "text/html")
+
+        return email
+
+    def _set_email_context(
+            self, recipient: list, send_record_id: int,
+            tb_object) -> dict:
+        """
+        Sets the context for the email to be sent.
+
+        Keyword arguments:
+        recipient -- the list of recipients
+        send_record_id -- the id of the send record attached to the email
+
+        Returns:
+        A dict containing the context to use to render the email.
+        """
+        context = dict()
+        context["context_appropriate_base_template"] = \
+            self.context_appropriate_base_template
+        context["email"] = tb_object
+
+        # The unsubscribe link is created with the send_record and the
+        # user's email hidden in a token.
+        context["token"] = \
+            self.get_unsubscribe_token(recipient[0], send_record_id)
+
+        return context
+
+    def create_send_record(self,  slug: str, mailing_list: MailingList,
+                           recipient: str):
+        """
+        Create a new TBEmailSentRecord object
+
+        Keyword arguments:
+        slug -- the slug of the object to send
+        mailing_list -- the mailing list to send a the object to
+        recipient -- the recipient's email
+
+        Returns:
+        A SendRecord object linking the email and the user.
+        """
+        recipient_user_object = User.objects.get(email=recipient)
+        send_record = self.send_record_class(
+            slug=slug,
+            mailinglist=mailing_list,
+            recipient=recipient_user_object,
+            send_time=datetime.now(timezone.utc)
+        )
+        send_record.save()
+        return send_record
+
+    def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
+        """
+        Create a token to unsubscribe the user from the mailing list.
+        """
+        email = email
+        k_minutes_in_six_months = 60*24*30*6
+        token = make_timed_token(
+            email, k_minutes_in_six_months, int_key=send_record_id)
+        return token
+
+
+class TopicBlogBaseSendView(FormView, SendableObjectMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # The slug is then used to get the TBEmail we want to send.
+        context["tbe_slug"] = self.kwargs['the_slug']
+        if not hasattr(self, "base_model"):
+            raise ImproperlyConfigured("base_model must be a class with a "
+                                       "send_object_url attribute")
+        context["send_to_view"] = self.base_model.send_object_url
+        return context
+
+    def form_valid(self, form):
+        tbe_slug = self.kwargs['the_slug']
+        tbe_object = self.get_last_published_email(tbe_slug)
+
+        if tbe_object is None:
+            logger.info(f"No published {self.base_model.send_object_url} "
+                        f"object found for '{tbe_slug}'")
+            raise Http404(
+                f"Pas de '{self.base_model.description_of_object}' publié "
+                f"trouvé pour le slug '{tbe_slug}'")
+
+        mailing_list_token = form.cleaned_data['mailing_list']
+        # The recipient list is extracted from the selected MailingList.
+        mailing_list = MailingList.objects.get(
+            mailing_list_token=mailing_list_token)
+        mailing_list: MailingList
+        recipient_list = get_subcribed_users_email_list(mailing_list)
+
+        # We create and send an email for each recipient, each with
+        # custom informations (like the unsubscribe link).
+        for recipient in recipient_list:
+            send_record = self.create_send_record(
+                slug=tbe_slug,
+                mailing_list=mailing_list,
+                recipient=recipient)
+            custom_email = self.prepare_email(
+                pkid=tbe_object.id,
+                the_slug=tbe_slug,
+                recipient=[recipient],
+                mailing_list=mailing_list,
+                send_record_id=send_record.id)
+
+            logger.info(f"Successfully prepared email to {recipient}")
+            custom_email.send(fail_silently=False)
+            logger.info(f"Successfully sent email to {recipient}")
+
+        return super().form_valid(form)
 ######################################################################
 # TopicBlogItem
 
@@ -485,259 +700,19 @@ class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
 
 
 class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
-                         FormView):
-    """Notes to Benjamin and Mickael:
-
-    This view isn't implemented yet.  Here's what I think you should do:
-
-    1.  On GET, display a form.  That form should (for now) just show
-    the mailing_lists available in a dropdown list and let the user
-    choose one.  Once a mailing_list is chosen, enable a send button.
-    Pushing the send button will POST to the same url.
-
-    2.  On POST, send the mail.  This means you do the following:
-        (i)  Get the list of users from the mailing_list by calling
-             subscribed_users() from mailing_list/events.py.  Note that
-             that function doesn't exist yet, but it should be a really,
-             really simple function for you to write based on the other
-             functions in the file.  You should make a single commit
-             with that function and tests for that function.
-        (ii) For each user in the list:
-
-             Compute a timed_token (function already exists,
-             make_timed_token() in asso_tn/utils.py).  Given it a
-             three-week timeout so as not to over-think.  Pass the
-             TopicBlogEmailSendRecord pk_id in persistent.  If someone
-             comes back after expiration, we can ask them to respond
-             to a new query (not for today).  In the footer of the
-             base email template (note: this is 30 seconds, you just
-             write "<div><div><p><a href={% url
-             ... %}>unsubscribe</a></div></div>" with maybe some
-             arguments to the divs and such.  DO NOT spend time now
-             fiddling with making it look just right.  There's a
-             difference between unworldly user interaction paradigms
-             and simply not being pretty yet.  The latter is easily
-             remedied in a second commit, the former is trickier.
-             This is a commit.
-
-             Also compute the url (the path already exists) to view
-             this email on the web.  Put that in the context, too, and
-             make sure you add a link at the top of the email base
-             template, just above the content.  That's another commit.
-
-             Render the email, pass it off to SES for sending, and
-             write a record to TopicBlogEmailSendRecord.  This is
-             another commit.
-
-             Now write a function that serves a beacon.  A beacon
-             means you have a non-threatening path (NOT
-             /tb/e/beacon/<value>/ but rather /tb/e/i/<value>/ -- and
-             value is going to be another timed_token that encodes the
-             pk_id of the TopicBlogEmailSendRecord) that returns a
-             one-pixel background-colour gif.  We can change it later,
-             that will work for now.  This is a commit.
-
-             Now go back to the above and add a beacon to the email
-             base template.  Give it a ten year time-out, which is
-             nine years and six months more than we probably need.
-             That means you generate the beacon value and pass it in
-             so that the image (/tb/e/i/<value>) has the right value.
-             This is a commit.
-
-             Note that the two timed tokens encode the email address
-             to which we sent the mail and the pk_id of the
-             TopicBlogEmailSendRecord, so the beacon function or the
-             unsub page can easily look up the send record.  The
-             beacon function should update
-             TopicBlogEmailSendRecord.open_time.  Clicks should lead
-             to setting TopicBlogEmailSendRecord.click_time.  In both
-             cases, only if not already set, since what we want is the
-             time of the first view, the first click.  This is a
-             commit.
-
-             If the user validates an unsub having clicked in from an
-             email, then we have the timed token handy and we should
-             set TopicBlogEmailSendRecord.unsubscribe_time if it's not
-             already set (and call unsubscribe_user_from_list()).
-
-    """
+                         TopicBlogBaseSendView):
+    """ Allow TopicBlogEmails to be sent and tracked through emails. """
     permission_required = 'topicblog.tbe.may_send'
     form_class = TopicBlogEmailSendForm
     template_name = 'topicblog/topicblogbase_send_form.html'
+    # Template used to render emails
+    context_appropriate_base_template = "topicblog/base_email.html"
+    send_record_class = TopicBlogEmailSendRecord
+    base_model = TopicBlogEmail
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
     # itself eventually, or on the dashboard ?
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # The slug is then used to get the TBEmail we want to send.
-        context["tbe_slug"] = self.kwargs['the_slug']
-        context["send_to_view"] = "topicblog:send_email"
-        return context
-
-    def get_last_published_email(self, tbe_slug: str) -> TopicBlogEmail:
-        """Get the TBEmail object with the most recent publication date
-        for a given slug.
-        """
-        tbe_object = TopicBlogEmail.objects.filter(
-            slug=tbe_slug,
-            # Not implemented yet, but a published TBEmail should be
-            # the only one with a publication date. For now it picks the
-            # most recent.
-            publication_date__isnull=False
-        )
-        if len(tbe_object) > 1:
-            raise ValueError(
-                "There is more than one TBEmail with slug {} and a not-null "
-                "publication date".format(
-                    tbe_slug))
-        elif len(tbe_object) == 0:
-            raise ValueError(
-                "There is no TBEmail with slug {} and a not-null "
-                "publication date".format(
-                    tbe_slug))
-        return tbe_object[0]
-
-    def form_valid(self, form):
-        tbe_slug = self.kwargs['the_slug']
-        tbe_object = self.get_last_published_email(tbe_slug)
-
-        if tbe_object is None:
-            logger.info(f"No published TBEmail object found for '{tbe_slug}'")
-            raise Http404(
-                f"Pas d'email publié trouvé pour le slug '{tbe_slug}'")
-
-        mailing_list_token = form.cleaned_data['mailing_list']
-        # The recipient list is extracted from the selected MailingList.
-        mailing_list = MailingList.objects.get(
-            mailing_list_token=mailing_list_token)
-        mailing_list: MailingList
-        recipient_list = get_subcribed_users_email_list(mailing_list)
-
-        # We create and send an email for each recipient, each with
-        # custom informations (like the unsubscribe link).
-        for recipient in recipient_list:
-            send_record = self.create_send_record(
-                slug=tbe_slug,
-                mailing_list=mailing_list,
-                recipient=recipient)
-            custom_email = self.prepare_email(
-                pkid=tbe_object.id,
-                the_slug=tbe_slug,
-                recipient=[recipient],
-                mailing_list=mailing_list,
-                send_record_id=send_record.id)
-
-            logger.info(f"Successfully prepared email to {recipient}")
-            custom_email.send(fail_silently=False)
-            logger.info(f"Successfully sent email to {recipient}")
-
-        return super().form_valid(form)
-
-    def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record_id: int) \
-            -> mail.EmailMultiAlternatives:
-        """
-        Creates a sendable email object from a TBEmail with a mail
-        client-friendly template, given a pkid, a slug and a mail adress.
-
-        send_record is the pk_id of the TopicBlogEmailSendRecord
-        """
-        if pkid < 0 or the_slug is None:
-            logger.info(f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
-            return HttpResponseServerError()
-
-        # Preparing the email
-        tb_email = TopicBlogEmail.objects.get(pk=pkid, slug=the_slug)
-        self.template_name = tb_email.template_name
-
-        context = self._set_email_context(recipient, send_record_id, tb_email)
-
-        try:
-            email = self._create_email_object(tb_email, context, recipient)
-        except Exception as e:
-            message = \
-                f"Error while creating EmailMultiAlternatives object: {e}"
-            logger.info(message)
-            raise Exception(message)
-
-        return email
-
-    def _create_email_object(self, tb_email: TopicBlogEmail, context: dict,
-                             recipient_list: list,
-                             from_email: str = settings.DEFAULT_FROM_EMAIL) \
-            -> mail.EmailMultiAlternatives:
-        """
-        To send emails to multiple persons, django send_mail function isn't
-        enough, we need to create a EmailMultiAlternatives object to be able,
-        for example to put recipients in BCC field or add attachments.
-        It also improves the performances by reusing the same connexion to SMTP
-        server.
-        Doc :
-        https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
-        https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
-        https://docs.djangoproject.com/en/3.2/topics/email/#sending-alternative-content-types
-        """
-        # HTML message is the one displayed in mail client
-        html_message = render_to_string(
-            tb_email.template_name, context=context, request=self.request)
-        # In cases where the HTML message isn't accepted, a plain text
-        # message is displayed in the mail client.
-        plain_text_message = strip_tags(html_message)
-
-        email = mail.EmailMultiAlternatives(
-            subject=tb_email.subject,
-            body=plain_text_message,
-            from_email=from_email,
-            to=recipient_list,
-        )
-        email.attach_alternative(html_message, "text/html")
-
-        return email
-
-    def _set_email_context(
-            self, recipient: list, send_record_id: int,
-            tb_email: TopicBlogEmail) -> dict:
-        """
-        Sets the context for the email to be sent.
-        """
-        context = dict()
-        context["context_appropriate_base_template"] = \
-            "topicblog/base_email.html"
-        context["email"] = tb_email
-
-        # The unsubscribe link is created with the send_record and the
-        # user's email hidden in a token.
-        context["token"] = \
-            self.get_unsubscribe_token(recipient[0], send_record_id)
-
-        return context
-
-    def create_send_record(self,  slug: str, mailing_list: MailingList,
-                           recipient: str) -> TopicBlogEmailSendRecord:
-        """
-        Create a new TBEmailSentRecord object.
-        """
-        recipient_user_object = User.objects.get(email=recipient)
-        send_record = TopicBlogEmailSendRecord(
-            slug=slug,
-            mailinglist=mailing_list,
-            recipient=recipient_user_object,
-            send_time=datetime.now(timezone.utc)
-        )
-        send_record.save()
-        return send_record
-
-    def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
-        """
-        Create a token to unsubscribe the user from the mailing list.
-        """
-        email = email
-        k_minutes_in_six_months = 60*24*30*6
-        token = make_timed_token(
-            email, k_minutes_in_six_months, int_key=send_record_id)
-        return token
 
 
 @perm_required("topicblog.tbe.may_send")
@@ -845,269 +820,19 @@ class TopicBlogPressList(PermissionRequiredMixin,
 
 
 class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
-                         FormView):
-    """Notes to Benjamin and Mickael:
-
-    This view isn't implemented yet.  Here's what I think you should do:
-
-    1.  On GET, display a form.  That form should (for now) just show
-    the mailing_lists available in a dropdown list and let the user
-    choose one.  Once a mailing_list is chosen, enable a send button.
-    Pushing the send button will POST to the same url.
-
-    Soon-ish, we should add a "press" flag to mailing lists, but
-    that's not today.  Our goal today is got move.  Just, in the back
-    of your head, think that we'll eventually filter on a press flag.
-
-    2.  On POST, send the mail.  This means you do the following:
-        (i)  Get the list of users from the mailing_list by calling
-             subscribed_users() from mailing_list/events.py.  Note that
-             that function doesn't exist yet, but it should be a really,
-             really simple function for you to write based on the other
-             functions in the file.  You should make a single commit
-             with that function and tests for that function.
-        (ii) For each user in the list:
-
-             Compute a timed_token (function already exists,
-             make_timed_token() in asso_tn/utils.py).  Given it a
-             three-week timeout so as not to over-think.  Pass the
-             TopicBlogPressSendRecord pk_id in persistent.  If someone
-             comes back after expiration, we can ask them to respond
-             to a new query (not for today).  In the footer of the
-             base press template (note: this is 30 seconds, you just
-             write "<div><div><p><a href={% url
-             ... %}>unsubscribe</a></div></div>" with maybe some
-             arguments to the divs and such.  DO NOT spend time now
-             fiddling with making it look just right.  There's a
-             difference between unworldly user interaction paradigms
-             and simply not being pretty yet.  The latter is easily
-             remedied in a second commit, the former is trickier.
-             This is a commit.
-
-             Also compute the url (the path already exists) to view
-             this press on the web.  Put that in the context, too, and
-             make sure you add a link at the top of the press base
-             template, just above the content.  That's another commit.
-
-             Render the press, pass it off to SES for sending, and
-             write a record to TopicBlogPressSendRecord.  This is
-             another commit.
-
-             Now write a function that serves a beacon.  A beacon
-             means you have a non-threatening path (NOT
-             /tb/e/beacon/<value>/ but rather /tb/e/i/<value>/ -- and
-             value is going to be another timed_token that encodes the
-             pk_id of the TopicBlogPressSendRecord) that returns a
-             one-pixel background-colour gif.  We can change it later,
-             that will work for now.  This is a commit.
-
-             Now go back to the above and add a beacon to the press
-             base template.  Give it a ten year time-out, which is
-             nine years and six months more than we probably need.
-             That means you generate the beacon value and pass it in
-             so that the image (/tb/e/i/<value>) has the right value.
-             This is a commit.
-
-             Note that the two timed tokens encode the press address
-             to which we sent the mail and the pk_id of the
-             TopicBlogPressSendRecord, so the beacon function or the
-             unsub page can easily look up the send record.  The
-             beacon function should update
-             TopicBlogPressSendRecord.open_time.  Clicks should lead
-             to setting TopicBlogPressSendRecord.click_time.  In both
-             cases, only if not already set, since what we want is the
-             time of the first view, the first click.  This is a
-             commit.
-
-             If the user validates an unsub having clicked in from an
-             press, then we have the timed token handy and we should
-             set TopicBlogPressSendRecord.unsubscribe_time if it's not
-             already set (and call unsubscribe_user_from_list()).
-
-             Hints for the future: once this is working, we're going
-             to improve it with things like our logo in the mail, the
-             date and other press release type things.  Also, the
-             unsub button will have some special press-like features,
-             like letting journalists specify the specific lists to
-             which they want to be subscribed.  Maybe you care about
-             pedestrians but not about inter-city buses, and maybe we
-             some day have lists for those.
-
-    """
+                         TopicBlogBaseSendView):
+    """ Allow press releases to be sent and tracked by email. """
     permission_required = 'topicblog.tbp.may_send'
     form_class = TopicBlogEmailSendForm
     template_name = 'topicblog/topicblogbase_send_form.html'
+    # Template used to render emails
+    context_appropriate_base_template = "topicblog/base_press.html"
+    send_record_class = TopicBlogEmailSendRecord
+    base_model = TopicBlogPress
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
     # itself eventually, or on the dashboard ?
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # The slug is then used to get the TBEmail we want to send.
-        context["tbe_slug"] = self.kwargs['the_slug']
-        context["send_to_view"] = "topicblog:send_press"
-        return context
-
-    def get_last_published_email(self, tbe_slug: str) -> TopicBlogEmail:
-        """Get the TBPress object with the most recent publication date
-        for a given slug.
-        """
-        tbe_object = TopicBlogPress.objects.filter(
-            slug=tbe_slug,
-            publication_date__isnull=False
-        )
-        if len(tbe_object) > 1:
-            raise ValueError(
-                "There is more than one TBPress with slug {} and a not-null "
-                "publication date".format(
-                    tbe_slug))
-        elif len(tbe_object) == 0:
-            raise ValueError(
-                "There is no TBPress with slug {} and a not-null "
-                "publication date".format(
-                    tbe_slug))
-        return tbe_object[0]
-
-    def form_valid(self, form):
-        tbe_slug = self.kwargs['the_slug']
-        tbe_object = self.get_last_published_email(tbe_slug)
-
-        if tbe_object is None:
-            logger.info(f"No published TBEmail object found for '{tbe_slug}'")
-            raise Http404(
-                f"Pas d'email publié trouvé pour le slug '{tbe_slug}'")
-
-        mailing_list_token = form.cleaned_data['mailing_list']
-        # The recipient list is extracted from the selected MailingList.
-        mailing_list = MailingList.objects.get(
-            mailing_list_token=mailing_list_token)
-        mailing_list: MailingList
-        recipient_list = get_subcribed_users_email_list(mailing_list)
-
-        # We create and send an email for each recipient, each with
-        # custom informations (like the unsubscribe link).
-        for recipient in recipient_list:
-            send_record = self.create_send_record(
-                slug=tbe_slug,
-                mailing_list=mailing_list,
-                recipient=recipient)
-            custom_email = self.prepare_email(
-                pkid=tbe_object.id,
-                the_slug=tbe_slug,
-                recipient=[recipient],
-                mailing_list=mailing_list,
-                send_record_id=send_record.id)
-
-            logger.info(f"Successfully prepared email to {recipient}")
-            custom_email.send(fail_silently=False)
-            logger.info(f"Successfully sent email to {recipient}")
-
-        return super().form_valid(form)
-
-    def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record_id: int) \
-            -> mail.EmailMultiAlternatives:
-        """
-        Creates a sendable email object from a TBPress with a mail
-        client-friendly template, given a pkid, a slug and a mail address.
-
-        send_record is the pk_id of the TopicBlogEmailSendRecord
-        """
-        if pkid < 0 or the_slug is None:
-            logger.info(f"pkid < 0 ({pkid}) or slug is none ({the_slug})")
-            return HttpResponseServerError()
-
-        # Preparing the email
-        tb_email = TopicBlogPress.objects.get(pk=pkid, slug=the_slug)
-        self.template_name = tb_email.template_name
-
-        context = self._set_email_context(recipient, send_record_id, tb_email)
-
-        try:
-            email = self._create_email_object(tb_email, context, recipient)
-        except Exception as e:
-            message = \
-                f"Error while creating EmailMultiAlternatives object: {e}"
-            logger.info(message)
-            raise Exception(message)
-
-        return email
-
-    def _create_email_object(self, tb_email: TopicBlogPress, context: dict,
-                             recipient_list: list,
-                             from_email: str = settings.DEFAULT_FROM_EMAIL) \
-            -> mail.EmailMultiAlternatives:
-        """
-        To send emails to multiple persons, django send_mail function isn't
-        enough, we need to create a EmailMultiAlternatives object to be able,
-        for example to put recipients in BCC field or add attachments.
-        It also improves the performances by reusing the same connexion to SMTP
-        server.
-        Doc :
-        https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
-        https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
-        https://docs.djangoproject.com/en/3.2/topics/email/#sending-alternative-content-types
-        """
-        # HTML message is the one displayed in mail client
-        html_message = render_to_string(
-            tb_email.template_name, context=context, request=self.request)
-        # In cases where the HTML message isn't accepted, a plain text
-        # message is displayed in the mail client.
-        plain_text_message = strip_tags(html_message)
-
-        email = mail.EmailMultiAlternatives(
-            subject=tb_email.subject,
-            body=plain_text_message,
-            from_email=from_email,
-            to=recipient_list,
-        )
-        email.attach_alternative(html_message, "text/html")
-
-        return email
-
-    def _set_email_context(
-            self, recipient: list, send_record_id: int,
-            tb_email: TopicBlogPress) -> dict:
-        """
-        Sets the context for the email to be sent.
-        """
-        context = dict()
-        context["context_appropriate_base_template"] = \
-            "topicblog/base_press.html"
-        context["page"] = tb_email
-
-        # The unsubscribe link is created with the send_record and the
-        # user's email hidden in a token.
-        context["token"] = \
-            self.get_unsubscribe_token(recipient[0], send_record_id)
-
-        return context
-
-    def create_send_record(self,  slug: str, mailing_list: MailingList,
-                           recipient: str) -> TopicBlogEmailSendRecord:
-        """
-        Create a new TBEmailSentRecord object.
-        """
-        recipient_user_object = User.objects.get(email=recipient)
-        send_record = TopicBlogEmailSendRecord(
-            slug=slug,
-            mailinglist=mailing_list,
-            recipient=recipient_user_object,
-            send_time=datetime.now(timezone.utc)
-        )
-        send_record.save()
-        return send_record
-
-    def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
-        """
-        Create a token to unsubscribe the user from the mailing list.
-        """
-        email = email
-        k_minutes_in_six_months = 60*24*30*6
-        token = make_timed_token(
-            email, k_minutes_in_six_months, int_key=send_record_id)
-        return token
 
 
 ######################################################################
