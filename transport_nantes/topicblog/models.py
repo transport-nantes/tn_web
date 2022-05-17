@@ -964,16 +964,16 @@ class TopicBlogPressSendRecord(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
     send_time = models.DateTimeField(auto_now=True)
     # Open time is the time of the first instance of a beacon responding.
-    open_time = models.DateTimeField()
+    open_time = models.DateTimeField(null=True, blank=True)
     # Click time is the time of the first instance of a link being clicked.
-    click_time = models.DateTimeField()
+    click_time = models.DateTimeField(null=True, blank=True)
     # Unsubscribe time is the first instance of a user clicking the
     # unsubscribe button, whether the unsubscribe is successful or
     # not.  Note that we still have to send the user to the
     # appropriate mailinglist unsubscribe page with user_id filled in
     # (so that no press confirmation is required, which would be safer
     # but would annoy most people).
-    unsubscribe_time = models.DateTimeField()
+    unsubscribe_time = models.DateTimeField(null=True, blank=True)
 
 
 class TopicBlogPressClicks(models.Model):
