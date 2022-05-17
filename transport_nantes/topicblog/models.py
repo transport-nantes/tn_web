@@ -708,6 +708,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_emails_by_slug'
     listall_object_url = 'topicblog:list_emails'
     viewbyslug_object_url = 'topicblog:view_email_by_slug'
+    send_object_url = 'topicblog:send_email'
     description_of_object = 'Email'
 
     def get_absolute_url(self):
@@ -905,6 +906,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_press_by_slug'
     listall_object_url = 'topicblog:list_press'
     viewbyslug_object_url = 'topicblog:view_press_by_slug'
+    send_object_url = 'topicblog:send_press'
     description_of_object = 'Communiqué de presse'
 
     def get_absolute_url(self):
