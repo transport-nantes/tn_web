@@ -6,6 +6,7 @@ attrs==21.4.0
 autopep8==1.5.7
 awscli==1.19.59
 backcall==0.1.0
+backports.zoneinfo==0.2.1
 boto3==1.17.59
 botocore==1.20.59
 branca==0.4.2
@@ -23,10 +24,10 @@ cryptography==36.0.1
 decorator==4.4.1
 distlib==0.3.0
 distro==1.4.0
-Django==3.2.13
+Django==4.0.4
 django-amazon-ses==4.0.0
 django-countries==7.2.1
-django-crispy-forms==1.12.0
+django-crispy-forms==1.14.0
 django-debug-toolbar==3.2.4
 django-ranged-response==0.2.0
 django-simple-captcha==0.5.13

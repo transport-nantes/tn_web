@@ -2,21 +2,25 @@ from django.test import TestCase
 from .models import UTM
 from django.utils.crypto import get_random_string
 
+# This is used for creating probably distinct test values.
+# It has no other real significance in this test.
+k_string_length = 12
+
 class SimpleTest(TestCase):
     def setUp(self):
         pass
 
     def test_parse_url_ads_true(self):
-        the_campaign = get_random_string()
-        the_content = get_random_string()
-        the_medium = get_random_string()
-        the_source = get_random_string()
-        the_term = get_random_string()
-        the_aclk = get_random_string()
-        the_fbclid = get_random_string()
-        the_gclid = get_random_string()
-        the_msclkid = get_random_string()
-        the_twclid = get_random_string()
+        the_campaign = get_random_string(k_string_length)
+        the_content = get_random_string(k_string_length)
+        the_medium = get_random_string(k_string_length)
+        the_source = get_random_string(k_string_length)
+        the_term = get_random_string(k_string_length)
+        the_aclk = get_random_string(k_string_length)
+        the_fbclid = get_random_string(k_string_length)
+        the_gclid = get_random_string(k_string_length)
+        the_msclkid = get_random_string(k_string_length)
+        the_twclid = get_random_string(k_string_length)
         url = f"/?a=b&utm_campaign={the_campaign}&utm_medium={the_medium}&utm_content={the_content}&c=1&utm_term={the_term}&utm_source={the_source}&gclid={the_gclid}&fbclid={the_fbclid}&twclid={the_twclid}&msclkid={the_msclkid}&aclk={the_aclk}"
         response = self.client.get(url)
         objects = UTM.objects.all()
@@ -35,11 +39,11 @@ class SimpleTest(TestCase):
         self.assertNotEqual("-", object.session_id)
 
     def test_parse_url_ads_false(self):
-        the_campaign = get_random_string()
-        the_content = get_random_string()
-        the_medium = get_random_string()
-        the_source = get_random_string()
-        the_term = get_random_string()
+        the_campaign = get_random_string(k_string_length)
+        the_content = get_random_string(k_string_length)
+        the_medium = get_random_string(k_string_length)
+        the_source = get_random_string(k_string_length)
+        the_term = get_random_string(k_string_length)
         url = f"/?a=b&utm_campaign={the_campaign}&utm_medium={the_medium}&utm_content={the_content}&c=1&utm_term={the_term}&utm_source={the_source}"
         response = self.client.get(url)
         objects = UTM.objects.all()
