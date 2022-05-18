@@ -779,7 +779,8 @@ class TopicBlogEmailSendRecord(models.Model):
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
-    send_time = models.DateTimeField(auto_now=True)
+    # Send time is only set once SES sends the email.
+    send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
     # Open time is the time of the first instance of a beacon responding.
     open_time = models.DateTimeField(null=True, blank=True)
     # Click time is the time of the first instance of a link being clicked.
@@ -962,7 +963,8 @@ class TopicBlogPressSendRecord(models.Model):
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
-    send_time = models.DateTimeField(auto_now=True)
+    # Send time is only set once SES sends the email.
+    send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
     # Open time is the time of the first instance of a beacon responding.
     open_time = models.DateTimeField(null=True, blank=True)
     # Click time is the time of the first instance of a link being clicked.

@@ -440,7 +440,6 @@ class SendableObjectMixin:
             slug=slug,
             mailinglist=mailing_list,
             recipient=recipient_user_object,
-            send_time=datetime.now(timezone.utc)
         )
         send_record.save()
         return send_record
