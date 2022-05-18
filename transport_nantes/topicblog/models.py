@@ -776,9 +776,22 @@ class TopicBlogEmailSendRecord(models.Model):
 
     """Represent the fact that we sent an email.
     """
+
+    class StatusChoices(models.TextChoices):
+        # This is the initial state
+        PENDING = 'PENDING', "Pending"
+        # Toggle to this state when Amazon SES accepts to send the email
+        SENT = 'SENT', "Sent"
+        # Toggle to this state if Amazon SES accepted the sending, but is
+        # unable to deliver the email
+        FAILED = 'FAILED', "Failed"
+
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
+    status = models.CharField(
+        max_length=50, choices=StatusChoices.choices,
+        default=StatusChoices.PENDING)
     # Send time is only set once SES sends the email.
     send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
     # Open time is the time of the first instance of a beacon responding.
@@ -960,9 +973,21 @@ class TopicBlogPressSendRecord(models.Model):
 
     """Represent the fact that we sent an press.
     """
+
+    class StatusChoices(models.TextChoices):
+        # This is the default state
+        PENDING = 'PENDING', "Pending"
+        # Toggled to this state when Amazon SES sends the email
+        SENT = 'SENT', "Sent"
+        # Toggled to this state if Amazon SES refuses to send the email
+        FAILED = 'FAILED', "Failed"
+
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
+    status = models.CharField(
+        max_length=50, choices=StatusChoices.choices,
+        default=StatusChoices.PENDING)
     # Send time is only set once SES sends the email.
     send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
     # Open time is the time of the first instance of a beacon responding.
