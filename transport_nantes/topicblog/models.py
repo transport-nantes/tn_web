@@ -412,6 +412,7 @@ class SendRecordBase(models.Model):
         default=StatusChoices.PENDING)
     # Send time is only set once SES sends the email.
     send_time = models.DateTimeField(null=True, blank=True)
+    aws_message_id = models.CharField(max_length=300, blank=True, null=True)
 
 
 class SendRecordTransactional(SendRecordBase):
