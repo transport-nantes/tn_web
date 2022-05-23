@@ -323,7 +323,7 @@ class SendableObjectMixin:
         return tb_objects[0]
 
     def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record_id: int) \
+                      mailing_list: MailingList, send_record) \
             -> mail.EmailMultiAlternatives:
         """
         Creates a sendable email object from a TBobject with a mail
@@ -334,7 +334,7 @@ class SendableObjectMixin:
         the_slug -- the slug of the object to send
         recipient -- the list of recipients
         mailing_list -- the mailing list to send a the object to
-        send_record_id -- the id of the send record attached to the email
+        send_record -- the send_record object associated with the email
 
         Returns:
         An EmailMultiAlternatives object ready to be sent.
@@ -347,10 +347,11 @@ class SendableObjectMixin:
         tb_email = self.base_model.objects.get(pk=pkid, slug=the_slug)
         self.template_name = tb_email.template_name
 
-        context = self._set_email_context(recipient, send_record_id, tb_email)
+        context = self._set_email_context(recipient, send_record.id, tb_email)
 
         try:
-            email = self._create_email_object(tb_email, context, recipient)
+            email = self._create_email_object(tb_email, context, recipient,
+                                              send_record)
         except Exception as e:
             message = \
                 f"Error while creating EmailMultiAlternatives object: {e}"
@@ -360,7 +361,7 @@ class SendableObjectMixin:
         return email
 
     def _create_email_object(self, tb_object, context: dict,
-                             recipient_list: list,
+                             recipient_list: list, send_record,
                              from_email: str = settings.DEFAULT_FROM_EMAIL) \
             -> mail.EmailMultiAlternatives:
         """
@@ -398,15 +399,26 @@ class SendableObjectMixin:
         # different endpoints can be notified.
         # Without this header, the email is sent but no notification will be
         # sent to the endpoints.
-        AWS_headers = {
-            "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME}
+        values_to_pass_to_ses = {
+            "send_record class": send_record.__class__.__name__,
+            "send_record id": str(send_record.id),
+        }
+        # The Comments header is a non structured header that allows us to pass
+        # arbitrary data to SES. See https://www.ietf.org/rfc/rfc0822.txt
+        # for more information.
+        # This header field accepts text as value, so we create a string from a
+        # dictionary.
+        comments_header = json.dumps(values_to_pass_to_ses)
+        headers = {
+            "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
+            "Comments": comments_header}
 
         email = mail.EmailMultiAlternatives(
             subject=tb_object.subject,
             body=plain_text_message,
             from_email=from_email,
             to=recipient_list,
-            headers=AWS_headers,
+            headers=headers,
         )
         email.attach_alternative(html_message, "text/html")
 
@@ -512,11 +524,16 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
                 the_slug=tbe_slug,
                 recipient=[recipient],
                 mailing_list=mailing_list,
-                send_record_id=send_record.id)
+                send_record=send_record)
 
             logger.info(f"Successfully prepared email to {recipient}")
-            custom_email.send(fail_silently=False)
-            logger.info(f"Successfully sent email to {recipient}")
+            try:
+                custom_email.send(fail_silently=False)
+                logger.info(f"Successfully sent email to {recipient}")
+            except Exception as e:
+                logger.error(f"Failed to send email to {recipient} : {e}")
+                send_record.status = "FAILED"
+                send_record.save()
 
         return super().form_valid(form)
 ######################################################################
