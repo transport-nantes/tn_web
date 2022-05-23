@@ -1,4 +1,5 @@
 import logging
+import json
 from django.http import HttpRequest, HttpResponseRedirect
 from django.utils.crypto import get_random_string
 
@@ -154,7 +155,9 @@ def create_send_record(email: str) -> SendRecordTransactional:
         recipient=recipient)
     return send_record
 
-def prepare_email(email: str, request: HttpRequest) \
+
+def prepare_email(email: str, request: HttpRequest,
+                  send_record: SendRecordTransactional) \
         -> EmailMultiAlternatives:
     """Create a sendable Email object"""
     template = 'authentication/account_activation_email.html'
@@ -174,14 +177,25 @@ def prepare_email(email: str, request: HttpRequest) \
     # different endpoints can be notified.
     # Without this header, the email is sent but no notification will be sent
     # to the endpoints.
-    AWS_headers = {
-        "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME}
+    values_to_pass_to_ses = {
+        "send_record class": send_record.__class__.__name__,
+        "send_record id": str(send_record.id),
+    }
+    # The Comments header is a non structured header that allows us to pass
+    # arbitrary data to SES. See https://www.ietf.org/rfc/rfc0822.txt
+    # for more information.
+    # This header field accepts text as value, so we create a string from a
+    # dictionary.
+    comments_header = json.dumps(values_to_pass_to_ses)
+    headers = {
+        "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
+        "Comments": comments_header}
     email = EmailMultiAlternatives(
         subject='Votre lien de connexion à Mobilitains.fr',
         body=render_to_string(template, context),
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[email],
-        headers=AWS_headers,
+        headers=headers,
     )
     email.attach_alternative(html_message, 'text/html')
 
