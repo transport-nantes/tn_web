@@ -391,6 +391,56 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
 
+class SendRecordBase(models.Model):
+    """Base model for Send Records."""
+
+    class Meta:
+        abstract = True
+
+    class StatusChoices(models.TextChoices):
+        # This is the initial state
+        PENDING = 'PENDING', "Pending"
+        # Toggle to this state when Amazon SES accepts to send the email
+        SENT = 'SENT', "Sent"
+        # Toggle to this state if Amazon SES accepted the sending, but is
+        # unable to deliver the email
+        FAILED = 'FAILED', "Failed"
+
+    recipient = models.ForeignKey(User, on_delete=models.PROTECT)
+    status = models.CharField(
+        max_length=50, choices=StatusChoices.choices,
+        default=StatusChoices.PENDING)
+    # Send time is only set once SES sends the email.
+    send_time = models.DateTimeField(null=True, blank=True)
+
+
+class SendRecordTransactional(SendRecordBase):
+    """
+    A Transactional Send Record keeps records of one-of mails
+    sent to users such as login mail
+    """
+    pass
+
+
+class SendRecordMarketing(SendRecordBase):
+    """
+    A Marketing Send Record keeps records of mails sent to users
+    such as newsletters or press releases.
+    """
+
+    class Meta:
+        abstract = True
+
+    # Slug to the article that was sent
+    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
+    mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
+    # Open time is the time of the first instance of a beacon responding.
+    open_time = models.DateTimeField(null=True, blank=True)
+    # Click time is the time of the first instance of a link being clicked.
+    click_time = models.DateTimeField(null=True, blank=True)
+    unsubscribe_time = models.DateTimeField(null=True, blank=True)
+
+
 ######################################################################
 # TopicBlogItem
 
@@ -772,39 +822,11 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
         return fields
 
 
-class TopicBlogEmailSendRecord(models.Model):
+class TopicBlogEmailSendRecord(SendRecordMarketing):
 
-    """Represent the fact that we sent an email.
+    """Represent the fact that we sent a newlsetter email.
     """
-
-    class StatusChoices(models.TextChoices):
-        # This is the initial state
-        PENDING = 'PENDING', "Pending"
-        # Toggle to this state when Amazon SES accepts to send the email
-        SENT = 'SENT', "Sent"
-        # Toggle to this state if Amazon SES accepted the sending, but is
-        # unable to deliver the email
-        FAILED = 'FAILED', "Failed"
-
-    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
-    mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
-    recipient = models.ForeignKey(User, on_delete=models.PROTECT)
-    status = models.CharField(
-        max_length=50, choices=StatusChoices.choices,
-        default=StatusChoices.PENDING)
-    # Send time is only set once SES sends the email.
-    send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
-    # Open time is the time of the first instance of a beacon responding.
-    open_time = models.DateTimeField(null=True, blank=True)
-    # Click time is the time of the first instance of a link being clicked.
-    click_time = models.DateTimeField(null=True, blank=True)
-    # Unsubscribe time is the first instance of a user clicking the
-    # unsubscribe button, whether the unsubscribe is successful or
-    # not.  Note that we still have to send the user to the
-    # appropriate mailinglist unsubscribe page with user_id filled in
-    # (so that no email confirmation is required, which would be safer
-    # but would annoy most people).
-    unsubscribe_time = models.DateTimeField(null=True, blank=True)
+    pass
 
 
 class TopicBlogEmailClicks(models.Model):
@@ -969,38 +991,11 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         return fields
 
 
-class TopicBlogPressSendRecord(models.Model):
+class TopicBlogPressSendRecord(SendRecordMarketing):
 
-    """Represent the fact that we sent an press.
+    """Represent the fact that we sent an press release.
     """
-
-    class StatusChoices(models.TextChoices):
-        # This is the default state
-        PENDING = 'PENDING', "Pending"
-        # Toggled to this state when Amazon SES sends the email
-        SENT = 'SENT', "Sent"
-        # Toggled to this state if Amazon SES refuses to send the email
-        FAILED = 'FAILED', "Failed"
-
-    slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
-    mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
-    recipient = models.ForeignKey(User, on_delete=models.PROTECT)
-    status = models.CharField(
-        max_length=50, choices=StatusChoices.choices,
-        default=StatusChoices.PENDING)
-    # Send time is only set once SES sends the email.
-    send_time = models.DateTimeField(null=True, blank=True, auto_now=False)
-    # Open time is the time of the first instance of a beacon responding.
-    open_time = models.DateTimeField(null=True, blank=True)
-    # Click time is the time of the first instance of a link being clicked.
-    click_time = models.DateTimeField(null=True, blank=True)
-    # Unsubscribe time is the first instance of a user clicking the
-    # unsubscribe button, whether the unsubscribe is successful or
-    # not.  Note that we still have to send the user to the
-    # appropriate mailinglist unsubscribe page with user_id filled in
-    # (so that no press confirmation is required, which would be safer
-    # but would annoy most people).
-    unsubscribe_time = models.DateTimeField(null=True, blank=True)
+    pass
 
 
 class TopicBlogPressClicks(models.Model):
