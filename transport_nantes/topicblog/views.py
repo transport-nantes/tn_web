@@ -1,7 +1,9 @@
 from collections import Counter
 from datetime import datetime, timezone
+import json
 import logging
 from pathlib import Path
+from typing import Tuple
 from django.apps import apps
 from django.conf import settings
 from django.core import mail
@@ -25,7 +27,8 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
-from django_ses.signals import bounce_received
+from django_ses.signals import (bounce_received, delivery_received,
+                                send_received)
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
@@ -1008,16 +1011,67 @@ def beacon_view(response, **kwargs):
     return response
 
 
-@receiver(bounce_received)
-def bounce_handler(sender, mail_obj, bounce_obj, raw_message, *args, **kwargs):
-    """Handle AWS SES bounces notifications
+def _extract_data_from_ses_signal(mail_obj: dict) -> Tuple[str, str, str]:
+    """Extract data attached to a mail object received on SES- webhook
+
+    Keyword Argument:
+    - mail_obj : A dict containing data related to a sent email
+
+    Return:
+    - A tuple containing :
+        - The AWS message ID
+        - The "send_record class" attached in the "Comments" header
+        - The "send_record id" attached in the "Comments" header
+    """
+    aws_message_id = mail_obj.get("messageId")
+    send_record_class = None
+    send_record_id = None
+    headers_content = mail_obj.get("headers")
+    comments_header = next(
+        (header for header in headers_content
+         if header["name"] == "Comments"), None)
+    if comments_header:
+        try:
+            comments_values: dict = json.loads(comments_header["value"])
+            send_record_class = comments_values.get("send_record class")
+            send_record_class = apps.get_model('topicblog', send_record_class)
+            send_record_id = comments_values.get("send_record id")
+            send_record_id = int(send_record_id)
+        except Exception as e:
+            logger.error(
+                f"Error while extracting data from comments header : {e}")
+            send_record_class = None
+            send_record_id = None
+
+    return aws_message_id, send_record_class, send_record_id
+
+
+@receiver(send_received)
+def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
+    """Handle AWS SES send_received notifications
 
     AWS Receiver
-    This function will run when a bounce is received from Amazon SES.
+    This function will run when a send_received is received from
+    Amazon SES.
     The signal is sent from django_ses' view.
-    For now it only logs the bounce while we think of a better way to
-    handle them.
     """
-    logger.info("Bounce received !")
-    logger.info("This is bounce email object")
-    logger.info(f"The mail_obj : {mail_obj}")
+    logger.info("send_received received !")
+    aws_message_id, send_record_class, send_record_id = \
+        _extract_data_from_ses_signal(mail_obj)
+    logger.info(
+        f"\nsend_received signal received for message {aws_message_id}\n"
+        f"SendRecord class : {send_record_class} ID : {send_record_id}")
+    if send_record_class and send_record_id:
+        try:
+            send_record = send_record_class.objects.get(pk=send_record_id)
+            send_record.status = "SENT"
+            send_record.send_time = datetime.now(timezone.utc)
+            send_record.aws_message_id = aws_message_id
+            send_record.save()
+            logger.info(
+                f"\nSES confirmed email sending\n"
+                f"SR.class : {send_record_class.__name__}\n"
+                f"SR.id :{send_record.pk})")
+        except Exception as e:
+            logger.error(
+                f"Error while updating send_record : {e}")
