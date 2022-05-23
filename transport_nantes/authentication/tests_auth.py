@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 import datetime
 
 from django.urls.base import reverse
@@ -33,7 +33,7 @@ class TimedTokenTest(TestCase):
             self.assertEqual(after_response[1], 0)
 
 
-class LoginViewTest(TestCase):
+class LoginViewTest(TransactionTestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
