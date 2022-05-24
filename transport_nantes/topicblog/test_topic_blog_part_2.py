@@ -1,6 +1,7 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from django.test import TestCase, Client
 from .models import TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
+from .models import TopicBlogObjectBase as TBObject
 from django.contrib.auth.models import Permission, User
 from django.urls import reverse
 
@@ -1308,3 +1309,44 @@ class TBLATest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+
+class MoribundAndDelete(TestCase):
+    def setUp(self):
+        TBETest.setUp(self)
+        now = datetime.now(timezone.utc)
+        then_moribund = now - timedelta(days=TBObject.K_MORIBUND_DELAY_DAYS)
+        then_deletable = now - timedelta(
+            days=TBObject.K_MORIBUND_DELAY_DAYS) - timedelta(
+            days=TBObject.K_MORIBUND_CLEARED_FOR_DELETING_DAYS)
+        self.moribund_email = TopicBlogEmail.objects.create(
+            slug="email",
+            subject="slug2",
+            body_text_1_md="body",
+            user=self.user,
+            template_name=self.template_email,
+            title="Test-title",
+        )
+        self.moribund_email.date_modified = then_moribund
+        self.deletable_email = TopicBlogEmail.objects.create(
+            slug="email",
+            subject="slug2",
+            body_text_1_md="body",
+            user=self.user,
+            template_name=self.template_email,
+            title="Test-title",
+            scheduled_for_deletion_date=then_deletable
+        )
+        self.deletable_email.date_modified=then_deletable
+        self.email_ok = TopicBlogEmail.objects.create(
+            slug="email",
+            subject="slug2",
+            body_text_1_md="body",
+            user=self.user,
+            template_name=self.template_email,
+            title="Test-title")
+
+    def test_moribund_and_delete(self):
+        self.assertTrue(self.moribund_email.is_moribund())
+        self.assertTrue(self.deletable_email.is_moribund())
+        self.assertFalse(self.email_ok.is_moribund())

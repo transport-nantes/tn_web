@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, timedelta
 import logging
 
 from django.contrib.auth.models import User
@@ -52,13 +52,21 @@ class TopicBlogTemplate(models.Model):
 
 
 class TopicBlogObjectBase(models.Model):
-
     """The base of all of TopicBlog.
 
     Represent a versioned object without social media support.
     """
 
+    # Define the timeout for unpublished objects before concluding
+    # they are moribund.
+    K_MORIBUND_DELAY_DAYS = 15
+    # Define the timeout for moribund objects before concluding they
+    # may be deleted with impunity.
+    K_MORIBUND_CLEARED_FOR_DELETING_DAYS = 15
+
     class Meta:
+        """The base class is abstract.  That is all."""
+
         abstract = True
 
     # I think I saw problems with unicode URLs, though.
@@ -119,7 +127,8 @@ class TopicBlogObjectBase(models.Model):
     # although we don't currently do so.
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now_add=True)
+    scheduled_for_deletion_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT,
                              related_name='+')
     publisher = models.ForeignKey(User, on_delete=models.PROTECT,
@@ -313,6 +322,62 @@ class TopicBlogObjectBase(models.Model):
                     fields.add('og_image')
                     continue
         return fields
+
+    def is_moribund(self) -> bool:
+        """Return True iff the object is moribund.
+
+        Moribund means the object has never been published and has age
+        at least K_MORIBUND_DELAY_DAYS.
+
+        """
+        if self.publication_date is not None:
+            # Failsafe: this was published.
+            return False
+        if self.date_modified is None:
+            # Shouldn't be possible, but our data model is a bit of a
+            # mess.  Retire this line when we can, late August 2022.
+            # Anyway, object's not published and we have no idea how
+            # old it is, so it's moribund.
+            return True
+        if self.first_publication_date is None and \
+           ((datetime.now(timezone.utc) - self.date_modified).days >=
+            self.K_MORIBUND_DELAY_DAYS):
+            return True
+        return False
+
+    def is_deletable(self) -> bool:
+        """Return True iff the object may be deleted.
+
+        Deletion is permitted if deletion_date is at least
+        K_MORIBUND_CLEARED_FOR_DELETING_DAYS in the past.
+
+        """
+        if self.publication_date is not None:
+            # Failsafe.
+            return False
+        if self.first_publication_date is None and \
+           self.scheduled_for_deletion_date is not None and \
+           ((datetime.now(timezone.utc) -
+             self.scheduled_for_deletion_date).days >=
+            self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS):
+            return True
+        return False
+
+    def days_until_deletion(self) -> int:
+        """Return the number of days until item is cleared for deletion.
+
+        If the returned value is zero, the item may be deleted
+        immediately.
+
+        """
+        if self.scheduled_for_deletion_date is not None:
+            delete_date =  \
+                self.scheduled_for_deletion_date + timedelta(
+                    self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS)
+            days_remaining = (delete_date - datetime.now(timezone.utc)).days
+            if days_remaining > 0:
+                return days_remaining
+            return 0
 
 
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):

@@ -42,6 +42,12 @@
             <br>
             Créé {{ object.date_modified|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
             <br>
+            {% if object.is_moribund %}
+                <span class="{% if object.is_moribund %} text-danger {% endif %}">
+                    Moribond, sera supprimé dans {{ object.days_until_deletion }} jours.
+                </span>
+                <br>
+            {% endif %}
             <a type="button" class="btn btn-outline-info btn-sm"
             href="{{object.get_edit_url}}?from={{request.GET.from}}">Modifier</a>
             <a type="button" class="btn btn-outline-info btn-sm"
