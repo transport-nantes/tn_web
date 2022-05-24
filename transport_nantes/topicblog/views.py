@@ -272,6 +272,7 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
     login_url = reverse_lazy("authentication:login")
 
     def get_context_data(self, **kwargs):
+        """This is a GET, supply the context."""
         context = super().get_context_data(**kwargs)
         qs = context['object_list']
         the_slug = self.kwargs.get('the_slug', None)
@@ -288,13 +289,20 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self, *args, **kwargs):
-        """Return a queryset of matches for a given the_slug.
-        """
+        """Return a queryset of matches for a given the_slug."""
         qs = super(ListView, self).get_queryset(*args, **kwargs)
         if 'the_slug' in self.kwargs:
+            # If we have a slug, show it.
             the_slug = self.kwargs['the_slug']
-            return qs.filter(slug=the_slug).order_by(
-                '-date_modified')
+
+            # Clean up old objects.  This should perhaps be pushed to
+            # celery later.
+            mark_moribund_and_delete(qs.filter(slug=the_slug))
+
+            the_qs = qs.filter(slug=the_slug).order_by('-date_modified')
+            return the_qs
+
+        # If we don't have a slug, list all slugs.
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
                            date_modified=Max('date_modified'),
@@ -1375,3 +1383,34 @@ def click_received_handler(sender, mail_obj, click_obj, *args, **kwargs):
     logger.info(
         f"\nclick_received signal received for message {aws_message_id}\n"
         f"SendRecord class : {send_record_class} ID : {send_record_id}")
+
+
+def mark_moribund_and_delete(slug_queryset):
+    """Delete or prepare to delete old objects.
+
+    Mark for deletion objects that are moribund.
+    Delete objects that have been marked moribund for long enough.
+
+    I really don't like that the queryset language doesn't permit me
+    to use a function, as this means that the functions defined on the
+    model (which can only apply to individual instances) can't be used
+    here, and the queryset definitions of moribund and deletable can't
+    be used there, even if I made a new manager.
+
+    Somewhat worse, I don't see how to do the SQL queries efficiently
+    in django's query language in order to call update().  So, rather
+    inefficiently, I'm loading all unpublished objects for the slug.
+    In principle, that isn't too inefficient, since after a few weeks
+    there likely won't be any.
+
+    """
+    slug_queryset.filter(publication_date=None)
+    for tb_object in slug_queryset:
+        if tb_object.is_deletable():
+            logger.info(f"Deleting object {tb_object.id}.")
+            tb_object.delete()
+        elif tb_object.is_moribund() and \
+             tb_object.scheduled_for_deletion_date is None:
+            logger.info(f"Marking as moribund object {tb_object.id}.")
+            tb_object.scheduled_for_deletion_date = datetime.now(timezone.utc)
+            tb_object.save()
