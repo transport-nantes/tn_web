@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'press',
     'debug_toolbar',
     'photo',
+    'django_celery_results',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -261,7 +262,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 if 'test' in sys.argv and ROLE == "dev":
     CAPTCHA_TEST_MODE = True
 
+# Celery configuration
 CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BROKER_URL = "amqp://localhost"
+CELERY_RESULT_BACKEND = 'django-db'
