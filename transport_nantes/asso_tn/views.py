@@ -43,3 +43,20 @@ class AssoView(TemplateView):
             context['hero_description'] = self.hero_description or ""
             context["is_static"] = True
         return context
+
+from .tasks import compute_sum_slowly
+
+class AdderView(MainTransportNantes):
+    """Display the home page and also start a slow add.
+    """
+
+    def get_context_data(self, **kwargs):
+        print("============================================================")
+        print(kwargs)
+        context = super().get_context_data(**kwargs)
+        num = kwargs['num']
+        print(num)
+        print("Calling compute_sum_slowly().")
+        compute_sum_slowly.delay(10)
+        print("Returned from compute_sum_slowly().")
+        return context

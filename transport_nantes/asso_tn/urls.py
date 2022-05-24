@@ -1,6 +1,7 @@
 from django.urls import path
 # from django.views.generic.base import RedirectView
 from .views import AssoView
+from .views import AdderView
 
 app_name = 'asso_m'
 urlpatterns = [
@@ -41,4 +42,6 @@ urlpatterns = [
         ),
         name='crowdfunding-2021',
         ),
+
+    path('sum/<int:num>/', AdderView.as_view(), name='addition'),
 ]

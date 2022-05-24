@@ -1,0 +1,7 @@
+Packages:
+  * librabbitmq4
+  * rabbitmq-server
+  * (maybe) python3-celery
+
+python manage.py runserver 0.0.0.0:8000
+celery -A transport_nantes worker -l INFO
