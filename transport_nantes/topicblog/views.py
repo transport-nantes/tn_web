@@ -8,7 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
-
+from django.core.serializers import serialize
 from django.db.models import Count, Max
 from django.dispatch import receiver
 from django.http import (Http404, HttpResponseBadRequest,
@@ -40,6 +40,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm)
+from .tasks import send_email
 
 
 logger = logging.getLogger("django")
@@ -563,8 +564,12 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
 
             logger.info(f"Successfully prepared email to {recipient}")
             try:
-                custom_email.send(fail_silently=False)
-                logger.info(f"Successfully sent email to {recipient}")
+                # Celery task arguments must be serialized
+                serialized_email = json.dumps(vars(custom_email))
+                # Django has a built in to serialize querysets
+                serialized_send_record = serialize("json", [send_record])
+                # The email sending is handed to Celery
+                send_email.delay(serialized_email, serialized_send_record)
             except Exception as e:
                 logger.error(f"Failed to send email to {recipient} : {e}")
                 send_record.status = "FAILED"
