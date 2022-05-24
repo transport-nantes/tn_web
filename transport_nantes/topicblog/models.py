@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, timedelta
 import logging
 
 from django.contrib.auth.models import User
@@ -57,6 +57,8 @@ class TopicBlogObjectBase(models.Model):
 
     Represent a versioned object without social media support.
     """
+
+    K_MORIBUND_BEFORE_DELETING_DAYS = 15
 
     class Meta:
         abstract = True
@@ -120,6 +122,7 @@ class TopicBlogObjectBase(models.Model):
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
+    scheduled_for_deletion_date = models.DateField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT,
                              related_name='+')
     publisher = models.ForeignKey(User, on_delete=models.PROTECT,
@@ -313,6 +316,13 @@ class TopicBlogObjectBase(models.Model):
                     fields.add('og_image')
                     continue
         return fields
+
+    def get_days_defore_deletion(self) -> int:
+        if self.scheduled_for_deletion_date is not None:
+            ended_date =  \
+                self.scheduled_for_deletion_date + timedelta(
+                    self.K_MORIBUND_BEFORE_DELETING_DAYS)
+            return (ended_date - date.today()).days
 
 
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):

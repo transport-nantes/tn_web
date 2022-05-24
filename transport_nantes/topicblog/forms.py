@@ -91,7 +91,7 @@ class TopicBlogLauncherForm(ModelFormTemplateList):
         model = TopicBlogLauncher
         # Admins can still edit those values
         exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date')
+                   'publication_date', 'scheduled_for_deletion_date')
 
     field_order = ['slug', 'article_slug', 'campaign_name',
                    'headline', 'template_name', 'launcher_text_md',
@@ -107,7 +107,7 @@ class TopicBlogEmailForm(ModelFormTemplateList):
         model = TopicBlogEmail
         # Admins can still edit those values
         exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date')
+                   'publication_date', 'scheduled_for_deletion_date')
     field_order = ["slug", "subject", "title", "header_title",
                    "header_description", "header_image", "template_name",
                    "body_text_1_md", "cta_1_slug", "cta_1_label",
@@ -126,7 +126,7 @@ class TopicBlogPressForm(ModelFormTemplateList):
         model = TopicBlogPress
         # Admins can still edit those values
         exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date')
+                   'publication_date', 'scheduled_for_deletion_date')
 
 
 class TopicBlogMailingListPitchForm(ModelFormTemplateList):
@@ -137,7 +137,7 @@ class TopicBlogMailingListPitchForm(ModelFormTemplateList):
         model = TopicBlogMailingListPitch
         # Admins can still edit those values
         exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date')
+                   'publication_date', 'scheduled_for_deletion_date')
 
 class SendToSelfForm(forms.Form):
     """Form to send a TopicBlog object to oneself"""

@@ -13,6 +13,10 @@
     <a type="button" class="btn btn-outline-info btn-sm"
        href="{% url viewbyslug_object_url servable_object.slug %}">Visualiser (usager)</a>
     {% endif %}
+    <a type="button" class="btn btn-outline-info btn-sm"
+    href="{{delete_url}}">
+        <i class="fa fa-trash"></i>
+    </a>
     </p>
     {% for object in object_list %}
         <p class="small text-monospace">
@@ -42,6 +46,12 @@
             <br>
             Créé {{ object.date_modified|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
             <br>
+            {% if not object.first_publication_date and not object.publication_date and object.scheduled_for_deletion_date  %}
+                <span class="{% if object.get_days_defore_deletion <= 0 %} text-danger {% endif %}">
+                    Nombre de jour(s) avant suppression : {{ object.get_days_defore_deletion }}
+                </span>
+                <br>
+            {% endif %}
             <a type="button" class="btn btn-outline-info btn-sm"
             href="{{object.get_edit_url}}?from={{request.GET.from}}">Modifier</a>
             <a type="button" class="btn btn-outline-info btn-sm"

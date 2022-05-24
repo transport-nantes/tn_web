@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 import json
 import logging
 from pathlib import Path
@@ -280,6 +280,13 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
             context['servable_object'] = qs.filter(
                 publication_date__lte=datetime.now(timezone.utc)).order_by(
                     '-publication_date').first()
+            # check if the url already have GEt parameter
+            if "/?" in self.request.get_full_path():
+                get_data_of_delete_url = "&delete=true"
+            else:
+                get_data_of_delete_url = "?delete=true"
+            context['delete_url'] = \
+                self.request.get_full_path() + get_data_of_delete_url
         context["new_object_url"] = self.model.new_object_url
         context["listone_object_url"] = self.model.listone_object_url
         context["listall_object_url"] = self.model.listall_object_url
@@ -293,8 +300,15 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
         qs = super(ListView, self).get_queryset(*args, **kwargs)
         if 'the_slug' in self.kwargs:
             the_slug = self.kwargs['the_slug']
-            return qs.filter(slug=the_slug).order_by(
-                '-date_modified')
+            the_qs = qs.filter(slug=the_slug).order_by('-date_modified')
+            if self.request.GET.get("delete"):
+                # Delete expired tb_objects that was never been published
+                delete_scheduled_moribund_slug_instances(the_qs)
+                # Refresh the query set
+                the_qs = qs.filter(slug=the_slug).order_by('-date_modified')
+            # Update scheduled_for_deletation_date
+            schedule_moribund_slug_instances_for_deletion(the_qs)
+            return the_qs
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
                            date_modified=Max('date_modified'),
@@ -1375,3 +1389,24 @@ def click_received_handler(sender, mail_obj, click_obj, *args, **kwargs):
     logger.info(
         f"\nclick_received signal received for message {aws_message_id}\n"
         f"SendRecord class : {send_record_class} ID : {send_record_id}")
+
+
+def schedule_moribund_slug_instances_for_deletion(tb_objects):
+    """Get a list of tb objects and for each tb object set the
+    scheduled_for_deletion_date to today if it's equal to None
+    """
+    tb_objects.filter(
+        scheduled_for_deletion_date=None).update(
+            scheduled_for_deletion_date=date.today())
+
+
+def delete_scheduled_moribund_slug_instances(tb_objects):
+    """Get a list of tb objects and remove all objects that
+    was never be published and get_days_defore_deletion is equal to 0
+    or less.
+    """
+    id_list = [tb_object.id for tb_object in tb_objects \
+               if tb_object.get_days_defore_deletion() <= 0]
+    tb_objects.filter(pk__in=id_list,
+                      publication_date=None,
+                      first_publication_date=None).delete()

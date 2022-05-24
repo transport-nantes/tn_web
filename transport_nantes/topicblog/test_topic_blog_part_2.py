@@ -1,8 +1,10 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from django.test import TestCase, Client
 from .models import TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
 from django.contrib.auth.models import Permission, User
 from django.urls import reverse
+from .views import (schedule_moribund_slug_instances_for_deletion,
+                    delete_scheduled_moribund_slug_instances)
 
 
 class TBETest(TestCase):
@@ -1308,3 +1310,47 @@ class TBLATest(TestCase):
             )
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+
+class TB_VIEWS_FUNCTION(TestCase):
+    def setUp(self):
+
+        TBETest.setUp(self)
+        self.email_with_slug_2 = TopicBlogEmail.objects.create(
+            slug="email",
+            subject="slug2",
+            body_text_1_md="body",
+            user=self.staff,
+            template_name=self.template_email,
+            title="Test-title")
+        self.today = date.today()
+
+    def test_schedule_moribund_slug_func(self):
+        qs_start = TopicBlogEmail.objects.filter(
+            slug=self.email_with_slug.slug)
+        self.assertIsNone(
+            qs_start[0].scheduled_for_deletion_date)
+        self.assertIsNone(
+            qs_start[1].scheduled_for_deletion_date)
+        schedule_moribund_slug_instances_for_deletion(qs_start)
+        qs_end = TopicBlogEmail.objects.filter(
+            slug=self.email_with_slug.slug)
+        self.assertEqual(
+            qs_end[0].scheduled_for_deletion_date,
+            self.today)
+        self.assertEqual(
+            qs_end[1].scheduled_for_deletion_date,
+            self.today)
+
+    def test_delete_scheduled_moribund(self):
+        qs_start = TopicBlogEmail.objects.filter(
+            slug=self.email_with_slug.slug)
+        TopicBlogEmail.objects.filter(
+            slug="email").update(
+            scheduled_for_deletion_date=self.today - timedelta(days=15)
+            )
+        self.assertEqual(len(qs_start), 2)
+        delete_scheduled_moribund_slug_instances(qs_start)
+        qs_end = TopicBlogEmail.objects.filter(
+            slug=self.email_with_slug.slug)
+        self.assertEqual(len(qs_end),  1)
