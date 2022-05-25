@@ -325,10 +325,13 @@ def stripe_webhook(request):
             customer_id = event["data"]["object"]['customer']
             amount = int(event["data"]["object"]['amount_due'])
             event_id = event["id"]
-            error_flag = save_recurring_payment_details(
-                customer_id, amount, event_id)
-            if error_flag:
-                return HttpResponse(status=500)
+            try:
+                save_recurring_payment_details(
+                    customer_id, amount, event_id)
+            except Exception as e:
+                logger.info(f"Recurring payment couldn't be processed : {e}")
+
+            return HttpResponse(status=200)
 
     elif event["type"] == 'checkout.session.expired':
         logger.info("Stripe checkout session expired")
@@ -489,7 +492,7 @@ def save_recurring_payment_details(
     if customer is None:
         logger.info(
             f"No subscriptions found for this customer_id: ({customer_id})")
-        return HttpResponseServerError
+        raise Exception("No subscriptions found for this customer_id.")
 
     last_donation_kwargs = customer.__dict__
 
@@ -518,14 +521,14 @@ def save_recurring_payment_details(
 
         if already_exists:
             logger.info("Event already saved : " + event_id)
-            return HttpResponseServerError
+            raise Exception
         else:
             new_donation = Donation(**kwargs)
             new_donation.save()
             logger.info("Donation entry created.")
     except Exception as e:
         logger.info(f"Error while creating a new donation : {e}")
-        return HttpResponseServerError
+        raise Exception
 
 
 class QuickDonationView(TemplateView):
