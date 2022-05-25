@@ -7,7 +7,7 @@ from .models import Profile
 class EmailLoginForm(forms.ModelForm):
     email = forms.EmailField(
         max_length=254,
-        label="Adresse mél", help_text='Obligatoire')
+        label="Adresse mail", help_text='Obligatoire')
     captcha = CaptchaField(
         help_text='Obligatoire',
         error_messages=dict(invalid="captcha incorrect, veuillez réessayer"))
@@ -28,7 +28,7 @@ class EmailLoginForm(forms.ModelForm):
 class PasswordLoginForm(forms.ModelForm):
     email = forms.EmailField(
         max_length=254,
-        label="Adresse mél", help_text='Obligatoire')
+        label="Adresse mail", help_text='Obligatoire')
     remember_me = forms.BooleanField(
         label="Se souvenir de moi",
         required=False)
@@ -64,7 +64,7 @@ class OtherForm:
         fields = ('email', 'password1', 'password2', )
 
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(label="Adresse mél")
+    email = forms.EmailField(label="Adresse mail")
 
     class Meta:
         model = User
