@@ -60,6 +60,7 @@ class MailingList(models.Model):
         NEWSLETTER = 'NEWSLETTER', 'Newsletter'
         PETITION = 'PETITION', 'Petition'
         PRESS = 'PRESS', 'Press'
+        DONORS = 'DONORS', 'Donors'
 
     mailing_list_type = models.CharField(
         max_length=30,
