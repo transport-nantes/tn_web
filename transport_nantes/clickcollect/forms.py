@@ -23,7 +23,7 @@ class ClickCollectForm(ModelForm):
         labels = {
             'first_name': "Prénom",
             'last_name': "Nom",
-            'email': "Adresse mél",
+            'email': "Adresse mail",
         }
         help_texts = {
             'first_name': "Obligatoire",
