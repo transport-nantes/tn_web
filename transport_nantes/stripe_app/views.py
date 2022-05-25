@@ -15,6 +15,8 @@ import user_agents
 
 from .models import TrackingProgression, Donation
 from .forms import DonationForm, AmountForm, QuickDonationForm
+from mailing_list.events import subscribe_user_to_list
+from mailing_list.models import MailingList
 from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
                                        STRIPE_SECRET_KEY,
                                        STRIPE_ENDPOINT_SECRET)
@@ -454,6 +456,14 @@ def make_donation_from_webhook(event: dict) -> Donation:
         "originating_view": metadata["originating_view"],
         "originating_parameters": metadata["originating_parameters"],
     }
+    try:
+        if kwargs.get('user') is None:
+            raise Exception("User not found.")
+        logger.info(f"Adding {kwargs['user']} to donors mailing list...")
+        add_user_to_donor_mailing_list(user=kwargs['user'])
+    except Exception as e:
+        logger.info(f"Error while adding user to donors' mailing list : {e}")
+
     logger.info("Creating donation...")
     try:
         already_exists = Donation.objects.filter(
@@ -470,6 +480,23 @@ def make_donation_from_webhook(event: dict) -> Donation:
     except Exception as e:
         logger.info(f"Error while creating a new donation : {e}")
         return False
+
+
+def add_user_to_donor_mailing_list(user: User) -> None:
+    this_year = str(datetime.date.today().year)
+    this_year_donors_mailing_list, _ = \
+        MailingList.objects.get_or_create(
+            mailing_list_token="donors-" + this_year,
+            mailing_list_type="DONORS",
+            defaults={
+                "mailing_list_name": this_year + "'s donors list",
+                "mailing_list_token": "donors-" + this_year,
+                "contact_frequency_weeks": 12,
+                "list_active": True,
+                "mailing_list_type": "DONORS",
+            }
+        )
+    subscribe_user_to_list(user, this_year_donors_mailing_list)
 
 
 def save_recurring_payment_details(
