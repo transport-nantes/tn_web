@@ -48,7 +48,7 @@ class MailingListSignupForm(ModelForm):
         labels = {
             'first_name': "Prénom",
             'last_name': "Nom",
-            'email': "Adresse mél",
+            'email': "Adresse mail",
         }
         help_texts = {
             'first_name': "* Obligatoire",
@@ -99,7 +99,7 @@ class QuickMailingListSignupForm(ModelForm):
         fields = ('email', 'captcha', 'mailinglist')
 
         labels = {
-            'email': "Adresse mél",
+            'email': "Adresse mail",
         }
 
     def clean(self):
@@ -107,7 +107,7 @@ class QuickMailingListSignupForm(ModelForm):
         email = cleaned_data.get('email')
 
         if email == "":
-            self.add_error('email', "Vous devez entrer une adresse mél")
+            self.add_error('email', "Vous devez entrer une adresse mail")
 
         return cleaned_data
 
@@ -129,5 +129,5 @@ class QuickPetitionSignupForm(ModelForm):
         labels = {
             'first_name': "Prénom",
             'last_name': "Nom",
-            'email': "Adresse mél",
+            'email': "Adresse mail",
         }
