@@ -104,7 +104,7 @@ class StripeAppTests(TestCase):
         response = self.post_payload_to_webhook(
             self.payment_succeeded_sub_cycle_payload)
 
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
 
         number_of_donations = Donation.objects.count()
         self.assertEqual(number_of_donations, 2)
