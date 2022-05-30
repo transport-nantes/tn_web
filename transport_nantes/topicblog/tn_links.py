@@ -227,7 +227,9 @@ class TNLinkParser(object):
                 url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
             self.out_string += don.action_button(url, self.bracket_label_string)
         elif 'slug' == self.bracket_class_string:
-            self.out_string += slug.tbi_slug(self.bracket_label_string, self.paren_string)
+            self.out_string += slug.tbi_slug(self.context,
+                                             self.bracket_label_string,
+                                             self.paren_string)
         elif 'contact' == self.bracket_class_string:
             self.out_string += don.contact_button(self.bracket_label_string, self.paren_string)
         elif 'externe' == self.bracket_class_string:
