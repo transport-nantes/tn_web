@@ -15,7 +15,7 @@
     {% endif %}
     <form id="press_subscription_form" action="{% url 'mailing_list:press_subscription_management' token %}" method="post"> {% csrf_token %}
         <div class="d-flex flex-column col-10 mx-auto justify-content-center">
-            <p style="font-weight:bold;font-size:1.25em">Mes abonnements</p>
+            <p style="font-weight:bold;font-size:1.25em">Mes préférences presse</p>
             {% for mailing_list in press_subscription_list %}
             <div class="form-check">
                 <input type="checkbox" name="MAILING_LIST_ID_ITEM_TAG__{{ mailing_list.id }}"
