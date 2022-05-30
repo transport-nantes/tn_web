@@ -308,7 +308,7 @@ def stripe_webhook(request):
             donation = make_donation_from_webhook(event)
             donation.save()
         except Exception as error_message:
-            logger.info("="*80 + f"\nError while creating \
+            logger.error("="*80 + f"\nError while creating \
             a new Donation. Details : {error_message}")
             return HttpResponse(status=500)
         update_user_name(event)
@@ -344,7 +344,7 @@ def stripe_webhook(request):
             donation.amount_centimes_euros = 0
             donation.save()
         except Exception as error_message:
-            logger.info("="*80 + f"\nError while creating \
+            logger.error("="*80 + f"\nError while creating \
             a new Donation. Details : {error_message}")
             return HttpResponse(status=500)
         update_user_name(event)
@@ -462,7 +462,9 @@ def make_donation_from_webhook(event: dict) -> Donation:
         logger.info(f"Adding {kwargs['user']} to donors mailing list...")
         add_user_to_donor_mailing_list(user=kwargs['user'])
     except Exception as e:
-        logger.info(f"Error while adding user to donors' mailing list : {e}")
+        logger.error(f"Error while adding user to donors' mailing list : {e}")
+        # We don't want to stop the process if the mailing list
+        # couldn't be updated.
 
     logger.info("Creating donation...")
     try:
@@ -470,7 +472,7 @@ def make_donation_from_webhook(event: dict) -> Donation:
             stripe_event_id=event["id"]).exists()
         if already_exists:
             logger.info("Donation already exists.")
-            return HttpResponseServerError(
+            raise Exception(
                 "This event has already been processed. Event : " + event["id"]
                 )
         else:
@@ -478,8 +480,9 @@ def make_donation_from_webhook(event: dict) -> Donation:
             logger.info("Donation entry created.")
             return donation
     except Exception as e:
-        logger.info(f"Error while creating a new donation : {e}")
-        return False
+        logger.error(f"Error while creating a new donation : {e}")
+        # This error is serious enough for us to propagate the error
+        raise
 
 
 def add_user_to_donor_mailing_list(user: User) -> None:
