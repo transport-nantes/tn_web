@@ -33,9 +33,6 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p><b>Communiqué de presse</b></p>
             <p class="small text-muted">{{ email.publication_date|date:"j F Y" }}</p>
-            <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
-                {{ email.title }}
-            </h1>
             <p style="margin:0;">
                 {% tn_markdown email.body_text_1_md %}
             </p>
