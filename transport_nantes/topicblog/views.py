@@ -297,6 +297,10 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
             return ['topicblog/topicblogbase_list.html'] + names
 
 
+# This is the name of the key we put in contexts to communicate
+# to renderers.
+k_render_as_email = "render_as_email"
+
 class SendableObjectMixin:
     """ Define the sending by email behaviour for TopicBlog Objects """
 
@@ -441,6 +445,11 @@ class SendableObjectMixin:
         A dict containing the context to use to render the email.
         """
         context = dict()
+        # If the key k_render_as_email is present in the context, the
+        # render must assume we are rendering to email.  More
+        # important, it if is absent the render must assume we are
+        # rendering to a web page.
+        context[k_render_as_email] = True
         context["context_appropriate_base_template"] = \
             self.context_appropriate_base_template
         context["email"] = tb_object
