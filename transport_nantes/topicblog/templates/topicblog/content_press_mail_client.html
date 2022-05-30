@@ -31,7 +31,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     <tr> {# Title and Body_1 #}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p><b>Communiqué de presse</b></p>
-            <p class="small text-muted">Le {{ email.publication_date|date:"j F Y" }},</p>
+            <p class="small text-muted">{{ email.publication_date|date:"j F Y" }}</p>
             <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
                 {{ email.title }}
             </h1>
@@ -43,6 +43,13 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             {% endif %}
         </td>
     </tr> <!-- End of Body_1-->
+    <tr>
+	<td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+            <p style="margin:0;font-size:14px;line-height:20px;">
+		Contact: press@mobilitains.fr
+	    </p>
+	</td>
+    </tr>
     <tr> <!-- Footer -->
         <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
             <p style="margin:0;font-size:14px;line-height:20px;">

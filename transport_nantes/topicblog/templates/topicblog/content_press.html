@@ -47,7 +47,7 @@
 </div>
      <div id="app_content" class="d-flex flex-column col-sm-12 col-md-9 col-lg-6 mx-auto mt-4">
           <p><b>Communiqué de presse</b></p>
-          <p class="small text-muted">Le {{ page.publication_date|date:"j F Y" }},</p>
+          <p class="small text-muted">{{ page.publication_date|date:"j F Y" }}</p>
           {% tn_markdown page.body_text_1_md %}
           {# Body image, if any #}
           {% if page.body_image_1 %}
@@ -56,5 +56,10 @@
                     class="w-100 my-4">
           {% endif %}
      </div>
+</div>
+<div>
+    <div class="d-flex flex-column col-sm-12 col-md-9 col-lg-6 mx-auto mt-4">
+	Contact: press@mobilitains.fr
+    </div>
 </div>
 {% endblock content %}
