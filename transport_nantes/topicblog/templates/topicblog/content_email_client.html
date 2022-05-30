@@ -10,7 +10,7 @@
 style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
     <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
         {# links will need to be wrapped into redirect links #}
-        <a href="{% absolute_url 'topicblog:view_email_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:#cccccc;text-decoration:underline;">Voir sur le site web</a>
+        <a href="{% absolute_url 'topicblog:view_email_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:gray;text-decoration:underline;">Voir sur le site web</a>
     </tr>
     <img src="{% absolute_url 'topicblog:beacon_view' token %}.gif" alt="space" height="1" width="1">
     <tr>
