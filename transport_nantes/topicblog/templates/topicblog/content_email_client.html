@@ -2,6 +2,7 @@
 {% load static %}
 {% load email_tags %}
 {% load absolute_url %}
+{% load markdown %}
 
 {% block email_content %}
 
@@ -34,7 +35,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             </h1>
             <p style='color: #6c757d'>Le {{ email.first_publication_date|date:"d M Y"  }},</p>
             <p style="margin:0;">
-                {{ email.body_text_1_md }}
+                {% tn_markdown email.body_text_1_md %}
             </p>
         </td>
     </tr> <!-- End of Body_1-->

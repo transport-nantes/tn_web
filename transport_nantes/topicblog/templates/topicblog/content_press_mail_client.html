@@ -2,6 +2,7 @@
 {% load static %}
 {% load email_tags %}
 {% load absolute_url %}
+{% load markdown %}
 
 {% block email_content %}
 
@@ -36,7 +37,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
                 {{ email.title }}
             </h1>
             <p style="margin:0;">
-                {{ email.body_text_1_md }}
+                {% tn_markdown email.body_text_1_md %}
             </p>
             {% if email.body_image_1 %}
                 {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
