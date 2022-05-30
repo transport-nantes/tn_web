@@ -495,6 +495,7 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
             raise ImproperlyConfigured("base_model must be a class with a "
                                        "send_object_url attribute")
         context["send_to_view"] = self.base_model.send_object_url
+        context["is_email"] = True
         return context
 
     def form_valid(self, form):
