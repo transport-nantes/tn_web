@@ -191,7 +191,7 @@ def prepare_email(email: str, request: HttpRequest,
         "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
         "Comments": comments_header}
     email = EmailMultiAlternatives(
-        subject='Votre lien de connexion à Mobilitains.fr',
+        subject="Votre lien Mobilitains, comme promis",
         body=render_to_string(template, context),
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[email],
