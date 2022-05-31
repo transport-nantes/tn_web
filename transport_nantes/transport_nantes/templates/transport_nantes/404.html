@@ -1,0 +1,38 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load mpanels %}
+
+{% comment %}
+This template will display when the Http404 exception is raised.
+In dev, you need to set settings.DEBUG to False to see it displayed,
+otherwise you will get the standard debug page.
+{% endcomment %}
+
+{% block app_content %}
+<div id="404-wrapper" class="d-flex flex-column m-auto col-10 col-md-6">
+    <h2 class="d-flex">
+        Oops, cette page est introuvable !
+    </h2>
+    <p class="d-flex">
+        Si vous voulez nous faire passer un petit mot,
+        vous pouvez nous contacter à contact(@)mobilitains.fr
+    </p>
+    <p class="d-flex">
+        Vous pouvez également revenir à l'accueil en utilisant ce bouton !
+    </p>
+    <a href="/" class="d-flex mr-auto btn navigation-button">
+        Retour à l'accueil
+    </a>
+    <p class="my-4">
+        Mais entre nous, même si on n'a pas pu trouver cette page, on en a
+        plein d'autres d'intéressantes pour vous ! Regardez ...
+    </p>
+
+</div>
+<div class="d-flex w-100 background-ad-hoc-blue">
+    <div class="d-flex flex-column p-4 p-xl-5">
+        {% show_projects %}
+    </div>
+</div>
+
+{% endblock app_content %}
