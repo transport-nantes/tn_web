@@ -301,6 +301,7 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
 # to renderers.
 k_render_as_email = "render_as_email"
 
+
 class SendableObjectMixin:
     """ Define the sending by email behaviour for TopicBlog Objects """
 
@@ -458,6 +459,28 @@ class SendableObjectMixin:
         # user's email hidden in a token.
         context["token"] = \
             self.get_unsubscribe_token(recipient[0], send_record_id)
+
+        # On May 31th 2022 :
+        #
+        # While sending a press release, it appears that at least 10 token out
+        # of 24 were invalid. We know this because we got 10 times a
+        # "token_valid: invalid token" error on GET requests to the
+        # 'mailing_list:press_subscription_management' url, seconds after the
+        # send.
+        # These errors all occured on the same try except block in
+        # asso_tn.urls.token_valid(), the one including :
+        #
+        # "timed_token = urlsafe_base64_decode(encoded_timed_token).decode()"
+        #
+        # Using the same tokens raises UnicodeError and once a ValueError.
+        # Attemps to create and decode tokens from the very same mails and
+        # send_record ids didn't raise any errors.
+        #
+        # In an attempt to reproduce and understand the error, we log more
+        # details about it for the next time it appears
+        # See issue https://github.com/transport-nantes/tn_web/issues/777
+        logger.info(f"Token {context['token']} is associated "
+                    f"with Email {recipient[0]} and SR.id {send_record_id}")
 
         return context
 
