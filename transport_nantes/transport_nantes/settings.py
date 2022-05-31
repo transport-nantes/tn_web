@@ -79,7 +79,8 @@ ROOT_URLCONF = 'transport_nantes.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [settings_local.BASE_DIR +
+                 '/transport_nantes/templates/transport_nantes/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
