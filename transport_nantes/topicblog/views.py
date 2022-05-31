@@ -36,7 +36,7 @@ from mailing_list.events import (get_subcribed_users_email_list,
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogEmailSendRecord)
+                     TopicBlogEmailSendRecord, TopicBlogPressSendRecord)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm)
@@ -870,7 +870,7 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
     template_name = 'topicblog/topicblogbase_send_form.html'
     # Template used to render emails
     context_appropriate_base_template = "topicblog/base_press.html"
-    send_record_class = TopicBlogEmailSendRecord
+    send_record_class = TopicBlogPressSendRecord
     base_model = TopicBlogPress
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
