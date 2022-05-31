@@ -166,21 +166,15 @@ class TestsTopicItemForm(LiveServerTestCase):
         self.assertHTMLEqual(body_html, "<h1>403 Forbidden</h1><p></p>",
                              msg="User can't self publish")
         # Check the user view
-        self.selenium.get('%s%s' %
-                          (self.live_server_url,
-                           reverse("topic_blog:view_item_by_slug",
-                                   kwargs={
-                                       "the_slug": slug
-                                   })
-                           ))
-        """Get the body innerHTML and check if
-        this is not found because this is not published
-        """
-        body_view = self.selenium.find_element_by_tag_name("body")
-        body_view_html = body_view.get_attribute('innerHTML')
-        self.assertHTMLEqual(body_view_html,
-                             "<h1>Not Found</h1><p>The requested resource "
-                             "was not found on this server.</p>")
+
+        response = Client().get('%s%s' %
+                                (self.live_server_url,
+                                 reverse("topic_blog:view_item_by_slug",
+                                         kwargs={
+                                             "the_slug": slug
+                                         })
+                                 ))
+        self.assertEqual(response.status_code, 404)
 
     def test_editor_create_and_another_publish(self):
         # Create an item with the first editor that is not published
