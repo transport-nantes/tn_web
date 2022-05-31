@@ -96,8 +96,28 @@ def token_valid(encoded_timed_token, test_value_now=None):
     """
     try:
         timed_token = urlsafe_base64_decode(encoded_timed_token).decode()
-    except (TypeError, ValueError):
-        logger.info(f"token_valid: invalid token ({encoded_timed_token})")
+    except (TypeError, ValueError) as e:
+        # On May 31th 2022 :
+        #
+        # While sending a press release, it appears that at least 10 token out
+        # of 24 were invalid. We know this because we got 10 times a
+        # "token_valid: invalid token" error on GET requests to the
+        # 'mailing_list:press_subscription_management' url, seconds after the
+        # send.
+        # These errors all occured on the same try except block in
+        # asso_tn.urls.token_valid(), the one including :
+        #
+        # "timed_token = urlsafe_base64_decode(encoded_timed_token).decode()"
+        #
+        # Using the same tokens raises UnicodeError and once a ValueError.
+        # Attemps to create and decode tokens from the very same mails and
+        # send_record ids didn't raise any errors.
+        #
+        # In an attempt to reproduce and understand the error, we log more
+        # details about it for the next time it appears
+        # See issue https://github.com/transport-nantes/tn_web/issues/777
+        logger.info(f"token_valid: invalid token ({encoded_timed_token})\n"
+                    f"More info: {e}")
         return (None, 0)
     (the_rand_value, the_hash_rand, the_string_key,
      the_soon, the_int_key, the_hmac) = \
