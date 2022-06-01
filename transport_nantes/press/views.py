@@ -107,10 +107,10 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
             # Check if the website is accessible
             page = requests.get(form.cleaned_data['article_link'])
         except Exception as e:
-                logger.error(f"Exeption when saving Pressmention {e}.")
-                form._errors['article_link'] = \
-                    ['Le liens est incorrect ou le site web est indisponible.']
-                return super().form_invalid(form)
+            logger.error(f"Exeption when saving Pressmention {e}.")
+            form._errors['article_link'] = \
+                ['Le liens est incorrect ou le site web est indisponible.']
+            return super().form_invalid(form)
         tree = html.fromstring(page.content.decode("utf-8"))
         og_title = tree.xpath('//meta[@property="og:title"]/@content')
         og_description = tree.xpath(
