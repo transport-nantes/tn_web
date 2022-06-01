@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from django.urls import reverse_lazy
 from . import settings_local
 import sys
+import os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -79,8 +80,9 @@ ROOT_URLCONF = 'transport_nantes.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [settings_local.BASE_DIR +
-                 '/transport_nantes/templates/transport_nantes/'],
+        'DIRS': [
+            os.path.abspath(__file__ + "/../templates/transport_nantes/"),
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
