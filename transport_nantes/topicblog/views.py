@@ -27,7 +27,7 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
-from django_ses.signals import (bounce_received, delivery_received,
+from django_ses.signals import (open_received, click_received,
                                 send_received)
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
@@ -1084,3 +1084,50 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
         except Exception as e:
             logger.error(
                 f"Error while updating send_record : {e}")
+
+
+@receiver(open_received)
+def open_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
+    """Handle AWS SES open_received notifications
+
+    AWS Receiver
+    This function will run when a open_received is received from
+    Amazon SES.
+    The signal is sent from django_ses' view.
+
+    We voluntarily ignore open_received notifications because
+    we already have the beacon view handling that for us.
+
+    We mean to disable this feature in AWS console, but we handle them so we
+    know if we receive them.
+    """
+    logger.info("open_received received !")
+    aws_message_id, send_record_class, send_record_id = \
+        _extract_data_from_ses_signal(mail_obj)
+    logger.info(
+        f"\nopen_received signal received for message {aws_message_id}\n"
+        f"SendRecord class : {send_record_class} ID : {send_record_id}")
+
+
+@receiver(click_received)
+def click_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
+    """Handle AWS SES click_received notifications
+
+    AWS Receiver
+    This function will run when a click_received is received from
+    Amazon SES.
+    The signal is sent from django_ses' view.
+
+    We voluntarily ignore click_received notifications because
+    the click redirection from amazon is flagged in uBlock as tracker.
+    We don't want our clicks to scare any user.
+
+    We mean to disable this feature in AWS console, but we handle them so we
+    know if we receive them.
+    """
+    logger.info("click_received received !")
+    aws_message_id, send_record_class, send_record_id = \
+        _extract_data_from_ses_signal(mail_obj)
+    logger.info(
+        f"\nclick_received signal received for message {aws_message_id}\n"
+        f"SendRecord class : {send_record_class} ID : {send_record_id}")
