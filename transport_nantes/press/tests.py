@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from django.test import TestCase, Client
 from .models import PressMention
 from datetime import datetime, timezone
@@ -175,8 +176,23 @@ class PressMentionTestCase(TestCase):
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
 
-    def test_post_new_press_mention(self):
-        complete_url = "https://beta.mobilitains.fr/"
+    @patch("requests.get")
+    def test_post_new_press_mention(self, mock_request):
+        og_title = "Test title"
+        og_description = "Test description"
+        og_image = "https://example.com/test.jpg"
+        mock_request.return_value.status_code = 200
+        mock_request.return_value.content = f"""
+            <!DOCTYPE html>
+            <html>
+                <head>
+                <meta property="og:title" content="{og_title}" />
+                <meta property="og:description" content="{og_description}" />
+                <meta property="og:image" content="{og_image}" />
+                </head>
+            </html>
+        """.encode("utf-8")
+        complete_url = "http://example.com/"
         self.user_permited_client.post(
             reverse("press:new_item"),
             {'newspaper_name': 'test_post', 'article_link': complete_url,
@@ -184,14 +200,9 @@ class PressMentionTestCase(TestCase):
              'article_publication_date': '2022-03-31'})
         new_press_mention = PressMention.objects.filter(
             newspaper_name__iexact="test_post").get()
-        self.assertEqual(new_press_mention.og_title,
-                         "Les Mobilitains  - "
-                         "Pour une mobilité multimodale")
-        self.assertEqual(new_press_mention.og_description,
-                         "Nous agissons pour une mobilité plus fluide, "
-                         "plus sécurisée et plus vertueuse des villes et"
-                         " des périphéries.")
-        self.assertIn("pont-rousseau-1", new_press_mention.og_image.url)
+        self.assertEqual(new_press_mention.og_title, og_title)
+        self.assertEqual(new_press_mention.og_description, og_description)
+        self.assertIn("test", new_press_mention.og_image.url)
         self.assertIn(".jpg", new_press_mention.og_image.url)
 
     def test_detail_view_press(self):
