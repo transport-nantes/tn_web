@@ -49,6 +49,7 @@
 				<link rel="icon" type="image/png" href="{% static 'asso_tn/favico.png' %}" />
 				{# Mobilitains #}
 				<link rel="stylesheet" href="{% static 'asso_tn/mobilitains.css' %}">
+				{% if is_production %}
 				{# Matomo #}
 				<!-- Matomo -->
 				<script type="text/javascript">
@@ -67,6 +68,7 @@
 				</script>
 				<noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 				<!-- End Matomo Code -->
+				{% endif %}
 
 				{% if page.hero_image %}
 					<style>
