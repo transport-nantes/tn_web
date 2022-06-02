@@ -1,4 +1,5 @@
 from django.views.generic.base import TemplateView
+from django.shortcuts import render
 
 # Create your views here.
 class MainTransportNantes(TemplateView):
@@ -43,3 +44,8 @@ class AssoView(TemplateView):
             context['hero_description'] = self.hero_description or ""
             context["is_static"] = True
         return context
+
+
+def tn_404_view(request, exception):
+    """TN custom 404 view."""
+    return render(request, "asso_tn/404.html", status=404)
