@@ -27,6 +27,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
+from django.utils.crypto import get_random_string
 from django.utils.html import strip_tags
 from django_ses.signals import (open_received, click_received,
                                 send_received)
@@ -505,7 +506,41 @@ class SendableObjectMixin:
             mailinglist=mailing_list,
             recipient=recipient_user_object,
         )
-        send_record.save()
+        try:
+            send_record.save()
+        except IntegrityError:
+            # Because we want admins to be able to send themselves emails,
+            # but we can't violate the unique constraint on the email and
+            # the slug, we will alter the slug to be unique if admin sends to
+            # himself or another admin.
+            if recipient_user_object.is_superuser:
+                logger.info(f"{recipient_user_object} is superuser, sending"
+                            f" with an altered slug.")
+                # If the first attempt to create a send_record fails, we
+                # try again with an altered slug up to 10 times.
+                for _ in range(10):
+                    altered_slug = slug + get_random_string(length=32)
+                    send_record = self.send_record_class(
+                        slug=altered_slug,
+                        mailinglist=mailing_list,
+                        recipient=recipient_user_object,
+                    )
+                    try:
+                        send_record.save()
+                        break
+                    except IntegrityError:
+                        continue
+                # If after 10 times no send_record is created, we raise an
+                # IntegrityError
+                else:
+                    logger.error(f"Could not create a unique slug for"
+                                 f" {recipient_user_object}")
+                    raise IntegrityError
+            # If user isn't admin, we just raise the error after a log
+            else:
+                logger.info(f"{recipient_user_object} already received an "
+                            f"email for {slug}")
+                raise
         return send_record
 
     def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
