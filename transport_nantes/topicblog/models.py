@@ -827,7 +827,13 @@ class TopicBlogEmailSendRecord(SendRecordMarketing):
 
     """Represent the fact that we sent a newlsetter email.
     """
-    pass
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipient', 'slug'],
+                name='TBE_unique_recipient_slug')
+        ]
 
 
 class TopicBlogEmailClicks(models.Model):
@@ -996,7 +1002,12 @@ class TopicBlogPressSendRecord(SendRecordMarketing):
 
     """Represent the fact that we sent an press release.
     """
-    pass
+    class Meta:
+        constraints = [
+                models.UniqueConstraint(
+                    fields=['recipient', 'slug'],
+                    name='TBP_unique_recipient_slug')
+            ]
 
 
 class TopicBlogPressClicks(models.Model):
