@@ -15,6 +15,7 @@ ALLOWED_HOSTS  = ['localhost', '127.0.0.1', '[::1]']
 MORE_INSTALLED_APPS = [
 ]
 
+# NOT AVAILABLE IN PRODUCTION
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,22 +29,19 @@ DATABASES = {
 LOG_DIR = '/tmp/django-tn-log/'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 ## Not needed in development, but maybe need to be set.
 AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
 AWS_DEFAULT_REGION = ''
 DEFAULT_FROM_EMAIL = ''
-
-STRIPE_PUBLISHABLE_KEY = 'pk_test_...'
-STRIPE_SECRET_KEY = 'sk_test_...'
-STRIPE_ENDPOINT_SECRET = 'whsec_...'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+AWS_CONFIGURATION_SET_NAME = ''
 
 # LOCAL AND BETA SETTINGS, SAFE TO PUBLISH
-STRIPE_PUBLISHABLE_KEY = "pk_test_gVh6nSOJh19KHLsPepK35JzE00CkdNB1nR"
-STRIPE_SECRET_KEY = "sk_test_JA5eW82rv6lp61vNAwRUFIrr00rhzXUsLW"
+STRIPE_PUBLISHABLE_KEY = "pk_test_..."
+STRIPE_SECRET_KEY = "sk_test_..."
+STRIPE_ENDPOINT_SECRET = 'whsec_...'
 
 TOPIC_BLOG_EDIT_WINDOW_SECONDS = 12 * 3600
