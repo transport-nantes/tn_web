@@ -397,12 +397,18 @@ class SendRecordBase(models.Model):
         abstract = True
 
     class StatusChoices(models.TextChoices):
-        # This is the initial state
+        # Newly created objects derived from SendRecordBase start life
+        # as PENDING.
         PENDING = 'PENDING', "Pending"
-        # Toggle to this state when Amazon SES accepts to send the email
+        # If SES indicates a non-permanent failure, the object enters
+        # state RETRY.  From this state, it should eventually
+        # transition to SENT or FAILED.
+        RETRYING = 'RETRY', 'Retry'
+        # Objects become SENT when SES accepts them (at handoff).
+        # This is an absorbing state.
         SENT = 'SENT', "Sent"
-        # Toggle to this state if Amazon SES accepted the sending, but is
-        # unable to deliver the email
+        # If SES indicates a permanent failure, the object transitions
+        # to FAILED.  This is an absorbing state.
         FAILED = 'FAILED', "Failed"
 
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
