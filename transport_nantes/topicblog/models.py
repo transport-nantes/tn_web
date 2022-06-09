@@ -15,8 +15,13 @@ logger = logging.getLogger("django")
 
 
 class TopicBlogPage(models.Model):
-    # Obsolete, but removing the model doesn't remove the table,
-    # which leaves a strange trace behind.
+    """Obsolete.
+
+    Removing the model doesn't remove the table, which leaves a
+    strange trace behind.  This stub just explains a bit of history.
+
+    """
+
     pass
 
 
@@ -25,72 +30,32 @@ class TopicBlogPage(models.Model):
 
 
 class TopicBlogContentType(models.Model):
-    """Deprecated, held a single charfield designating the content
-    type of a topicblog object.
+    """Obsolete.
+
+    Removing the model doesn't remove the table, which leaves a
+    strange trace behind.  This stub just explains a bit of history.
+
     """
+
     pass
 
 
 class TopicBlogTemplate(models.Model):
-    """DEPRECATED - EVERYTHING BELOW IS HISTORY
-    Encode template metadata for displaying TB content.
+    """Obsolete.
 
-    More precisely, we want to encode data useful for content editing
-    so that we know what fields to display.  So this just provides a
-    map of what fields are active for a given template.
-
-    It's initially intended that TBTemplates will only be created by
-    admins in the admin interface.  They are rather sensitive, in the
-    sense that borking a template will bork all content that depends
-    on the template.
-
-    Note that creating the html template is a standard git action:
-    create, edit, commit, PR.  So designers can do that part with no
-    worry.  This model provides an interface between the html template
-    and the TB editors so that users are asked for the fields that
-    matter to the actions they are performing.
-
-    At some point we might want to make this more publicly accessible,
-    but probably we'll so seldom make new templates that the burden on
-    devs will be light and not worth the development cost of making
-    instances of this model safe to edit.
-
-    I think we will want to have content be inserted via templatetags
-    in order to facilitate automated content serving.  But for now,
-    we'll assume we have a template file that defines an entire page.
-    (We'll therefore need a single record in the database to represent
-    that.)
-
-    # Design notes.
-
-    This model (and the ContentType model above) are questionable.
-    While it's not unusual to have software configuration in the
-    database rather than in code, the usual scenario for that is third
-    party or at least one code : many installations.  That is not our
-    use case.  We have one code base and one installation.
-
-    It could reasonably be argued, then, that we should instead, for
-    each TBObject subclass, simply specify in the code a map from
-    template names to a map of the boolean switches this model
-    provides.  That would push all template configuration to python
-    and git rather than splitting it across two sources.
-
-    It's also a bit annoying that this model must know of every field
-    that every derived class might want to use.
-
-    This comment written during the TBItem ->
-    TB(Item|Email|Press|Launcher|Petition) transition, which will
-    surely inform how annoying or not the above really is.
+    Removing the model doesn't remove the table, which leaves a
+    strange trace behind.  This stub just explains a bit of history.
 
     """
+
     pass
 
 
 class TopicBlogObjectBase(models.Model):
 
-    """
-    Represent fundamental TopicBlogObjects concepts excepting
-    social media.
+    """The base of all of TopicBlog.
+
+    Represent a versioned object without social media support.
     """
 
     class Meta:
@@ -103,21 +68,55 @@ class TopicBlogObjectBase(models.Model):
     # non-privileged users.  A NULL or future publication_date
     # indicates the object should not be served to non-auth'd users.
     #
-    # At most one of a collection of TBObjects of the same type and
-    # with the same slug should be published.  More than one is an
-    # error.
+    # See below for historical notes, which may to some extent be a
+    # current discription of the system.  We first describe what we
+    # want the system to be doing.  Note that these variables are
+    # called "_date" but are actually "_timestamp".
     #
-    # The first_publication_date helps us understand collection life
-    # cycle.  The modification date helps us understand object life
-    # cycle.
+    # * first_publication_date is set if this object is at some point
+    #   in history published.  It is None if the object has never been
+    #   published.  Once set, it should never change.
+    #
+    # * publication_date is the timestamp at which this object was
+    #   last published.  Multiple objects with the same slug may have
+    #   been published and so have non-empty publication_date.  The
+    #   most recently published object is the servable version of a
+    #   slug collection.
+    #
+    # * The modification date is the timestamp at which this object
+    #   was last modified.
+    #
+    #
+    # Historical notes:
+    #
+    # We used to define publication this way, and to some extent it
+    # may still be true:
+    #
+    # * first_publication_date was the initial timestamp at which some
+    #   object with this slug was published.
+    #
+    # * publication_date was the timestamp at which this object, if it
+    #   is the currently servable object, was published.  At most one
+    #   of a collection of TBObjects of the same type and with the
+    #   same slug would be published.  More than one was an error.
+    #
+    # * The modification date was the timestamp on which this object
+    #   was last modified.
+    #
+    # End historical notes.  When we believe these notes are purely
+    # history and do not represent the state of the system, we should
+    # delete this part of the comment section.
     #
     # We call an unpublished object a draft (brouillon).
-    # We call a published object published (publiée).
+    # We call the currently servable object published (publiée).
     # We call a published and then unpublished object retired (retirée).
     #
-    # One should assume that drafts and retired objects may be deleted
-    # in some asyncrhonous manner by a cleanup process running outside
-    # of django itself, although we don't currently do so.
+    # We call the collection of objects with the same slug a slug
+    # collection.
+    #
+    # One should assume that objects that have never been published
+    # may be deleted in some asyncrhonous manner by a cleanup process,
+    # although we don't currently do so.
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_modified = models.DateTimeField(auto_now=True)
