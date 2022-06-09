@@ -410,23 +410,42 @@ class SendRecordBase(models.Model):
     status = models.CharField(
         max_length=50, choices=StatusChoices.choices,
         default=StatusChoices.PENDING)
-    # Send time is only set once SES sends the email.
+    # The handoff time is the timestamp at which the function we use
+    # to send mail returned without error.
+    handoff_time = models.DateTimeField(null=True, blank=True)
+    # The send time is the timestamp at which our email provider (SES
+    # at the time of writing this comment) confirms that it has sent
+    # the mail.
     send_time = models.DateTimeField(null=True, blank=True)
+    # Open time is the time of the first instance of a beacon
+    # responding.  Note that we may receive many beacon signals on a
+    # single message.  We want to record here the first time we
+    # receive one.
+    open_time = models.DateTimeField(null=True, blank=True)
+    # Click time is the time of the first instance of a link in the
+    # mail being clicked.
+    click_time = models.DateTimeField(null=True, blank=True)
     aws_message_id = models.CharField(max_length=300, blank=True, null=True)
 
 
 class SendRecordTransactional(SendRecordBase):
-    """
-    A Transactional Send Record keeps records of one-of mails
-    sent to users such as login mail
+    """Represent a transactional email.
+
+    This class represents mail sent without a slug (i.e., not
+    TopicBlog content.
+
     """
     pass
 
 
 class SendRecordMarketing(SendRecordBase):
-    """
-    A Marketing Send Record keeps records of mails sent to users
-    such as newsletters or press releases.
+    """This cleass represents a marketing email.
+
+    At a technical level, it differs from SendRecordTransactional by
+    virtue of having a unique index on (slug, recipient), and because
+    of that it is abstract because only derived classes will know what
+    TBObject sub-type the slug points to.
+
     """
 
     class Meta:
@@ -434,11 +453,12 @@ class SendRecordMarketing(SendRecordBase):
 
     # Slug to the article that was sent
     slug = models.SlugField(max_length=90, allow_unicode=True, blank=True)
+    # A SendRecordMarketing represents a mail sent to a single
+    # recipient.  We may have chosen this recipient, however, because
+    # the person is subscribed to a mailing list, and so we need to
+    # record that list here in order to be able to respond to
+    # unsubscribe requests.
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
-    # Open time is the time of the first instance of a beacon responding.
-    open_time = models.DateTimeField(null=True, blank=True)
-    # Click time is the time of the first instance of a link being clicked.
-    click_time = models.DateTimeField(null=True, blank=True)
     unsubscribe_time = models.DateTimeField(null=True, blank=True)
 
 
@@ -824,14 +844,11 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
 
 
 class TopicBlogEmailSendRecord(SendRecordMarketing):
-
-    """Represent the fact that we sent a newlsetter email.
-    """
+    """Represent the fact that we sent a newlsetter email."""
     pass
 
 
 class TopicBlogEmailClicks(models.Model):
-
     """Represent the fact that an email was clicked.
 
     Note that TopicBlogEmailSendRecord will record the first click,
