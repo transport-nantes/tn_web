@@ -313,10 +313,12 @@ class TopicBlogObjectBase(models.Model):
 
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
 
-    """
-    Represent all that is common in various the various
-    TopicBlogObjects that contain social media metadata and are
-    directly servable (Item, Email, etc.).
+    """Represent social media sharing data.
+
+    Note that many fields are nullable in order to permit saving
+    drafts during composition.  Publication and sending, however, must
+    validate that all necessary fields are provided.
+
     """
 
     class Meta:
@@ -472,12 +474,7 @@ class SendRecordMarketing(SendRecordBase):
 
 class TopicBlogItem(TopicBlogObjectSocialBase):
 
-    """Represent an item in the TopicBlog.
-
-    An item is the central user-visible element of a TopicBlog (TB)
-    entry.
-
-    """
+    """Represent a web blog page."""
     class Meta:
         permissions = (
             # The simpleset permission allows a user to view TBItems
@@ -676,17 +673,15 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     This can be rendered as an email to be sent or as a web page that
     the user clicks (or shares) with exactly the same content.
 
-    Note that many fields are nullable in order to permit saving
-    drafts during composition.  Publication and sending, however, must
-    validate that all necessary fields are provided.
+    This object is conceptually immutable once published, in the sense
+    that changes should only be spelling and typographical fixes.  If
+    we send a mail, we shouldn't have the web version change in the
+    mean time.
 
-    This model must be marked immutable.  That's hard to enforce, but
-    changes must only be spelling and typographical fixes.  If we send
-    a mail, we can't have the web version change in the mean time.
-
-    The header_image only displays on the website, not in emails.  A
-    good way to make an email stay unread is to begin with an image so
-    that the user doesn't see what's coming.
+    The header_image only displays on the website, not in emails.
+    (Is/should this still be true?)  A good way to make an email stay
+    unread is to begin with an image so that the user doesn't see
+    what's coming.
 
     """
     class Meta:
@@ -849,7 +844,9 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
 
 
 class TopicBlogEmailSendRecord(SendRecordMarketing):
-    """Represent the fact that we sent a newlsetter email."""
+    """Represent the sending of a TBEmail.
+
+    """
     pass
 
 
@@ -876,17 +873,15 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     This can be rendered as an email to be sent or as a web page that
     the user clicks (or shares) with exactly the same content.
 
-    Note that many fields are nullable in order to permit saving
-    drafts during composition.  Publication and sending, however, must
-    validate that all necessary fields are provided.
+    This object is conceptually immutable once published, in the sense
+    that changes should only be spelling and typographical fixes.  If
+    we send a mail, we shouldn't have the web version change in the
+    mean time.
 
-    This model must be marked immutable.  That's hard to enforce, but
-    changes must only be spelling and typographical fixes.  If we send
-    a mail, we can't have the web version change in the mean time.
-
-    The header_image only displays on the website, not in email.  A
-    good way to make an email stay unread is to begin with an image so
-    that the user doesn't see what's coming.
+    The header_image only displays on the website, not in emails.
+    (Is/should this still be true?)  A good way to make an email stay
+    unread is to begin with an image so that the user doesn't see
+    what's coming.
 
     """
     class Meta:
@@ -1015,9 +1010,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
 
 
 class TopicBlogPressSendRecord(SendRecordMarketing):
-
-    """Represent the fact that we sent an press release.
-    """
+    """Represent the sending of a TBPress."""
     pass
 
 
@@ -1183,9 +1176,12 @@ class TopicBlogLauncher(TopicBlogObjectBase):
 
 
 class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
-    """
-    Mailist list pitch is a page that promotes a mailing
-    list to the user, in order to get them to subscribe.
+    """Represent a mailing list signup page.
+
+    A TBMLP displays as a web page like a TBItem but also encapsulates
+    the mailing list whose membership we are pitching, the web page to
+    display on signup, and the email to send on signup.
+
     """
     class Meta:
         verbose_name_plural = "Mailing list pitches"
