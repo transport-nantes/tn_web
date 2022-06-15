@@ -1184,7 +1184,7 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
 
 
 @receiver(open_received)
-def open_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
+def open_received_handler(sender, mail_obj, open_obj, *args, **kwargs):
     """Handle AWS SES open_received notifications
 
     AWS Receiver
@@ -1207,7 +1207,7 @@ def open_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
 
 
 @receiver(click_received)
-def click_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
+def click_received_handler(sender, mail_obj, click_obj, *args, **kwargs):
     """Handle AWS SES click_received notifications
 
     AWS Receiver
