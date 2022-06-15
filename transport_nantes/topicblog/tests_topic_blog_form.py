@@ -10,7 +10,7 @@ from asso_tn.utils import make_timed_token
 from mailing_list.events import (get_subcribed_users_email_list,
                                  subscribe_user_to_list)
 from mailing_list.models import MailingList, MailingListEvent
-from .models import TopicBlogEmail, TopicBlogEmailSendRecord, TopicBlogItem
+from .models import TopicBlogEmail, SendRecordMarketingEmail, TopicBlogItem
 from selenium.webdriver.chrome.options import Options
 
 
@@ -353,7 +353,7 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
         self.assertIn(self.no_permissions_user.email, sub_user_list)
 
         # Create an event as if we actually sent an email
-        send_record = TopicBlogEmailSendRecord.objects.create(
+        send_record = SendRecordMarketingEmail.objects.create(
             slug=self.email_article.slug,
             mailinglist=self.mailing_list,
             recipient=self.no_permissions_user,

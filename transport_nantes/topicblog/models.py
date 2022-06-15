@@ -843,7 +843,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
         return fields
 
 
-class TopicBlogEmailSendRecord(SendRecordMarketing):
+class SendRecordMarketingEmail(SendRecordMarketing):
     """Represent the sending of a TBEmail.
 
     """
@@ -853,12 +853,12 @@ class TopicBlogEmailSendRecord(SendRecordMarketing):
 class TopicBlogEmailClicks(models.Model):
     """Represent the fact that an email was clicked.
 
-    Note that TopicBlogEmailSendRecord will record the first click,
+    Note that SendRecordMarketingEmail will record the first click,
     but here we want to record all clicks that happen and where they
     lead.
 
     """
-    email = models.ForeignKey(TopicBlogEmailSendRecord,
+    email = models.ForeignKey(SendRecordMarketingEmail,
                               on_delete=models.PROTECT)
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
@@ -1009,7 +1009,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         return fields
 
 
-class TopicBlogPressSendRecord(SendRecordMarketing):
+class SendRecordMarketingPress(SendRecordMarketing):
     """Represent the sending of a TBPress."""
     pass
 
@@ -1018,12 +1018,12 @@ class TopicBlogPressClicks(models.Model):
 
     """Represent the fact that an press was clicked.
 
-    Note that TopicBlogPressSendRecord will record the first click,
+    Note that SendRecordMarketingPress will record the first click,
     but here we want to record all clicks that happen and where they
     lead.
 
     """
-    press = models.ForeignKey(TopicBlogPressSendRecord,
+    press = models.ForeignKey(SendRecordMarketingPress,
                               on_delete=models.PROTECT)
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)

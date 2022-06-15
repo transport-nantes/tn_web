@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogEmailSendRecord,
+from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
                      TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogMailingListPitch, TopicBlogPressSendRecord)
+                     TopicBlogMailingListPitch, SendRecordMarketingPress)
 
 
 class TopicBlogItemAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class TopicBlogLauncherAdmin(admin.ModelAdmin):
     pass
 
 
-class TopicBlogEmailSendRecordAdmin(admin.ModelAdmin):
+class SendRecordMarketingEmailAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'send_time',)
 
     list_display = ("mailinglist", "recipient", "send_time", "slug")
@@ -30,7 +30,7 @@ class TopicBlogEmailSendRecordAdmin(admin.ModelAdmin):
     search_fields = ("mailinglist", "recipient", "send_time", "slug")
 
 
-class TopicBlogPressSendRecordAdmin(admin.ModelAdmin):
+class SendRecordMarketingPressAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'send_time',)
 
     list_display = ("mailinglist", "recipient", "send_time", "slug")
@@ -50,6 +50,6 @@ admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
 admin.site.register(TopicBlogPress, TopicBlogPressAdmin)
 admin.site.register(TopicBlogLauncher, TopicBlogLauncherAdmin)
-admin.site.register(TopicBlogEmailSendRecord, TopicBlogEmailSendRecordAdmin)
+admin.site.register(SendRecordMarketingEmail, SendRecordMarketingEmailAdmin)
 admin.site.register(TopicBlogMailingListPitch, TopicBlogMailingListPitchAdmin)
-admin.site.register(TopicBlogPressSendRecord, TopicBlogPressSendRecordAdmin)
+admin.site.register(SendRecordMarketingPress, SendRecordMarketingPressAdmin)

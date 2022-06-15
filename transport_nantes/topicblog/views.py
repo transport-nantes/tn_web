@@ -36,7 +36,7 @@ from mailing_list.events import (get_subcribed_users_email_list,
 from mailing_list.models import MailingList
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogEmailSendRecord, TopicBlogPressSendRecord)
+                     SendRecordMarketingEmail, SendRecordMarketingPress)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm)
@@ -792,7 +792,7 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
     template_name = 'topicblog/topicblogbase_send_form.html'
     # Template used to render emails
     context_appropriate_base_template = "topicblog/base_email.html"
-    send_record_class = TopicBlogEmailSendRecord
+    send_record_class = SendRecordMarketingEmail
     base_model = TopicBlogEmail
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
@@ -912,7 +912,7 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
     template_name = 'topicblog/topicblogbase_send_form.html'
     # Template used to render emails
     context_appropriate_base_template = "topicblog/base_press.html"
-    send_record_class = TopicBlogPressSendRecord
+    send_record_class = SendRecordMarketingPress
     base_model = TopicBlogPress
     # For now, successfully sending an email will redirect to the
     # homepage. We'll probably want to redirect to the email
@@ -1048,8 +1048,8 @@ def beacon_view(response, **kwargs):
     email, send_record_id = token_valid(token)
     if email and send_record_id:
         # In case the token is valid, we update the open_time
-        send_record: TopicBlogEmailSendRecord
-        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
+        send_record: SendRecordMarketingEmail
+        send_record = SendRecordMarketingEmail.objects.get(pk=send_record_id)
         if not send_record.open_time:
             send_record.open_time = datetime.now(timezone.utc)
             send_record.save()
