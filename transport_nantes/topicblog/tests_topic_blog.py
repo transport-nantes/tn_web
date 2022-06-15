@@ -1013,7 +1013,7 @@ class TopicBlogEmailTest(TestCase):
     #         recipient=self.superuser.email)
 
     #     # Check that the send record is created
-    #     self.assertEqual(1, TopicBlogEmailSendRecord.objects.count())
+    #     self.assertEqual(1, SendRecordMarketingEmail.objects.count())
 
     def test_send_email_status_code(self):
         url = reverse('topicblog:send_email',

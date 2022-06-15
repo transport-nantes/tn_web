@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic import FormView, ListView, TemplateView
-from topicblog.models import TopicBlogEmailSendRecord
+from topicblog.models import SendRecordMarketingEmail
 
 from .events import (subscribe_user_to_list, subscriber_count,
                      unsubscribe_user_from_list, user_current_state,
@@ -326,7 +326,10 @@ class MailingListToggleSubscription(LoginRequiredMixin, FormView):
 class NewsletterUnsubscriptionView(TemplateView):
 
     """
-    View to unsubscribe a user from a Newsletter mailing list.
+    View that allows a user to unsubscribe from a mailinglist
+
+    GET happens when the user clicks on the unsub url inside one of our emails
+    POST effectively removes the user from the mailing list
     """
     template_name = "mailing_list/unsubscribe_from_mailing_list.html"
 
@@ -340,7 +343,7 @@ class NewsletterUnsubscriptionView(TemplateView):
             raise Http404()
 
         try:
-            send_record = TopicBlogEmailSendRecord.objects.get(
+            send_record = SendRecordMarketingEmail.objects.get(
                 pk=send_record_id)
         except ObjectDoesNotExist:
             logger.info(f"Send record ID : {send_record_id} not found")
@@ -368,8 +371,8 @@ class NewsletterUnsubscriptionView(TemplateView):
         except ValueError:
             logger.info(f"Token {token} is invalid")
             raise Http404()
-        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
-        send_record: TopicBlogEmailSendRecord
+        send_record = SendRecordMarketingEmail.objects.get(pk=send_record_id)
+        send_record: SendRecordMarketingEmail
         now = datetime.now(timezone.utc)
         unsubscribe_user_from_list(
             send_record.recipient, send_record.mailinglist)
@@ -439,8 +442,8 @@ class PressSubscriptionManagementView(TemplateView):
         except ValueError:
             logger.info(f"Token {token} is invalid")
             raise Http404()
-        send_record = TopicBlogEmailSendRecord.objects.get(pk=send_record_id)
-        send_record: TopicBlogEmailSendRecord
+        send_record = SendRecordMarketingEmail.objects.get(pk=send_record_id)
+        send_record: SendRecordMarketingEmail
 
         # Retrieve from POST the list of mailing lists the user wants to
         # subscribe to
