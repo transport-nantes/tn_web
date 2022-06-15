@@ -305,26 +305,38 @@ k_render_as_email = "render_as_email"
 class SendableObjectMixin:
     """ Define the sending by email behaviour for TopicBlog Objects """
 
+    # Defines the concrete subclass of SendRecordBase that we use to
+    # record this sending operation.
     send_record_class = None
+    # Used for determining whether a message is being rendered for
+    # email or for web.
     context_appropriate_base_template = None
+    # Defines the concrete subclass of sendable that we are treating.
     base_model = None
 
     def get_last_published_email(self, tb_slug: str) -> base_model:
-        """Get the TB object with the most recent publication date
-        for a given slug.
+        """Fetch the currently published email object.
+
+        Fetch the base_model instance in this slug class with most
+        recent publication_date.
+
         """
         tb_objects = self.base_model.objects.filter(
             slug=tb_slug,
             # Not implemented yet, but a published TBObject should be
-            # the only one with a publication date. For now it picks the
-            # most recent.
+            # the only one with a publication date. For now it picks
+            # the most recent.  **BUG**: assumes precisely one object
+            # returned, no order_by.
             publication_date__isnull=False
         )
         if len(tb_objects) > 1:
+            logger.error("Found multiple objects in class \"f{tb_slug}\" "
+                         "because we didn't try to do otherwise.")
             raise ValueError(
                 f"There is more than one {self.base_model.__name__} with slug"
                 f" {tb_slug} and a not-null publication date")
         elif len(tb_objects) == 0:
+            logger.error(f"Failed to find requested email object in class \"f{tb_slug}\".")
             raise ValueError(
                 f"There is no {self.base_model.__name__} with"
                 f" slug {tb_slug} and a not-null publication date")
@@ -372,12 +384,16 @@ class SendableObjectMixin:
                              recipient_list: list, send_record,
                              from_email: str = settings.DEFAULT_FROM_EMAIL) \
             -> mail.EmailMultiAlternatives:
-        """
-        To send emails to multiple persons, django send_mail function isn't
-        enough, we need to create a EmailMultiAlternatives object to be able,
-        for example to put recipients in BCC field or add attachments.
-        It also improves the performances by reusing the same connexion to SMTP
-        server.
+        """Create an EmailMultiAlternatives object.
+
+        To send emails to multiple persons, django send_mail function
+        isn't enough, we need to create a EmailMultiAlternatives
+        object to be able, for example to put recipients in BCC field
+        or add attachments.  **BUG** We probably don't want ever to
+        send to a list, since it presents a risk of name leakage (GDPR
+        and reputation) and doesn't let us track individual mail
+        messages.
+
         Doc :
         https://docs.djangoproject.com/en/3.2/topics/email/#sending-multiple-emails
         https://docs.djangoproject.com/en/3.2/topics/email/#emailmessage-objects
@@ -391,6 +407,7 @@ class SendableObjectMixin:
 
         Returns:
         An EmailMultiAlternatives object ready to be sent.
+
         """
         # HTML message is the one displayed in mail client
         html_message = render_to_string(
@@ -436,7 +453,7 @@ class SendableObjectMixin:
             self, recipient: list, send_record_id: int,
             tb_object) -> dict:
         """
-        Sets the context for the email to be sent.
+        Return the context for the email to be sent.
 
         Keyword arguments:
         recipient -- the list of recipients
@@ -487,7 +504,7 @@ class SendableObjectMixin:
     def create_send_record(self,  slug: str, mailing_list: MailingList,
                            recipient: str):
         """
-        Create a new TBEmailSentRecord object
+        Create a new send record object.
 
         Keyword arguments:
         slug -- the slug of the object to send
@@ -496,6 +513,7 @@ class SendableObjectMixin:
 
         Returns:
         A SendRecord object linking the email and the user.
+
         """
         recipient_user_object = User.objects.get(email=recipient)
         send_record = self.send_record_class(
@@ -504,6 +522,7 @@ class SendableObjectMixin:
             recipient=recipient_user_object,
         )
         send_record.save()
+        logger.info(f"Created send record " + str(type(send_record)))
         return send_record
 
     def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
