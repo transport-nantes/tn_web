@@ -13,7 +13,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         {# links will need to be wrapped into redirect links #}
         <a href="{% absolute_url 'topicblog:view_email_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:gray;text-decoration:underline;">Voir sur le site web</a>
     </tr>
-    <img src="{% absolute_url 'topicblog:beacon_view' token %}.gif" alt="space" height="1" width="1">
+    <img src="{% absolute_url 'topicblog:beacon_view' beacon_token %}.gif" alt="space" height="1" width="1">
     <tr>
         {% comment "Logo" %}This row handles the logo display{% endcomment %}
         <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#ffffff;">

@@ -336,7 +336,8 @@ class SendableObjectMixin:
                 f"There is more than one {self.base_model.__name__} with slug"
                 f" {tb_slug} and a not-null publication date")
         elif len(tb_objects) == 0:
-            logger.error(f"Failed to find requested email object in class \"f{tb_slug}\".")
+            logger.error("Failed to find requested email object in class "
+                         f"{tb_slug}")
             raise ValueError(
                 f"There is no {self.base_model.__name__} with"
                 f" slug {tb_slug} and a not-null publication date")
@@ -476,6 +477,8 @@ class SendableObjectMixin:
         # user's email hidden in a token.
         context["token"] = \
             self.get_unsubscribe_token(recipient[0], send_record_id)
+        context["beacon_token"] = \
+            self.get_beacon_token(send_record_id)
 
         # On May 31th 2022 :
         #
@@ -522,17 +525,36 @@ class SendableObjectMixin:
             recipient=recipient_user_object,
         )
         send_record.save()
-        logger.info(f"Created send record " + str(type(send_record)))
+        logger.info("Created send record " + str(type(send_record)))
         return send_record
 
     def get_unsubscribe_token(self, email: str, send_record_id: int) -> str:
         """
         Create a token to unsubscribe the user from the mailing list.
         """
-        email = email
         k_minutes_in_six_months = 60*24*30*6
         token = make_timed_token(
             email, k_minutes_in_six_months, int_key=send_record_id)
+        return token
+
+    def get_beacon_token(self, send_record_id: int) -> str:
+        """Create a new beacon token.
+
+        Create a beacon token that encodes the send_record_class and
+        send_record_id for the mail message we are sending.
+
+        Keyword arguments:
+        send_record_id -- the id of the send record attached to the email
+
+        Returns:
+        A token that can be used to retrieve the send_record_class and
+        send_record_id attached to the email.
+        """
+        send_record_class_string = self.send_record_class.__name__
+        k_minutes_in_six_months = 60*24*30*6
+        token = make_timed_token(
+            send_record_class_string, k_minutes_in_six_months,
+            int_key=send_record_id)
         return token
 
 
@@ -1043,22 +1065,55 @@ class TopicBlogMailingListPitchViewOne(
 
 def beacon_view(response, **kwargs):
 
+    def update_send_record_open_time(token: str) -> None:
+        """Update the token's associated send record's open time.
+
+        Keyword argument :
+        token -- The beacon token embedded in the email the user received.
+
+        Returns:
+        None
+        """
+        send_record_class_string, send_record_id = token_valid(token)
+        if not send_record_id:
+            logger.info(
+                    f"The token {token} provided an incorrect "
+                    f"ID : {send_record_id} "
+                    f"(Class string : {send_record_class_string}")
+            return None
+
+        try:
+            send_record_class = \
+                apps.get_model("topicblog", send_record_class_string)
+            # In case the token is valid, we update the open_time
+            send_record = send_record_class.objects.get(pk=send_record_id)
+            if not send_record.open_time:
+                send_record.open_time = datetime.now(timezone.utc)
+                send_record.save()
+                logger.info(
+                    f"{send_record.recipient.email} opened email"
+                    f" ({send_record_class_string} SR.id :{send_record.pk})")
+        except ObjectDoesNotExist:
+            logger.info(f"No send record with id {send_record_id} in class"
+                        f" {send_record_class_string}.")
+            return None
+        except LookupError:
+            logger.info(
+                f"No send record class with name {send_record_class_string}.")
+            return None
+
+    def make_beacon_response() -> FileResponse:
+        """Make a response that contains the beacon image."""
+        path_to_beacon = (Path(__file__).parent.parent / "asso_tn" / "static" /
+                          "asso_tn" / "beacon.gif")
+        image = open(path_to_beacon, "rb")
+        response = FileResponse(image, content_type="image/gif")
+        return response
+
     # We remove the ".gif" from the end of the token
     token = kwargs['token'][:-4]
-    email, send_record_id = token_valid(token)
-    if email and send_record_id:
-        # In case the token is valid, we update the open_time
-        send_record: SendRecordMarketingEmail
-        send_record = SendRecordMarketingEmail.objects.get(pk=send_record_id)
-        if not send_record.open_time:
-            send_record.open_time = datetime.now(timezone.utc)
-            send_record.save()
-            logger.info(f"{email} opened email (SR.id :{send_record.pk})")
-
-    path_to_beacon = (Path(__file__).parent.parent / "asso_tn" / "static" /
-                      "asso_tn" / "beacon.gif")
-    image = open(path_to_beacon, "rb")
-    response = FileResponse(image, content_type="image/gif")
+    update_send_record_open_time(token)
+    response = make_beacon_response()
     return response
 
 
