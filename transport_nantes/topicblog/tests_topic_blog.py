@@ -2,14 +2,14 @@ from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import Permission, User
 from django.core import mail
-from django.test import Client, TestCase
+from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 from mailing_list.models import MailingList
 from mailing_list.events import (get_subcribed_users_email_list,
                                  unsubscribe_user_from_list,
                                  subscribe_user_to_list)
 from topicblog.forms import TopicBlogEmailSendForm
-from .models import TopicBlogEmail, TopicBlogItem
+from .models import TopicBlogEmail, TopicBlogItem, TopicBlogPress
 
 
 class Test(TestCase):
@@ -910,7 +910,7 @@ class TBIView(TestCase):
                              {"url": "/tb/admin/t/list/test-slug-no-alt/"})
 
 
-class TopicBlogEmailTest(TestCase):
+class TopicBlogEmailTest(TransactionTestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             username="test_user",
@@ -1048,3 +1048,82 @@ class TopicBlogEmailTest(TestCase):
 
         form = TopicBlogEmailSendForm(data=form_data)
         self.assertTrue(form.is_valid())
+
+    def test_unique_slug_recipient_constraint(self):
+        url = reverse('topicblog:send_email',
+                      args=[self.email_article.slug])
+
+        form_data = {
+            "mailing_list": 'the_mailing_list_token',
+            "confirmation_box": 'on'
+        }
+        response = self.admin_client.post(url, form_data)
+        # Redirect to success url
+        self.assertEqual(response.status_code, 302)
+        # Check if the emails have been sent (one for each subscribed user)
+        self.assertEqual(len(mail.outbox), 2)
+
+        # Empty outbox
+        mail.outbox = []
+
+        response = self.admin_client.post(url, form_data)
+        # Redirect to success url
+        self.assertEqual(response.status_code, 302)
+        # Check if the emails were sent once
+        self.assertEqual(len(mail.outbox), 0)
+
+
+class TopicBlogPressTests(TransactionTestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="test_user",
+            email="admin@mobilitain.fr",
+            password="test_password")
+        self.press_release = TopicBlogPress.objects.create(
+            subject="Test subject",
+            user=self.superuser,
+            body_text_1_md="Test body text 1",
+            slug="test-press",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            template_name="topicblog/content_press.html",
+            title="Test title")
+        self.mailing_list = MailingList.objects.create(
+            mailing_list_name="the_mailing_list_name",
+            mailing_list_token="the_mailing_list_token",
+            contact_frequency_weeks=12,
+            list_active=True,
+            mailing_list_type="PRESS")
+        self.no_permissions_user = User.objects.create_user(
+            username="user_without_permissions",
+            email="test@mobilitain.fr"
+        )
+        subscribe_user_to_list(self.superuser, self.mailing_list)
+        subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
+        self.no_permissions_client = Client()
+        self.admin_client = Client()
+        self.admin_client.force_login(self.superuser)
+        self.no_permissions_client.force_login(self.no_permissions_user)
+
+    def test_unique_slug_recipient_constraint(self):
+        url = reverse('topicblog:send_press',
+                      args=[self.press_release.slug])
+
+        form_data = {
+            "mailing_list": 'the_mailing_list_token',
+            "confirmation_box": 'on'
+        }
+        response = self.admin_client.post(url, form_data)
+        # Redirect to success url
+        self.assertEqual(response.status_code, 302)
+        # Check if the emails have been sent (one for each subscribed user)
+        self.assertEqual(len(mail.outbox), 2)
+
+        # Empty outbox
+        mail.outbox = []
+
+        response = self.admin_client.post(url, form_data)
+        # Redirect to success url
+        self.assertEqual(response.status_code, 302)
+        # Check if the emails were sent once
+        self.assertEqual(len(mail.outbox), 0)

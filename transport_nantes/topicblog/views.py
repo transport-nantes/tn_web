@@ -8,6 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
+from django.db import IntegrityError
 
 from django.db.models import Count, Max
 from django.dispatch import receiver
@@ -34,6 +35,7 @@ from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (get_subcribed_users_email_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
+
 from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
                      SendRecordMarketingEmail, SendRecordMarketingPress)
@@ -591,10 +593,15 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
         # We create and send an email for each recipient, each with
         # custom informations (like the unsubscribe link).
         for recipient in recipient_list:
-            send_record = self.create_send_record(
-                slug=tbe_slug,
-                mailing_list=mailing_list,
-                recipient=recipient)
+            try:
+                send_record = self.create_send_record(
+                    slug=tbe_slug,
+                    mailing_list=mailing_list,
+                    recipient=recipient)
+            except IntegrityError:
+                logger.info(f"{recipient} already received an email for "
+                            f"{tbe_slug}")
+                continue
             custom_email = self.prepare_email(
                 pkid=tbe_object.id,
                 the_slug=tbe_slug,
