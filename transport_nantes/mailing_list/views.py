@@ -119,7 +119,7 @@ class QuickMailingListSignup(FormView):
                 user = User()
                 user.username = get_random_string(20)
                 user.email = email
-                logger.info(f"Created new user with email {user.email}")
+                logger.info(f"QuickMailingListSignup: Created new user {user.email}")
                 user.save()
         # If we can't find the mailinglist, that's our bug.
         try:
