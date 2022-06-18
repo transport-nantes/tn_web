@@ -929,13 +929,16 @@ class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
 
 class TopicBlogPressList(PermissionRequiredMixin,
                          TopicBlogBaseList):
+    """List available press releases."""
+
     model = TopicBlogPress
     permission_required = 'topicblog.tbp.may_view'
 
 
 class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
                          TopicBlogBaseSendView):
-    """ Allow press releases to be sent and tracked by email. """
+    """Email a TBPress."""
+
     permission_required = 'topicblog.tbp.may_send'
     form_class = TopicBlogEmailSendForm
     template_name = 'topicblog/topicblogbase_send_form.html'
@@ -1021,20 +1024,27 @@ class TopicBlogLauncherView(TopicBlogBaseView):
 
 class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
                                TopicBlogBaseViewOne):
+    """View a TBLauncher by pk id."""
+
     model = TopicBlogLauncher
 
 
 class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
+    """View a list of TBLaunchers."""
+
     model = TopicBlogLauncher
     permission_required = 'topicblog.tbla.may_view'
 
 
 class TopicBlogMailingListPitchView(TopicBlogBaseView):
+    """View a published mailing list pitch."""
+
     model = TopicBlogMailingListPitch
 
 
 class TopicBlogMailingListPitchEdit(PermissionRequiredMixin,
                                     TopicBlogBaseEdit):
+    """Edit a TBMailingList Pitch."""
 
     model = TopicBlogMailingListPitch
     permission_required = 'topicblog.tbmlp.may_edit'
@@ -1043,6 +1053,8 @@ class TopicBlogMailingListPitchEdit(PermissionRequiredMixin,
 
 class TopicBlogMailingListPitchList(PermissionRequiredMixin,
                                     TopicBlogBaseList):
+    """List available TBMailingListPitches."""
+
     model = TopicBlogMailingListPitch
     permission_required = 'topicblog.tbmlp.may_view'
 
@@ -1067,11 +1079,13 @@ class TopicBlogMailingListPitchViewOnePermissions(PermissionRequiredMixin):
 class TopicBlogMailingListPitchViewOne(
         TopicBlogMailingListPitchViewOnePermissions,
         TopicBlogBaseViewOne):
+    """View a TBMailingListPitch by pk id."""
+
     model = TopicBlogMailingListPitch
 
 
 def beacon_view(response, **kwargs):
-
+    """Process received mail beacon."""
     def update_send_record_open_time(token: str) -> None:
         """Update the token's associated send record's open time.
 
@@ -1125,7 +1139,7 @@ def beacon_view(response, **kwargs):
 
 
 def _extract_data_from_ses_signal(mail_obj: dict) -> Tuple[str, str, str]:
-    """Extract data attached to a mail object received on SES- webhook
+    """Extract data attached to a mail object received on SES-webhook.
 
     Keyword Argument:
     - mail_obj : A dict containing data related to a sent email
@@ -1152,7 +1166,7 @@ def _extract_data_from_ses_signal(mail_obj: dict) -> Tuple[str, str, str]:
             send_record_id = int(send_record_id)
         except Exception as e:
             logger.error(
-                f"Error while extracting data from comments header : {e}")
+                f"Error extracting data from comments header : {e}")
             send_record_class = None
             send_record_id = None
 
@@ -1161,19 +1175,18 @@ def _extract_data_from_ses_signal(mail_obj: dict) -> Tuple[str, str, str]:
 
 @receiver(send_received)
 def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
-    """Handle AWS SES send_received notifications
+    """Handle AWS SES send_received notifications.
 
     AWS Receiver
     This function will run when a send_received is received from
     Amazon SES.
     The signal is sent from django_ses' view.
     """
-    logger.info("send_received received !")
+    logger.info("Received send_received.")
     aws_message_id, send_record_class, send_record_id = \
         _extract_data_from_ses_signal(mail_obj)
-    logger.info(
-        f"\nsend_received signal received for message {aws_message_id}\n"
-        f"SendRecord class : {send_record_class} ID : {send_record_id}")
+    logger.info(f"Received send_received for {aws_message_id}")
+    logger.info(f"  {send_record_class} ID : {send_record_id}")
     if send_record_class and send_record_id:
         try:
             send_record = send_record_class.objects.get(pk=send_record_id)
@@ -1181,10 +1194,7 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
             send_record.send_time = datetime.now(timezone.utc)
             send_record.aws_message_id = aws_message_id
             send_record.save()
-            logger.info(
-                f"\nSES confirmed email sending\n"
-                f"SR.class : {send_record_class.__name__}\n"
-                f"SR.id :{send_record.pk})")
+            logger.info(f"send_received : {send_record_class.__name__} id={send_record.pk}")
         except Exception as e:
             logger.error(
                 f"Error while updating send_record : {e}")
