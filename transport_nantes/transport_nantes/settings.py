@@ -23,6 +23,7 @@ SECRET_KEY = settings_local.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = settings_local.DEBUG
 ROLE = settings_local.ROLE
+ADMIN = [('Dev admins', 'dev-admin@mobilitains.fr'), ]
 
 ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
 # Requirement for Django-debug-toolbar
@@ -149,12 +150,12 @@ LOGGING = {
     'formatters': {
         'django.server': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': '[{server_time}] {message}',
+            'format': '[{asctime}] {levelname}[{filename}:{lineno} ({funcName})] {message}',
             'style': '{',
         },
         'django.ses.extra': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': '[{server_time}] {message}  Notification : {notification}',
+            'format': '[{asctime}] {levelname}[{filename}:{lineno} ({funcName})] {message} Notification : {notification}',
             'style': '{',
         }
     },
@@ -169,44 +170,50 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'django.server',
         },
-        #'mail_admins': {
-        #    'level': 'ERROR',
-        #    'filters': ['require_debug_false'],
-        #    'class': 'django.utils.log.AdminEmailHandler'
-        #},
+        'mail_admins': {
+           'level': 'ERROR',
+           'filters': ['require_debug_false'],
+           'class': 'django.utils.log.AdminEmailHandler'
+        },
         'file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': settings_local.LOG_DIR + "tn_web.log",
             'formatter': 'django.server',
+            'when': 'd',
+            'utc': True,
+            'backupCount': 10,
         },
         'django_ses_notification': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': settings_local.LOG_DIR + "tn_web-ses.log",
             'formatter': 'django.ses.extra',
+            'when': 'd',
+            'utc': True,
+            'backupCount': 10,
         }
     },
     'loggers': {
         'app': {
             # 'handlers': ['console', 'mail_admins'],
-            'handlers': ['django.server'],
+            'handlers': ['django.server', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'django': {
             # 'handlers': ['console', 'mail_admins'],
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'file', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.server': {
-            'handlers': ['django.server'],
+            'handlers': ['django.server', 'mail_admins'],
             'level': 'INFO',
             'propagate': False,
         },
         'django_ses': {
-            'handlers': ['console', 'django_ses_notification'],
+            'handlers': ['console', 'django_ses_notification', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
