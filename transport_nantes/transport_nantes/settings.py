@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 from django.urls import reverse_lazy
 from . import settings_local
 import sys
+import os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -75,6 +76,11 @@ MIDDLEWARE = [
     'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
     'utm.middleware.utm.UtmMiddleware',
 ]
+
+if ROLE in ("beta", "production"):
+    MIDDLEWARE += [
+        'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
+    ]
 
 ROOT_URLCONF = 'transport_nantes.urls'
 
@@ -275,3 +281,12 @@ CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BROKER_URL = "amqp://localhost"
+
+if ROLE in ("beta", "production"):
+    ROLLBAR = {
+        'access_token': settings_local.ROLLBAR_ACCESS_TOKEN,
+        'environment': 'dev' if DEBUG else 'production',
+        'root': os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    }
+    import rollbar
+    rollbar.init(**ROLLBAR)
