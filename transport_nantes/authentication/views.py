@@ -69,7 +69,12 @@ class LoginView(FormView):
             user = User.objects.get(email=email)
             authenticates_by_email = user.profile.authenticates_by_mail
         except User.DoesNotExist:
-            # Don't create new users until then confirm (respond to mail).
+            logger.info(f"New user : Creation of user account for {email}")
+            user = User()
+            user.email = email
+            user.username = get_random_string(length=20)
+            user.set_unusable_password()
+            user.save()
             authenticates_by_email = True
         if authenticates_by_email:
             logger.info(f"Sending email to {email}")
