@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'press',
     'debug_toolbar',
     'photo',
+    'dbbackup',  # django-dbbackup
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -101,6 +102,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = settings_local.DATABASES
+
+# Django dbbackup
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = settings_local.DBBACKUP_STORAGE_OPTIONS
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
