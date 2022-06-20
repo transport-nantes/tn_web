@@ -1,7 +1,11 @@
 from django.contrib import admin
 from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
                      TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogMailingListPitch, SendRecordMarketingPress)
+                     TopicBlogMailingListPitch, SendRecordMarketingPress,
+                     SendRecordTransactionalPress,
+                     SendRecordTransactionalEmail,
+                     SendRecordTransactionalAdHoc,
+                     )
 
 
 class TopicBlogItemAdmin(admin.ModelAdmin):
@@ -53,3 +57,6 @@ admin.site.register(TopicBlogLauncher, TopicBlogLauncherAdmin)
 admin.site.register(SendRecordMarketingEmail, SendRecordMarketingEmailAdmin)
 admin.site.register(TopicBlogMailingListPitch, TopicBlogMailingListPitchAdmin)
 admin.site.register(SendRecordMarketingPress, SendRecordMarketingPressAdmin)
+admin.site.register(SendRecordTransactionalEmail)
+admin.site.register(SendRecordTransactionalPress)
+admin.site.register(SendRecordTransactionalAdHoc)
