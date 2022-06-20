@@ -438,8 +438,18 @@ class SendRecordBase(models.Model):
     click_time = models.DateTimeField(null=True, blank=True)
     aws_message_id = models.CharField(max_length=300, blank=True, null=True)
 
+    def __str__(self):
+        return f'{self.recipient.email} - {self.status}'
+
 
 class SendRecordTransactional(SendRecordBase):
+    """Base class for Transactional emails.
+    """
+    class Meta:
+        abstract = True
+
+
+class SendRecordTransactionalAdHoc(SendRecordTransactional):
     """Represent a transactional email.
 
     This class represents mail sent without a slug (i.e., not
@@ -447,6 +457,24 @@ class SendRecordTransactional(SendRecordBase):
 
     """
     pass
+
+
+class SendRecordTransactionalEmail(SendRecordTransactional):
+    """Represent a transactional email that sends a TopicBlogEmail."""
+
+    slug = models.SlugField(max_length=200)
+
+    def __str__(self):
+        return super().__str__() + self.slug
+
+
+class SendRecordTransactionalPress(SendRecordTransactional):
+    """Represent a transactional email that sends a TopicBlogPress."""
+
+    slug = models.SlugField(max_length=200)
+
+    def __str__(self):
+        return super().__str__() + self.slug
 
 
 class SendRecordMarketing(SendRecordBase):
