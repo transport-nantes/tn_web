@@ -804,7 +804,7 @@ class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
 
         # template field being set in the ModelForm it needs to be specifically
         # set here before saving.
-        tb_item.template_name = form.cleaned_data["template"]
+        tb_item.template_name = form.cleaned_data["template_name"]
 
         return tb_item
 
