@@ -98,7 +98,7 @@ class TestsTopicItemForm(LiveServerTestCase):
         title_input = self.selenium.find_element(By.NAME, "title")
         title_input.clear()
         title_input.send_keys(title)
-        select = Select(self.selenium.find_element(By.NAME, "template"))
+        select = Select(self.selenium.find_element(By.NAME, "template_name"))
         select.select_by_value("topicblog/content.html")
         self.selenium.find_element(By.LINK_TEXT, "Contenu (1)").click()
         body_text_1_md_input = self.selenium.find_element(
@@ -276,7 +276,7 @@ class TestsTopicItemForm(LiveServerTestCase):
                           reverse("topic_blog:new_item")))
         slug_input = self.selenium.find_element(By.NAME, "slug")
         slug_input.send_keys("unpublishable")
-        select = Select(self.selenium.find_element(By.NAME, "template"))
+        select = Select(self.selenium.find_element(By.NAME, "template_name"))
         select.select_by_value("topicblog/content.html")
         self.selenium.find_element(By.NAME, "sauvegarder").click()
         # Check if the item is on the database and get the data to fake
