@@ -50,6 +50,15 @@ Maybe there's a better way, I just haven't found it yet.
 	    <a type="button" class="btn btn-outline-info btn-sm disabled" aria-disabled="true"
 	       href="">Republier</a>
 	    {% endif %}{% endif %}
+		{% if not page.first_publication_date %}
+				<form method="post" action="{% url 'topicblog:delete_tb_object' tb_object_class pkid page.slug|default:"No-slug"  %}"
+				onsubmit="return confirm('Êtes vous sûr(e) ?')">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-outline-info btn-sm">
+						Supprimer
+					</button>
+				</form>
+		{% endif %}
 	</p>
     </div>
 </div>

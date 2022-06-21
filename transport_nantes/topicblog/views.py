@@ -22,6 +22,7 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
@@ -222,6 +223,7 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
         tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
         context['topicblog_admin'] = True
+        context["tb_object_class"] = self.model.__name__
         return context
 
     def post(self, request, *args, **kwargs):
@@ -302,6 +304,43 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
 # This is the name of the key we put in contexts to communicate
 # to renderers.
 k_render_as_email = "render_as_email"
+
+
+class TopicBlogBaseDelete(PermissionRequiredMixin, View):
+    """
+    Delete a TopicBlogObject that has never been published
+    """
+    model = None
+    abreviated_name = getattr(model, "abreviated_name", None)
+    permission_required = f'topicblog.{abreviated_name}.may_delete_self'
+
+    def post(self, request, *args, **kwargs):
+        tb_object_class_name = kwargs.get('tb_object_class', None)
+        self.model = apps.get_model("topicblog", tb_object_class_name)
+        pk_id = kwargs.get('pkid', -1)
+        the_slug = kwargs.get('the_slug', '')
+        logger.info(
+            f"Deleting request for {tb_object_class_name} ID {pk_id} "
+            f"slug {the_slug} by {request.user}"
+        )
+        tb_object = get_object_or_404(self.model, id=pk_id, slug=the_slug)
+        if tb_object.first_publication_date is not None:
+            raise PermissionDenied("You cannot delete a once published object")
+        user = User.objects.get(username=request.user)
+        if tb_object.user == user or user.has_perm(
+                f'topicblog.{self.model.abreviated_name}.may_delete'):
+            tb_object.delete()
+            logger.info(f"Deleted {tb_object_class_name} ID {pk_id} ")
+        else:
+            logger.info(
+                f"User {request.user} tried to delete {tb_object_class_name} "
+                f"ID {pk_id} slug {the_slug} but was denied")
+            raise PermissionDenied("Vous n'avez pas les droits pour "
+                                   "supprimer un article qui ne vous "
+                                   "appartient pas")
+        self.success_url = reverse_lazy(
+            getattr(tb_object, "listall_object_url", None))
+        return HttpResponseRedirect(self.success_url)
 
 
 class SendableObjectMixin:

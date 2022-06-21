@@ -129,6 +129,10 @@ urlpatterns = [
     path('admin/p/send/<slug:the_slug>/', views.TopicBlogPressSend.as_view(),
          name='send_press'),
 
+    path('admin/delete/<str:tb_object_class>/<int:pkid>/<slug:the_slug>/',
+         views.TopicBlogBaseDelete.as_view(),
+         name='delete_tb_object'),
+
     path('ajax/get-slug-dict/', views.get_slug_dict,
          name="get_slug_dict"),
     path('ajax/get-url-list/', views.get_url_list,
