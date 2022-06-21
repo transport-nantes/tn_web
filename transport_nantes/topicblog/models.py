@@ -151,8 +151,12 @@ class TopicBlogObjectBase(models.Model):
         else:
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
-    def get_servable_status(self):
-        """Return True if page is user visible, False otherwise."""
+    def get_servable_status(self) -> bool:
+        """Return True if page is user visible, False otherwise.
+
+        The publication date being set and inferior or equal to same day
+        isn't the only constraint to be user visible, it also need to be
+        the last one published."""
         if self.publication_date is None or \
                 datetime.now(timezone.utc) < self.publication_date:
             return False
