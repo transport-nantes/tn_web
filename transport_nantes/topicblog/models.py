@@ -143,6 +143,7 @@ class TopicBlogObjectBase(models.Model):
     # e.g. a TopicBlogItem is a "Page de blog"
     # This is used as header in object-related forms
     description_of_object = None
+    abreviated_name = None
 
     def __str__(self):
         if self.slug:
@@ -490,6 +491,8 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
             # self-publish (implies tbi_may_publish)
             ("tbi.may_publish", "May publish TopicBlogItems"),
             ("tbi.may_publish_self", "May publish own TopicBlogItems"),
+            ("tbi.may_delete", "May delete TopicBlogItems"),
+            ("tbi.may_delete_self", "May delete own TopicBlogItems"),
         )
 
     # Content Type ##################################################
@@ -602,6 +605,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     listall_object_url = 'topicblog:list_items'
     viewbyslug_object_url = 'topicblog:view_item_by_slug'
     description_of_object = 'Page de blog'
+    abreviated_name = 'tbi'
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -703,6 +707,8 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             ("tbe.may_publish_self", "May publish own TopicBlogEmails"),
             ("tbe.may_send", "May send TopicBlogEmails"),
             ("tbe.may_send_self", "May send own TopicBlogEmails"),
+            ("tbe.may_delete", "May delete TopicBlogEmails"),
+            ("tbe.may_delete_self", "May delete own TopicBlogEmails"),
         )
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
@@ -781,6 +787,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     viewbyslug_object_url = 'topicblog:view_email_by_slug'
     send_object_url = 'topicblog:send_email'
     description_of_object = 'Email'
+    abreviated_name = "tbe"
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -908,6 +915,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
             ("tbp.may_publish_self", "May publish own TopicBlogPress"),
             ("tbp.may_send", "May send TopicBlogPresss"),
             ("tbp.may_send_self", "May send own TopicBlogPress"),
+            ("tbp.may_delete", "May delete TopicBlogPress"),
+            ("tbp.may_delete_self", "May delete own TopicBlogPress"),
         )
 
     template_config_default = {
@@ -968,6 +977,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     viewbyslug_object_url = 'topicblog:view_press_by_slug'
     send_object_url = 'topicblog:send_press'
     description_of_object = 'Communiqué de presse'
+    abreviated_name = "tbp"
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -1082,6 +1092,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
             # self-send.
             ("tbla.may_publish", "May publish TopicBlogLauncher"),
             ("tbla.may_publish_self", "May publish own TopicBlogLauncher"),
+            ("tbla.may_delete", "May delete TopicBlogLauncher"),
+            ("tbla.may_delete_self", "May delete own TopicBlogLauncher"),
         )
     # Content Type ##################################################
     #
@@ -1151,6 +1163,7 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     listall_object_url = 'topicblog:list_launcher'
     viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
     description_of_object = 'Lanceur'
+    abreviated_name = "tbla"
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
@@ -1205,6 +1218,10 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
              "May publish TopicBlogMailingListPitch"),
             ("tbmlp.may_publish_self",
              "May publish own TopicBlogMailingListPitch"),
+            ("tbmlp.may_delete",
+                "May delete TopicBlogMailingListPitch"),
+            ("tbmlp.may_delete_self",
+                "May delete own TopicBlogMailingListPitch"),
         )
 
     body_text_1_md = models.TextField(blank=True)
@@ -1264,6 +1281,7 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
     viewbyslug_object_url = 'topicblog:view_mlp_by_slug'
     viewbyid_object_url = 'topicblog:view_mlp_by_pkid'
     description_of_object = 'Pitch de mailing list'
+    abreviated_name = "tbmlp"
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
