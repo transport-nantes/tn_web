@@ -560,6 +560,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     }
     template_config = {
         'topicblog/content.html': {
+            'default_choice': True,
             'user_template_name': 'Article',
             'active': True,
             "fields": {
@@ -765,7 +766,8 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     }
     template_config = {
         'topicblog/content_email_client.html': {
-            'user_template_name': 'Classic',
+            'default_choice': True,
+            'user_template_name': 'Classique',
             'active': True,
             "fields": {
                 'slug': True,
@@ -962,7 +964,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     }
     template_config = {
         'topicblog/content_press_mail_client.html': {
-            'user_template_name': 'Classic',
+            'default_choice': True,
+            'user_template_name': 'Classique',
             'active': True,
             "fields": {
                 'slug': True,
@@ -1134,7 +1137,8 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     }
     template_config = {
         'topicblog/content_launcher.html': {
-            'user_template_name': 'Classic',
+            'default_choice': True,
+            'user_template_name': 'Classique',
             'active': True,
             "fields": {
                 'slug': True,
@@ -1269,6 +1273,7 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
     }
     template_config = {
         'topicblog/content_mlp.html': {
+            'default_choice': True,
             'user_template_name': 'Classique',
             'active': True,
             "fields": {
