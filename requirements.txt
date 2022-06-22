@@ -66,7 +66,7 @@ markdown2==2.4.0
 MarkupSafe==1.1.1
 mccabe==0.6.1
 msgpack==0.6.2
-numpy==1.21.0
+numpy==1.22.0
 outcome==1.1.0
 packaging==20.3
 parso==0.6.1
