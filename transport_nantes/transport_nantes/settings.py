@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'press',
     'debug_toolbar',
     'photo',
+    'mobilito',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
