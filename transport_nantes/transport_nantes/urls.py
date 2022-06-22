@@ -54,6 +54,7 @@ urlpatterns = [
     path("donation/", include('stripe_app.urls')),
     path("presse/", include('press.urls')),
     path("photo/", include('photo.urls')),
+    path("mobilito/", include('mobilito.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
     path("ses/event-webhook/", SESEventWebhookView.as_view(),
          name="ses_event_webhook"),
