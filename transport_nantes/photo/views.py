@@ -30,12 +30,14 @@ class UploadEntry(LoginRequiredMixin, CreateView):
         form.instance.user = request.user
         if form.is_valid():
             try:
+                logger.info("Received photo submission.")
                 mailing_list = MailingList.objects.get(
                     mailing_list_token="operation-pieton")
                 user = request.user
                 subscribe_user_to_list(user, mailing_list)
+                logger.info(f"Subscribed user {user} to list {mailing_list}.")
             except ObjectDoesNotExist:
-                logger.info("Mailing list operation-pieton does not exist")
+                logger.error("Mailing list operation-pieton does not exist")
 
             return self.form_valid(form)
         else:
