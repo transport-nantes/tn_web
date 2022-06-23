@@ -21,6 +21,10 @@ class UploadEntry(LoginRequiredMixin, CreateView):
 
     success_url = reverse_lazy('photo:confirmation')
 
+    def get(self, request, *args, **kwargs):
+        logger.info(f"UploadEntry.get() from {request.user}")
+        return super().get(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         """
         Override the post method to add the user to the form
@@ -49,3 +53,7 @@ class Confirmation(TemplateView):
     Confirmation page after successful submit of a PhotoEntry
     """
     template_name = 'photo/confirmation.html'
+
+    def get(self, request, *args, **kwargs):
+        logger.info(f"Confirmation.get() from {request.user}")
+        return super().get(request, *args, **kwargs)
