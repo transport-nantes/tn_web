@@ -1,5 +1,22 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
 
 {% block app_content %}
-<h1>Bienvenue sur l'application Mobilito !</h1>
+    <main id="mobilito-landing" class="container">
+        <h1>Bienvenue sur Mobilito !</h1>
+
+        <div id="auth-user-landing">
+            <p>{# No guarantee user is authenticated here. #}
+                Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
+            </p>
+            <a class="btn donation-button" role="button" href="">Commencer à enregistrer</a>
+            </a>
+            <p class="mt-2">
+                Mais si vous avez besoin d'explications sur comment utiliser
+                Mobilito, alors
+                <a href="{% url 'mobilito:tutorial' %}">on vous explique tout ici</a> !
+            </p>
+        </div>
+    </main>
+
 {% endblock app_content %}
