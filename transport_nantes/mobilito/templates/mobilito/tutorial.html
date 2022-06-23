@@ -1,0 +1,38 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'mobilito/js/has_visited.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block app_content %}
+<div class="container">
+    {# Visibility is toggled by JavaScript after checking their localstorage #}
+    <div id="already-visited" class="d-none">
+        <p>
+            Ce n'est pas la première fois qu'on vous voit par ici !<br/>
+            Si vous êtes déjà familier.ère avec Mobilito, vous pouvez passer
+            le tutoriel et cliquant ici !
+        </p>
+        <a href="{% url 'authentication:login'%}?next=path-to-mobilito-app"
+        class="btn donation-button">
+            Passer le tutoriel
+        </a>
+    </div>
+
+    {# First time the user comes #}
+    <section id="tutorial" class="mt-3">
+        <h1>Mobilito : Un guide pratique pour les Mobilitains en herbes !</h1>
+        
+        <p>
+            Explications ...
+        </p>
+        <a href="{% url 'authentication:login'%}?next=path-to-mobilito-app"
+        class="btn donation-button">
+            En avant !
+        </a>
+    </section>
+</div>
+
+{% endblock app_content %}
