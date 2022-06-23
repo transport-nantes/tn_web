@@ -4,7 +4,21 @@
 
 <div class="container">
     <h1>Merci de votre participation !</h1>
+    <p>
+        Nous vous tiendrons informé.e de l'avancement de l'opération Piéton
+        par mail.
+    </p>
     <p>Vous voulez soumettre d'autres photos ?</p>
-    <a class="btn donation-button" href="{% url 'photo:upload' %}">Par ici !</a>
-<div>
+    <a class="btn donation-button mb-3" href="{% url 'photo:upload' %}">
+        Je soumets d'autres photos !
+    </a>
+    {% if submitted_photo %}
+        <div class="d-flex flex-column w-100 my-5">
+            <p>Voici la photo que vous venez de soumettre :</p>
+            <img class="img-fluid img-thumbnail col-12 col-lg-9 mx-auto"
+            src="{{submitted_photo}}"/>
+        </div>
+    {% endif %}
+    
+</div>
 {% endblock app_content %}
