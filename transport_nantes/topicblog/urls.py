@@ -47,6 +47,8 @@ urlpatterns = [
     path('admin/mlp/view/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogMailingListPitchViewOne.as_view(),
          name='view_mlp_by_pkid'),
+    path('admin/self-send/', views.TopicBlogSelfSendView.as_view(),
+         name='self_send'),
 
     path('admin/t/new/', views.TopicBlogItemEdit.as_view(),
          name='new_item'),
