@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth.models import Permission, User
 from django.test import LiveServerTestCase, Client
@@ -75,8 +77,9 @@ class TestsTopicItemForm(LiveServerTestCase):
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-extensions")
-        self.selenium = WebDriver(ChromeDriverManager().install(),
-                                  options=options)
+        self.selenium = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
 
         self.selenium.implicitly_wait(5)
 
@@ -90,29 +93,33 @@ class TestsTopicItemForm(LiveServerTestCase):
         """Fill the topicblog item form and publish
         """
         if not edit:
-            slug_input = self.selenium.find_element_by_name("slug")
+            slug_input = self.selenium.find_element(By.NAME, "slug")
             slug_input.send_keys(slug)
-        title_input = self.selenium.find_element_by_name("title")
+        title_input = self.selenium.find_element(By.NAME, "title")
         title_input.clear()
         title_input.send_keys(title)
-        select = Select(self.selenium.find_element_by_name("template"))
+        select = Select(self.selenium.find_element(By.NAME, "template"))
         select.select_by_value("topicblog/content.html")
-        self.selenium.find_element_by_link_text("Contenu (1)").click()
-        body_text_1_md_input = self.selenium.find_element_by_id(
+        self.selenium.find_element(By.LINK_TEXT, "Contenu (1)").click()
+        body_text_1_md_input = self.selenium.find_element(
+            By.ID,
             "id_body_text_1_md")
         body_text_1_md_input.clear()
         body_text_1_md_input.send_keys(body_1)
-        body_text_2_md_input = self.selenium.find_element_by_id(
+        body_text_2_md_input = self.selenium.find_element(
+            By.ID,
             "id_body_text_2_md")
         body_text_2_md_input.clear()
         body_text_2_md_input.send_keys(body_2)
-        self.selenium.find_element_by_link_text("Contenu (2)").click()
-        body_text_3_md_input = self.selenium.find_element_by_id(
+        self.selenium.find_element(By.LINK_TEXT, "Contenu (2)").click()
+        body_text_3_md_input = self.selenium.find_element(
+            By.ID,
             "id_body_text_3_md")
         body_text_3_md_input.clear()
         body_text_3_md_input.send_keys(body_3)
-        self.selenium.find_element_by_name("sauvegarder").click()
-        self.selenium.find_element_by_xpath(
+        self.selenium.find_element(By.NAME, "sauvegarder").click()
+        self.selenium.find_element(
+            By.XPATH,
             "//input[@value='Publier']").click()
 
     def test_user_permited_create_auto_publish(self):
@@ -130,11 +137,11 @@ class TestsTopicItemForm(LiveServerTestCase):
             item_staff, msg="The item created by the super user"
                             " is not in the database")
         # Go to the user view
-        self.selenium.find_element_by_link_text("Visualiser (usager)").click()
+        self.selenium.find_element(By.LINK_TEXT, "Visualiser (usager)").click()
         """Get the body innerHTML and check if
         this is what we send in the form
         """
-        body_app_content = self.selenium.find_element_by_id("app_content")
+        body_app_content = self.selenium.find_element(By.ID, "app_content")
         body_html = body_app_content.get_attribute('innerHTML')
         self.assertHTMLEqual(
             body_html, "<p>body 1</p><p>body 2</p><p>body 3</p>",
@@ -200,7 +207,8 @@ class TestsTopicItemForm(LiveServerTestCase):
                                        "the_slug": self.item.slug,
                                    })
                            ))
-        self.selenium.find_element_by_xpath(
+        self.selenium.find_element(
+            By.XPATH,
             "//input[@value='Publier']").click()
         item_editor = TopicBlogItem.objects.filter(
             slug="test-slug")[0]
@@ -211,11 +219,11 @@ class TestsTopicItemForm(LiveServerTestCase):
                              msg="The first publication date"
                                  "should not be none")
         # Check the user view
-        self.selenium.find_element_by_link_text("Visualiser (usager)").click()
+        self.selenium.find_element(By.LINK_TEXT, "Visualiser (usager)").click()
         """Get the body innerHTML and check if
         this is what we send in the form
         """
-        body_app_content = self.selenium.find_element_by_id("app_content")
+        body_app_content = self.selenium.find_element(By.ID, "app_content")
         body_html = body_app_content.get_attribute('innerHTML')
         self.assertHTMLEqual(
             body_html, "<p>body 1</p><p>body 2</p><p>body 3</p>",
@@ -232,7 +240,7 @@ class TestsTopicItemForm(LiveServerTestCase):
                           reverse("topic_blog:new_item")))
         self.fill_the_form_and_publish(slug="test-edited", title="title-edit")
         # Go to the edit view
-        self.selenium.find_element_by_link_text("Modifier").click()
+        self.selenium.find_element(By.LINK_TEXT, "Modifier").click()
         self.fill_the_form_and_publish(slug="", title="new title edited",
                                        body_1="new setence 1",
                                        body_2="new setence 2",
@@ -246,11 +254,11 @@ class TestsTopicItemForm(LiveServerTestCase):
                              msg="The item edited by the staff"
                              " is not in the database")
         # Go to the user view
-        self.selenium.find_element_by_link_text("Visualiser (usager)").click()
+        self.selenium.find_element(By.LINK_TEXT, "Visualiser (usager)").click()
         """Get the body innerHTML and check if
         this is what we send in the form
         """
-        body_app_content = self.selenium.find_element_by_id("app_content")
+        body_app_content = self.selenium.find_element(By.ID, "app_content")
         body_html = body_app_content.get_attribute('innerHTML')
         self.assertHTMLEqual(
             body_html,
@@ -266,11 +274,11 @@ class TestsTopicItemForm(LiveServerTestCase):
              'secure': False, 'path': '/'})
         self.selenium.get('%s%s' % (self.live_server_url,
                           reverse("topic_blog:new_item")))
-        slug_input = self.selenium.find_element_by_name("slug")
+        slug_input = self.selenium.find_element(By.NAME, "slug")
         slug_input.send_keys("unpublishable")
-        select = Select(self.selenium.find_element_by_name("template"))
+        select = Select(self.selenium.find_element(By.NAME, "template"))
         select.select_by_value("topicblog/content.html")
-        self.selenium.find_element_by_name("sauvegarder").click()
+        self.selenium.find_element(By.NAME, "sauvegarder").click()
         # Check if the item is on the database and get the data to fake
         # the publication
         item_unpublishable = TopicBlogItem.objects.filter(
@@ -341,8 +349,9 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-extensions")
-        self.browser = WebDriver(ChromeDriverManager().install(),
-                                 options=options)
+        self.browser = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
         self.browser.implicitly_wait(5)
         self.neutral_url = \
             self.live_server_url + reverse("authentication:login")
@@ -369,7 +378,8 @@ class TopicBlogEmailSeleniumTests(LiveServerTestCase):
         self.browser.get(url)
 
         # Confirm unsubscription
-        self.browser.find_element_by_xpath(
+        self.browser.find_element(
+            By.XPATH,
             '//button[normalize-space()="Oui"]').click()
 
         # Make sure we produced the appropriate event
