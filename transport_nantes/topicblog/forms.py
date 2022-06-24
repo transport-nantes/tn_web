@@ -196,3 +196,13 @@ class TopicBlogMailingListPitchForm(ModelForm):
         self.fields['template_name'] = forms.ChoiceField(
             choices=template_list,
             initial=self.instance.template_name)
+
+
+class SendToSelfForm(forms.Form):
+    """Form to send a TopicBlog object to oneself"""
+    sent_object_class = forms.CharField(required=True)
+    sent_object_id = forms.IntegerField(required=True)
+    sent_object_transactional_send_record_class = forms.CharField(
+        required=True)
+    redirect_url = forms.CharField(required=True)
+    context_appropriate_base_template = forms.CharField(required=True)
