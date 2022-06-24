@@ -48,6 +48,26 @@ Maybe there's a better way, I just haven't found it yet.
 		<a type="button" class="btn btn-outline-info btn-sm"
 	       href="{% url 'topic_blog:view_email_by_slug' page.slug|default:'--sans-slug--' %}">Voir la version publiée</a>
 	    {% endif %}
+		<div class="d-flex flex-row mr-auto">
+			<form method="POST" action="{% url 'topic_blog:self_send' %}">
+				{% csrf_token %}
+				<input type="hidden" name="sent_object_id"
+				value="{{ page.id }}">
+				<input type="hidden" name="sent_object_class"
+				value="{{ base_model }}">
+				<input type="hidden" name="sent_object_transactional_send_record_class"
+				value="{{ transactional_send_record_class }}">
+				<input type="hidden" name="redirect_url"
+				value="{{ request.path }}">
+				<input type="hidden" name="context_appropriate_base_template" 
+				value="{{ context_appropriate_base_template }}">
+				<button type="submit" class="btn btn-outline-info btn-sm"
+				>Envoyer par mail à moi même</button>
+			</form>
+			{% if request.GET.email_sent == 'true' %}
+				<span class="ml-1">Envoyé <i class="fa fa-check"></i></span>
+			{% endif %}
+		</div>
 		</p>
 	</p>
     </div>
