@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Type, Union
 from django.apps import apps
 from django.conf import settings
 from django.core import mail
@@ -23,7 +23,7 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
 from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, BaseFormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
@@ -36,12 +36,16 @@ from mailing_list.events import (get_subcribed_users_email_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
 
-from .models import (TopicBlogItem, TopicBlogEmail, TopicBlogMailingListPitch,
+from .models import (SendRecordTransactionalEmail,
+                     SendRecordTransactionalPress, TopicBlogItem,
+                     TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
-                     SendRecordMarketingEmail, SendRecordMarketingPress)
+                     SendRecordMarketingEmail, SendRecordMarketingPress,
+                     SendRecordTransactional)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
-                    TopicBlogMailingListPitchForm, TopicBlogPressForm)
+                    TopicBlogMailingListPitchForm, TopicBlogPressForm,
+                    SendToSelfForm)
 
 
 logger = logging.getLogger("django")
@@ -209,6 +213,8 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
 
     """
 
+    transactional_send_record_class = None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -222,6 +228,10 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
         tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
         context['topicblog_admin'] = True
+        context["base_model"] = self.model.__name__.lower()
+        if self.transactional_send_record_class:
+            context["transactional_send_record_class"] = \
+                self.transactional_send_record_class.__name__
         return context
 
     def post(self, request, *args, **kwargs):
@@ -619,6 +629,113 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
                 send_record.save()
 
         return super().form_valid(form)
+
+
+class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
+                            SendableObjectMixin, BaseFormView):
+    """Allow sending TB objects to oneself by email.
+
+    Authorised users can send to themselves sendable objects (eg TBPress and
+    TBEmail) by email.
+    """
+    permission_required = ('topicblog.tbe.may_send', 'topicblog.tbp.may_send')
+    form_class = SendToSelfForm
+    send_record_class = None
+
+    def form_valid(self, form):
+        sent_object_id = form.cleaned_data['sent_object_id']
+        sent_object_class = form.cleaned_data['sent_object_class']
+        sent_object_transactional_send_record_class_name = form.cleaned_data[
+            'sent_object_transactional_send_record_class']
+        self.success_url = \
+            form.cleaned_data['redirect_url'] + "?email_sent=true"
+        self.context_appropriate_base_template = \
+            form.cleaned_data['context_appropriate_base_template']
+
+        logger.info(f"Sending {sent_object_class} {sent_object_id} to "
+                    f"{self.request.user.email}")
+        self.send_email_to_self(
+            sent_object_id, sent_object_class,
+            sent_object_transactional_send_record_class_name)
+        return super().form_valid(form)
+
+    def send_email_to_self(
+            self, sent_object_id: int,
+            sent_object_class: str,
+            sent_object_transactional_send_record_class_name: str) \
+            -> None:
+        """Send an email to the user with the given email address."""
+        # Retrieve the object to send.
+        object_class = apps.get_model('topicblog', sent_object_class)
+        object_to_send = object_class.objects.get(id=sent_object_id)
+
+        # Create a send record.
+        logger.info("Creating send record...")
+        send_record = self.create_send_record(
+            object_to_send,
+            sent_object_transactional_send_record_class_name)
+        if not send_record:
+            logger.info("No send record created, aborting the send.")
+            return None
+
+        # Prepare the email.
+        context = self._set_email_context(
+            recipient=[self.request.user.email],
+            send_record_id=send_record.id,
+            tb_object=object_to_send
+        )
+        custom_email = self._create_email_object(
+            tb_object=object_to_send,
+            context=context,
+            recipient_list=[self.request.user.email],
+            send_record=send_record,
+        )
+        # Send the email.
+        custom_email.send(fail_silently=False)
+
+    def create_send_record(
+        self,
+        object_to_send: Union[TopicBlogEmail, TopicBlogPress],
+        sent_object_transactional_send_record_class_name: str) \
+            -> Union[Type[SendRecordTransactional], None]:
+        """Return the proper send record for the given class.
+
+        Keyword argument:
+        object_to_send -- the object we are sending, a sendable Topicblog item
+        sent_object_transactional_send_record_class_name -- the class name of
+            the send record we want to create.
+
+        Returns:
+        The send record for the given object.
+        Or if an error prevents the creation of a send record, None.
+        """
+        # Get the send record class.
+        try:
+            self.send_record_class = apps.get_model(
+                "topicblog",
+                sent_object_transactional_send_record_class_name)
+        except LookupError:
+            logger.info(f"{sent_object_transactional_send_record_class_name}"
+                        " does not exist in topicblog.models")
+            return None
+
+        # Fill the send record object
+        kwargs = {
+            "recipient": self.request.user,
+            "slug": getattr(
+                object_to_send, "slug",
+                f"{object_to_send.__class__.__name__}-{object_to_send.id}"),
+        }
+        send_record = self.send_record_class(**kwargs)
+        send_record.save()
+
+        logger.info(
+            f"Created send record : Recipient: {self.request.user.email}, "
+            f"send record: {self.send_record_class} - "
+            f"{send_record.id}")
+
+        return send_record
+
 ######################################################################
 # TopicBlogItem
 
@@ -799,6 +916,7 @@ class TopicBlogEmailView(TopicBlogBaseView):
 class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
                             TopicBlogBaseViewOne):
     model = TopicBlogEmail
+    transactional_send_record_class = SendRecordTransactionalEmail
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -918,6 +1036,7 @@ class TopicBlogPressView(TopicBlogBaseView):
 class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
                             TopicBlogBaseViewOne):
     model = TopicBlogPress
+    transactional_send_record_class = SendRecordTransactionalPress
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
