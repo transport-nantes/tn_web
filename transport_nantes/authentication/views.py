@@ -1,3 +1,4 @@
+from datetime import date, datetime, timezone
 import logging
 import json
 from django.http import HttpRequest, HttpResponseRedirect
@@ -143,6 +144,8 @@ def send_activation(request, email, remember_me):
         logger.info(f"Sending activation email to {email}")
         custom_email.send(fail_silently=False)
         logger.info(f"Activation email sent to {email}")
+        send_record.handoff_time = datetime.now(timezone.utc)
+        send_record.save()
     except Exception as e:
         logger.error(f"Error while sending mail to {email} : {e}")
         send_record.status = "FAILED"

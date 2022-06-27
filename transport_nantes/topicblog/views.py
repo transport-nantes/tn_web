@@ -612,6 +612,8 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
             logger.info(f"Successfully prepared email to {recipient}")
             try:
                 custom_email.send(fail_silently=False)
+                send_record.handoff_time = datetime.now(timezone.utc)
+                send_record.save()
                 logger.info(f"Successfully sent email to {recipient}")
             except Exception as e:
                 logger.error(f"Failed to send email to {recipient} : {e}")
