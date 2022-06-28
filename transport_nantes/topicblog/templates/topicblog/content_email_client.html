@@ -28,6 +28,14 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             </a>
         </td> <!-- End Logo -->
     </tr>
+    {% if email.header_image %}
+        <tr> {# Hero Image#}
+            <td>
+                <img src="{% absolute_url_image email.header_image.url|default:'' %}" alt="{{ email.header_title|default:'Image bannière'}}"
+                style="width:100%;max-width:600px;height:auto;border:none;text-decoration:none;">
+            </td>
+        </tr>
+    {% endif %}
     <tr> {% comment %} Title and Body_1 {% endcomment %}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p style='color: #6c757d'>Le {{ email.first_publication_date|date:"d M Y"  }},</p>
