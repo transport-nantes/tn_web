@@ -29,6 +29,12 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             </a>
         </td> <!-- End Logo -->
     </tr>
+    <tr> {# Hero Image#}
+        <td>
+            <img src="{% absolute_url_image email.header_image.url|default:'' %}" alt="{{ email.header_title|default:'Image bannière'}}"
+            style="width:100%;max-width:600px;height:auto;border:none;text-decoration:none;">
+        </td>
+    </tr>
     <tr> {# Title and Body_1 #}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p><b>Communiqué de presse</b></p>
