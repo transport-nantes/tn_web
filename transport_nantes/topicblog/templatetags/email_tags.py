@@ -1,7 +1,7 @@
 from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-
+from .markdown import tn_markdown
 register = template.Library()
 
 
@@ -28,8 +28,8 @@ def email_full_width_image(
     return mark_safe(html_template)
 
 
-@register.simple_tag
-def email_body_text_md(text: str) -> str:
+@register.simple_tag(takes_context=True)
+def email_body_text_md(context, text: str) -> str:
     html_template = """
     <tr>
         <td style="padding:30px;background-color:#ffffff;">
@@ -38,7 +38,7 @@ def email_body_text_md(text: str) -> str:
             </p>
         </td>
     </tr>
-    """.format(text=text)
+    """.format(text=tn_markdown(context, text))
     return mark_safe(html_template)
 
 
