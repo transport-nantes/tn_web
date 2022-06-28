@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase, TransactionTestCase
 import datetime
 
@@ -65,6 +66,8 @@ class LoginViewTest(TransactionTestCase):
             }
         )
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.user.email])
 
         # POST non-existing user
         response = self.client.post(
@@ -78,6 +81,9 @@ class LoginViewTest(TransactionTestCase):
         )
         # Expected to 200, displays an "Email sent" page.
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[1].to, [User.objects.get(
+            email="doesntexist@null.com").email])
 
         # POST existing user with password login
         response = self.client.post(
@@ -89,6 +95,11 @@ class LoginViewTest(TransactionTestCase):
                 "captcha_1": "PASSED",
             }
         )
+
+        # User with a password login are redirected to a password page and
+        # aren't sent a mail
+        self.assertEqual(len(mail.outbox), 2)
+
         # print("Response :", response)
         # Expected to redirect to password login page.
         # Printing the response shows it is a redirect to
