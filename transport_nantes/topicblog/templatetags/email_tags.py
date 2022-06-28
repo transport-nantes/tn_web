@@ -5,10 +5,12 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
-@register.simple_tag
+@register.simple_tag(takes_context=True)
 def email_full_width_image(
+        context: dict,
         filepath: str, alt_text: str,
         link: str = "https://mobilitains.fr") -> str:
+    request = context['request']
     html_template = """
     <tr>
         <td
@@ -20,7 +22,7 @@ def email_full_width_image(
         </td>
     </tr>
     """.format(
-        filepath=filepath,
+        filepath=request.build_absolute_uri(filepath),
         alt_text=alt_text,
         link=link)
     return mark_safe(html_template)
