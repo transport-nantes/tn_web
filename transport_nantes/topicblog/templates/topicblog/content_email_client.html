@@ -45,7 +45,9 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         </td>
     </tr> <!-- End of Body_1-->
     {% if email.cta_1_slug %}
+    <tr><td style="margin-bottom:1em;">
         {% email_cta_button email.cta_1_slug email.cta_1_label %}
+    </td></tr>
     {% endif %}
 
     {% if email.body_image_1 %}
@@ -62,7 +64,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         {% email_cta_button email.cta_2_slug email.cta_2_label %}
     {% endif %}
     <tr> <!-- Footer -->
-        <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+        <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
             <p style="margin:0;font-size:14px;line-height:20px;">
                 &reg; Mobilitains 2022<br>
                 <a class="unsub" href="{% absolute_url 'mailing_list:newsletter_unsubscribe' token %}" style="color:#cccccc;text-decoration:underline;">Se désabonner</a>
