@@ -20,7 +20,7 @@ from django.views.generic.base import TemplateView
 from authentication.forms import (EmailLoginForm, PasswordLoginForm,
                                   UserUpdateForm, ProfileUpdateForm)
 from asso_tn.utils import make_timed_token, token_valid
-from topicblog.models import SendRecordTransactional
+from topicblog.models import SendRecordTransactional, SendRecordTransactionalAdHoc
 
 """
 A quick note on the captcha:
@@ -152,20 +152,20 @@ def send_activation(request, email, remember_me):
         send_record.save()
 
 
-def create_send_record(email: str) -> SendRecordTransactional:
-    """Create a SendRecordTransactional for the given email."""
+def create_send_record(email: str) -> SendRecordTransactionalAdHoc:
+    """Create a SendRecordTransactionalAdHoc for the given email."""
     try:
         recipient = User.objects.get(email=email)
     except User.DoesNotExist:
         logger.info("No user for email {}".format(email))
         recipient = None
-    send_record = SendRecordTransactional.objects.create(
+    send_record = SendRecordTransactionalAdHoc.objects.create(
         recipient=recipient)
     return send_record
 
 
 def prepare_email(email: str, request: HttpRequest,
-                  send_record: SendRecordTransactional) \
+                  send_record: SendRecordTransactionalAdHoc) \
         -> EmailMultiAlternatives:
     """Create a sendable Email object"""
     template = 'authentication/account_activation_email.html'
