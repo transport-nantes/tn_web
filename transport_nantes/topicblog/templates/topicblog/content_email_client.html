@@ -47,13 +47,17 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     {% if email.cta_1_slug %}
         {% email_cta_button email.cta_1_slug email.cta_1_label %}
     {% endif %}
+
     {% if email.body_image_1 %}
         {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
     {% endif %}
+
     {% email_body_text_md email.body_text_2_md %}
+
     {% if email.body_image_2 %}
         {% email_full_width_image email.body_image_2.url email.body_image_2_alt_text %}
     {% endif %}
+
     {% if  email.cta_2_slug %}
         {% email_cta_button email.cta_2_slug email.cta_2_label %}
     {% endif %}
