@@ -17,7 +17,7 @@ def email_full_width_image(
         style="padding:0;font-size:24px;line-height:28px;font-weight:bold;background-color:#ffffff;">
             <a href="{link}" style="text-decoration:none;">
                 <img src="{filepath}" width="600" alt="{alt_text}"
-                style="width:70%;margin:auto;height:auto;display:block;border:none;text-decoration:none;color:#363636;padding-bottom:15px;">
+                style="width:70%;margin: 20px auto;height:auto;display:block;border:none;text-decoration:none;color:#363636;">
             </a>
         </td>
     </tr>
