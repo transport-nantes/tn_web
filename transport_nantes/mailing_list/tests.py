@@ -1,5 +1,7 @@
 from django.test import Client, LiveServerTestCase, TestCase
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
@@ -95,8 +97,9 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-extensions")
-        self.selenium = WebDriver(ChromeDriverManager().install(),
-                                  options=options)
+        self.selenium = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
         self.selenium.implicitly_wait(5)
 
     def tearDown(self):
@@ -147,7 +150,8 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         self.selenium.refresh()
         # because we're already logged in, we're subbed to the default
         # list without captcha
-        self.selenium.find_element_by_css_selector(
+        self.selenium.find_element(
+            By.CSS_SELECTOR,
             "form button[type=submit]").click()
         # We wait until next page is loaded (confirmation page)
         WebDriverWait(self.selenium, 5).until(
@@ -244,11 +248,13 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
             {'name': 'sessionid', 'value': self.cookie_user,
              'secure': False, 'path': '/'})
         self.selenium.get(f"{self.live_server_url}{user_status_url}")
-        self.selenium.find_element_by_css_selector(
+        self.selenium.find_element(
+            By.CSS_SELECTOR,
             f"#id-ml-{self.mailing_list_2.id} form button[type=submit]"
         ).click()
         a_html = \
-            self.selenium.find_element_by_css_selector(
+            self.selenium.find_element(
+                By.CSS_SELECTOR,
                 f"#id-ml-{self.mailing_list_2.id} div a").get_attribute(
                     'innerHTML')
         new_event = user_current_state(self.user, self.mailing_list_2)
@@ -267,11 +273,14 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
             {'name': 'sessionid', 'value': self.cookie_user,
              'secure': False, 'path': '/'})
         self.selenium.get(f"{self.live_server_url}{user_status_url}")
-        self.selenium.find_element_by_css_selector(
+        self.selenium.find_element(
+            By.CSS_SELECTOR,
             f"#id-ml-{self.mailing_list_1.id} a").click()
-        self.selenium.find_element_by_css_selector(
+        self.selenium.find_element(
+            By.CSS_SELECTOR,
             "form button[type=submit]").click()
-        button_html = self.selenium.find_element_by_css_selector(
+        button_html = self.selenium.find_element(
+            By.CSS_SELECTOR,
             f"#id-ml-{self.mailing_list_1.id} div button").get_attribute(
                 'innerHTML')
         new_event = user_current_state(self.user, self.mailing_list_2)
