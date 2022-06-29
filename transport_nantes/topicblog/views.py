@@ -693,7 +693,16 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
             send_record=send_record,
         )
         # Send the email.
-        custom_email.send(fail_silently=False)
+        try:
+            custom_email.send(fail_silently=False)
+            send_record.handoff_time = datetime.now(timezone.utc)
+            send_record.save()
+            logger.info(f"Sent email to {self.request.user.email}")
+        except Exception as e:
+            logger.error(
+                f"Failed to send email to {self.request.user.email} : {e}")
+            send_record.status = "FAILED"
+            send_record.save()
 
     def create_send_record(
         self,
