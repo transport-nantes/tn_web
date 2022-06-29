@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from topicblog.models import TopicBlogItem, TopicBlogLauncher
 from datetime import datetime, timezone
 
+from topicblog.templatetags.markdown import tn_markdown
+
 
 class TBEmailTemplateTagsTests(TestCase):
 
@@ -35,7 +37,7 @@ class TBEmailTemplateTagsTests(TestCase):
             <tr>
                 <td style="padding:30px;background-color:#ffffff;">
                     <p style="margin:0;">
-                        {text}
+                        {tn_markdown({}, text)}
                     </p>
                 </td>
             </tr>
