@@ -133,7 +133,7 @@ class QuickMailingListSignup(FormView):
 
         if mailing_list_obj.linked_article:
             kwargs = {
-                "the_slug": mailing_list_obj.linked_article.slug,
+                "the_slug": mailing_list_obj.linked_article,
                 }
             url = (reverse_lazy("topicblog:view_item_by_slug", kwargs=kwargs)
                    + '?just_subscribed=true')

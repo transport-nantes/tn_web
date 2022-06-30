@@ -46,8 +46,7 @@ class MailingList(models.Model):
     is_petition = models.BooleanField(default=False)
     # User once they subscribe to a mailing_list, are redirected to the
     # linked_article.
-    linked_article = models.ForeignKey('topicblog.TopicBlogItem', blank=True,
-                                       null=True, on_delete=models.SET_NULL)
+    linked_article = models.SlugField(max_length=90, blank=True, null=True)
 
     # The mailing_list_type is a class that indicates us the type of
     # the instance we're dealing with : a Newsletter, a petition or a
