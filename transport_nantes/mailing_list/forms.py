@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, Form
 from captcha.fields import CaptchaField
 from .models import MailingList
+from topicblog.models import TopicBlogItem
 from crispy_forms.helper import FormHelper
 
 
@@ -131,3 +132,23 @@ class QuickPetitionSignupForm(ModelForm):
             'last_name': "Nom",
             'email': "Adresse mail",
         }
+
+
+class MailingListAdminForm(forms.ModelForm):
+
+    linked_article = forms.ChoiceField(
+            choices=[],
+            required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(MailingListAdminForm, self).__init__(*args, **kwargs)
+        SLUG_CHOICE = [
+            (slug, slug) for slug in TopicBlogItem.objects.values_list(
+                'slug', flat=True).distinct()
+        ]
+        SLUG_CHOICE.insert(0, ('', '----'))
+        self.fields['linked_article'].choices = SLUG_CHOICE
+
+    class Meta:
+        model = MailingList
+        fields = "__all__"
