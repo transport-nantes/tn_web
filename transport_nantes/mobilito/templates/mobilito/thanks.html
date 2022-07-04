@@ -1,0 +1,21 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<section class="container">
+    <h1>Merci pour votre contribution !</h1>
+
+    <p>Petit résumé de vos observations : </p>
+    <ul>
+        <li>Du {{ request.session.start_timestamp.pop }} au {{ request.session.end_timestamp }}</li>
+        <li>Nombre de piétons : {{ request.session.number_of_pedestrians }}</li>
+        <li>Nombre de vélos : {{ request.session.number_of_bicycles }}</li>
+        <li>Nombre de véhicules : {{ request.session.number_of_cars }}</li>
+        <li>Nombre de transports en commun : {{ request.session.number_of_public_transports }}</li>
+    </ul>
+
+    <p>On espère vous revoir très vite et merci encore !</p>
+    <a href='/' class="btn navigation-button">Retour à l'accueil</a>
+</section>
+
+{% endblock app_content %}

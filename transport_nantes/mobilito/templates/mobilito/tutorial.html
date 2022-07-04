@@ -15,7 +15,7 @@
             Si vous êtes déjà familier.ère avec Mobilito, vous pouvez passer
             le tutoriel et cliquant ici !
         </p>
-        <a href="{% url 'authentication:login'%}?next=path-to-mobilito-app"
+        <a href="{% url 'authentication:login'%}?next={% url 'mobilito:index'%}"
         class="btn donation-button">
             Passer le tutoriel
         </a>
@@ -28,7 +28,7 @@
         <p>
             Explications ...
         </p>
-        <a href="{% url 'authentication:login'%}?next=path-to-mobilito-app"
+        <a href="{% url 'authentication:login'%}?next={% url 'mobilito:index'%}"
         class="btn donation-button">
             En avant !
         </a>

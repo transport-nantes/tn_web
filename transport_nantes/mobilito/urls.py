@@ -9,4 +9,8 @@ urlpatterns = [
     path('formulaire-adresse/',
          views.AddressFormView.as_view(),
          name='address_form'),
+    path('enregistrement/', views.RecordingView.as_view(), name='recording'),
+    path('merci/', views.ThankYouView.as_view(), name='thanks'),
+
+    path('ajax/create-event/', views.create_event, name='event_creation'),
 ]
