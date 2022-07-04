@@ -1,0 +1,24 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<section class="container">
+    <h1>Merci pour votre contribution !</h1>
+
+    <p>Dans l'espace de {{ request.session.recording_duration_minutes }} minute(s),
+	vous avez noté {{ request.session.number_of_pedestrians }} piétons, 
+        {{ request.session.number_of_bicycles }} vélos,
+        {{ request.session.number_of_cars }} voitures et camions,
+        et {{ request.session.number_of_public_transports }} transports collectifs.
+    </p>
+
+    <p>À très vite et à la prochaine&nbsp;!</p>
+
+    <a href="{% url 'mobilito:index' %}" class="btn navigation-button">
+        Faire un autre enregistrement
+        <i class="fa fa-arrow-right"></i>
+    </a>
+
+</section>
+
+{% endblock app_content %}
