@@ -250,76 +250,78 @@
 				</div>
 			{% endblock bottom_appeal %}
 
-			<footer class="text-center text-lg-start my-5">
-				<!-- réseaux sociaux-->
-				<div class="footer-social py-5">
-					<div class="social">
-						<a href="https://www.linkedin.com/company/transport-nantes/?originalSubdomain=fr"><i class="fab fa-linkedin"></i></a>
-						<a href="https://www.instagram.com/mobilitains/"><i class="fab fa-instagram"></i></a>
-						<a href="https://twitter.com/mobilitains"><i class="fab fa-twitter"></i></a>
-						<a href="https://www.facebook.com/Mobilitains"><i class="fab fa-facebook"></i></a>
+			{% block footer %}
+				<footer class="text-center text-lg-start my-5">
+					<!-- réseaux sociaux-->
+					<div class="footer-social py-5">
+						<div class="social">
+							<a href="https://www.linkedin.com/company/transport-nantes/?originalSubdomain=fr"><i class="fab fa-linkedin"></i></a>
+							<a href="https://www.instagram.com/mobilitains/"><i class="fab fa-instagram"></i></a>
+							<a href="https://twitter.com/mobilitains"><i class="fab fa-twitter"></i></a>
+							<a href="https://www.facebook.com/Mobilitains"><i class="fab fa-facebook"></i></a>
+						</div>
 					</div>
-				</div>
-				<!--Fin réseaux sociaux-->
-				<div class="container pt-2">
-					<div class="row justify-content-center">
-						<!--s'engager-->
-						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-							<h5 class="text-uppercase">S'engager</h5>
+					<!--Fin réseaux sociaux-->
+					<div class="container pt-2">
+						<div class="row justify-content-center">
+							<!--s'engager-->
+							<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+								<h5 class="text-uppercase">S'engager</h5>
 
-							<ul class="list-unstyled mb-0">
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'faire-un-don' %}" class="footer-text">Faire un don</a>
-								</li>
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
-								</li>
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
-								</li>
-							</ul>
+								<ul class="list-unstyled mb-0">
+									<li>
+										<a href="{% url 'topic_blog:view_item_by_slug' 'faire-un-don' %}" class="footer-text">Faire un don</a>
+									</li>
+									<li>
+										<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-benevole' %}" class="footer-text">Devenir bénévole</a>
+									</li>
+									<li>
+										<a href="{% url 'topic_blog:view_item_by_slug' 'devenir-ambassadeur' %}" class="footer-text">Devenir ambassadeur</a>
+									</li>
+								</ul>
+							</div>
+							<!--Fin s'engager-->
+
+							<!--s'informer-->
+							<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+								<h5 class="text-uppercase">S'informer</h5>
+
+								<ul class="list-unstyled mb-0">
+									<li>
+										<a href="{% url 'topic_blog:view_item_by_slug' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
+									</li>
+									<li>
+										<a href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
+									</li>
+								</ul>
+							</div>
+							<!--Fin s'informer-->
+
+							<!--Echanger-->
+							<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
+								<h5 class="text-uppercase">Échanger</h5>
+
+								<ul class="list-unstyled mb-0">
+									<li>
+										{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
+										<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
+									</li>
+									<li>
+										<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
+									</li>
+									<li>
+										<a href="{% url 'asso_m:TC' %}" class="footer-text">
+										Mentions Légales
+										</a>
+									</li>
+								</ul>
+							</div>
+							<!--End echanger-->
+
 						</div>
-						<!--Fin s'engager-->
-
-						<!--s'informer-->
-						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-							<h5 class="text-uppercase">S'informer</h5>
-
-							<ul class="list-unstyled mb-0">
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'velopolitain' %}" class="footer-text">Vélopolitain</a>
-								</li>
-								<li>
-									<a href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}" class="footer-text">La Grande Mobilité</a>
-								</li>
-							</ul>
-						</div>
-						<!--Fin s'informer-->
-
-						<!--Echanger-->
-						<div class="col-lg-3 col-md-4 col-sm-4 mb-4 mb-md-0">
-							<h5 class="text-uppercase">Échanger</h5>
-
-							<ul class="list-unstyled mb-0">
-								<li>
-									{# <a href="{% url 'asso_m:contact' %}" class="footer-text">Nous contacter</a> #}
-									<a href="mailto:jevousaide@transport-nantes.com">Nous contacter</a>
-								</li>
-								<li>
-									<a href="{% url 'asso_m:jobs' %}" class="footer-text">Jobs</a>
-								</li>
-								<li>
-									<a href="{% url 'asso_m:TC' %}" class="footer-text">
-									Mentions Légales
-									</a>
-								</li>
-							</ul>
-						</div>
-						<!--End echanger-->
-
 					</div>
-				</div>
-			</footer>
+				</footer>
+			{% endblock footer %}
 
 			{% block scripts %} {# jQuery library #}
 				<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
