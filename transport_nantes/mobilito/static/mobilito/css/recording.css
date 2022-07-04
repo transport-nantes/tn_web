@@ -1,0 +1,67 @@
+/* Why is root being redefined/extended? */
+:root {
+    --button-color: var(--mobilitains-bleu);
+    --button-font-color: #fff;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+.mobilito-btn {
+    background-color: var(--button-color);
+    border-color: var(--button-color);
+    border-radius: 6px;
+    width:47vw;
+    height:47vw;
+    max-width:250px;
+    max-height:250px;
+    align-items: center;
+    justify-content: center;
+    font-size: 46px;
+    color: var(--button-font-color);
+    transition: background-color 0.2s ease-out;
+}
+.mobilito-btn:active {
+    filter: brightness(1.3);
+}
+.mobilito-btn:focus {
+    outline: none;
+}
+.end-recording-button {
+    background-color: var(--button-color);
+    border-color: var(--button-color);
+    border-radius: 6px;
+    color: var(--button-font-color);
+    font-weight: 600;
+}
+.counter-holder > input {
+    border: none;
+    padding: 0;
+    text-align: center;
+}
+.plus-minus-btn {
+    background-color: var(--button-color);
+    border-color: var(--button-color);
+    border-radius: 6px;
+    color: var(--button-font-color);
+    font-weight: 900;
+}
+.plus-minus-btn:focus {
+    outline: none;
+}
+button[data-field="pedestrian"] {
+    background-color: var(--mobilitains-bleu);
+    border-color: var(--mobilitains-bleu);
+}
+button[data-field="bicycle"] {
+    background-color: var(--mobilitains-bleu-marine);
+    border-color: var(--mobilitains-bleu-marine);
+}
+button[data-field="motor-vehicle"] {
+    background-color: var(--mobilitains-orange);
+    border-color: var(--mobilitains-orange);
+}
+button[data-field="public-transport"] {
+    background-color: var(--mobilitains-rouge);
+    border-color: var(--mobilitains-rouge);
+}

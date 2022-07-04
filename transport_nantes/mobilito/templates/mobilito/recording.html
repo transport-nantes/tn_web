@@ -1,0 +1,107 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel='stylesheet' type='text/css' href="{% static 'mobilito/css/recording.css' %}">
+{% endblock styles %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'mobilito/js/plus_minus_buttons.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block content %}
+
+<form class=" d-flex flex-column flex-grow-1 justify-content-center align-items-end mx-auto"
+method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
+
+    {# End Record button #}
+    <div class="d-flex end-recording-area px-5 mx-auto mt-4 justify-content-center">
+        <button class="d-flex col-12 px-5 mx-auto mt-4 justify-content-center end-recording-button">
+            Terminer l'enregistrement
+        </button>
+    </div>
+
+    {# Recording area #}
+    <div class="d-flex flex-column recording-buttons-holder mt-auto mx-auto mb-3">
+        <div class="d-flex flex-row flex-nowrap w-100 justify-content-center">
+            {# Pedestrian #}
+            <div class="d-flex">
+                <button type="button"
+                data-quantity="plus"
+                data-field="pedestrian"
+                class='mobilito-btn d-flex flex-column p-5 mx-auto'>
+                    <i class="fa fa-solid fa-person-walking"></i>
+                    <span class="button-counter" name="pedestrian-counter">0</span>
+                </button>
+                {# Input Field #}
+                <input
+                class="d-flex col-4"
+                type="numeric"
+                name="pedestrian"
+                value="0" style="display: none !important;"/>
+            </div>
+
+            {# Bike #}
+            <div class="d-flex flex-column">
+                <button type="button"
+                data-quantity="plus"
+                data-field="bicycle"
+                class='mobilito-btn d-flex flex-column p-5 mx-auto'>
+                    <i class="fa-solid fa-person-biking"></i>
+                    <span class="button-counter" name="bicycle-counter">0</span>
+                </button>
+                {# Input Field #}
+                <input
+                class="d-flex col-4"
+                type="numeric"
+                name="bicycle"
+                value="0" style="display: none !important;"/>
+            </div>
+        </div>
+
+        <div class="d-flex flex-row flex-nowrap w-100 justify-content-center">
+            {# Car #}
+            <div class="d-flex">
+                <button type="button"
+                data-quantity="plus"
+                data-field="motor-vehicle"
+                class='mobilito-btn d-flex flex-column p-5 mx-auto'>
+                    <i class="fa-solid fa-car"></i>
+                    <span class="button-counter" name="motor-vehicle-counter">0</span>
+                </button>
+                {# Input Field #}
+                <input
+                class="d-flex col-4"
+                type="numeric"
+                name="motor-vehicle"
+                value="0" style="display: none !important;"/>
+            </div>
+
+            {# Public transports #}
+            <div class="d-flex">
+                <button
+                type="button"
+                data-quantity="plus"
+                data-field="public-transport"
+                class='mobilito-btn d-flex flex-column p-5 mx-auto'>
+                    <i class="fa-solid fa-train-tram"></i>
+                    <span class="button-counter" name="public-transport-counter">0</span>
+                </button>
+                {# Input Field #}
+                <input
+                class="d-flex col-4"
+                type="numeric"
+                name="public-transport"
+                value="0" style="display: none !important;"/>
+            </div>
+        </div>
+    </div>
+    
+</form>
+
+{% endblock content %}
+
+{% block bottom_appeal %}{% endblock bottom_appeal %}
+{% block footer %}{% endblock footer %}

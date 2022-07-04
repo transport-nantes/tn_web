@@ -1,3 +1,31 @@
 from django.contrib import admin
 
-# Register your models here.
+from mobilito import models
+
+
+class EventInline(admin.TabularInline):
+    model = models.Event
+    extra = 0
+
+
+class SessionAdmin(admin.ModelAdmin):
+    inlines = [EventInline]
+    readonly_fields = ('pk', 'start_timestamp', 'end_timestamp',)
+
+    list_display = ("user", "address", "city", "postcode", "start_timestamp",
+                    "end_timestamp",)
+    list_filter = ("user", "address", "city", "postcode",
+                   ("end_timestamp", admin.EmptyFieldListFilter))
+    search_fields = ("user", "address", "city", "postcode",)
+
+
+class EventAdmin(admin.ModelAdmin):
+    readonly_fields = ('pk', 'timestamp',)
+
+    list_display = ("session", "event_type", "timestamp")
+    list_filter = ("session", "event_type",)
+    search_fields = ("session", "event_type",)
+
+
+admin.site.register(models.Session, SessionAdmin)
+admin.site.register(models.Event, EventAdmin)

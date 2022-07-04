@@ -66,4 +66,12 @@ class Event(models.Model):
         blank=False)
 
     def __str__(self):
-        return f'{self.session.user.user.email} - {self.timestamp} - {self.event_type.label}'
+        return f'{self.session.user.user.email} - {self.timestamp} - {self.event_type}'
+
+    def save(self, *args, **kwargs) -> None:
+        """Override save method to run validators on create"""
+        try:
+            self.full_clean()
+            super().save(*args, **kwargs)
+        except ValidationError as e:
+            logger.error(f"Error while saving event : {e}")
