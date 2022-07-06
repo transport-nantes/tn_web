@@ -16,7 +16,9 @@
                 Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
             </p>
             <button type="button" class="btn donation-button">
-                <a id="start-recording" href="">Commencer à enregistrer</a>
+                <a id="start-recording" href="{% url 'mobilito:address_form' %}">
+                    Commencer à enregistrer
+                </a>
             </button>
             <p class="mt-2">
                 Mais si vous avez besoin d'explications sur comment utiliser
