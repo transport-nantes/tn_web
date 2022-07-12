@@ -4,7 +4,16 @@
 {% block styles %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'mobilito/css/index.css' %}">
+    <meta name="theme-color" content="#5BC2E7" />
+    <link rel="manifest" href="{% static 'mobilito/manifest.json' %}">
+    <link rel="apple-touch-icon"
+    href="{% static 'mobilito/icon/mobilitains-logo-192x192.png' %}">
 {% endblock styles %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'mobilito/js/start_service_worker.js' %}" defer></script>
+{% endblock scripts %}
 
 {% block app_content %}
 

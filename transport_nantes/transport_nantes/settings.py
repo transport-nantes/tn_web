@@ -275,3 +275,8 @@ CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BROKER_URL = "amqp://localhost"
+
+# PWA
+# This setting is used to make the PWA update the manifest.json file
+# only once per django restart.
+PWA_MANIFEST_IS_UPDATEABLE = True

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from asso_tn.views import AssoView
+from mobilito.views import service_worker
 from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -55,6 +56,7 @@ urlpatterns = [
     path("presse/", include('press.urls')),
     path("photo/", include('photo.urls')),
     path("mobilito/", include('mobilito.urls')),
+    path("ServiceWorker.js", service_worker, name="service_worker"),
     path('__debug__/', include('debug_toolbar.urls')),
     path("ses/event-webhook/", SESEventWebhookView.as_view(),
          name="ses_event_webhook"),

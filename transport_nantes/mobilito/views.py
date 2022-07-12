@@ -1,9 +1,13 @@
 from datetime import datetime, timezone
 import logging
 from typing import Union
+from pathlib import Path
+import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
@@ -21,6 +25,46 @@ class MobilitoView(TemplateView):
         if not request.user.is_authenticated:
             return HttpResponseRedirect(reverse('mobilito:tutorial'))
         return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Images are saved with several resolutions to accomodate different
+        # screen sizes.
+        self.resolutions_list = ["512x512", "384x384", "192x192", "180x180",
+                                 "152x152", "144x144", "128x128", "96x96",
+                                 "72x72"]
+        if settings.PWA_MANIFEST_IS_UPDATEABLE:
+            logger.info("Updating manifest file")
+            self.update_manifest()
+            settings.PWA_MANIFEST_IS_UPDATEABLE = False
+            logger.info("Manifest file updated")
+
+        return context
+
+    def update_manifest(self) -> None:
+        """Update the manifest.json file to have proper paths to statc files.
+
+        You may find documentation for manifest file at the following url:
+        https://developer.mozilla.org/fr/docs/Web/Manifest
+        """
+        manifest_path = \
+            Path(__file__).parent / "static" / "mobilito" / "manifest.json"
+
+        with open(manifest_path, "r") as f:
+            manifest = json.load(f)
+            manifest["icons"] = [
+                {
+                    "src": static(
+                        f"mobilito/icons/mobilitains-logo-{resolution}.png"),
+                    "sizes": resolution,
+                    "type": "image/png",
+                    "purpose": "any"
+                } for resolution in self.resolutions_list
+            ]
+
+        # Effectively overwriting the manifest file
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=4)
 
 
 class TutorialView(TemplateView):
@@ -143,3 +187,26 @@ def create_event(request: HttpRequest) -> HttpResponse:
 
     if request.method == 'GET':
         return HttpResponse(status=403)
+
+
+def service_worker(request: HttpRequest) -> HttpResponse:
+    service_worker_path = \
+        Path(__file__).parent / "static" / "mobilito" / "ServiceWorker.js"
+    service_worker_assets_paths_list = [
+            "/",
+            static("mobilito/css/index.css"),
+            static("mobilito/css/recording.css"),
+            static("mobilito/js/has_visited.js"),
+            static("mobilito/js/plus_minus_buttons.js")
+        ]
+    with open(service_worker_path, "r") as f:
+        service_worker_content = f.read()
+    service_worker_content = (
+        "const assets = "
+        + str(service_worker_assets_paths_list)
+        + "\n"
+        + service_worker_content
+        )
+    response = HttpResponse(service_worker_content,
+                            content_type='application/javascript')
+    return response
