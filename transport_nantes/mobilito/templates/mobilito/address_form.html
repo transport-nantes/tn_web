@@ -1,0 +1,37 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src={% static 'mobilito/js/pre-address-form.js' %} defer></script>
+{% endblock scripts %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href={% static 'mobilito/css/address-form.css' %}>
+{% endblock styles %}
+
+{% block app_content %}
+<div class="d-flex flex-column col-10 col-sm-6 col-lg-4 mx-auto" id="pre-address-form">
+    <p class="d-flex mx-auto text-center">Savez-vous où vous vous trouvez&nbsp;?</p>
+    <div class="d-flex flex-row mx-auto justify-content-center">
+        <button type="button" name="address-form-yes"
+        class="btn navigation-button mx-2">
+            Oui
+        </button>
+        <a class="btn navigation-button mx-2" href="#">
+            Non
+        </a>
+    </div>
+</div>
+
+<section id="address-form" class="container">
+    <form method="post" action="{% url 'mobilito:address_form' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn donation-button">Valider</button>
+    </form>
+</section>
+
+{% endblock app_content %}

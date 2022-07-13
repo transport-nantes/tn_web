@@ -1,0 +1,19 @@
+#pre-address-form {
+    transition: all 1s ease;
+}
+
+#pre-address-form.hidden {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+#address-form {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+#address-form.active {
+    transform: translateX(0);
+    opacity: 1;
+}
