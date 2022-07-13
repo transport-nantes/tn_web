@@ -1,0 +1,35 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<section class="container">
+    <h1>Merci !</h1>
+
+    {% with rs=request.session %}
+        {% if rs.minutes > 0 %}
+            <p>
+                Pendant votre enregistrement ({{ rs.minutes }}m et 
+                {{rs.seconds}}s), vous avez vu 
+                passer {{ rs.number_of_pedestrians }} piétons,
+                {{ rs.number_of_bicycles }} vélos et trottinettes,  
+                {{ rs.number_of_motor_vehicles }} véhicules à moteur
+                et {{ rs.number_of_public_transports }} transports 
+                en commun.
+            </p>
+        {% else %}
+            <p>
+                Pendant votre enregistrement ({{rs.seconds}}s),
+                vous avez vu passer {{ rs.number_of_pedestrians }} piétons,
+                {{ rs.number_of_bicycles }} vélos et trotinettes,  
+                {{ rs.number_of_motor_vehicles }} véhicules à moteur
+                et {{ rs.number_of_public_transports }} transports 
+                en commun.
+            </p>
+        {% endif %}
+    {% endwith %}
+
+    <p>On espère vous revoir très vite et merci encore !</p>
+    <a href='/' class="btn navigation-button">Retour à l'accueil</a>
+</section>
+
+{% endblock app_content %}
