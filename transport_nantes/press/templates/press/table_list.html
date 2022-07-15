@@ -42,7 +42,8 @@
         <td>
           <a href="{% url 'press:detail_item' press_mention.id%} " class="btn navigation-button m-1"><i class="fas fa-eye"></i></a>
           <a href="{% url 'press:update_item' press_mention.id%}" class="btn navigation-button m-1"><i class="fas fa-edit"></i></a>
-          <a href="{% url 'press:delete_item' press_mention.id%} " class="btn navigation-button m-1"><i class="fa fa-trash"></i></a>
+          <a href="{% url 'press:list_items'%}?press_mention_refresh={{ press_mention.id }}" class="btn navigation-button m-1"><i class="fas fa-sync"></i></a>
+          <a href="{% url 'press:delete_item' press_mention.id%} " class="btn navigation-button m-2"><i class="fa fa-trash"></i></a>
         </td>
       </tr>
       {% endfor %}
@@ -70,6 +71,7 @@
     <div class="d-flex justify-content-around">
       <a href="{% url 'press:detail_item' press_mention.id%}"><i class="fas fa-eye"></i></a>
       <a href="{% url 'press:update_item' press_mention.id%}"><i class="fas fa-edit"></i></a>
+      <a href="{% url 'press:list_items'%}?press_mention_refresh={{ press_mention.id }}"><i class="fas fa-sync"></i></a>
       <a href="{% url 'press:delete_item' press_mention.id%}"><i class="fa fa-trash"></i></a>
     </div>
   </div>

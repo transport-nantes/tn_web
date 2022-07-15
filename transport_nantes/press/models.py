@@ -22,7 +22,7 @@ class PressMention(models.Model):
     og_title = models.CharField(max_length=255, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.ImageField(
-        upload_to="press_mention/open_graph/", blank=True)
+        upload_to="press_mention/open_graph/", blank=True, default="press_mention/open_graph/default_press_mention.jpg")
 
     def __str__(self):
         return f"{self.newspaper_name} {self.article_title}"
