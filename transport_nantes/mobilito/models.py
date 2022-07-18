@@ -19,16 +19,16 @@ class MobilitoUser(models.Model):
 class Session(models.Model):
     """A user recording session: a collection of Event's."""
     user = models.ForeignKey(MobilitoUser, on_delete=models.PROTECT)
-    address = models.CharField(max_length=500, blank=True)
-    city = models.CharField(max_length=255, blank=True)
-    postcode = models.CharField(max_length=20, blank=True)
-    country = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=500, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    postcode = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField(null=True, blank=True)
-    pedestrian_count = models.IntegerField(null=True)
-    bicycle_count = models.IntegerField(null=True)
-    motor_vehicle_count = models.IntegerField(null=True)
-    public_transport_count = models.IntegerField(null=True)
+    pedestrian_count = models.IntegerField(default=0)
+    bicycle_count = models.IntegerField(default=0)
+    motor_vehicle_count = models.IntegerField(default=0)
+    public_transport_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.user.email} - {self.start_timestamp}'
