@@ -3,11 +3,14 @@ import logging
 from typing import Union
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from mobilito.models import MobilitoUser, Session
+from mobilito.forms import AddressForm
 
 logger = logging.getLogger("django")
 
@@ -28,6 +31,40 @@ class TutorialView(TemplateView):
     """
 
     template_name = 'mobilito/tutorial.html'
+
+
+class AddressFormView(LoginRequiredMixin, FormView):
+    """Present the address form.
+    The form is optional to fill.
+    """
+
+    template_name = 'mobilito/address_form.html'
+    form_class = AddressForm
+    success_url = reverse_lazy('mobilito:recording')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Clear session data if user had filled the form before.
+        self.request.session['address'] = None
+        self.request.session['city'] = None
+        self.request.session['postcode'] = None
+        return context
+
+    def form_valid(self, form):
+        address, city, postcode, country = (
+            form.cleaned_data['address'],
+            form.cleaned_data['city'],
+            form.cleaned_data['postcode'],
+            form.cleaned_data['country'],
+        )
+        self.request.session['address'] = address
+        self.request.session['city'] = city
+        self.request.session['postcode'] = postcode
+        self.request.session['country'] = country
+        logger.info(
+            f'{self.request.user.email} filled address form.\n'
+            f'Address saved: {address}, {city}, {postcode}, {country}')
+        return super().form_valid(form)
 
 
 class RecordingView(TemplateView):

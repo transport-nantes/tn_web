@@ -1,0 +1,16 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}
+
+<section id="address-form" class="container">
+    <form method="post" action="{% url 'mobilito:address_form' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <span>Avec ou sans&nbsp;</span>
+        <button type="submit" class="btn donation-button">je compte ! <i class="fa fa-arrow-right"></i></button>
+    </form>
+</section>
+
+{% endblock app_content %}

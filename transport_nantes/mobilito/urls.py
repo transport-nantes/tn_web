@@ -6,6 +6,8 @@ app_name = 'mobilito'
 urlpatterns = [
     path('', views.MobilitoView.as_view(), name='index'),
     path('tutoriel/', views.TutorialView.as_view(), name='tutorial'),
+    path('formulaire-adresse', views.AddressFormView.as_view(),
+         name='address_form'),
 
     path('enregistrement/', views.RecordingView.as_view(), name='recording'),
     path('merci/', views.ThankYouView.as_view(), name='thanks'),

@@ -9,7 +9,9 @@
             <p>{# No guarantee user is authenticated here. #}
                 Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
             </p>
-            <a class="btn donation-button" role="button" href="{% url 'mobilito:recording' %}">Commencer à enregistrer</a>
+            <a class="btn donation-button" role="button" 
+               href="{% url 'mobilito:address_form' %}">
+               Commencer à enregistrer
             </a>
             <p class="mt-2">
                 Mais si vous avez besoin d'explications sur comment utiliser
