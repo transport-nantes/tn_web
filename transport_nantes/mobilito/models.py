@@ -15,6 +15,9 @@ class MobilitoUser(models.Model):
     # Set first_time to False once the user has read the tutorial.
     first_time = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.user.email
+
 
 class Session(models.Model):
     """A user recording session: a collection of Event's."""
@@ -31,14 +34,14 @@ class Session(models.Model):
     public_transport_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'{self.user.email} - {self.start_timestamp}'
+        return f'{self.user.user.email} - {self.start_timestamp}'
 
     def create_event(self, event_type):
         Event.objects.create(
             session=self,
             event_type=event_type,
         )
-        logger.info(f"{self.user.email} created an event of type {event_type}")
+        logger.info(f"{self.user.user.email} created an event of type {event_type}")
 
 
 def event_type_validator(value):
