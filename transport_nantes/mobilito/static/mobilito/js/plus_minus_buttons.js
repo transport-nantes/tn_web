@@ -15,10 +15,14 @@ function getCookie(name) {
 }
 
 $(document).ready(function(){
-    // This button will increment the value
-    $('[data-quantity="plus"]').click(function(e){
-        // Stop acting like a button
+
+    var last_event = '';
+
+    function plus_button_click(e) {
         e.preventDefault();
+        if (last_event == 'touchend' && e.type == 'click') {
+            return;
+        }
         // Get the field name
         fieldName = $(this).attr('data-field');
         // Get its current value
@@ -44,29 +48,13 @@ $(document).ready(function(){
             $('input[name='+fieldName+']').val(0);
             $('span[name='+fieldName+'-counter]').text(0);
         }
-    });
-    // THERE IS NO MINUS BUTTON FOR NOW
-    // I'm leaving this piece of code in case we want to add some way to
-    // decrement the value later on.
-    // This button will decrement the value till 0
-    $('[data-quantity="minus"]').click(function(e) {
-        // Stop acting like a button
-        e.preventDefault();
-        // Get the field name
-        fieldName = $(this).attr('data-field');
-        // Get its current value
-        var currentVal = parseInt($('input[name='+fieldName+']').val());
-        var newValue = currentVal - 1;
-        // If it isn't undefined or its greater than 0
-        if (!isNaN(currentVal) && newValue >= 0) {
-            // Decrement one
-            $('input[name='+fieldName+']').val(newValue);
-            $('span[name='+fieldName+'-counter]').text(newValue);
-        } else {
-            // Otherwise put a 0 there
-            $('input[name='+fieldName+']').val(0);
-            $('span[name='+fieldName+'-counter]').text(0);
-        }
-    });
+        last_event = e.type;
+        return false;
+        
+    }
+    document.querySelectorAll('[data-quantity="plus"]').forEach(function(element) {
+        element.addEventListener('click', plus_button_click);
+        element.addEventListener('touchend', plus_button_click);
+    })
 });
 
