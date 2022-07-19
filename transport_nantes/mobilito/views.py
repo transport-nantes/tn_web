@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 import logging
+from user_agents import parse
 from typing import Union
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -76,6 +77,7 @@ class RecordingView(TemplateView):
         city = self.request.session.get('city')
         postcode = self.request.session.get('postcode')
         country = self.request.session.get('country')
+        user_agent = parse(self.request.META.get('HTTP_USER_AGENT'))
         user = MobilitoUser.objects.get_or_create(
             user=self.request.user)[0]
         session_object = Session.objects.create(
@@ -84,6 +86,7 @@ class RecordingView(TemplateView):
             address=address,
             postcode=postcode,
             country=country,
+            user_browser=str(user_agent),
             start_timestamp=datetime.now(timezone.utc),
         )
         self.request.session["mobilito_session_id"] = session_object.id
