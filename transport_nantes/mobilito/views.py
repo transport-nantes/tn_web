@@ -1,9 +1,13 @@
 from datetime import datetime, timezone
+import json
 import logging
 from user_agents import parse
 from typing import Union
 
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 
 from django.views.generic import TemplateView
@@ -12,6 +16,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from mobilito.models import MobilitoUser, Session
 from mobilito.forms import AddressForm
+from authentication.views import create_send_record
+from topicblog.models import SendRecordTransactionalAdHoc
 
 logger = logging.getLogger("django")
 
@@ -140,11 +146,17 @@ class ThankYouView(TemplateView):
     template_name = 'mobilito/thanks.html'
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        request.session.pop("address", None)
-        request.session.pop("city", None)
-        request.session.pop("postcode", None)
-        request.session.pop("country", None)
-        request.session.pop("mobilito_session_id", None)
+        try:
+            send_results(request)
+        except Exception as e:
+            logger.error(
+                f"Can't send email, user={request.user.email}, {e}")
+        else:
+            request.session.pop("address", None)
+            request.session.pop("city", None)
+            request.session.pop("postcode", None)
+            request.session.pop("country", None)
+            request.session.pop("mobilito_session_id", None)
         return super().get(request, *args, **kwargs)
 
 
@@ -185,3 +197,60 @@ def create_event(request: HttpRequest) -> HttpResponse:
 
     if request.method == 'GET':
         return HttpResponse(status=403)
+
+
+def send_results(request: HttpRequest) -> None:
+    """Send session's results by email to user"""
+    logger.info(f'Sending session results to {request.user.email}')
+    session_object = get_session_object(request)
+    if session_object:
+        try:
+            logger.info(f'Session id : {session_object.id}')
+            logger.info("Creating send record ...")
+            send_record = create_send_record(request.user.email)
+            custom_email = prepare_email(request, session_object, send_record)
+            logger.info(f'Sending email to {request.user.email}')
+            custom_email.send(fail_silently=False)
+            logger.info(f'Email sent to {request.user.email}')
+            send_record.handoff_time = datetime.now(timezone.utc)
+            send_record.save()
+        except Exception as e:
+            logger.error(f'Error sending email to {request.user.email} : {e}')
+            send_record.status = "FAILED"
+            send_record.save()
+
+
+def prepare_email(
+        request: HttpRequest, session_object: Session,
+        send_record: SendRecordTransactionalAdHoc) -> EmailMultiAlternatives:
+    """Prepare the email to be sent"""
+    logger.info(f'Preparing email for {session_object.user.user.email}')
+    template = "mobilito/result_email.html"
+    context = {
+        'session_object': session_object,
+        'nb_pedestrians': session_object.pedestrian_count,
+        'nb_bicycles': session_object.bicycle_count,
+        'nb_cars': session_object.motor_vehicle_count,
+        'nb_TC': session_object.public_transport_count,
+    }
+
+    html_message = render_to_string(template, context=context, request=request)
+
+    values_to_pass_to_ses = {
+        "send_record class": send_record.__class__.__name__,
+        "send_record id": str(send_record.id),
+    }
+    comments_header = json.dumps(values_to_pass_to_ses)
+    headers = {
+        "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
+        "Comments": comments_header}
+    email = EmailMultiAlternatives(
+        subject="Les résultats de votre session Mobilito sont là !",
+        body=render_to_string(template, context),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[send_record.recipient.email],
+        headers=headers,
+    )
+    email.attach_alternative(html_message, "text/html")
+
+    return email
