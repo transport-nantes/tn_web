@@ -3,6 +3,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from datetime import datetime
 
 
 def validate_submitted_photo(value):
@@ -56,6 +57,12 @@ class PhotoEntry(models.Model):
         help_text="Largeur de la photo recommandée : 2000 px",
         verbose_name="Photo",
         validators=[validate_submitted_photo])
+    timestamp = models.DateTimeField(
+        null=False,
+        blank=False,
+        verbose_name="Date de soumission",
+        auto_now_add=True,
+    )
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
