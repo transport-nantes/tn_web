@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 import logging
 import json
 from django.http import HttpRequest, HttpResponseRedirect
@@ -20,7 +20,7 @@ from django.views.generic.base import TemplateView
 from authentication.forms import (EmailLoginForm, PasswordLoginForm,
                                   UserUpdateForm, ProfileUpdateForm)
 from asso_tn.utils import make_timed_token, token_valid
-from topicblog.models import SendRecordTransactional, SendRecordTransactionalAdHoc
+from topicblog.models import SendRecordTransactionalAdHoc
 
 """
 A quick note on the captcha:
