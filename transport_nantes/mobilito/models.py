@@ -26,6 +26,7 @@ class Session(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     postcode = models.CharField(max_length=20, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
+    user_browser = models.CharField(max_length=255, blank=True, null=True)
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField(null=True, blank=True)
     pedestrian_count = models.IntegerField(default=0)
