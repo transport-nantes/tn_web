@@ -45,7 +45,7 @@
 	<span class="text-muted">
 	    {% if object.date_published %}publié {{ object.date_published|date:"l d-m-Y" }}
 	    {% endif %}
-	    modifié {{ object.date_modified|date:"l d-m-Y" }}
+	    modifié {{ object.date_created|date:"l d-m-Y" }}
 	</span>
 	[#={{ object.count }}]
     </p>

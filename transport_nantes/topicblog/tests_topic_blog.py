@@ -27,7 +27,7 @@ class Test(TestCase):
         self.main_page_slug_name = ("index")
         self.item_with_slug = TopicBlogItem.objects.create(
             slug=self.main_page_slug_name,
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=9),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
@@ -76,7 +76,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Create an Item with a slug, ID = 1
         self.item_with_slug = TopicBlogItem.objects.create(
             slug="test-slug",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=9),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=9),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
@@ -89,7 +89,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Create an Item with no slug, ID = 2
         self.item_without_slug = TopicBlogItem.objects.create(
             slug="",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=10),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=10),
             publication_date=None,
             user=self.user,
             template_name=self.template_name,
@@ -97,7 +97,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Create an Item with a slug and higher publication date, ID = 3
         self.item_with_higher_date = TopicBlogItem.objects.create(
             slug="test-slug",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=7),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=7),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
@@ -106,7 +106,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Create an intem with the body image but no the alt image
         self.item_without_alt = TopicBlogItem.objects.create(
             slug="test-slug-no-alt",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=7),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=7),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
@@ -119,7 +119,7 @@ class TBIEditStatusCodeTest(TestCase):
         # Create an item without publication date and first publication date
         self.item_without_date = TopicBlogItem.objects.create(
             slug="test-slug-no-date",
-            date_modified=datetime.now(timezone.utc) - timedelta(seconds=7),
+            date_created=datetime.now(timezone.utc) - timedelta(seconds=7),
             user=self.user,
             body_text_1_md="body 1",
             body_text_2_md="body 2",
@@ -131,9 +131,9 @@ class TBIEditStatusCodeTest(TestCase):
         """ Test status codes for the edit page of an item with a slug
         The edition page is accessed through the TopicBlogItemEdit view.
         In this test we will use these items from the setUp:
-            - An item with a slug, ID = 1, date_modified = 1
+            - An item with a slug, ID = 1, date_created = 1
             - An item with a slug and higher publish date, ID = 3,
-              date_modified = 3
+              date_created = 3
         We aim to check that we get the correct status codes on the edition
         page in various situations involving items with a slug.
         Items which have a saved slug edition page MUST return 200 if:
@@ -285,9 +285,9 @@ class TBIEditStatusCodeTest(TestCase):
         # Edit with only the correct slug.
         # Checks it loads the greatest modification date.
 
-        latest_date_modified = TopicBlogItem.objects.filter(
+        latest_date_created = TopicBlogItem.objects.filter(
             slug=self.item_with_slug.slug
-        ).order_by("date_modified").last().date_modified
+        ).order_by("date_created").last().date_created
 
         users_expected_5 = [
             {"client": self.client, "code": 403,
@@ -312,18 +312,18 @@ class TBIEditStatusCodeTest(TestCase):
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
 
-        self.assertEqual(latest_date_modified,
-                         self.item_with_higher_date.date_modified,
+        self.assertEqual(latest_date_created,
+                         self.item_with_higher_date.date_created,
                          msg="The page MUST load the item with the latest "
-                         "date modified."
+                         "date created."
                          f"\nitem with slug: {self.item_with_slug}"
-                         f"\nHighest date_modified: {latest_date_modified}")
+                         f"\nHighest date_created: {latest_date_created}")
 
     def test_item_without_slug_edit(self):
         """Test status code of edit page of items without slug
         The edition page is accessed through the TopicBlogItemEdit view.
         In this test we will use these items from the setUp:
-            - An item without a slug, ID = 2, date_modified = 0
+            - An item without a slug, ID = 2, date_created = 0
         We aim to check that we get the correct status codes on the edition
         page in various situations involving items without a slug.
         For Items which don't have a saved slug edition page
@@ -431,7 +431,7 @@ class TBIViewStatusCodeTests(TestCase):
         the TopicBlogItemView.
 
         In this test we will use these items from the setUp:
-            - An item with a slug, ID = 1, date_modified = now - 5
+            - An item with a slug, ID = 1, date_created = now - 5
             - An item with a slug and  key, ID = 3
 
         We aim to check that we get the correct status codes on the view
@@ -616,16 +616,16 @@ class TBIViewStatusCodeTests(TestCase):
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
 
-        latest_date_modified = TopicBlogItem.objects.filter(
+        latest_date_created = TopicBlogItem.objects.filter(
             slug=self.item_with_slug.slug
-        ).order_by("date_modified").last()
+        ).order_by("date_created").last()
 
         self.assertEqual(response.context["page"],
-                         latest_date_modified,
+                         latest_date_created,
                          msg="The page MUST load the item with the highest "
-                         "date_modified."
+                         "date_created."
                          f"\nitem with slug: {self.item_with_slug}"
-                         f"\nhighest date_modified: {latest_date_modified}")
+                         f"\nhighest date_created: {latest_date_created}")
 
         # View with wrong slug
         users_expected_7 = [
@@ -655,7 +655,7 @@ class TBIViewStatusCodeTests(TestCase):
         the TopicBlogItemView.
 
         In this test we will use this item from the setUp:
-            - An item without a slug, ID = 2, date_modified = 0
+            - An item without a slug, ID = 2, date_created = 0
 
         We aim to check that we get the correct status codes on the view
         page in various situations involving items without a slug.

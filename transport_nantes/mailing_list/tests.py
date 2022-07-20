@@ -68,7 +68,7 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         # Create a topicblog page for testing quick sign up
         self.home = TopicBlogItem.objects.create(
             slug="home",
-            date_modified=datetime.now(timezone.utc),
+            date_created=datetime.now(timezone.utc),
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             user=self.superuser,

@@ -40,7 +40,7 @@
             {% endif %}
         {% endif %}
             <br>
-            Créé {{ object.date_modified|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
+            Créé {{ object.date_created|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
             <br>
             {% if object.is_moribund %}
                 <span class="{% if object.is_moribund %} text-danger {% endif %}">
