@@ -1327,7 +1327,7 @@ class MoribundAndDelete(TestCase):
             template_name=self.template_email,
             title="Test-title",
         )
-        self.moribund_email.date_modified = then_moribund
+        self.moribund_email.date_created = then_moribund
         self.deletable_email = TopicBlogEmail.objects.create(
             slug="email",
             subject="slug2",
@@ -1337,7 +1337,7 @@ class MoribundAndDelete(TestCase):
             title="Test-title",
             scheduled_for_deletion_date=then_deletable
         )
-        self.deletable_email.date_modified=then_deletable
+        self.deletable_email.date_created = then_deletable
         self.email_ok = TopicBlogEmail.objects.create(
             slug="email",
             subject="slug2",

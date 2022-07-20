@@ -179,7 +179,7 @@ class TopicBlogBaseView(TemplateView):
             tb_object = self.model.objects.filter(
                 slug=kwargs['the_slug'],
                 publication_date__isnull=False
-            ).order_by("date_modified").last()
+            ).order_by("date_created").last()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_object is None:
@@ -299,15 +299,15 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
             # celery later.
             mark_moribund_and_delete(qs.filter(slug=the_slug))
 
-            the_qs = qs.filter(slug=the_slug).order_by('-date_modified')
+            the_qs = qs.filter(slug=the_slug).order_by('-date_created')
             return the_qs
 
         # If we don't have a slug, list all slugs.
         return qs.values('slug') \
                  .annotate(count=Count('slug'),
-                           date_modified=Max('date_modified'),
+                           date_created=Max('date_created'),
                            publication_date=Max('publication_date')) \
-                 .order_by('-date_modified')
+                 .order_by('-date_created')
 
     def get_template_names(self):
         names = super().get_template_names()

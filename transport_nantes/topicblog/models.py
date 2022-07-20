@@ -127,7 +127,7 @@ class TopicBlogObjectBase(models.Model):
     # although we don't currently do so.
     publication_date = models.DateTimeField(blank=True, null=True)
     first_publication_date = models.DateTimeField(blank=True, null=True)
-    date_modified = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     scheduled_for_deletion_date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT,
                              related_name='+')
@@ -333,14 +333,14 @@ class TopicBlogObjectBase(models.Model):
         if self.publication_date is not None:
             # Failsafe: this was published.
             return False
-        if self.date_modified is None:
+        if self.date_created is None:
             # Shouldn't be possible, but our data model is a bit of a
             # mess.  Retire this line when we can, late August 2022.
             # Anyway, object's not published and we have no idea how
             # old it is, so it's moribund.
             return True
         if self.first_publication_date is None and \
-           ((datetime.now(timezone.utc) - self.date_modified).days >=
+           ((datetime.now(timezone.utc) - self.date_created).days >=
             self.K_MORIBUND_DELAY_DAYS):
             return True
         return False
