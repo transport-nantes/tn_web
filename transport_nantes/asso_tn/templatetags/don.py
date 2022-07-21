@@ -2,19 +2,55 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.urls import reverse, reverse_lazy
 
+from topicblog.views import k_render_as_email
+
 register = template.Library()
 
 page_donation = reverse_lazy("stripe_app:stripe")
 
+# Because emails don't handle classes in most cases,
+# we hardcode the styles here instead of using a CSS file.
+class_btn_navigation_button = (
+    """display: inline-block; font-weight: 400; """
+    """color: #212529; text-align: center; vertical-align: middle;"""
+    """padding: .375rem .75rem; font-size: 1rem; line-height: 1.5;"""
+    """border-radius: .25rem; background-color:  #43526e; """
+    """border: 1px solid  #43526e; color: white; font-weight: 600;"""
+    """text-decoration: none; """
+)
+
+class_btn_donation_button = (
+    """display: inline-block; font-weight: 400; """
+    """color: #212529; text-align: center; vertical-align: middle;"""
+    """padding: .375rem .75rem; font-size: 1rem; line-height: 1.5;"""
+    """border-radius: .25rem; background-color:  #5BC2E7; """
+    """border: 1px solid  #5BC2E7; color: white; font-weight: 600;"""
+    """text-decoration: none; """
+)
+
+class_btn_lg = (
+    """padding: .5rem 1rem;font-size: 1.25rem;line-height: 1.5;"""
+    """border-radius: .3rem;"""
+)
+
 
 @register.simple_tag
-def bouton_don(link_text):
-    return mark_safe(
-        ('<a href="{url}" class="btn donation-button"'
-         'role="button" target="_blank"">{text}</a>').format(
-            url=page_donation,
-            text=link_text)
-    )
+def bouton_don(link_text, context={}):
+
+    if k_render_as_email in context:
+        # Rendering to email, so need absolute URL.
+        request = context['request']
+        absolute_url = request.build_absolute_uri(page_donation)
+        html = (
+            f"""<a href="{absolute_url}" role="button" target="_blank" """
+            f"""style="{class_btn_donation_button}">{link_text}</a> """
+        )
+    else:
+        html = ('<a href="{url}" class="btn donation-button"'
+                'role="button" target="_blank"">{text}</a>').format(
+                url=page_donation,
+                text=link_text)
+    return mark_safe(html)
 
 
 @register.simple_tag
@@ -28,12 +64,23 @@ def bouton_join(link_text):
 
 
 @register.simple_tag
-def bouton_don_lg(link_text):
-    html_template = """<p class="pl-5"><a href="{link_url}" class="btn """ + \
-        """donation-button btn-lg" target="_blank">{text} """ + \
-        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
-    return mark_safe(html_template.format(
-        link_url=page_donation, text=link_text))
+def bouton_don_lg(link_text, context={}):
+
+    if k_render_as_email in context:
+        # Rendering to email, so need absolute URL.
+        request = context['request']
+        absolute_url = request.build_absolute_uri(page_donation)
+        html = (
+            f"""<p style="padding-left:3em;"><a href="{absolute_url}" """
+            f""" style="{class_btn_donation_button} {class_btn_lg}" """
+            f"""target="_blank">{link_text} &rarr;</a></p> """
+        )
+    else:
+        html = """<p class="pl-5"><a href="{link_url}" class="btn """ + \
+            """donation-button btn-lg" target="_blank">{text} """ + \
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        html = html.format(link_url=page_donation, text=link_text)
+    return mark_safe(html)
 
 
 @register.simple_tag
@@ -58,20 +105,47 @@ def external_url(url, label):
 
 
 @register.simple_tag
-def external_url_button(url, label):
-    html = """<p class="pl-5"> """ + \
-        """<a href="{url}" target="_blank" """ + \
-        """class="btn navigation-button">{label} """ + \
-        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+def external_url_button(url, label, context={}):
+
+    if k_render_as_email in context:
+        # Rendering to email, so need absolute URL.
+        request = context['request']
+        url = request.build_absolute_uri(url)
+        html = (
+            """<p style="padding-left: 3em !important;"> """
+            """<a href="{url}" target="_blank" """
+            f"""style="{class_btn_navigation_button}">"""
+            "{label} &rarr;</a></p>"
+        )
+    else:
+        html = """<p class="pl-5"> """ + \
+            """<a href="{url}" target="_blank" """ + \
+            """class="btn navigation-button">{label} """ + \
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+
     return mark_safe(html.format(url=url, label=label))
 
 
 @register.simple_tag
-def action_button(link_url, topic_name):
-    html_template = """<p><a href="{link_url}" class="btn """ + \
-        """donation-button btn-lg">{text} """ + \
-        """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
-    return mark_safe(html_template.format(link_url=link_url, text=topic_name))
+def action_button(link_url, topic_name, context={}):
+
+    if k_render_as_email in context:
+        # Rendering to email, so need absolute URL.
+        request = context['request']
+        link_url = request.build_absolute_uri(link_url)
+        html = (
+            f"""<p><a href="{link_url}" """
+            f""" style="{class_btn_donation_button} {class_btn_lg}" >"""
+            f"""{topic_name} &rarr;</a></p> """
+        )
+    else:
+        html = """<p class="pl-5"> """ + \
+            """<a href="{link_url}" class="btn donation-button """ + \
+            """btn-lg" target="_blank">{topic_name} """ + \
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        html = html.format(link_url=link_url, topic_name=topic_name)
+
+    return mark_safe(html)
 
 
 @register.simple_tag
