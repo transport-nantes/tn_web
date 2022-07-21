@@ -21,17 +21,12 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     </tr>
     <tr> {% comment %} Title and Body_1 {% endcomment %}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
-            <p style="margin:0;">
-                Bonjour,
-	    </p>
-	    <p style="margin:0;">
-                Vous avez demandé à accéder au site mobilitains.fr.  Félicitations,
-		vous y êtes presque !  Un clic et c'est bon !
+            <p>
+                Bonjour des Mobilitains,
 	    </p>
 	    <p>
-                Si toutefois vous n'êtes pas à l'origine de cette demande,
-		vous pouvez ignorer ce message et on vous oubliera aussitôt.
-            </p>
+                Vous y êtes presque.
+	    </p>
         </td>
     </tr> <!-- End of Body_1-->
     <tr>
@@ -43,16 +38,20 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
                 -webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
                 border: 1px solid transparent;padding: .375rem .75rem;font-size: 1rem;line-height: 1.5;
                 border-radius: .25rem;text-decoration: none;">
-                    Cliquez ici pour accéder à votre page <i class="fa fa-arrow-right" area-hidden="true"></i>
+                    Cliquez ici pour continuer <i class="fa fa-arrow-right" area-hidden="true"></i>
                 </a>
             </p>
         </td>
     </tr>
     <tr> {# plain text link #}
-        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;overflow-wrap: break-word;max-width: 150px;">
-            <p style="margin:0;font-size:14px">
+        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;overflow-wrap: break-word;max-width: 150px; font-size: 80%;">
+            <p style="margin:0">
                 Si vous avez des difficultés avec le bouton ci-dessus, vous pouvez également copier-coller le lien suivant dans votre barre d'adresse :<br />
                 {{ request.scheme }}://{{ host }}{% url 'authentication:activate' token=token %}?next={{ next_url}}
+            </p>
+	    <p>
+                Si toutefois vous n'êtes pas à l'origine de cette demande,
+		vous pouvez ignorer ce message et on vous oubliera aussitôt.
             </p>
         </td>
     </tr>
