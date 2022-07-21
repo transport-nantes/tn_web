@@ -190,9 +190,9 @@ class TNLinkParser(object):
         """
         if 'don' == self.bracket_class_string:
             if '' == self.bracket_label_string:
-                self.out_string += don.bouton_don(self.paren_string)
+                self.out_string += don.bouton_don(self.paren_string, context=self.context)
             elif 'large' == self.bracket_label_string:
-                self.out_string += don.bouton_don_lg(self.paren_string)
+                self.out_string += don.bouton_don_lg(self.paren_string, context=self.context)
             elif 'adhésion' == self.bracket_label_string:
                 self.out_string += don.bouton_join(self.paren_string)
             elif self.bracket_label_string.startswith('fixed|'):
@@ -225,7 +225,7 @@ class TNLinkParser(object):
                 url = reverse('topic_blog:view_item_by_slug', args=[self.paren_string])
             except NoReverseMatch:
                 url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
-            self.out_string += don.action_button(url, self.bracket_label_string)
+            self.out_string += don.action_button(url, self.bracket_label_string, context=self.context)
         elif 'slug' == self.bracket_class_string:
             self.out_string += slug.tbi_slug(self.context,
                                              self.bracket_label_string,
@@ -237,7 +237,7 @@ class TNLinkParser(object):
             self.out_string += don.external_url(url, self.bracket_label_string)
         elif 'EXTERNE' == self.bracket_class_string:
             url = self.paren_string
-            self.out_string += don.external_url_button(url, self.bracket_label_string)
+            self.out_string += don.external_url_button(url, self.bracket_label_string, context=self.context)
         elif 'petition' == self.bracket_class_string:
             self.out_string += newsletter.petition_link(self.paren_string, self.bracket_label_string)
         else:
