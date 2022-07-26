@@ -66,22 +66,25 @@
 <div class="container-fluid py-5 px-0">
      {% block app_content %}
      <div id="app_content" class="d-flex flex-column col-sm-12 col-md-10 col-lg-9 m-auto">
-          
+
           {# First paragraph of text #}
-          {% tn_markdown page.body_text_1_md %} 
+          {% tn_markdown page.body_text_1_md %}
           {# First CTA, if any #}
           {% if page.cta_1_slug|length > 0 %}
             <div class="d-flex mx-auto flex-nowrap">
-                <a href="{% url 'topicblog:view_item_by_slug' page.cta_1_slug %}" 
+                <a href="{% url 'topicblog:view_item_by_slug' page.cta_1_slug %}"
                     class="btn donation-button my-3">
                     {{ page.cta_1_label }}
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
           {% endif %}
-          {% show_mailing_list  mailinglist=page.mailing_list.mailing_list_token title=page.subscription_form_title %}
+          {% if page.mailing_list %}
+               {% show_mailing_list  mailinglist=page.mailing_list.mailing_list_token title=page.subscription_form_title %}
+          {% else %}
+               {% show_mailing_list mailinglist="No token" title="Pas de liste" %}
+          {% endif %}
 
-           
      </div>
 
      {% endblock app_content%}
@@ -94,5 +97,5 @@
               {% show_volunteer %}
           </div>
      </div>
-     
+
 {% endblock content %}
