@@ -33,6 +33,12 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             <td>
                 <img src="{% absolute_url_image email.header_image.url|default:'' %}" alt="{{ email.header_title|default:'Image bannière'}}"
                 style="width:100%;max-width:600px;height:auto;border:none;text-decoration:none;">
+                <p style="font-size:4.0vh;font-weight:bold;text-align:center;">
+                    {{ email.header_title}}
+                </p>
+                <p style="font-size:3.0vh;font-weight:bold;text-align:center;">
+                    {{ email.header_description}}
+                </p>
             </td>
         </tr>
     {% endif %}
