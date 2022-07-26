@@ -42,8 +42,8 @@ def bouton_don(link_text, context={}):
         request = context['request']
         absolute_url = request.build_absolute_uri(page_donation)
         html = (
-            f"""<a href="{absolute_url}" role="button" target="_blank" """
-            f"""style="{class_btn_donation_button}">{link_text}</a> """
+            f"""<p><a href="{absolute_url}" role="button" target="_blank" """
+            f"""style="{class_btn_donation_button}">{link_text}</a></p> """
         )
     else:
         html = ('<a href="{url}" class="btn donation-button"'
@@ -71,12 +71,12 @@ def bouton_don_lg(link_text, context={}):
         request = context['request']
         absolute_url = request.build_absolute_uri(page_donation)
         html = (
-            f"""<p style="padding-left:3em;"><a href="{absolute_url}" """
+            f"""<p><a href="{absolute_url}" """
             f""" style="{class_btn_donation_button} {class_btn_lg}" """
             f"""target="_blank">{link_text} &rarr;</a></p> """
         )
     else:
-        html = """<p class="pl-5"><a href="{link_url}" class="btn """ + \
+        html = """<p><a href="{link_url}" class="btn """ + \
             """donation-button btn-lg" target="_blank">{text} """ + \
             """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
         html = html.format(link_url=page_donation, text=link_text)
@@ -112,13 +112,12 @@ def external_url_button(url, label, context={}):
         request = context['request']
         url = request.build_absolute_uri(url)
         html = (
-            """<p style="padding-left: 3em !important;"> """
-            """<a href="{url}" target="_blank" """
+            """<p><a href="{url}" target="_blank" """
             f"""style="{class_btn_navigation_button}">"""
-            "{label} &rarr;</a></p>"
+            """{label} &rarr;</a></p>"""
         )
     else:
-        html = """<p class="pl-5"> """ + \
+        html = """<p> """ + \
             """<a href="{url}" target="_blank" """ + \
             """class="btn navigation-button">{label} """ + \
             """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
@@ -139,7 +138,7 @@ def action_button(link_url, topic_name, context={}):
             f"""{topic_name} &rarr;</a></p> """
         )
     else:
-        html = """<p class="pl-5"> """ + \
+        html = """<p> """ + \
             """<a href="{link_url}" class="btn donation-button """ + \
             """btn-lg" target="_blank">{topic_name} """ + \
             """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
@@ -152,7 +151,7 @@ def action_button(link_url, topic_name, context={}):
 def contact_button(button_text, email_subject):
     """This might (should) someday become a form."""
     html_template = (
-        '<p class="pl-5">'
+        '<p>'
         '<a href="mailto:jevousaide@transport-nantes.com?subject={subj}&nbsp;!'
         'class="btn donation-button btn-lg">{text}'
         '<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>')
