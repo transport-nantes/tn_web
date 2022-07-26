@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, date, timedelta
+from datetime import datetime, timezone, timedelta
 import logging
 
 from django.contrib.auth.models import User
@@ -341,7 +341,7 @@ class TopicBlogObjectBase(models.Model):
             return True
         if self.first_publication_date is None and \
            ((datetime.now(timezone.utc) - self.date_created).days >=
-            self.K_MORIBUND_DELAY_DAYS):
+                self.K_MORIBUND_DELAY_DAYS):
             return True
         return False
 
@@ -359,7 +359,7 @@ class TopicBlogObjectBase(models.Model):
            self.scheduled_for_deletion_date is not None and \
            ((datetime.now(timezone.utc) -
              self.scheduled_for_deletion_date).days >=
-            self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS):
+                self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS):
             return True
         return False
 
@@ -1313,7 +1313,8 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
                                   blank=True)
     cta_1_label = models.CharField(max_length=80, blank=True)
     mailing_list = models.ForeignKey('mailing_list.MailingList',
-                                     on_delete=models.PROTECT)
+                                     on_delete=models.PROTECT, null=True,
+                                     blank=True)
     subscription_form_title = models.CharField(max_length=80, blank=True)
     subscription_form_button_label = models.CharField(max_length=80,
                                                       blank=True)
