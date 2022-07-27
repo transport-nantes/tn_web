@@ -139,6 +139,7 @@ class TopicBlogMailingListPitchForm(ModelFormTemplateList):
         exclude = ('first_publication_date', 'publisher', 'user',
                    'publication_date', 'scheduled_for_deletion_date')
 
+
 class SendToSelfForm(forms.Form):
     """Form to send a TopicBlog object to oneself"""
     sent_object_class = forms.CharField(required=True)
@@ -146,4 +147,3 @@ class SendToSelfForm(forms.Form):
     sent_object_transactional_send_record_class = forms.CharField(
         required=True)
     redirect_url = forms.CharField(required=True)
-    context_appropriate_base_template = forms.CharField(required=True)
