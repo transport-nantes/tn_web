@@ -25,7 +25,10 @@ def show_mailing_list(context, **kwargs):
     if mailinglist is None:
         mailinglist = context.get('mailinglist')
     form = FirstStepQuickMailingListSignupForm(
-        initial={"mailinglist": mailinglist})
+        initial={
+            "mailinglist": mailinglist,
+            "origin_url": context.get('request').build_absolute_uri()
+            })
     context['form'] = form
     return context
 
