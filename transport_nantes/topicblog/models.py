@@ -147,6 +147,7 @@ class TopicBlogObjectBase(models.Model):
     listone_object_url = None
     listall_object_url = None
     viewbyslug_object_url = None
+    viewbypkid_object_url = None
     # The description is meant to be a really short string description
     # of what the object is supposed to render into.
     # e.g. a TopicBlogItem is a "Page de blog"
@@ -709,6 +710,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_items_by_slug'
     listall_object_url = 'topicblog:list_items'
     viewbyslug_object_url = 'topicblog:view_item_by_slug'
+    viewbypkid_object_url = 'topicblog:view_item_by_pkid'
     description_of_object = 'Page de blog'
 
     def get_absolute_url(self):
@@ -888,6 +890,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_emails_by_slug'
     listall_object_url = 'topicblog:list_emails'
     viewbyslug_object_url = 'topicblog:view_email_by_slug'
+    viewbypkid_object_url = 'topicblog:view_email_by_pkid'
     send_object_url = 'topicblog:send_email'
     description_of_object = 'Email'
 
@@ -1076,6 +1079,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     listone_object_url = 'topicblog:list_press_by_slug'
     listall_object_url = 'topicblog:list_press'
     viewbyslug_object_url = 'topicblog:view_press_by_slug'
+    viewbypkid_object_url = 'topicblog:view_press_by_pkid'
     send_object_url = 'topicblog:send_press'
     description_of_object = 'Communiqué de presse'
 
@@ -1261,6 +1265,7 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     listone_object_url = 'topicblog:list_launcher_by_slug'
     listall_object_url = 'topicblog:list_launcher'
     viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
+    viewbypkid_object_url = 'topicblog:view_launcher_by_pkid'
     description_of_object = 'Lanceur'
 
     def get_absolute_url(self):
@@ -1376,6 +1381,7 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
     listall_object_url = 'topicblog:list_mlp'
     viewbyslug_object_url = 'topicblog:view_mlp_by_slug'
     viewbyid_object_url = 'topicblog:view_mlp_by_pkid'
+    viewbypkid_object_url = 'topicblog:view_mlp_by_pkid'
     description_of_object = 'Pitch de mailing list'
 
     def get_absolute_url(self):
