@@ -1,85 +1,46 @@
-{% extends 'asso_tn/base_mobilitain.html' %}
-{% load utm %}
+{% extends 'topicblog/base_topicblog.html' %}
 
-{% comment %}
-Note that we need the slug|default:'--sans-slug--' goofiness because
-the template render will try to generate URLs even in the cases where we
-deactivate the button, and will fail to find a path mapping when the slug
-is empty.  Django sees an empty string and trims it when looking for patterns.
+{% block tb_admin_button_row %}
+    {{ block.super }}
+    {% if transactional_send_record_class %}
+        <div class="d-flex flex-row mr-auto">
+            <form method="POST" action="{% url 'topic_blog:self_send' %}">
+                {% csrf_token %}
+                <input type="hidden" name="sent_object_id"
+                value="{{ page.id }}">
+                <input type="hidden" name="sent_object_class"
+                value="{{ base_model }}">
+                <input type="hidden" name="sent_object_transactional_send_record_class"
+                value="{{ transactional_send_record_class }}">
+                <input type="hidden" name="redirect_url"
+                value="{{ request.path }}">
+                <button type="submit" class="btn btn-outline-info btn-sm"
+                >Envoyer par mail à moi même</button>
+            </form>
 
-Maybe there's a better way, I just haven't found it yet.
-{% endcomment %}
+            {% if request.GET.email_sent == 'true' %}
+                <span class="ml-1">Envoyé <i class="fa fa-check"></i></span>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock tb_admin_button_row %}
 
-{% block body %}{% if user.is_staff %}
-  <div class="container-fluid pl-3 py-1">{% visit_overview %}</div>
-{% endif %}
-{% if user.is_staff %}
-  {% if topicblog_admin  %}
-<div class="container-fluid pl-5 py-3">
-    <div class="row">
-	<p>
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{% url 'topic_blog:list_emails_by_slug' page.slug|default:'--sans-slug--' %}">Liste</a>
-	    {% if page.publication_date %}
-	    	publiée {{ page.publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }}
-	    {% else %}
-			{% if page.first_publication_date %}
-				publiée {{ page.first_publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }} (retirée)
-			{% else %}
-				(brouillon)
-			{% endif %}
-			{% if page.is_publishable %}
-				<form
-				action="{% url 'topicblog:view_email_by_pkid' pkid page.slug|default:'--sans-slug--' %}"
-				method="POST">
-					{% csrf_token %}
-					<input type="submit" class="btn btn-outline-info btn-sm" value="Publier">
-				</form>
-			{% endif %}
-	    {% endif %}
-		<p class="mx-1">
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{{ page.get_edit_url }}">Modifier</a>
-
-	    {% if page.publication_date %}
-	    <a type="button" class="btn btn-outline-info btn-sm"
-	       href="{% url 'topic_blog:view_email_by_slug' page.slug|default:'--sans-slug--' %}">Visualiser (usager)</a>
-		{% else %}
-		<a type="button" class="btn btn-outline-info btn-sm"
-	       href="{% url 'topic_blog:view_email_by_slug' page.slug|default:'--sans-slug--' %}">Voir la version publiée</a>
-	    {% endif %}
-		<div class="d-flex flex-row mr-auto">
-			<form method="POST" action="{% url 'topic_blog:self_send' %}">
-				{% csrf_token %}
-				<input type="hidden" name="sent_object_id"
-				value="{{ page.id }}">
-				<input type="hidden" name="sent_object_class"
-				value="{{ base_model }}">
-				<input type="hidden" name="sent_object_transactional_send_record_class"
-				value="{{ transactional_send_record_class }}">
-				<input type="hidden" name="redirect_url"
-				value="{{ request.path }}">
-				<input type="hidden" name="context_appropriate_base_template" 
-				value="{{ context_appropriate_base_template }}">
-				<button type="submit" class="btn btn-outline-info btn-sm"
-				>Envoyer par mail à moi même</button>
-			</form>
-			{% if request.GET.email_sent == 'true' %}
-				<span class="ml-1">Envoyé <i class="fa fa-check"></i></span>
-			{% endif %}
-		</div>
-		</p>
-	</p>
-    </div>
-</div>
-  {% elif sendable %}{% comment %}
-Sendable and not topicblog_admin, so viewing published page, so can
-offer to send.
-{% endcomment %}<div class="container-fluid pl-5 py-3">
-    <div class="row">
-	<a type="button" class="btn btn-warning" area-disabled="true" href="{% url 'topic_blog:send_email' page.slug %}">Envoyer...</a>
-    </div>
-</div>
-  {% endif %}
-{% endif %}{{ block.super }}
-{% endblock body %}
+{% block common_staff_banner %}
+    {{ block.super }}
+    {% if sendable %}
+        {% comment %}
+            Sendable and not topicblog_admin, so viewing published page, so can
+            offer to send.
+        {% endcomment %}
+        <div class="container-fluid pl-5 py-3">
+            <div class="row">
+                <a type="button"
+                class="btn btn-warning"
+                area-disabled="true"
+                href="{% url page.send_object_url page.slug %}">
+                    Envoyer...
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock common_staff_banner %}
