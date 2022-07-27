@@ -79,6 +79,11 @@
                 </a>
             </div>
           {% endif %}
+          {% if messages %}
+               {% for message in messages %}
+                         {{ message }}
+               {% endfor %}
+          {% endif %}
           {% if page.mailing_list %}
                {% show_mailing_list  mailinglist=page.mailing_list.mailing_list_token title=page.subscription_form_title %}
           {% else %}

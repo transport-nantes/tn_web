@@ -68,18 +68,34 @@ class SubscribeUpdateForm(Form):
 # First step of quick signup to the newsletter
 
 
+def validate_mailinglist_name(mailinglist_token):
+    """Validate the mailing list name.
+
+    """
+    if not MailingList.objects.filter(
+            mailing_list_token=mailinglist_token).exists():
+        raise forms.ValidationError(
+            "Cette liste de diffusion n'existe pas.")
+
+
 class FirstStepQuickMailingListSignupForm(Form):
     email = forms.EmailField(required=False, widget=forms.EmailInput(
         attrs={'placeholder': 'Votre adresse e-mail *'}))
     mailinglist = forms.CharField(
         max_length=100,
         required=True,
+        widget=forms.HiddenInput(),
+        validators=[validate_mailinglist_name])
+    origin_url = forms.CharField(
+        max_length=500,
+        required=False,
         widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
+
 
 # Like MailingListSignupForm, but only requests email.
 

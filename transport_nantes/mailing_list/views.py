@@ -6,6 +6,7 @@ from asso_tn.views import AssoView
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, When, Subquery, OuterRef
 from django.db.models.expressions import Value
@@ -146,6 +147,11 @@ class QuickMailingListSignup(FormView):
         form, extract the email address from the incoming form, and
         then display the correct thing.  I think.
         """
+        origin_url = form.cleaned_data.get('origin_url', None)
+        if origin_url:
+            messages.add_message(self.request, messages.ERROR,
+                                 form.errors.as_text())
+            return redirect(to=origin_url)
         if self.request.user.is_authenticated:
             user = self.request.user
             email = form.cleaned_data.get('email', user.email)
