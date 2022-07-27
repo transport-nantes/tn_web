@@ -174,7 +174,6 @@ class TopicBlogBaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         try:
             tb_object = self.model.objects.filter(
                 slug=kwargs['the_slug'],
@@ -328,9 +327,6 @@ class SendableObjectMixin:
     # Defines the concrete subclass of SendRecordBase that we use to
     # record this sending operation.
     send_record_class = None
-    # Used for determining whether a message is being rendered for
-    # email or for web.
-    context_appropriate_base_template = None
     # Defines the concrete subclass of sendable that we are treating.
     base_model = None
 
@@ -343,19 +339,9 @@ class SendableObjectMixin:
         """
         tb_objects = self.base_model.objects.filter(
             slug=tb_slug,
-            # Not implemented yet, but a published TBObject should be
-            # the only one with a publication date. For now it picks
-            # the most recent.  **BUG**: assumes precisely one object
-            # returned, no order_by.
             publication_date__isnull=False
-        )
-        if len(tb_objects) > 1:
-            logger.error("Found multiple objects in class \"f{tb_slug}\" "
-                         "because we didn't try to do otherwise.")
-            raise ValueError(
-                f"There is more than one {self.base_model.__name__} with slug"
-                f" {tb_slug} and a not-null publication date")
-        elif len(tb_objects) == 0:
+        ).order_by('-publication_date')
+        if len(tb_objects) == 0:
             logger.error("Failed to find requested email object in class "
                          f"{tb_slug}")
             raise ValueError(
@@ -489,8 +475,6 @@ class SendableObjectMixin:
         # important, it if is absent the render must assume we are
         # rendering to a web page.
         context[k_render_as_email] = True
-        context["context_appropriate_base_template"] = \
-            self.context_appropriate_base_template
         context["email"] = tb_object
 
         # The unsubscribe link is created with the send_record and the
@@ -659,8 +643,6 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
             'sent_object_transactional_send_record_class']
         self.success_url = \
             form.cleaned_data['redirect_url'] + "?email_sent=true"
-        self.context_appropriate_base_template = \
-            form.cleaned_data['context_appropriate_base_template']
 
         logger.info(f"Sending {sent_object_class} {sent_object_id} to "
                     f"{self.request.user.email}")
@@ -920,8 +902,6 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = \
-            'topicblog/base_email.html'
         self.template_name = 'topicblog/content_email.html'
         tb_object = context['page']
         user = self.request.user
@@ -939,8 +919,6 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = \
-            'topicblog/base_email.html'
         self.template_name = 'topicblog/content_email.html'
         return context
 
@@ -956,8 +934,6 @@ class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
     permission_required = 'topicblog.tbe.may_send'
     form_class = TopicBlogEmailSendForm
     template_name = 'topicblog/topicblogbase_send_form.html'
-    # Template used to render emails
-    context_appropriate_base_template = "topicblog/base_email.html"
     send_record_class = SendRecordMarketingEmail
     base_model = TopicBlogEmail
     # For now, successfully sending an email will redirect to the
@@ -1040,8 +1016,6 @@ class TopicBlogPressView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = \
-            'topicblog/base_press.html'
         tb_object = context['page']
         self.template_name = 'topicblog/content_press.html'
         user = self.request.user
@@ -1059,8 +1033,6 @@ class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = \
-            'topicblog/base_press.html'
         self.template_name = 'topicblog/content_press.html'
         return context
 
@@ -1080,8 +1052,6 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
     permission_required = 'topicblog.tbp.may_send'
     form_class = TopicBlogEmailSendForm
     template_name = 'topicblog/topicblogbase_send_form.html'
-    # Template used to render emails
-    context_appropriate_base_template = "topicblog/base_press.html"
     send_record_class = SendRecordMarketingPress
     base_model = TopicBlogPress
     # For now, successfully sending an email will redirect to the
@@ -1152,12 +1122,6 @@ class TopicBlogLauncherView(TopicBlogBaseView):
 
     """
     model = TopicBlogLauncher
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['context_appropriate_base_template'] = \
-            'topicblog/base_launcher.html'
-        return context
 
 
 class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
