@@ -436,6 +436,16 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
         verbose_name="Notes libres pour éditeurs",
         blank=True, null=True)
 
+    def clean(self):
+        if any([self.header_description, self.header_title]):
+            if not self.header_image:
+                raise ValidationError({
+                    'header_image': (
+                        "Si vous renseignez un titre ou une description,"
+                        " vous devez fournir une image pour le header")
+                })
+        return super().clean()
+
     def set_social_context(self, context):
         """
         inherited from original TB, it adds socials related
