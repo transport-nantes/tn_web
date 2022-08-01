@@ -20,6 +20,7 @@ body {
     font-size: 46px;
     color: var(--button-font-color);
     transition: background-color 0.2s ease-out;
+    margin: 0.10rem;
 }
 .mobilito-btn:active {
     filter: brightness(1.3);
