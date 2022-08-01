@@ -5,6 +5,7 @@
 {% block app_content %}
 
 <section id="address-form" class="container">
+    <p>Ce serait pratique de savoir où vous êtes :</p>
     <form method="post" action="{% url 'mobilito:address_form' %}">
         {% csrf_token %}
         {{ form|crispy }}
