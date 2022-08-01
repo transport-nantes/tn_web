@@ -1,29 +1,38 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
 
+{% block styles %}
+    {{block.super}}
+    <link rel="stylesheet" href="{% static 'mobilito/css/tutorial.css' %}">
+{% endblock styles %}
+
 {% block app_content %}
 <div class="container">
-    <section id="tutorial" class="mt-3">
-        <h1>Mobilito : Un guide pratique pour les Mobilitains en herbes !</h1>
-        <p>
-            Explications ...
-        </p>
-	<p>
-	    Notes en interne : Ce tutoriel n'existe pas encore.  Il
-	    sera plusieurs pages, une page par mode.  Au moins.
-	    Histoire d'aller doucement sans déborder, sans trop
-	    d'information par page.
-	</p>
-	<p>
-	    Si l'utilisateur est connu, alors à tout moment nous
-	    proposerons qu'il saut à l'enregistrement.  Dans tous les
-	    cas, nous laisserons la personne naviguer entre les pages
-	    librement.  Ce n'est pas à nous d'imposer un ordre de
-	    présentation, même si nous en proposera un.
-	</p>
-        <a href="{% url 'mobilito:recording'%}" class="btn donation-button">
-            En avant !
+    {% if the_next_page %}
+        <a href="{% url 'mobilito:address_form'%}" class="d-flex justify-content-end">
+            Passer à l'enregistrement >>
         </a>
+    {% endif %}
+    <section id="tutorial" class="mt-3">
+        <ul class="nav nav-pills mb-1">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Sommaire</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item {% if active_page == 'presentation' %}active{% endif %}" href="{% url 'mobilito:tutorial' 'presentation' %}">Présention</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item {% if active_page == 'pietons' %}active{% endif %}"
+                   href="{% url 'mobilito:tutorial' 'pietons' %}">Piéton</a>
+                <a class="dropdown-item {% if active_page == 'voitures' %}active{% endif %}"
+                   href="{% url 'mobilito:tutorial' 'voitures' %}">Voiture</a>
+                <a class="dropdown-item {% if active_page == 'velos' %}active{% endif %}"
+                   href="{% url 'mobilito:tutorial' 'velos' %}">Vélo</a>
+                <a class="dropdown-item {% if active_page == 'transports-collectifs' %}active{% endif %}"
+                   href="{% url 'mobilito:tutorial' 'transports-collectifs' %}">Transports collectifs</a>
+              </div>
+            </li>
+        </ul>
+        {% block tutorial_content %}{% endblock tutorial_content %}
+        {% include 'mobilito/next_page_arrow.html' with next_page=the_next_page %}
     </section>
 </div>
 

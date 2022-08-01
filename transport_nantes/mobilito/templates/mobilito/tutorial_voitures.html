@@ -1,0 +1,19 @@
+{% extends 'mobilito/tutorial.html' %}
+{% load static %}
+
+{% block tutorial_content %}
+  
+    <section id="car-icon-presentation">
+        <img class="d-flex mx-auto" 
+            src="{% static 'mobilito/images/car-icon.png' %}"
+            alt="Icône de voiture">
+        <hr />
+        <h2><b>L'icône voiture</b></h2>
+        <p>
+            Cliquez ce bouton une fois pour compter le passage d'une <b>voiture</b>,
+            peu importe son nombre d'occupants. Utilisez également ce bouton
+            pour compter les <b>motos, camions et utilitaires.</b>
+        </p>
+    </section>
+
+{% endblock tutorial_content %}

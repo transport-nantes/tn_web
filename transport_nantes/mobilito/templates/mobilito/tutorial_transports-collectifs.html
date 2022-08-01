@@ -1,0 +1,18 @@
+{% extends 'mobilito/tutorial.html' %}
+{% load static %}
+
+{% block tutorial_content %}
+  
+    <section id="tc-icon-presentation">
+        <img class="d-flex mx-auto" 
+            src="{% static 'mobilito/images/tc-icon.png' %}"
+            alt="Icône de tram">
+        <hr />
+        <h2><b>L'icône tram</b></h2>
+        <p>
+            Cliquez ce bouton une fois pour compter le passage d'un <b>transport en commun</b>,
+            peu importe son nombre d'occupants.
+        </p>
+    </section>
+
+{% endblock tutorial_content %}

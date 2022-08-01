@@ -14,6 +14,9 @@ class MobilitoUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     # Set first_time to False once the user has read the tutorial.
     first_time = models.BooleanField(default=True)
+    # Set to the date user visited every page of the tutorial for the last
+    # time.
+    completed_tutorial_timestamp = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.user.email

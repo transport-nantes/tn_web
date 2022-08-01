@@ -1,18 +1,21 @@
-from datetime import datetime, timezone
+from base64 import b64decode, b64encode
+from datetime import datetime, timedelta, timezone
 import json
 import logging
+import pickle
 from user_agents import parse
 from typing import Union
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from asso_tn.utils import make_timed_token, token_valid
 
 from mobilito.models import MobilitoUser, Session
 from mobilito.forms import AddressForm
@@ -33,11 +36,124 @@ class MobilitoView(TemplateView):
 
 class TutorialView(TemplateView):
     """Present the tutorial.
-
-    This is far too simple, but it will stand in for the moment.
     """
 
     template_name = 'mobilito/tutorial.html'
+    tutorial_cookie_name = 'mobilito_tutorial'
+
+    # Map each tutorial page name to the datetime before which the
+    # user is assumed not to have see it (i.e., the page's last
+    # modification or its creation or just we want to show it again).
+    last_mod_date = datetime(
+        year=2022, month=8, day=3, tzinfo=timezone.utc)
+    all_tutorial_pages = {
+        'presentation': {"last_modified": last_mod_date},
+        'pietons': {"last_modified": last_mod_date},
+        'voitures': {"last_modified": last_mod_date},
+        'velos': {"last_modified": last_mod_date},
+        'transports-collectifs': {"last_modified": last_mod_date},
+    }
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        tutorial_cookie_value = context.get('mobilito_tutorial', '')
+        response = self.render_to_response(context)
+        response.set_cookie(
+            key='mobilito_tutorial',
+            value=tutorial_cookie_value,
+            expires=datetime.now(timezone.utc) + timedelta(hours=2))
+
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        this_page = kwargs.get('tutorial_page', 'presentation')
+        if this_page not in self.all_tutorial_pages:
+            # Trying to access a tutorial page that doesn't exist.
+            raise Http404()
+        context['active_page'] = this_page
+        self.template_name = f'mobilito/tutorial_{this_page}.html'
+
+        pages_seen = self.get_seen_pages_from_cookie()
+        if this_page not in pages_seen:
+            pages_seen.append(this_page)
+        pickled_pages_seen = pickle.dumps(pages_seen)
+        pages_seen = make_timed_token(
+            string_key=b64encode(pickled_pages_seen).decode(),
+            minutes=120)
+
+        # Store the list in context to then be added to the response.
+        context['mobilito_tutorial'] = pages_seen
+
+        next_page = self.get_next_tutorial_page()
+        if next_page:
+            context["the_next_page"] = next_page
+        else:
+            if self.request.user.is_authenticated:
+                user = get_MobilitoUser(self)
+                user.completed_tutorial_timestamp = datetime.now(
+                    timezone.utc)
+                user.first_time = False
+                user.save()
+            context["the_next_page"] = self.not_this_page(this_page)
+
+        return context
+
+    def get_seen_pages_from_cookie(self) -> list:
+        """Return the list of pages seen from the cookie."""
+        pages_seen = self.request.COOKIES.get(
+            self.tutorial_cookie_name, '')
+        if pages_seen:
+            pickled_pages_seen, _ = token_valid(pages_seen)
+            if pickled_pages_seen:
+                pages_seen_list: list = pickle.loads(
+                    b64decode(pickled_pages_seen))
+                return pages_seen_list
+            else:
+                logger.info(
+                    "Invalid token provided for mobilito "
+                    f"tutorial : {pages_seen}")
+        return []
+
+    def get_pages_to_visit(self) -> list:
+        """Return the list of pages to visit.
+
+        This is used by the bottom arrow to redirect to the next page.
+        """
+        # This returns a list of pages visited.
+        pages_seen: list = self.get_seen_pages_from_cookie()
+        if self.request.user.is_authenticated:
+            user = get_MobilitoUser(self)
+            completed_tutorial_timestamp = user.completed_tutorial_timestamp
+        else:
+            completed_tutorial_timestamp = datetime(
+                year=2022, month=8, day=3, tzinfo=timezone.utc)
+        pages_to_visit = [page for page, last_mod_date
+                          in self.all_tutorial_pages.items()
+                          if page not in pages_seen
+                          and completed_tutorial_timestamp
+                          < last_mod_date["last_modified"]]
+        return pages_to_visit
+
+    def get_next_tutorial_page(self) -> str:
+        """Return the name of the next tutorial page to visit.
+
+        This is used for the forward arrow.  Return None if the user
+        has seen all tutorial pages.
+        """
+        pages_to_visit = self.get_pages_to_visit()
+        if pages_to_visit:
+            return pages_to_visit[0]
+        return None
+
+    def not_this_page(self, this_page) -> str:
+        """Return the next tutorial page, if all pages have been visited.
+        """
+        possible_pages = list(self.all_tutorial_pages.keys())
+        index_of_this_page = possible_pages.index(this_page)
+        if index_of_this_page == len(possible_pages) - 1:
+            return possible_pages[0]
+        return possible_pages[index_of_this_page + 1]
 
 
 class AddressFormView(LoginRequiredMixin, FormView):
@@ -254,3 +370,22 @@ def prepare_email(
     email.attach_alternative(html_message, "text/html")
 
     return email
+
+
+def get_MobilitoUser(self: Union[TemplateView, FormView]) -> Union[MobilitoUser, None]:
+    """Get the MobilitoUser object for the current user"""
+    if self.request.user.is_authenticated:
+        user, created = MobilitoUser.objects.get_or_create(
+            user=self.request.user,
+            defaults={
+                "user": self.request.user,
+                'first_time': True,
+            })
+        user: MobilitoUser
+        created: bool
+        if created:
+            logger.info(f"Created MobilitoUser {user}")
+    else:
+        user = None
+
+    return user

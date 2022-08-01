@@ -1,0 +1,11 @@
+{% if next_page %}
+    <div id="next-page-arrow" class="d-flex justify-content-center">
+        <a href="{% url 'mobilito:tutorial' next_page %}" style="font-size:2.5em;">
+            <i class="fas fa-arrow-circle-right" alt="Suivant"></i>
+        </a>
+    </div>
+{% else %}
+    <a href="{% url 'mobilito:recording'%}" class="btn donation-button">
+        Je commence à compter ! <i class="fas fa-arrow-right"></i>
+    </a>
+{% endif %}
