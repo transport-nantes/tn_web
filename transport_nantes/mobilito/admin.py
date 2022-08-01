@@ -29,3 +29,4 @@ class EventAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Session, SessionAdmin)
 admin.site.register(models.Event, EventAdmin)
+admin.site.register(models.MobilitoUser)

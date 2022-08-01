@@ -1,0 +1,19 @@
+{% extends 'mobilito/tutorial.html' %}
+{% load static %}
+
+{% block tutorial_content %}
+  
+    <section id="bike-icon-presentation">
+        <img class="d-flex mx-auto" 
+            src="{% static 'mobilito/images/bike-icon.png' %}"
+            alt="Icône de vélo">
+        <hr />
+        <h2><b>L'icône vélo</b></h2>
+        <p>
+            Cliquez ce bouton une fois pour compter le passage d'un <b>vélo</b>. 
+            Utilisez également ce bouton pour compter les
+            <b>trottinettes, et pourquoi pas les monocylces !</b>
+        </p>
+    </section>
+
+{% endblock tutorial_content %}
