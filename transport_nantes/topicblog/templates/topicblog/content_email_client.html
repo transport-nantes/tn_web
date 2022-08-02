@@ -44,7 +44,7 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     {% endif %}
     <tr> {% comment %} Title and Body_1 {% endcomment %}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
-            <p style='color: #6c757d'>Le {{ email.first_publication_date|date:"d M Y"  }},</p>
+            <p style='color: #6c757d'>Le {{ email.first_publication_date|date:"j F Y"  }},</p>
             <p style="margin:0;">
                 {% tn_markdown email.body_text_1_md %}
             </p>
