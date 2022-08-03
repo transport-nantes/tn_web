@@ -7,9 +7,13 @@ app_name = 'press'
 
 urlpatterns = [
     path('', PressMentionListView.as_view(), name='view'),
-    path('list/', PressMentionListViewAdmin.as_view(), name='list_items'),
-    path('new/', PressMentionCreateView.as_view(), name='new_item'),
-    path('update/<int:pk>', PressMentionUpdateView.as_view(), name='update_item'),
-    path('delete/<int:pk>', PressMentionDeleteView.as_view(), name='delete_item'),
-    path('detail/<int:pk>', PressMentionDetailView.as_view(), name='detail_item'),
+    path('admin/list/', PressMentionListViewAdmin.as_view(),
+         name='list_items'),
+    path('admin/new/', PressMentionCreateView.as_view(), name='new_item'),
+    path('admin/update/<int:pk>', PressMentionUpdateView.as_view(),
+         name='update_item'),
+    path('admin/delete/<int:pk>', PressMentionDeleteView.as_view(),
+         name='delete_item'),
+    path('admin/detail/<int:pk>', PressMentionDetailView.as_view(),
+         name='detail_item'),
 ]
