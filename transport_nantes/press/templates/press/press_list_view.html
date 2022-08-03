@@ -6,12 +6,9 @@
         <div class="card mb-3 p-0 h-100">
           {% if  press_mention.og_image %}
           <img src="{{ press_mention.og_image.url }}" class="card-img" alt="{{ press_mention.newspaper_name }}" style="height: 150px;">
-          {% else %}
-              {% comment %}
-              SHOULD NOT happen but if the website doesn't have
-              open graph image we don't display the image
-              {% endcomment %}
-              <p>Pas d'image</p>
+          {% else %} {% comment %}If no open graph image we display no
+              image.  {% endcomment %}
+              <p>&nbsp;</p>
           {% endif %}
           <div class="card-body">
               <a href="{{ press_mention.article_link }}" class="stretched-link text-muted text-decoration-none font-weight-bold">{{ press_mention.get_domaine_of_link }}</a>

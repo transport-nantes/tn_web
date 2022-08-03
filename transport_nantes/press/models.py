@@ -16,13 +16,12 @@ class PressMention(models.Model):
     article_title = models.CharField(max_length=200)
     article_summary = models.TextField()
     article_publication_date = models.DateField()
-    # OG data SHOULD NOT be blank, but if the site
-    # can't provide open graph or the user gives the wrong
-    # article link we let the possibility of the data to be blank.
+
+    # Not all sites have opengraph data.
     og_title = models.CharField(max_length=255, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.ImageField(
-        upload_to="press_mention/open_graph/", blank=True, default="press_mention/open_graph/default_press_mention.jpg")
+        upload_to="press_mention/open_graph/", blank=True, null=True)
 
     def __str__(self):
         return f"{self.newspaper_name} {self.article_title}"

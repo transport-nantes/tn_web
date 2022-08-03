@@ -162,7 +162,9 @@ def fetching_open_graph_data(form=False, presmention_id=None):
     try:
         page = requests.get(url)
     except Exception as e:
-        logger.warning(f"Can't acess to the website {e}.")
+        # It would be better to log the status code rather than a
+        # semi-meaningless "can't access".
+        logger.warning(f"Can't acess {e}.")
         return None
     tree = html.fromstring(page.content.decode("utf-8"))
     og_title = tree.xpath('//meta[@property="og:title"]/@content')
@@ -170,7 +172,7 @@ def fetching_open_graph_data(form=False, presmention_id=None):
         '//meta[@property="og:description"]/@content')
     og_image = tree.xpath('//meta[@property="og:image"]/@content')
     if not og_title or not og_description:
-        logger.warning("This website doesn't have all open graph data.")
+        logger.info(f"No opengraph data at {url}.")
         return None
     else:
         if form:
