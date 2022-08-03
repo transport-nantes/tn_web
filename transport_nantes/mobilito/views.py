@@ -369,6 +369,9 @@ def prepare_email(
     )
     email.attach_alternative(html_message, "text/html")
 
+    if settings.ROLE == "dev":
+        logger.info(f"Sending this email to {send_record.recipient.email}:\n\n"
+                    f"{render_to_string(template, context)}")
     return email
 
 
