@@ -67,16 +67,14 @@ class TutorialView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        this_page = kwargs.get('tutorial_page', 'presentation')
-        if this_page not in self.all_tutorial_pages:
+        self.this_page = kwargs.get('tutorial_page', 'presentation')
+        if self.this_page not in self.all_tutorial_pages:
             # Trying to access a tutorial page that doesn't exist.
             raise Http404()
-        context['active_page'] = this_page
-        self.template_name = f'mobilito/tutorial_{this_page}.html'
+        context['active_page'] = self.this_page
+        self.template_name = f'mobilito/tutorial_{self.this_page}.html'
 
         pages_seen = self.get_seen_pages_from_cookie()
-        if this_page not in pages_seen:
-            pages_seen.append(this_page)
         pickled_pages_seen = pickle.dumps(pages_seen)
         pages_seen = make_timed_token(
             string_key=b64encode(pickled_pages_seen).decode(),
@@ -95,7 +93,8 @@ class TutorialView(TemplateView):
                     timezone.utc)
                 user.first_time = False
                 user.save()
-            context["the_next_page"] = self.not_this_page(this_page)
+            context["seen_all_pages"] = True
+            context["the_next_page"] = self.not_this_page(self.this_page)
 
         return context
 
@@ -108,12 +107,14 @@ class TutorialView(TemplateView):
             if pickled_pages_seen:
                 pages_seen_list: list = pickle.loads(
                     b64decode(pickled_pages_seen))
+                if self.this_page not in pages_seen_list:
+                    pages_seen_list.append(self.this_page)
                 return pages_seen_list
             else:
                 logger.info(
                     "Invalid token provided for mobilito "
                     f"tutorial : {pages_seen}")
-        return []
+        return [self.this_page]
 
     def get_pages_to_visit(self) -> list:
         """Return the list of pages to visit.
@@ -127,7 +128,7 @@ class TutorialView(TemplateView):
             completed_tutorial_timestamp = user.completed_tutorial_timestamp
         else:
             completed_tutorial_timestamp = datetime(
-                year=2022, month=8, day=3, tzinfo=timezone.utc)
+                year=2022, month=8, day=2, tzinfo=timezone.utc)
         pages_to_visit = [page for page, last_mod_date
                           in self.all_tutorial_pages.items()
                           if page not in pages_seen

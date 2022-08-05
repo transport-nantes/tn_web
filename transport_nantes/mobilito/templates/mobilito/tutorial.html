@@ -8,7 +8,7 @@
 
 {% block app_content %}
 <div class="container">
-    {% if the_next_page %}
+    {% if seen_all_pages %}
         <a href="{% url 'mobilito:address_form'%}" class="d-flex justify-content-end">
             Passer à l'enregistrement >>
         </a>
