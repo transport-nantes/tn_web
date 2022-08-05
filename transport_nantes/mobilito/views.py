@@ -67,14 +67,14 @@ class TutorialView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.this_page = kwargs.get('tutorial_page', 'presentation')
-        if self.this_page not in self.all_tutorial_pages:
+        this_page = kwargs.get('tutorial_page', 'presentation')
+        if this_page not in self.all_tutorial_pages:
             # Trying to access a tutorial page that doesn't exist.
             raise Http404()
-        context['active_page'] = self.this_page
-        self.template_name = f'mobilito/tutorial_{self.this_page}.html'
+        context['active_page'] = this_page
+        self.template_name = f'mobilito/tutorial_{this_page}.html'
 
-        pages_seen = self.get_seen_pages_from_cookie()
+        pages_seen = self.get_seen_pages_from_cookie(this_page)
         pickled_pages_seen = pickle.dumps(pages_seen)
         pages_seen = make_timed_token(
             string_key=b64encode(pickled_pages_seen).decode(),
@@ -94,11 +94,11 @@ class TutorialView(TemplateView):
                 user.first_time = False
                 user.save()
             context["seen_all_pages"] = True
-            context["the_next_page"] = self.not_this_page(self.this_page)
+            context["the_next_page"] = self.not_this_page(this_page)
 
         return context
 
-    def get_seen_pages_from_cookie(self) -> list:
+    def get_seen_pages_from_cookie(self, this_page=None) -> list:
         """Return the list of pages seen from the cookie."""
         pages_seen = self.request.COOKIES.get(
             self.tutorial_cookie_name, '')
@@ -107,26 +107,34 @@ class TutorialView(TemplateView):
             if pickled_pages_seen:
                 pages_seen_list: list = pickle.loads(
                     b64decode(pickled_pages_seen))
-                if self.this_page not in pages_seen_list:
-                    pages_seen_list.append(self.this_page)
+                if this_page and this_page not in pages_seen_list:
+                    pages_seen_list.append(this_page)
                 return pages_seen_list
             else:
                 logger.info(
                     "Invalid token provided for mobilito "
                     f"tutorial : {pages_seen}")
-        return [self.this_page]
+
+        if this_page:
+            return [this_page]
+
+        return []
 
     def get_pages_to_visit(self) -> list:
-        """Return the list of pages to visit.
+        """Return the list of pages yet to visit in the tutorial.
 
-        This is used by the bottom arrow to redirect to the next page.
+        This is used by the bottom arrow to redirect to the next page, and
+        determine if one has seen all pages required or not.
         """
+        this_page = self.kwargs.get("tutorial_page", None)
         # This returns a list of pages visited.
-        pages_seen: list = self.get_seen_pages_from_cookie()
+        pages_seen: list = self.get_seen_pages_from_cookie(this_page)
+        completed_tutorial_timestamp = None
         if self.request.user.is_authenticated:
             user = get_MobilitoUser(self)
             completed_tutorial_timestamp = user.completed_tutorial_timestamp
-        else:
+
+        if not completed_tutorial_timestamp:
             completed_tutorial_timestamp = datetime(
                 year=2022, month=8, day=2, tzinfo=timezone.utc)
         pages_to_visit = [page for page, last_mod_date
@@ -157,7 +165,7 @@ class TutorialView(TemplateView):
         return possible_pages[index_of_this_page + 1]
 
 
-class AddressFormView(LoginRequiredMixin, FormView):
+class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
     """Present the address form.
     The form is optional to fill.
     """
@@ -167,12 +175,22 @@ class AddressFormView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('mobilito:recording')
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(FormView, self).get_context_data(**kwargs)
         # Clear session data if user had filled the form before.
         self.request.session['address'] = None
         self.request.session['city'] = None
         self.request.session['postcode'] = None
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        # If the user has to see the tutorial (because it has been updated, or
+        # because it is the first time), we need to redirect to the tutorial.
+        if self.get_pages_to_visit():
+            return HttpResponseRedirect(
+                reverse('mobilito:tutorial',
+                        kwargs={'tutorial_page': self.get_next_tutorial_page()}))
+        return self.render_to_response(context)
 
     def form_valid(self, form):
         address, city, postcode, country = (
@@ -191,11 +209,11 @@ class AddressFormView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class RecordingView(TemplateView):
+class RecordingView(TutorialView, TemplateView):
     template_name = 'mobilito/recording.html'
 
     def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
+        context = super(TemplateView, self).get_context_data(**kwargs)
         address = self.request.session.get('address')
         city = self.request.session.get('city')
         postcode = self.request.session.get('postcode')
@@ -217,6 +235,16 @@ class RecordingView(TemplateView):
             f'{self.request.user.email} started a new session '
             f'id={session_object.id}')
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        # If the user has to see the tutorial (because it has been updated, or
+        # because it is the first time), we need to redirect to the tutorial.
+        if self.get_pages_to_visit():
+            return HttpResponseRedirect(
+                reverse('mobilito:tutorial',
+                        kwargs={'tutorial_page': self.get_next_tutorial_page()}))
+        return self.render_to_response(context)
 
     def post(self, request: HttpRequest, *args, **kwargs) \
             -> HttpResponseRedirect:
