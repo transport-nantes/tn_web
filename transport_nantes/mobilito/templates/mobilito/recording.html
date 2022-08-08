@@ -31,7 +31,7 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
                 <button type="button"
                 data-quantity="plus"
                 data-field="pedestrian"
-                class='mobilito-btn d-flex flex-column p-5'>
+                class='mobilito-btn d-flex flex-column p-5 pedestrian'>
                     <i class="fa fa-solid fa-person-walking"></i>
                     <span class="button-counter" name="pedestrian-counter">0</span>
                 </button>
@@ -48,7 +48,7 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
                 <button type="button"
                 data-quantity="plus"
                 data-field="bicycle"
-                class='mobilito-btn d-flex flex-column p-5'>
+                class='mobilito-btn d-flex flex-column p-5 bicycle'>
                     <i class="fa-solid fa-person-biking"></i>
                     <span class="button-counter" name="bicycle-counter">0</span>
                 </button>
@@ -67,7 +67,7 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
                 <button type="button"
                 data-quantity="plus"
                 data-field="motor-vehicle"
-                class='mobilito-btn d-flex flex-column p-5'>
+                class='mobilito-btn d-flex flex-column p-5 motor-vehicle'>
                     <i class="fa-solid fa-car"></i>
                     <span class="button-counter" name="motor-vehicle-counter">0</span>
                 </button>
@@ -85,7 +85,7 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
                 type="button"
                 data-quantity="plus"
                 data-field="public-transport"
-                class='mobilito-btn d-flex flex-column p-5'>
+                class='mobilito-btn d-flex flex-column p-5 public-transport'>
                     <i class="fa-solid fa-train-tram"></i>
                     <span class="button-counter" name="public-transport-counter">0</span>
                 </button>

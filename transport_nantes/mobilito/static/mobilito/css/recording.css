@@ -1,4 +1,3 @@
-/* Why is root being redefined/extended? */
 :root {
     --button-color: var(--mobilitains-bleu);
     --button-font-color: #fff;
@@ -19,11 +18,7 @@ body {
     justify-content: center;
     font-size: 46px;
     color: var(--button-font-color);
-    transition: background-color 0.2s ease-out;
     margin: 0.10rem;
-}
-.mobilito-btn:active {
-    filter: brightness(1.3);
 }
 .mobilito-btn:focus {
     outline: none;
@@ -54,15 +49,31 @@ button[data-field="pedestrian"] {
     background-color: var(--mobilitains-bleu);
     border-color: var(--mobilitains-bleu);
 }
+.pedestrian:active {
+    background-color: white;;
+    color: var(--mobilitains-bleu);
+}
 button[data-field="bicycle"] {
     background-color: var(--mobilitains-bleu-marine);
     border-color: var(--mobilitains-bleu-marine);
+}
+.bicycle:active {
+    background-color: white;;
+    color: var(--mobilitains-bleu-marine);
 }
 button[data-field="motor-vehicle"] {
     background-color: var(--mobilitains-orange);
     border-color: var(--mobilitains-orange);
 }
+.motor-vehicle:active {
+    background-color: white;;
+    color: var(--mobilitains-orange);
+}
 button[data-field="public-transport"] {
     background-color: var(--mobilitains-rouge);
     border-color: var(--mobilitains-rouge);
+}
+.public-transport:active {
+    background-color: white;;
+    color: var(--mobilitains-rouge);
 }
