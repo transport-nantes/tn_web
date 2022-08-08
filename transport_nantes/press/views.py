@@ -19,8 +19,9 @@ logger = logging.getLogger("django")
 class PressMentionListView(ListView):
     model = PressMention
     template_name = "press/press_list_view.html"
-    queryset = PressMention.objects.all()[:30]
+    queryset = PressMention.objects.all()
     context_object_name = 'press_mention_list'
+    paginate_by = 10
 
 
 class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
