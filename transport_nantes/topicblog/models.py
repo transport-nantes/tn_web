@@ -228,6 +228,8 @@ class TopicBlogObjectBase(models.Model):
                 self.publication_date = now_timestamp
             else:
                 self.publication_date = now_timestamp
+            if self.scheduled_for_deletion_date:
+                self.scheduled_for_deletion_date = None
             return True
         else:
             return False
