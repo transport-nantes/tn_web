@@ -1,7 +1,7 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 
 {% block content %}
-<div class="container-fluid pl-5 py-3">
+<div class="d-flex flex-column container-fluid pl-5 py-3 mx-auto col-12 col-md-10 col-lg-6">
     <div class="mb-3">
         <strong><a href="{% url "dashboard:index" %}">
             <i class="fa fa-arrow-left" aria-hidden="true"></i>
@@ -36,21 +36,24 @@
         </div>
         <a href="{% url new_object_url %}" class="btn btn-outline-info mb-3 mt-2 mr-auto">+ Nouveau...</a>
     </div>
-    {% for object in object_list %}
-    <p>
-	<strong>
-	    <a href="{% url listone_object_url object.slug|default:'--sans-slug--' %}?from={{request.GET.active}}">
-		{{ object.slug }}</a>
-	</strong>
-	<span class="text-muted">
-	    {% if object.date_published %}publié {{ object.date_published|date:"l d-m-Y" }}
-	    {% endif %}
-	    modifié {{ object.date_created|date:"l d-m-Y" }}
-	</span>
-	[#={{ object.count }}]
-    </p>
-    {% empty %}
-    <p>Aucun résultat.</p>
-    {% endfor %}
+    <div class='d-flex flex-column'>
+      {% for object in object_list %}
+        <p>
+          <strong>
+            <a href="{% url listone_object_url object.slug|default:'--sans-slug--' %}?from={{request.GET.active}}">
+              {{ object.slug }}
+            </a>
+          </strong>
+          <span class="small text-muted">
+            {% if object.publication_date %}
+              Dernière publication le {{ object.publication_date|date:"l d-m-Y" }}
+            {% endif %}
+            [{{ object.count }} éléments]
+          </span>
+        </p>
+      {% empty %}
+        <p>Aucun résultat.</p>
+      {% endfor %}
+    </div>
 </div>
 {% endblock content %}
