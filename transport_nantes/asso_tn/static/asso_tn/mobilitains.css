@@ -580,3 +580,9 @@ span.centered {
     object-fit: cover; /* Equivalent of the background-size: cover; of a background-image */
     object-position: center;
 }
+
+.press-card-image{
+    width: 100%;
+    height: 20vh;
+    object-fit: cover;
+}
