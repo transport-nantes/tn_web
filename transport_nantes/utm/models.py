@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UTM(models.Model):
     """Model used to track where our traffic comes from.
 
@@ -56,5 +57,7 @@ class UTM(models.Model):
     ua_is_pc = models.BooleanField(blank=True, default=False)
     ua_is_bot = models.BooleanField(blank=True, default=False)
     ua_is_email_client = models.BooleanField(blank=True, default=False)
+
+    user_is_authenticated = models.BooleanField(blank=True, default=False)
 
     timestamp = models.DateTimeField(auto_now=True)
