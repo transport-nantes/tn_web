@@ -23,13 +23,30 @@ Maybe there's a better way, I just haven't found it yet.
 				<a type="button" class="btn btn-outline-info btn-sm"
 				href="{% url page.listone_object_url page.slug|default:'--sans-slug--' %}">Liste</a>
 				{% if page.publication_date %}
-					publié {{ page.publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }}
-				{% else %}
-					{% if page.first_publication_date %}
-						publié {{ page.first_publication_date|date:"l d-m-Y" }} par {{ page.publisher.email }} (retiré)
-					{% else %}
-						(brouillon)
+					
+					{% if page.id == served_object.id %}
+						<span>
+							(Live) Publié {{ page.publication_date|date:"l d-m-Y à G:i" }}
+							par {{ page.publisher.email }}
+						</span>
 					{% endif %}
+					
+					{% if page.is_publishable and page.id != served_object.id %}
+						<span>
+							(Retiré) Publié depuis le {{ page.publication_date|date:"l d-m-Y à G:i" }}
+							par {{ page.publisher.email }}
+						</span>
+						<form
+						action="{% url page.viewbypkid_object_url pkid page.slug|default:'--sans-slug--' %}"
+						method="POST"
+						class="pl-1">
+							{% csrf_token %}
+							<input type="submit" class="btn btn-outline-info btn-sm" value="Publier">
+						</form>
+					{% endif %}
+
+				{% else %}
+					<span>Jamais publié.</span>
 					{% if page.is_publishable %}
 						<form
 						action="{% url page.viewbypkid_object_url pkid page.slug|default:'--sans-slug--' %}"

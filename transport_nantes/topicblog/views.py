@@ -178,7 +178,7 @@ class TopicBlogBaseView(TemplateView):
             tb_object = self.model.objects.filter(
                 slug=kwargs['the_slug'],
                 publication_date__isnull=False
-            ).order_by("date_created").last()
+            ).order_by("publication_date").last()
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_object is None:
@@ -228,6 +228,12 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
         context = tb_object.set_social_context(context)
         context['topicblog_admin'] = True
         context["base_model"] = self.model.__name__.lower()
+
+        context["served_object"] = self.model.objects.filter(
+            slug=slug,
+            publication_date__isnull=False
+        ).order_by("publication_date").last()
+
         if self.transactional_send_record_class:
             context["transactional_send_record_class"] = \
                 self.transactional_send_record_class.__name__
@@ -246,9 +252,6 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
         try:
             tb_object.publisher = self.request.user
             if tb_object.publish():
-                self.model.objects.filter(
-                    slug=tb_object.slug).exclude(
-                        id=tb_object.id).update(publication_date=None)
                 tb_object.save()
                 return HttpResponseRedirect(tb_object.get_absolute_url())
         except Exception as e:

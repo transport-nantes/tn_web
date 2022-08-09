@@ -1,44 +1,60 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 
 {% block content %}
-<div class="container-fluid pl-5 py-3">
+<div class="d-flex flex-column container-fluid pl-5 py-3 mx-auto col-12 col-md-10 col-lg-6">
     <p>
-    <strong>
-        <a href="{% url listall_object_url %}?active={{request.GET.from}}">
-	    <i class="fa fa-arrow-left" aria-hidden="true"></i>
-	    {{ slug }}
-	</a>
-    </strong>
-    {% if servable_object %}
-    <a type="button" class="btn btn-outline-info btn-sm"
-       href="{% url viewbyslug_object_url servable_object.slug %}">Visualiser (usager)</a>
-    {% endif %}
+        <strong>
+            <a href="{% url listall_object_url %}?active={{request.GET.from}}">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                {{ slug }}
+            </a>
+        </strong>
+        {% if servable_object %}
+            <a type="button" class="btn btn-outline-info btn-sm"
+            href="{% url viewbyslug_object_url servable_object.slug %}">
+                Visualiser (usager)
+            </a>
+        {% endif %}
     </p>
     {% for object in object_list %}
         <p class="small text-monospace">
-        {% if servable_object and object.id == servable_object.id %}
-            <span class="text-normal font-weight-bold">
-        {% else %}
-            <span class="text-muted">
-        {% endif %}
-        [{{ object.id }}]</span>
-        {{ object.header_title }} <span class="text-muted">{{ object.header_description }}</span>
-        <br>
-        {% if object.publication_date %}
-            Publié {{ object.publication_date|date:"l d-m-Y à G:i" }}
             {% if servable_object and object.id == servable_object.id %}
-                    depuis {{ object.first_publication_date|date:"l d-m-Y  à G:i" }}
-            {% endif %}
-        {% else %}
-            {% if object.first_publication_date %}
-                publiée {{ object.first_publication_date|date:"l d-m-Y" }} par {{ object.publisher.email }} (retirée)
+                <span class="text-normal font-weight-bold">
             {% else %}
-                (brouillon)
+                <span class="text-muted">
             {% endif %}
-            {% if object.is_publishable %}
-                    <span class="text-muted"><i>prêt à publier</i></span>
+                [{{ object.id }}]
+            </span>
+
+            {{ object.header_title }}
+
+            <span class="text-muted">{{ object.header_description }}</span>
+            <br>
+            {% if object.publication_date %}
+                {% if servable_object and object.id == servable_object.id %}
+                    <span style="color: green;font-weight: bold;">
+                        (Live) Publié {{ object.publication_date|date:"l d-m-Y à G:i" }}
+                    {% if object.publication_date == object.first_publication_date %}
+                        (première publication)
+                    {% else %}
+                        première publication le {{ object.first_publication_date|date:"l d-m-Y  à G:i" }}
+                    {% endif %}
+                        par {{ object.publisher.email }}
+                    </span>
+                {% else %}
+                    <span>
+                        (Retiré) Publié depuis le {{ object.publication_date|date:"l d-m-Y  à G:i" }} par {{ object.publisher.email }}
+                    </span>
+                {% endif %}
+                </span>
+            {% else %}
+                <span>
+                    Jamais publié.
+                </span>
+                {% if object.is_publishable %}
+                        <span class="text-muted"><i>✓ prêt à publier</i></span>
+                {% endif %}
             {% endif %}
-        {% endif %}
             <br>
             Créé {{ object.date_created|date:"l d-m-Y à G:i" }} par {{ object.user.email }}
             <br>
