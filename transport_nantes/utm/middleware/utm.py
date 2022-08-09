@@ -17,6 +17,7 @@ tracked_params = [
     "twclid",
 ]
 
+
 class UtmMiddleware:
 
     def __init__(self, get_response):
@@ -60,6 +61,8 @@ class UtmMiddleware:
             utm.gclid = ('gclid' in params)
             utm.msclkid = ('msclkid' in params)
             utm.twclid = ('twclid' in params)
+
+            utm.user_is_authenticated = request.user.is_authenticated
 
             utm.save()
 
