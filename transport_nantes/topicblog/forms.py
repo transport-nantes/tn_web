@@ -51,7 +51,8 @@ class TopicBlogItemForm(ModelFormTemplateList):
         model = TopicBlogItem
         # Admins can still edit those values
         exclude = ('item_sort_key', 'user',
-                   'publication_date', 'first_publication_date', 'publisher')
+                   'publication_date', 'first_publication_date', 'publisher',
+                   'scheduled_for_deletion_date')
 
 
 class TopicBlogEmailSendForm(forms.Form):
