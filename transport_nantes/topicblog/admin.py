@@ -5,6 +5,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
                      SendRecordTransactionalPress,
                      SendRecordTransactionalEmail,
                      SendRecordTransactionalAdHoc,
+                     EmailCampaign,
                      )
 
 
@@ -50,6 +51,27 @@ class TopicBlogMailingListPitchAdmin(admin.ModelAdmin):
     search_fields = ("title", "slug", "mailing_list")
 
 
+class SendRecordMarketingEmailTabularInline(admin.TabularInline):
+    model = SendRecordMarketingEmail
+    extra = 0
+
+
+class SendRecordMarketinngPressTabularInline(admin.TabularInline):
+    model = SendRecordMarketingPress
+    extra = 0
+
+
+class EmailCampaignAdmin(admin.ModelAdmin):
+    inlines = [SendRecordMarketingEmailTabularInline,
+               SendRecordMarketinngPressTabularInline,
+               ]
+    readonly_fields = ('mailing_list', 'timestamp', 'subject')
+
+    # Makes the inlines read-only
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
 admin.site.register(TopicBlogPress, TopicBlogPressAdmin)
@@ -60,3 +82,4 @@ admin.site.register(SendRecordMarketingPress, SendRecordMarketingPressAdmin)
 admin.site.register(SendRecordTransactionalEmail)
 admin.site.register(SendRecordTransactionalPress)
 admin.site.register(SendRecordTransactionalAdHoc)
+admin.site.register(EmailCampaign, EmailCampaignAdmin)

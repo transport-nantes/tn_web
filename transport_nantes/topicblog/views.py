@@ -36,7 +36,8 @@ from mailing_list.events import (get_subcribed_users_email_list,
                                  user_subscribe_count)
 from mailing_list.models import MailingList
 
-from .models import (SendRecordTransactionalEmail,
+from .models import (EmailCampaign, SendRecordBase, SendRecordMarketing,
+                     SendRecordTransactionalEmail,
                      SendRecordTransactionalPress, TopicBlogItem,
                      TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
@@ -326,7 +327,7 @@ class SendableObjectMixin:
 
     # Defines the concrete subclass of SendRecordBase that we use to
     # record this sending operation.
-    send_record_class = None
+    send_record_class: Type[SendRecordBase] = None
     # Defines the concrete subclass of sendable that we are treating.
     base_model = None
 
@@ -350,7 +351,8 @@ class SendableObjectMixin:
         return tb_objects[0]
 
     def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record) \
+                      mailing_list: MailingList,
+                      send_record: Type[SendRecordMarketing]) \
             -> mail.EmailMultiAlternatives:
         """
         Creates a sendable email object from a TBobject with a mail
@@ -509,7 +511,8 @@ class SendableObjectMixin:
         return context
 
     def create_send_record(self,  slug: str, mailing_list: MailingList,
-                           recipient: str):
+                           recipient: str,
+                           email_campaign: EmailCampaign = None):
         """
         Create a new send record object.
 
@@ -523,11 +526,13 @@ class SendableObjectMixin:
 
         """
         recipient_user_object = User.objects.get(email=recipient)
-        send_record = self.send_record_class(
+        send_record: Type[SendRecordBase] = self.send_record_class(
             slug=slug,
             mailinglist=mailing_list,
             recipient=recipient_user_object,
         )
+        if email_campaign:
+            send_record.email_campaign = email_campaign
         send_record.save()
         logger.info("Created send record " + str(type(send_record)))
         return send_record
@@ -591,6 +596,10 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
             mailing_list_token=mailing_list_token)
         mailing_list: MailingList
         recipient_list = get_subcribed_users_email_list(mailing_list)
+        email_campaign = EmailCampaign.objects.create(
+            mailing_list=mailing_list,
+            subject=tbe_object.subject,
+        )
 
         # We create and send an email for each recipient, each with
         # custom informations (like the unsubscribe link).
@@ -599,7 +608,9 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
                 send_record = self.create_send_record(
                     slug=tbe_slug,
                     mailing_list=mailing_list,
-                    recipient=recipient)
+                    recipient=recipient,
+                    email_campaign=email_campaign,
+                )
             except IntegrityError:
                 logger.info(f"{recipient} already received an email for "
                             f"{tbe_slug}")
@@ -1296,7 +1307,8 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
             send_record.send_time = datetime.now(timezone.utc)
             send_record.aws_message_id = aws_message_id
             send_record.save()
-            logger.info(f"send_received : {send_record_class.__name__} id={send_record.pk}")
+            logger.info(f"send_received : {send_record_class.__name__}"
+                        f"id={send_record.pk}")
         except Exception as e:
             logger.error(
                 f"Error while updating send_record : {e}")
@@ -1374,7 +1386,7 @@ def mark_moribund_and_delete(slug_queryset):
             logger.info(f"Deleting object {tb_object.id}.")
             tb_object.delete()
         elif tb_object.is_moribund() and \
-             tb_object.scheduled_for_deletion_date is None:
+                tb_object.scheduled_for_deletion_date is None:
             logger.info(f"Marking as moribund object {tb_object.id}.")
             tb_object.scheduled_for_deletion_date = datetime.now(timezone.utc)
             tb_object.save()

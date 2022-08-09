@@ -472,6 +472,25 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
             return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
 
 
+class EmailCampaign(models.Model):
+    """Represent the sending of emails to a mailing list.
+
+    A campaign is the act to send to a defined mailing list (e.g. newsletter,
+    press release...) a content.
+    Its role is to track email perfomances (e.g. open rate, click rate...).
+    """
+
+    mailing_list = models.ForeignKey('mailing_list.MailingList',
+                                     on_delete=models.PROTECT, null=True,
+                                     blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    subject = models.TextField(blank=True)
+
+    def __str__(self):
+        return '{ts} - {subject}'.format(
+            ts=self.timestamp, subject=self.subject)
+
+
 class SendRecordBase(models.Model):
     """Base model for Send Records."""
 
@@ -575,6 +594,8 @@ class SendRecordMarketing(SendRecordBase):
     # unsubscribe requests.
     mailinglist = models.ForeignKey(MailingList, on_delete=models.PROTECT)
     unsubscribe_time = models.DateTimeField(null=True, blank=True)
+    email_campaign = models.ForeignKey(EmailCampaign, on_delete=models.PROTECT,
+                                       null=True, blank=True)
 
 
 ######################################################################
