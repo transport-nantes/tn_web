@@ -42,5 +42,4 @@ class EmailCampaignsDashboardView(PermissionRequiredMixin,
     # ListView
     model = EmailCampaign
     template_name = 'dashboard/email_campaigns.html'
-    paginate_by = 10
-    ordering = ('timestamp')
+    ordering = ('-timestamp')

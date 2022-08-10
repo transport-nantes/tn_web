@@ -1,5 +1,45 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" 
+    href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+{% endblock styles %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript"
+    charset="utf8"
+    src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    {% block datatable_config %}
+        <script>
+            $(document).ready(function() {
+                $('#email-dashboard').DataTable({
+                    // Default is english
+                    "language": {
+                        "lengthMenu": "Afficher _MENU_ campagnes par page",
+                        "zeroRecords": "Aucune campagne trouvée",
+                        "info": "Page _PAGE_ sur _PAGES_",
+                        "infoEmpty": "Aucune campagne trouvée",
+                        "infoFiltered": "(filtré sur  un total de _MAX_ campagnes)",
+                        "search": "Rechercher :",
+                        "paginate": {
+                            "first": "Premier",
+                            "last": "Dernier",
+                            "next": "Suivant",
+                            "previous": "Précédent"
+                        },
+                        "emptyTable": "Aucune campagne trouvée",
+                    },
+                    // Default order is now 1st column (date) descending instead of
+                    // alphabetical slug
+                    order: [[1, 'desc']],
+                });
+            } );
+        </script>
+    {% endblock datatable_config %}
+{% endblock scripts %}
+
 {% block app_content %}
 
 <div class="px-3">
