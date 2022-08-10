@@ -1,8 +1,11 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from asso_tn.utils import StaffRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
+from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from asso_tn.utils import StaffRequiredMixin
-from django.urls import reverse_lazy
+from django.views.generic.list import ListView
+from topicblog.models import EmailCampaign
 
 from .forms import SignatureForm
 
@@ -27,3 +30,17 @@ class SignatureView(LoginRequiredMixin, FormView):
     """Form to generate a mail signature"""
     template_name = 'dashboard/signature.html'
     form_class = SignatureForm
+
+
+class EmailCampaignsDashboardView(PermissionRequiredMixin,
+                                  LoginRequiredMixin,
+                                  ListView):
+    """Dashboard of email campaigns"""
+    # Login & Permission
+    login_url = reverse_lazy("authentication:login")
+    permission_required = ('topicblog.tbe.may_send', 'topicblog.tbp.may_send')
+    # ListView
+    model = EmailCampaign
+    template_name = 'dashboard/email_campaigns.html'
+    paginate_by = 10
+    ordering = ('timestamp')

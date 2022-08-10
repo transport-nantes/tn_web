@@ -1,0 +1,14 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+
+<h1>Dashboard here</h1>
+<ul>
+{% for campaign in emailcampaign_list %}
+    <li>{{ campaign.mailing_list}} - {{ campaign.subject}}</li>
+{% empty %}
+    <li>Aucune campagne trouvée.</li>
+{% endfor %}
+</ul>
+
+{% endblock app_content %}
