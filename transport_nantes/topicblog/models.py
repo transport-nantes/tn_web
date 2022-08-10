@@ -487,8 +487,46 @@ class EmailCampaign(models.Model):
     subject = models.TextField(blank=True)
 
     def __str__(self):
-        return '{ts} - {subject}'.format(
-            ts=self.timestamp, subject=self.subject)
+        return '{ts} - {mailing_list} - {subject}'.format(
+            ts=self.timestamp.strftime("%F à %X"), subject=self.subject,
+            mailing_list=self.mailing_list.mailing_list_name)
+
+    def get_send_records(self):
+        """Return a list of send records for this campaign."""
+        associated_send_records = self.sendrecordmarketingemail_set.all()
+        if associated_send_records:
+            return associated_send_records
+        else:
+            return self.sendrecordmarketingpress_set.all()
+
+    @property
+    def send_records_count(self):
+        """Return the number of send records for this campaign."""
+        return self.get_send_records().count()
+
+    @property
+    def opening_rate(self):
+        send_records = self.get_send_records()
+        all_mails_count = send_records.count()
+        open_mails_count = send_records.filter(open_time__isnull=False).count()
+        if all_mails_count == 0:
+            return 0
+        else:
+            return round(open_mails_count / all_mails_count * 100, 2)
+
+    @property
+    def click_rate(self):
+        send_records = self.get_send_records()
+        all_mails_count = send_records.count()
+        click_mails_count = send_records.filter(click_time__isnull=False).count()
+        if all_mails_count == 0:
+            return 0
+        else:
+            return round(click_mails_count / all_mails_count * 100, 2)
+
+    @property
+    def name(self):
+        return self.subject
 
 
 class SendRecordBase(models.Model):
