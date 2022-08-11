@@ -576,6 +576,11 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
             raise ImproperlyConfigured("base_model must be a class with a "
                                        "send_object_url attribute")
         context["send_to_view"] = self.base_model.send_object_url
+        context["base_model"] = self.base_model
+        context["sent_object"] = self.base_model.objects.filter(
+            slug=self.kwargs['the_slug'],
+            publication_date__isnull=False
+            ).order_by("date_created").last()
         return context
 
     def form_valid(self, form):
