@@ -79,6 +79,21 @@
             </tbody>
         </table>
     </div>
+    <form class="d-flex" method="POST" action="{% url 'dashboard:email_campaigns' %}">
+        {% csrf_token %}
+        <div class="form-group d-flex flex-row align-items-center">
+            <label for="email-input">Rechercher un utilisateur par email&nbsp;:</label>
+            <input id="email-input" class="form-control" type="email" name="email" placeholder="Email">
+            <button class="ml-1 btn navigation-button" type="submit">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            {% for message in messages %}
+            <span class="d-flex invalid-feedback font-weight-bold ml-1">
+                {{ message }}
+            </span>
+            {% endfor %}
+        </div>
+    </form>
 </div>
 
 {% endblock app_content %}

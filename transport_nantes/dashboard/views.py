@@ -1,7 +1,9 @@
 from asso_tn.utils import StaffRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.auth.models import User
+from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -45,6 +47,27 @@ class EmailCampaignsDashboardView(PermissionRequiredMixin,
     model = EmailCampaign
     template_name = 'dashboard/email_campaigns.html'
     ordering = ('-timestamp')
+
+    def post(self, request, *args, **kwargs):
+        """Handle POST requests
+        Post requests are made to search user from its mail address,
+        and redirect to the user's send records detail page.
+        """
+        # Get the user from the POST request
+        try:
+            user = User.objects.get(email=request.POST['email'])
+        except User.DoesNotExist:
+            user = None
+
+        if user:
+            return HttpResponseRedirect(
+                reverse_lazy("dashboard:user_send_records",
+                             kwargs={'pk': user.pk}))
+        else:
+            messages.add_message(
+                request, messages.ERROR,
+                "Aucun utilisateur ne correspond à cette adresse.")
+            return self.get(request, *args, **kwargs)
 
 
 class EmailCampaignDetailView(PermissionRequiredMixin,
