@@ -60,7 +60,11 @@
             <tbody>
                 {% for campaign in emailcampaign_list %}
                 <tr>
-                    <td scope='row'>{{ campaign.name }}</td>
+                    <td scope='row'>
+                        <a href="{% url 'dashboard:email_campaign_details' campaign.id %}">
+                            {{ campaign.name }}
+                        </a>
+                    </td>
                     <td>{{ campaign.timestamp|date:"d/m/Y" }}</td>
                     <td>{{ campaign.mailing_list }}</td>
                     <td>{{campaign.send_records_count}}</td>

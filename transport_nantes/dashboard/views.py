@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from topicblog.models import EmailCampaign
 
 from .forms import SignatureForm
@@ -43,3 +44,16 @@ class EmailCampaignsDashboardView(PermissionRequiredMixin,
     model = EmailCampaign
     template_name = 'dashboard/email_campaigns.html'
     ordering = ('-timestamp')
+
+
+class EmailCampaignDetailView(PermissionRequiredMixin,
+                              LoginRequiredMixin,
+                              DetailView):
+    """Detail of an email campaign"""
+    # Login & Permission
+    login_url = reverse_lazy("authentication:login")
+    permission_required = ('topicblog.tbe.may_send', 'topicblog.tbp.may_send')
+    # DetailView
+    template_name = 'dashboard/email_campaign_details.html'
+    model = EmailCampaign
+    context_object_name = 'campaign'

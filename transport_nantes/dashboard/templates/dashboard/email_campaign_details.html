@@ -1,0 +1,42 @@
+{% extends 'dashboard/email_campaigns.html' %}
+
+{% block app_content %}
+<div class="px-3">
+    <a class="btn navigation-button mb-2" href="{% url 'dashboard:email_campaigns' %}">
+        <i class="fas fa-arrow-left"></i>
+        Retour à la liste des campagnes
+    </a>
+    <h1>Détail de la campagne</h1>
+
+    <div class="table-responsive">
+        <table id="email-dashboard" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Destinataire</th>
+                    <th scope="col">Date d'envoi</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Date de réception</th>
+                    <th scope="col">Date d'ouverture</th>
+                    <th scope="col">Date du 1er clic</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sendrecord in campaign.get_send_records %}
+                <tr>
+                    <td scope='row'>{{ sendrecord.recipient.email }}</td>
+                    <td>{{ sendrecord.handoff_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.status }}</td>
+                    <td>{{ sendrecord.send_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.open_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.click_time|date:"d/m/Y H:i:s" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">Aucun journal d'envoi trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock app_content %}
