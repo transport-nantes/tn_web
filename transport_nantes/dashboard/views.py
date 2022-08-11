@@ -1,6 +1,7 @@
 from asso_tn.utils import StaffRequiredMixin
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -57,3 +58,16 @@ class EmailCampaignDetailView(PermissionRequiredMixin,
     template_name = 'dashboard/email_campaign_details.html'
     model = EmailCampaign
     context_object_name = 'campaign'
+
+
+class UserSendRecordsDetailView(PermissionRequiredMixin,
+                                LoginRequiredMixin,
+                                DetailView):
+    """Detail of an email campaign"""
+    # Login & Permission
+    login_url = reverse_lazy("authentication:login")
+    permission_required = ('topicblog.tbe.may_send', 'topicblog.tbp.may_send')
+    # DetailView
+    template_name = 'dashboard/user_send_records_details.html'
+    model = User
+    context_object_name = 'user_object'

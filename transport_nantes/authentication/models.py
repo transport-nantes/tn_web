@@ -1,7 +1,9 @@
+from itertools import chain
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -38,6 +40,17 @@ class Profile(models.Model):
             uid=self.user.pk,
             conf=confirmed, auth=auth,
             commune=self.commune, cp=self.code_postal)
+
+    def get_all_send_records(self) -> list:
+        """Return all send records for this user"""
+        return list(
+            chain(
+                self.user.sendrecordmarketingemail_set.all().annotate(
+                    sr_type=models.Value("Newsletter")),
+                self.user.sendrecordmarketingpress_set.all().annotate(
+                    sr_type=models.Value("Presse")),
+            ))
+
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):

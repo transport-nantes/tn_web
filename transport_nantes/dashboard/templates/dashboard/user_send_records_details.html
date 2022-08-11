@@ -1,19 +1,49 @@
 {% extends 'dashboard/email_campaigns.html' %}
 
+{% block datatable_config %}
+<script>
+    $(document).ready(function() {
+        $('#email-dashboard').DataTable({
+            // Default is english
+            "language": {
+                "lengthMenu": "Afficher _MENU_ journaux d'envoi par page",
+                "zeroRecords": "Aucun mail envoyé.",
+                "info": "Page _PAGE_ sur _PAGES_",
+                "infoEmpty": "Aucun mail envoyé.",
+                "infoFiltered": "(filtré sur  un total de _MAX_ journaux d'envoi)",
+                "search": "Rechercher :",
+                "paginate": {
+                    "first": "Premier",
+                    "last": "Dernier",
+                    "next": "Suivant",
+                    "previous": "Précédent"
+                },
+                "emptyTable": "Aucun mail envoyé.",
+            },
+            // Default order is now 1st column (date) descending instead of
+            // alphabetical slug
+            order: [[1, 'desc']],
+        });
+    } );
+</script>
+{% endblock datatable_config %}
+
 {% block app_content %}
+
 <div class="px-3">
     <a class="btn navigation-button mb-2" href="{% url 'dashboard:email_campaigns' %}">
         <i class="fas fa-arrow-left"></i>
         Retour à la liste des campagnes
     </a>
-    <h1>Détail de la campagne</h1>
+    <h1>Tous les envois à l'addresse {{ user_object.email }}</h1>
 
     <div class="table-responsive">
         <table id="email-dashboard" class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th scope="col">Destinataire</th>
+                    <th scope="col">Slug envoyé</th>
                     <th scope="col">Date d'envoi</th>
+                    <th scope="col">Newsletter/Presse</th>
                     <th scope="col">Status</th>
                     <th scope="col">Date de réception</th>
                     <th scope="col">Date d'ouverture</th>
@@ -21,14 +51,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for sendrecord in campaign.get_send_records %}
+                {% for sendrecord in user_object.profile.get_all_send_records %}
                 <tr>
-                    <td scope='row'>
-                        <a href="{% url 'dashboard:user_send_records' sendrecord.recipient.id %}">
-                            {{ sendrecord.recipient.email }}
-                        </a>
-                    </td>
+                    <td scope='row'>{{ sendrecord.slug }}</td>
                     <td>{{ sendrecord.handoff_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.sr_type }}</td>
                     <td>{{ sendrecord.status }}</td>
                     <td>{{ sendrecord.send_time|date:"d/m/Y H:i:s" }}</td>
                     <td>{{ sendrecord.open_time|date:"d/m/Y H:i:s" }}</td>
@@ -43,4 +70,5 @@
         </table>
     </div>
 </div>
+
 {% endblock app_content %}
