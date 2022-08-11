@@ -1,4 +1,3 @@
-from asso_tn.utils import StaffRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
@@ -14,7 +13,7 @@ from topicblog.models import EmailCampaign
 from .forms import SignatureForm
 
 
-class DashboardIndex(StaffRequiredMixin, TemplateView):
+class DashboardIndex(PermissionRequiredMixin, TemplateView):
     """Present dashboard index.
 
     I haven't finished designing this, so it's anybody's guess what I
@@ -22,6 +21,7 @@ class DashboardIndex(StaffRequiredMixin, TemplateView):
     want.
 
     """
+    permission_required = 'dashboard.dashboard.may_see'
     template_name = 'dashboard/index.html'
     login_url = reverse_lazy("authentication:login")
 
