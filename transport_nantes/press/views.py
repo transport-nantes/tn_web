@@ -101,14 +101,6 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     form_class = PressMentionForm
     permission_required = 'press.press-editor'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["press_mention_list"] = PressMention.objects.all()[:5]
-        context["newspaper_name_list"] = PressMention.objects.distinct(
-        ).order_by('newspaper_name').values_list(
-            'newspaper_name', flat=True)
-        return context
-
     def form_valid(self, form):
         fetching_open_graph_data(form)
         return super().form_valid(form)
