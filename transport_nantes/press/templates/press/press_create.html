@@ -3,6 +3,10 @@
 {% block content %}
 <div class="container-fluid pl-5 py-3">
     <div class="col-md-8 col-sm-12 mx-auto">
+      <a href="{% url 'press:list_items' %}" class="btn navigation-button mb-2">
+        <i class="fa-solid fa-arrow-left"></i>
+        Retour à la liste des articles
+      </a>
       <h5 class="alert alert-info text-center" role="alert">
         N'oubliez pas qu'il faut toujours respecter les droits d'auteur.
       </h5>
