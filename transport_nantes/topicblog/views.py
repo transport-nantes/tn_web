@@ -115,7 +115,8 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
             ],
             "form_social": ["social_description", "twitter_title",
                             "twitter_description", "twitter_image",
-                            "og_title", "og_description", "og_image"],
+                            "og_title", "og_description", "og_image",
+                            "mail_only_contact_info"],
             "form_notes": ["author_notes"]
         }
         # Other fields is a catch-all that gets every field that should

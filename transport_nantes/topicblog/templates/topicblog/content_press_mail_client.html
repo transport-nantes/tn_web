@@ -29,12 +29,14 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             </a>
         </td> <!-- End Logo -->
     </tr>
+    {% if email.header_image %}
     <tr> {# Hero Image#}
         <td>
             <img src="{% absolute_url_image email.header_image.url|default:'' %}" alt="{{ email.header_title|default:'Image bannière'}}"
             style="width:100%;max-width:600px;height:auto;border:none;text-decoration:none;">
         </td>
     </tr>
+    {% endif %}
     <tr> {# Title and Body_1 #}
         <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
             <p><b>Communiqué de presse</b></p>
@@ -50,9 +52,14 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     <tr>
 	<td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
             <p style="margin:0;font-size:14px;line-height:20px;">
-		Contact: <a href="mailto:press@mobilitains.fr"
+		        Contact: <a href="mailto:press@mobilitains.fr"
 			    style="color:#cccccc;text-decoration:underline;">press@mobilitains.fr</a>
-	    </p>
+	        </p>
+            {% if email.mail_only_contact_info %}
+                <p style="margin:0;font-size:14px;line-height:20px;">
+                    {{email.mail_only_contact_info}}
+                </p>
+            {% endif %}
 	</td>
     </tr>
     <tr> <!-- Footer -->
