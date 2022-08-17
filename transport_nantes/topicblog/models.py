@@ -1073,6 +1073,11 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         upload_to='body/', blank=True,
         help_text='résolution recommandée : 1600x500')
     body_image_1_alt_text = models.CharField(max_length=100, blank=True)
+    mail_only_contact_info = models.CharField(
+        max_length=200, blank=True,
+        verbose_name=(
+            'Informations de contact (affiché dans les mails uniquement)')
+    )
 
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
