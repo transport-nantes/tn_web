@@ -6,6 +6,7 @@
 body {
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
 }
 .mobilito-btn {
     background-color: var(--button-color);
