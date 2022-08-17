@@ -1,0 +1,14 @@
+body {
+    background-color: var(--mobilitains-bleu-marine);
+ }
+ 
+#address-form p,
+#address-form span {
+    color: white;
+    font-weight: bold;
+}
+
+#notre-approche,
+footer {
+    display: none;
+}
