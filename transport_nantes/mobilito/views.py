@@ -176,6 +176,7 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        context["MAPS_API_KEY"] = settings.MAPS_API_KEY
         # If the user has to see the tutorial (because it has been updated, or
         # because it is the first time), we need to redirect to the tutorial.
         if self.get_pages_to_visit():
