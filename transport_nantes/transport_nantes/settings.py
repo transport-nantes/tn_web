@@ -290,3 +290,5 @@ if ROLE in ("beta", "production"):
     }
     import rollbar
     rollbar.init(**ROLLBAR)
+
+MAPS_API_KEY = settings_local.MAPS_API_KEY

@@ -1,0 +1,21 @@
+body {
+    background-color: var(--mobilitains-bleu-marine);
+    color:white;
+}
+#address-form > p,
+#address-form > span {
+    color: white;
+    font-weight: bold;
+}
+#notre-approche,
+footer {
+    display: none;
+}
+#map {
+    display: none;
+    margin-bottom: 1em;
+    height: 300px;
+    width: 100%;
+    border: 1px solid black;
+    color: black;
+}

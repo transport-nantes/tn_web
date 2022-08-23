@@ -1,0 +1,57 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel='stylesheet' type='text/css' href="{% static 'mobilito/css/geolocation_form.css' %}">
+    {# Leaflet JS #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+    {# Leaflet JS locate control #}
+    <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    {{ MAPS_API_KEY|json_script:"maps_api_key" }}
+
+{% endblock styles %}
+
+{% block scripts %}
+    {{ block.super }}
+    {# Leaflet JS #}
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    {# Leaflet JS locate control #}
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+    <script src="{% static 'mobilito/js/geolocation_map.js' %}"></script>
+    
+{% endblock scripts %}
+
+{% block navbar %}
+    <div class="d-flex col-10 col-sm-8 col-md-6 col-lg-4 col-xl-3 justify-content-center mx-auto">
+        <img src="{% static 'asso_tn/M-logo_white.png' %}" alt="logo mobilitains" class="w-100 h-100" />
+    </div>
+{% endblock navbar %}
+
+{% block app_content %}
+
+<section id="address-form" class="container">
+    <p>Ce serait pratique de connaître l'adresse que vous observez :</p>
+    <button id="share-location" type="button"
+    class="d-flex btn donation-button mb-5 mx-auto">
+        Je me localise
+    </button>
+
+    <div id="map"></div>
+
+    <form method="post" action="{% url 'mobilito:address_form' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <span>Avec ou sans&nbsp;</span>
+        <button type="submit" class="btn donation-button">Je compte ! <i class="fa fa-arrow-right"></i></button>
+    </form>
+</section>
+
+{% endblock app_content %}
