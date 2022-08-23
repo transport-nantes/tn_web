@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
-from typing import Tuple, Type, Union
+from typing import Tuple, Type, Union, TYPE_CHECKING
 from django.apps import apps
 from django.conf import settings
 from django.core import mail
@@ -46,6 +46,10 @@ from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm,
                     SendToSelfForm)
+
+# Doesn't actually import at runtime, it's for type hinting
+if TYPE_CHECKING:
+    from .models import TopicBlogObjectBase
 
 
 logger = logging.getLogger("django")
@@ -222,10 +226,21 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
         slug = kwargs.get('the_slug', '')
         tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
 
-        # We set the template in the model.
-        self.template_name = tb_object.template_name
+        # We check that the object's template is valid and configured, or
+        # raise a 500 error.
+        if tb_object.template_name in tb_object.template_config:
+            self.template_name = tb_object.template_name
+        else:
+            logger.error(
+                f"Current template ({tb_object.template_name}) is not configured.")
+            logger.debug(f"Template config: {tb_object.template_config}"
+                         f"\nTemplate name: {tb_object.template_name}"
+                         f"\nObject ID : {tb_object.id}"
+                         f"\nObject class : {tb_object.__class__.__name__}")
+            raise ImproperlyConfigured(
+                f"Template {tb_object.template_name} is not configured")
+
         context['page'] = tb_object
-        tb_object: self.model  # Type hint for linter
         context = tb_object.set_social_context(context)
         context['topicblog_admin'] = True
         context["base_model"] = self.model.__name__.lower()
@@ -332,7 +347,7 @@ class SendableObjectMixin:
     # record this sending operation.
     send_record_class = None
     # Defines the concrete subclass of sendable that we are treating.
-    base_model = None
+    base_model: Type['TopicBlogObjectBase'] = None
 
     def get_last_published_email(self, tb_slug: str) -> base_model:
         """Fetch the currently published email object.
@@ -375,8 +390,12 @@ class SendableObjectMixin:
             return HttpResponseServerError()
 
         # Preparing the email
-        tb_email = self.base_model.objects.get(pk=pkid, slug=the_slug)
-        self.template_name = tb_email.template_name
+        tb_email: Union[TopicBlogEmail, TopicBlogPress] = (
+            self.base_model.objects.get(pk=pkid, slug=the_slug))
+        self.template_name = (
+            tb_email.template_config[tb_email.template_name]
+            .get('email_template')
+        )
 
         context = self._set_email_context(recipient, send_record.id, tb_email)
 
@@ -422,7 +441,7 @@ class SendableObjectMixin:
         """
         # HTML message is the one displayed in mail client
         html_message = render_to_string(
-            tb_object.template_name, context=context, request=self.request)
+            self.template_name, context=context, request=self.request)
         # In cases where the HTML message isn't accepted, a plain text
         # message is displayed in the mail client.
         plain_text_message = strip_tags(html_message)
@@ -680,6 +699,10 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
             return None
 
         # Prepare the email.
+        self.template_name = (
+            object_to_send.template_config[object_to_send.template_name]
+            .get("email_template")
+        )
         context = self._set_email_context(
             recipient=[self.request.user.email],
             send_record_id=send_record.id,
@@ -911,7 +934,6 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.template_name = 'topicblog/content_email.html'
         tb_object = context['page']
         user = self.request.user
         if user.has_perm('topicblog.tbe.may_send_self') or \
@@ -925,11 +947,6 @@ class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
                             TopicBlogBaseViewOne):
     model = TopicBlogEmail
     transactional_send_record_class = SendRecordTransactionalEmail
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.template_name = 'topicblog/content_email.html'
-        return context
 
 
 class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
@@ -1026,7 +1043,6 @@ class TopicBlogPressView(TopicBlogBaseView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tb_object = context['page']
-        self.template_name = 'topicblog/content_press.html'
         user = self.request.user
         if user.has_perm('topicblog.tbp.may_send_self') or \
            (user.has_perm('topicblog.tbp.may_send') and
@@ -1039,11 +1055,6 @@ class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
                             TopicBlogBaseViewOne):
     model = TopicBlogPress
     transactional_send_record_class = SendRecordTransactionalPress
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.template_name = 'topicblog/content_press.html'
-        return context
 
 
 class TopicBlogPressList(PermissionRequiredMixin,
