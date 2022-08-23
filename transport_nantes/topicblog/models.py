@@ -844,7 +844,9 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
         ],
     }
     template_config = {
-        'topicblog/content_email_client.html': {
+        # Web version's template
+        'topicblog/content_email.html': {
+            'email_template': 'topicblog/content_email_client.html',
             'default_choice': True,
             'user_template_name': 'Classique',
             'active': True,
@@ -1043,7 +1045,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         ],
     }
     template_config = {
-        'topicblog/content_press_mail_client.html': {
+        'topicblog/content_press.html': {
+            "email_template": "topicblog/content_press_mail_client.html",
             'default_choice': True,
             'user_template_name': 'Classique',
             'active': True,
