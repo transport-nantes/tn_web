@@ -1,46 +1,109 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 
-{% block content %}
+{% block styles %}
+	{{ block.super }}
+	<style>
+		tbody > tr > th[colspan="3"] {
+			text-align: center;
+			background-color: #35353547
+		}
+		thead > tr > th {
+			text-align: center;
+			font-weight: bold;
+			font-size: 1.2em;	
+		}
+	</style>	
+{% endblock styles %}
+
+{% block app_content %}
 <div class="container">
-	<div class="row pb-3">
-		<div class="col-sm-6">
-			<h3>Contact</h3>
-			<p>Newsletter, mailing list, et pétition sont pour l'instant à peu près la même chose pour nous.</p>
-			<p><a class="nav-link" href="{% url 'mailing_list:list_items' %}">Listes</a></p>
-		</div>
-		<div class="col-sm-6">
-			<h3>TBv2</h3>
-			<p>Pages de blog :
-			    [<a href="{% url 'topic_blog:new_item' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_items' %}?active=articles">lister</a>]
-			</p>
-			<p>Emails :
-			    [<a href="{% url 'topic_blog:new_email' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_emails' %}?active=emails">lister</a>]
-			</p>
-			<p>Commmuniqués de presse :
-			    [<a href="{% url 'topic_blog:new_press' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_press' %}?active=cp">lister</a>]
-			</p>
-			<p>Lanceurs :
-			    [<a href="{% url 'topic_blog:new_launcher' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_launcher' %}?active=launcher">lister</a>]
-			</p>
-			<p>Mailing List pitch :
-			    [<a href="{% url 'topic_blog:new_mlp' %}">créer</a>]
-			    [<a href="{% url 'topic_blog:list_mlp' %}?active=mlp">lister</a>]
-			</p>
-		</div>
-		<div class="col-sm-6">
-			<h3>Press</h3>
-			<p>Les articles qui mentionnent les mobilitains</p>
-			<div class="d-flex justify-content-start">
-				<a class="nav-link" href="{% url 'press:list_items' %}"><i class="fas fa-list"></i></a>
-				<a class="nav-link" href="{% url 'press:new_item' %}"><i class="fas fa-plus"></i></a>
-			</div>
-		</div>
-	</div>
+	<table class="table table-striped">
+		<tbody>
+			<tr>
+				<th>Nom</th>
+				<th>Description</th>
+				<th>Actions</td>
+			</tr>
+			<tr>
+				<td>Blog</td>
+				<td>
+					Les articles de blog.
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topic_blog:list_items' %}?active=articles"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'topic_blog:new_item' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>Mails</td>
+				<td>
+					Marketing mails qui peuvent également être visionné sur web.
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topic_blog:list_emails' %}?active=emails"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'topic_blog:new_email' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>CP</td>
+				<td>
+					Communiqués de presse
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topic_blog:list_press' %}?active=cp"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'topic_blog:new_press' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>Carrés</td>
+				<td>
+					Un carré qui peut être présenté dans le rubrique de nos projets.
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topic_blog:list_launcher' %}?active=launcher"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'topic_blog:new_launcher' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>Inscriptions</td>
+				<td>
+					Pages qui incite le visiteur de s'inscrire une liste de diffusion (y compris pétition)
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topic_blog:list_mlp' %}?active=mlp"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'topic_blog:new_mlp' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>Presse</td>
+				<td>
+					Mentions des Mobilitains dans la presse
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'press:list_items' %}"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'press:new_item' %}"><i class="fas fa-plus"></i></a>
+				</td>
+			</tr>
+			<tr>
+				<td>Diffusion</td>
+				<td>
+					Listes de diffusion, de newsletters et pétitions
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'mailing_list:list_items' %}">
+						<i class="fas fa-list"
+						data-toggle="tooltip"
+						data-placement="bottom"
+						title="Voir les listes de diffusion"></i>
+					</a>
+					<i class="fas fa-plus ml-1" style="color:#d9d9d9"></i>
+				</td>
+			</tr>
+		</tbody>
+
+	</table>
 </div>
 {% block bottom_appeal %}{% endblock bottom_appeal %}
+{% block footer %}{% endblock footer %}
 
-{% endblock %}
+{% endblock app_content %}
