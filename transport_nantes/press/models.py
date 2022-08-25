@@ -12,7 +12,7 @@ class PressMention(models.Model):
         ordering = ['-article_publication_date', 'newspaper_name']
 
     newspaper_name = models.CharField(max_length=200)
-    article_link = models.URLField(max_length=255)
+    article_link = models.URLField(max_length=255, unique=True)
     article_title = models.CharField(max_length=200)
     article_summary = models.TextField()
     article_publication_date = models.DateField()
