@@ -3,31 +3,7 @@
 {% block content %}
 <div class="container-fluid pl-5 py-3">
   <div class="row">
-    <div class="col-sm-12 my-2">
-      <div class="accordion" id="accordion">
-        <div class="card">
-          <div class="card-header" id="headingOne">
-            <h2 class="mb-0">
-              <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#publication-liste" aria-expanded="true" aria-controls="publication-liste">
-                Liste des publications deja présente
-              </button>
-            </h2>
-          </div>
-          <div id="publication-liste" class="collapse"  aria-labelledby="headingOne" data-parent="#accordion">
-            <div class="text-center mt-3">
-                <a href="{% url 'press:list_items' %}" target="_blank" class="btn navigation-button">Liste complète</a>
-            </div>
-            <div class="card-body">
-                {% include 'press/table_list.html' %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="col-md-8 col-sm-12 mx-auto">
-      <h5 class="alert alert-info text-center" role="alert">
-        N'oubliez pas qu'il faut toujours respecter les droits d'auteur.
-      </h5>
       <h5 class="text-center">Création d'une nouvelle publication</h5>
         {% crispy form %}
       </form>
