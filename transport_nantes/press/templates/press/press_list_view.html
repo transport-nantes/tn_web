@@ -1,7 +1,7 @@
 {% extends 'asso_tn/base_mobilitain.html' %} {% block content %}
 <div class="container-fluid">
   <div class="row row-cols-1 row-cols-lg-2 m-2">
-    {%for press_mention in press_mention_list %}
+    {% for press_mention in press_mention_list %}
       <div class="col my-1">
       {% if press_mention.og_image %}
           <div class="card p-0 h-100">
@@ -19,9 +19,9 @@
                     class="stretched-link text-muted text-decoration-none font-weight-bold">
                     {{ press_mention.get_domaine_of_link }}
                   </a>
-                  <h5 class="card-title">{{ press_mention.og_title }}</h5>
+                  <h5 class="card-title">{{ press_mention.article_title }}</h5>
                   <p class="card-text">
-                    {{ press_mention.og_description|truncatewords:10 }}
+                    {{ press_mention.article_description|truncatewords:10 }}
                   </p>
                 </div>
               </div>
@@ -38,9 +38,9 @@
             class="stretched-link text-muted text-decoration-none font-weight-bold">
             {{ press_mention.get_domaine_of_link }}
           </a>
-          <h5 class="card-title">{{ press_mention.og_title }}</h5>
+          <h5 class="card-title">{{ press_mention.article_title }}</h5>
           <p class="card-text">
-            {{ press_mention.og_description|truncatewords:10 }}
+            {{ press_mention.article_description|truncatewords:10 }}
           </p>
         </div>
       </div>
