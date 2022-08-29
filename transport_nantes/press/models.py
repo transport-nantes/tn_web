@@ -11,14 +11,14 @@ class PressMention(models.Model):
         )
         ordering = ['-article_publication_date', 'newspaper_name']
 
-    newspaper_name = models.CharField(max_length=200)
-    article_link = models.URLField(max_length=255, unique=True)
-    article_title = models.CharField(max_length=200)
+    newspaper_name = models.CharField(max_length=1000)
+    article_link = models.URLField(max_length=1000, unique=True)
+    article_title = models.CharField(max_length=1000)
     article_summary = models.TextField()
     article_publication_date = models.DateField()
 
     # Not all sites have opengraph data.
-    og_title = models.CharField(max_length=255, blank=True)
+    og_title = models.CharField(max_length=1000, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.ImageField(
         upload_to="press_mention/open_graph/", blank=True, null=True)
