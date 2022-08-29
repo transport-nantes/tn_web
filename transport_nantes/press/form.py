@@ -2,22 +2,21 @@ from django import forms
 from .models import PressMention
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, ButtonHolder, Submit, HTML, Row
-from datetime import date
 
 
 class PressMentionForm(forms.ModelForm):
     class Meta:
         model = PressMention
         fields = "__all__"
-    newspaper_name = forms.CharField(max_length=200, label="Nom du journal")
-    article_link = forms.URLField(max_length=255, label="Lien de l'article")
-    article_title = forms.CharField(max_length=200, label="Titre de l'article")
+    newspaper_name = forms.CharField(max_length=1000, label="Nom du journal")
+    article_link = forms.URLField(max_length=1000, label="Lien de l'article")
+    article_title = forms.CharField(max_length=1000, label="Titre de l'article")
     article_summary = forms.CharField(
-        max_length=200, label="Description de l'article",
+        max_length=1000, label="Description de l'article",
         widget=forms.Textarea)
     article_publication_date = forms.DateField(
         label="Date de pubication de l'article",
-        widget=forms.DateInput(attrs={'type': 'date'}),
+        widget=forms.TextInput(attrs={'type': 'date'}),
         initial=None)
 
     def __init__(self, *args, **kwargs):
@@ -45,16 +44,16 @@ class PressMentionForm(forms.ModelForm):
 
 class PressMentionSearch(forms.Form):
     newspaper_name_search = forms.CharField(
-        label='Nom du journal', max_length=200, required=False)
+        label='Nom du journal', max_length=1000, required=False)
     article_link = forms.CharField(
-        label="Lien de l'article", max_length=255, required=False)
+        label="Lien de l'article", max_length=1000, required=False)
     article_title = forms.CharField(
-        label="Titre de l'article", max_length=200, required=False)
+        label="Titre de l'article", max_length=1000, required=False)
     article_summary = forms.CharField(
-        label="Description de l'article", max_length=200, required=False)
+        label="Description de l'article", required=False)
     article_date_start = forms.DateField(
         label="Date de début", required=False,
-        widget=forms.DateInput(attrs={'type': 'date'}))
+        widget=forms.DateInput(attrs={'type': 'date'}),)
     article_date_end = forms.DateField(
         label="Date de fin", required=False,
         widget=forms.DateInput(attrs={'type': 'date'}))
