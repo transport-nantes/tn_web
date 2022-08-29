@@ -1,19 +1,18 @@
 from django.urls import path
-from .views import (PressMentionListViewAdmin, PressMentionUpdateView,
-                    PressMentionListView, PressMentionCreateView,
-                    PressMentionDeleteView, PressMentionDetailView)
+from . import views
 
 app_name = 'press'
 
 urlpatterns = [
-    path('', PressMentionListView.as_view(), name='view'),
-    path('admin/list/', PressMentionListViewAdmin.as_view(),
+    path('', views.PressMentionListView.as_view(), name='view'),
+    path('admin/list/', views.PressMentionListViewAdmin.as_view(),
          name='list_items'),
-    path('admin/new/', PressMentionCreateView.as_view(), name='new_item'),
-    path('admin/update/<int:pk>', PressMentionUpdateView.as_view(),
+    path('admin/new-url/', views.PressMentionPreCreateView.as_view(), name='new_url'),
+    path('admin/new/', views.PressMentionCreateView.as_view(), name='new_item'),
+    path('admin/update/<int:pk>', views.PressMentionUpdateView.as_view(),
          name='update_item'),
-    path('admin/delete/<int:pk>', PressMentionDeleteView.as_view(),
+    path('admin/delete/<int:pk>', views.PressMentionDeleteView.as_view(),
          name='delete_item'),
-    path('admin/detail/<int:pk>', PressMentionDetailView.as_view(),
+    path('admin/detail/<int:pk>', views.PressMentionDetailView.as_view(),
          name='detail_item'),
 ]

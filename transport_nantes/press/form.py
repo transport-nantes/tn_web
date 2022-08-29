@@ -17,8 +17,8 @@ class PressMentionForm(forms.ModelForm):
         widget=forms.Textarea)
     article_publication_date = forms.DateField(
         label="Date de pubication de l'article",
-        widget=forms.TextInput(attrs={'type': 'date'}),
-        initial=date.today())
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        initial=None)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,3 +89,7 @@ class PressMentionSearch(forms.Form):
                 css_class="my-2"
             ),
         )
+
+
+class PressMentionUrlForm(forms.Form):
+    article = forms.URLField(label="Lien de l'article")

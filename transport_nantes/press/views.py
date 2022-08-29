@@ -1,17 +1,19 @@
-from django.views.generic import (ListView, CreateView, UpdateView,
-                                  DeleteView, DetailView)
-from .models import PressMention
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from .form import PressMentionForm, PressMentionSearch
-import requests
-from lxml import html
-from django.core import files
-from io import BytesIO
 import logging
 from datetime import date
+from io import BytesIO
 from urllib.parse import urlparse
 
+import requests
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core import files
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView, FormView)
+from lxml import html
+
+from .form import PressMentionForm, PressMentionSearch, PressMentionUrlForm
+from .models import PressMention
 
 logger = logging.getLogger("django")
 
@@ -96,6 +98,45 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
         return super().get_queryset()
 
 
+class PressMentionPreCreateView(PermissionRequiredMixin, FormView):
+    form_class = PressMentionUrlForm
+    template_name = "press/press_pre_create.html"
+    permission_required = 'press.press-editor'
+
+    def form_valid(self, form):
+        url = form.cleaned_data["article"]
+        title, description, image, newspaper_name, publication_date = \
+            self.fetch_opengraph_data(url)
+        return HttpResponseRedirect(
+            reverse_lazy("press:new_item") +
+            "?title={}&description={}&image={}&newspaper_name={}"
+            "&publication_date={}&url={}".format(
+                    title[0] if title else "",
+                    description[0] if description else "",
+                    image[0] if image else "",
+                    newspaper_name[0] if newspaper_name else "",
+                    publication_date[0] if publication_date else "",
+                    url
+            )
+        )
+
+    def fetch_opengraph_data(self, url):
+        try:
+            response = requests.get(url)
+            tree = html.fromstring(response.content)
+            title = tree.xpath('//meta[@property="og:title"]/@content')
+            description = tree.xpath(
+                '//meta[@property="og:description"]/@content')
+            image = tree.xpath('//meta[@property="og:image"]/@content')
+            newspaper_name = tree.xpath('//meta[@property="og:site_name"]/@content')
+            publication_date = tree.xpath(
+                '//meta[@property="og:article:published_time"]/@content')
+            return title, description, image, newspaper_name, publication_date
+        except Exception as e:
+            logger.error(f"Error during OG data fetch : {e}")
+            return None, None, None
+
+
 class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     template_name = "press/press_create.html"
     form_class = PressMentionForm
@@ -103,10 +144,21 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["press_mention_list"] = PressMention.objects.all()[:5]
-        context["newspaper_name_list"] = PressMention.objects.distinct(
-        ).order_by('newspaper_name').values_list(
-            'newspaper_name', flat=True)
+        form = context["form"]
+        if self.request.GET.get("url"):
+            form.fields["article_link"].initial = self.request.GET.get("url")
+        if self.request.GET.get("title"):
+            form.fields["article_title"].initial = self.request.GET.get("title")
+        if self.request.GET.get("description"):
+            form.fields["article_summary"].initial = \
+                self.request.GET.get("description")
+        if self.request.GET.get("newspaper_name"):
+            form.fields["newspaper_name"].initial = \
+                self.request.GET.get("newspaper_name")
+        if self.request.GET.get("publication_date"):
+            from dateutil.parser import parse
+            date = parse(self.request.GET.get("publication_date"))
+            form.fields["article_publication_date"].initial = date
         return context
 
     def form_valid(self, form):
@@ -156,6 +208,7 @@ def fetching_open_graph_data(form=False, presmention_id=None):
         # Settings the default data
         form.instance.og_title = form.cleaned_data['article_title']
         form.instance.og_description = form.cleaned_data['article_summary']
+        form.instance.newspaper_name = form.cleaned_data['newspaper_name']
     else:
         press_mention = PressMention.objects.get(
             pk=presmention_id)

@@ -1,0 +1,19 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block app_content %}
+
+    <form method="POST" action="{% url 'press:new_url' %}"
+    class="d-flex flex-column mx-auto col-10 col-sm-8 col-md-6 col-lg-4">
+        <p>
+            Nous allons tenter de pré-remplir le formulaire suivant grâce aux
+            informations sur l'article en lien ici.
+        {% csrf_token %}
+        {{ form|crispy}}
+        <button type="submit"class="btn donation-button mx-auto">
+            Ajouter...
+        </button>
+    </form>
+
+{% endblock app_content %}
