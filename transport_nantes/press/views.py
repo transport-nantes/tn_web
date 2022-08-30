@@ -1,17 +1,21 @@
-from django.views.generic import (ListView, CreateView, UpdateView,
-                                  DeleteView, DetailView)
-from .models import PressMention
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from .form import PressMentionForm, PressMentionSearch
-import requests
-from lxml import html
-from django.core import files
-from io import BytesIO
 import logging
 from datetime import date
+from io import BytesIO
+from typing import Union
 from urllib.parse import urlparse
 
+import requests
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core import files
+from django.http import JsonResponse
+from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
+from lxml import html
+
+from .form import PressMentionForm, PressMentionSearch
+from .models import PressMention
 
 logger = logging.getLogger("django")
 
@@ -58,7 +62,7 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
             context["search_form"].fields["article_date_end"].initial = \
                 self.request.GET.get("article_date_end")
         if self.request.GET.get("press_mention_refresh"):
-            fetching_open_graph_data(
+            update_opengraph_data(
                 presmention_id=self.request.GET.get(
                     "press_mention_refresh"))
         return context
@@ -96,21 +100,59 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
         return super().get_queryset()
 
 
+@csrf_protect
+def fetch_opengraph_data(request, url=None, isView=False) \
+        -> Union[tuple, JsonResponse]:
+    """Fetch OpenGraph data from a URL.
+
+    Keywords arguments:
+    request -- The request object
+    url -- the URL to fetch when called from view, request object if called ajax
+    isView -- if the function is called from a view
+
+    Returns one of the following :
+    - a tuple containing the title, description, image, newspaper_name and
+    publication_date if the function is called from a view
+    - a JSONResponse containing the title, description, image, newspaper_name
+    and publication_date if the function is called from browser (Ajax)
+    """
+    if not isView:
+        url = request.POST["url"]
+
+    try:
+        response = requests.get(url)
+        tree = html.fromstring(response.content)
+        title = tree.xpath('//meta[@property="og:title"]/@content')
+        description = tree.xpath(
+            '//meta[@property="og:description"]/@content')
+        image = tree.xpath('//meta[@property="og:image"]/@content')
+        newspaper_name = tree.xpath('//meta[@property="og:site_name"]/@content')
+        publication_date = tree.xpath(
+            '//meta[@property="og:article:published_time"]/@content')
+
+        if isView:
+            return title, description, image, newspaper_name, publication_date
+        else:
+            return JsonResponse({
+                "title": title[0] if title else "",
+                "description": description[0] if description else "",
+                "image": image[0] if image else "",
+                "newspaper_name": newspaper_name[0] if newspaper_name else "",
+                "publication_date": publication_date[0] if publication_date
+                else ""
+            }, json_dumps_params={'ensure_ascii': False})
+    except Exception as e:
+        logger.error(f"Error during OG data fetch : {e}")
+        return None, None, None, None, None
+
+
 class PressMentionCreateView(PermissionRequiredMixin, CreateView):
     template_name = "press/press_create.html"
     form_class = PressMentionForm
     permission_required = 'press.press-editor'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["press_mention_list"] = PressMention.objects.all()[:5]
-        context["newspaper_name_list"] = PressMention.objects.distinct(
-        ).order_by('newspaper_name').values_list(
-            'newspaper_name', flat=True)
-        return context
-
     def form_valid(self, form):
-        fetching_open_graph_data(form)
+        update_opengraph_data(form)
         return super().form_valid(form)
 
 
@@ -129,7 +171,7 @@ class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        fetching_open_graph_data(form)
+        update_opengraph_data(form)
         return super().form_valid(form)
 
 
@@ -146,7 +188,7 @@ class PressMentionDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'press.press-editor'
 
 
-def fetching_open_graph_data(form=False, presmention_id=None):
+def update_opengraph_data(form=False, presmention_id=None):
     """
     This function allow fetch open graph data of an url from
     a form or from the get data of the url and return None
