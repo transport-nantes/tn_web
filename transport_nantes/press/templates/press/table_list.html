@@ -30,7 +30,12 @@
         <td>{{ press_mention.og_description }}</td>
         <td>
           {% if  press_mention.og_image %}
-            <img src="{{ press_mention.og_image.url }}" alt="{{ press_mention.article_title }}" style="width:200px;max-height: 200px;">
+            <a href="{{ press_mention.article_link }}" target="_blank">
+              <img src="{{ press_mention.og_image.url }}"
+                alt="{{ press_mention.article_title }}"
+                style="width:200px;max-height: 200px;"
+              />
+            </a>
           {% else %} {% comment %} If no open graph image we display
           no image.  {% endcomment %}
             <p>&nbsp;</p>
@@ -55,8 +60,14 @@
     <p>Og title : {{ press_mention.og_title }}</p>
     <p>Og description : {{ press_mention.og_description }}</p>
     <div>
-      {% if  press_mention.og_image %}
-        <img src="{{ press_mention.og_image.url }}" alt="{{ press_mention.article_title }}" style="width:200px;max-height: 200px;">
+      {% if press_mention.og_image %}
+        <a href="{{ press_mention.article_link }}" target="_blank">
+          <img
+            src="{{ press_mention.og_image.url }}"
+            alt="{{ press_mention.article_title }}"
+            style="width:200px;max-height: 200px;"
+          />
+        </a>
       {% else %} {% comment %} If no open graph image we display no
       image.  {% endcomment %}
         <p>&nbsp;</p>

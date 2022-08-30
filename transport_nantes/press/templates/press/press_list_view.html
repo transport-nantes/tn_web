@@ -7,10 +7,13 @@
           <div class="card p-0 h-100">
             <div class="row no-gutters">
               <div class="col-md-4">
-                <img
-                  src="{{ press_mention.og_image.url }}"
-                  class="card-img press-card-image"
-                  alt="{{ press_mention.newspaper_name }}"/>
+                <a href="{{ press_mention.article_link }}" target="_blank">
+                  <img
+                    src="{{ press_mention.og_image.url }}"
+                    class="card-img press-card-image"
+                    alt="{{ press_mention.newspaper_name }}"
+                  />
+                </a>
               </div>
               <div class="col-md-8">
                 <div class="card-body">
