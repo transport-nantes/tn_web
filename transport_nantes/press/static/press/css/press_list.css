@@ -1,0 +1,22 @@
+@media screen and (min-width: 768px) {
+    .press-card {
+        max-height: 15vh;
+        overflow-y: clip;
+    }
+    .card-body {
+        max-height: 15vh;
+        padding: 0.5rem;
+        overflow-y: scroll;
+    }
+    .card-title {
+        font-size: 1rem;
+        overflow-y: scroll;
+    }
+    .card-text {
+        font-size: 0.9rem;
+        overflow-y: scroll;
+    }
+    .card-body-text {
+        overflow-y: scroll;
+    }
+}
