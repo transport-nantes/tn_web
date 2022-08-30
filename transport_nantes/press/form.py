@@ -91,4 +91,4 @@ class PressMentionSearch(forms.Form):
 
 
 class PressMentionUrlForm(forms.Form):
-    article = forms.URLField(label="Lien de l'article")
+    article = forms.URLField(label="URL")
