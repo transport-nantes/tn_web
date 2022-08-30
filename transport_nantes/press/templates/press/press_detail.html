@@ -14,8 +14,11 @@
             <div class="row no-gutters">
                 <div class="col-md-4">
                     {% if  object.og_image %}
-                    <img src="{{ object.og_image.url }}" style="object-fit: cover;width: 100%;height: 250px;"
-                    class="card-img" alt="{{ object.newspaper_name }}">
+                    <a href="{{ object.article_link }}" target="_blank">
+                        <img src="{{ object.og_image.url }}"
+                        style="object-fit: cover;width: 100%;height: 250px;"
+                        class="card-img" alt="{{ object.newspaper_name }}">
+                    </a>
                     {% else %} {% comment %} If no open graph image we
                         display no image. {% endcomment %}
                         <p>&nbsp;</p>
