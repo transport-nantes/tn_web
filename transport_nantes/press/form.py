@@ -24,6 +24,7 @@ class PressMentionForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
+            Field("article_link"),
             Field("newspaper_name", list="newspaper-names"),
             HTML("<datalist id='newspaper-names'>"
                  "{%for newspaper_name in newspaper_name_list %}"
@@ -31,7 +32,6 @@ class PressMentionForm(forms.ModelForm):
                  "{% endfor %}"
                  "</datalist>"
                  ),
-            Field("article_link"),
             Field("article_title"),
             Field("article_summary"),
             Field("article_publication_date"),
