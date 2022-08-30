@@ -15,4 +15,5 @@ urlpatterns = [
          name='delete_item'),
     path('admin/detail/<int:pk>', views.PressMentionDetailView.as_view(),
          name='detail_item'),
+    path('ajax/fetch-og-data/', views.fetch_opengraph_data, name='fetch_og_data'),
 ]

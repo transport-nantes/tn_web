@@ -1,7 +1,7 @@
 from django import forms
 from .models import PressMention
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, ButtonHolder, Submit, HTML, Row
+from crispy_forms.layout import Layout, Field, ButtonHolder, Submit, HTML, Row, Div
 
 
 class PressMentionForm(forms.ModelForm):
@@ -24,6 +24,20 @@ class PressMentionForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
+            Row(
+                Div(
+                    Field("article_link", css_class="", readonly=True),
+                    css_class="d-flex col-10 col-lg-11"
+                ),
+                HTML("""
+                <button type='button'
+                class='d-flex btn navigation-button mt-auto mb-3 mx-auto'
+                id='edit-link'>
+                    <i class='fa-solid fa-pen my-auto'></i>
+                </button>
+                """),
+                css_class="d-flex"
+            ),
             Field("newspaper_name", list="newspaper-names"),
             HTML("<datalist id='newspaper-names'>"
                  "{%for newspaper_name in newspaper_name_list %}"
@@ -31,7 +45,6 @@ class PressMentionForm(forms.ModelForm):
                  "{% endfor %}"
                  "</datalist>"
                  ),
-            Field("article_link"),
             Field("article_title"),
             Field("article_summary"),
             Field("article_publication_date"),

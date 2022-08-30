@@ -1,13 +1,16 @@
 import logging
 from datetime import date
 from io import BytesIO
+from typing import Union
 from urllib.parse import urlparse
 
 import requests
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core import files
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
+from django.core.handlers.wsgi import WSGIRequest
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView, FormView)
 from lxml import html
@@ -60,7 +63,7 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
             context["search_form"].fields["article_date_end"].initial = \
                 self.request.GET.get("article_date_end")
         if self.request.GET.get("press_mention_refresh"):
-            fetching_open_graph_data(
+            update_opengraph_data(
                 presmention_id=self.request.GET.get(
                     "press_mention_refresh"))
         return context
@@ -106,7 +109,7 @@ class PressMentionPreCreateView(PermissionRequiredMixin, FormView):
     def form_valid(self, form):
         url = form.cleaned_data["article"]
         title, description, image, newspaper_name, publication_date = \
-            self.fetch_opengraph_data(url)
+            fetch_opengraph_data(self.request, url, isView=True)
         return HttpResponseRedirect(
             reverse_lazy("press:new_item") +
             "?title={}&description={}&image={}&newspaper_name={}"
@@ -115,26 +118,55 @@ class PressMentionPreCreateView(PermissionRequiredMixin, FormView):
                     description[0] if description else "",
                     image[0] if image else "",
                     newspaper_name[0] if newspaper_name else "",
-                    publication_date[0] if publication_date else "",
+                    publication_date[0][:10] if publication_date else "",
                     url
             )
         )
 
-    def fetch_opengraph_data(self, url):
-        try:
-            response = requests.get(url)
-            tree = html.fromstring(response.content)
-            title = tree.xpath('//meta[@property="og:title"]/@content')
-            description = tree.xpath(
-                '//meta[@property="og:description"]/@content')
-            image = tree.xpath('//meta[@property="og:image"]/@content')
-            newspaper_name = tree.xpath('//meta[@property="og:site_name"]/@content')
-            publication_date = tree.xpath(
-                '//meta[@property="og:article:published_time"]/@content')
+
+@csrf_protect
+def fetch_opengraph_data(request, url=None, isView=False) \
+        -> Union[tuple, JsonResponse]:
+    """Fetch OpenGraph data from a URL.
+
+    Keywords arguments:
+    url -- the URL to fetch when called from view, request object if called ajax
+    isView -- if the function is called from a view
+
+    Returns one of the following :
+    - a tuple containing the title, description, image, newspaper_name and
+    publication_date if the function is called from a view
+    - a JSONResponse containing the title, description, image, newspaper_name
+    and publication_date if the function is called from browser (Ajax)
+    """
+    if not isView:
+        url = request.POST["url"]
+
+    try:
+        response = requests.get(url)
+        tree = html.fromstring(response.content)
+        title = tree.xpath('//meta[@property="og:title"]/@content')
+        description = tree.xpath(
+            '//meta[@property="og:description"]/@content')
+        image = tree.xpath('//meta[@property="og:image"]/@content')
+        newspaper_name = tree.xpath('//meta[@property="og:site_name"]/@content')
+        publication_date = tree.xpath(
+            '//meta[@property="og:article:published_time"]/@content')
+
+        if isView:
             return title, description, image, newspaper_name, publication_date
-        except Exception as e:
-            logger.error(f"Error during OG data fetch : {e}")
-            return None, None, None
+        else:
+            return JsonResponse({
+                "title": title[0] if title else "",
+                "description": description[0] if description else "",
+                "image": image[0] if image else "",
+                "newspaper_name": newspaper_name[0] if newspaper_name else "",
+                "publication_date": publication_date[0] if publication_date
+                else ""
+            }, json_dumps_params={'ensure_ascii': False})
+    except Exception as e:
+        logger.error(f"Error during OG data fetch : {e}")
+        return None, None, None, None, None
 
 
 class PressMentionCreateView(PermissionRequiredMixin, CreateView):
@@ -156,13 +188,12 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
             form.fields["newspaper_name"].initial = \
                 self.request.GET.get("newspaper_name")
         if self.request.GET.get("publication_date"):
-            from dateutil.parser import parse
-            date = parse(self.request.GET.get("publication_date"))
+            date = self.request.GET.get("publication_date")[:10]
             form.fields["article_publication_date"].initial = date
         return context
 
     def form_valid(self, form):
-        fetching_open_graph_data(form)
+        update_opengraph_data(form)
         return super().form_valid(form)
 
 
@@ -181,7 +212,7 @@ class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        fetching_open_graph_data(form)
+        update_opengraph_data(form)
         return super().form_valid(form)
 
 
@@ -198,7 +229,7 @@ class PressMentionDetailView(PermissionRequiredMixin, DetailView):
     permission_required = 'press.press-editor'
 
 
-def fetching_open_graph_data(form=False, presmention_id=None):
+def update_opengraph_data(form=False, presmention_id=None):
     """
     This function allow fetch open graph data of an url from
     a form or from the get data of the url and return None
