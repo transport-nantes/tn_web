@@ -11,12 +11,11 @@ class EventInline(admin.TabularInline):
 class SessionAdmin(admin.ModelAdmin):
     inlines = [EventInline]
     readonly_fields = ('pk', 'start_timestamp', 'end_timestamp',)
-
-    list_display = ("user", "address", "city", "postcode", "start_timestamp",
+    list_display = ("user", "location", "start_timestamp",
                     "end_timestamp",)
-    list_filter = ("user", "address", "city", "postcode",
+    list_filter = ("user", "location",
                    ("end_timestamp", admin.EmptyFieldListFilter))
-    search_fields = ("user", "address", "city", "postcode",)
+    search_fields = ("user", "location",)
 
 
 class EventAdmin(admin.ModelAdmin):

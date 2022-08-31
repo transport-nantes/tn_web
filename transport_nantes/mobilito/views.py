@@ -170,17 +170,9 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
     The form is optional to fill.
     """
 
-    template_name = 'mobilito/address_form.html'
+    template_name = 'mobilito/geolocation_form.html'
     form_class = AddressForm
     success_url = reverse_lazy('mobilito:recording')
-
-    def get_context_data(self, **kwargs):
-        context = super(FormView, self).get_context_data(**kwargs)
-        # Clear session data if user had filled the form before.
-        self.request.session['address'] = None
-        self.request.session['city'] = None
-        self.request.session['postcode'] = None
-        return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -190,22 +182,17 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
             return HttpResponseRedirect(
                 reverse('mobilito:tutorial',
                         kwargs={'tutorial_page': self.get_next_tutorial_page()}))
+        else:
+            self.template_name = 'mobilito/geolocation_form.html'
         return self.render_to_response(context)
 
     def form_valid(self, form):
-        address, city, postcode, country = (
-            form.cleaned_data['address'],
-            form.cleaned_data['city'],
-            form.cleaned_data['postcode'],
-            form.cleaned_data['country'],
-        )
-        self.request.session['address'] = address
-        self.request.session['city'] = city
-        self.request.session['postcode'] = postcode
-        self.request.session['country'] = country
+        self.request.session["location"] = form.cleaned_data['location']
+        self.request.session["latitude"] = form.cleaned_data['latitude']
+        self.request.session["longitude"] = form.cleaned_data['longitude']
         logger.info(
             f'{self.request.user.email} filled address form.\n'
-            f'Address saved: {address}, {city}, {postcode}, {country}')
+            f'Address saved: {self.request.session["location"]}')
         return super().form_valid(form)
 
 
@@ -214,19 +201,17 @@ class RecordingView(TutorialView, TemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super(TemplateView, self).get_context_data(**kwargs)
-        address = self.request.session.get('address')
-        city = self.request.session.get('city')
-        postcode = self.request.session.get('postcode')
-        country = self.request.session.get('country')
+        location = self.request.session.get('location')
+        latitude = self.request.session.get('latitude')
+        longitude = self.request.session.get('longitude')
         user_agent = parse(self.request.META.get('HTTP_USER_AGENT'))
         user = MobilitoUser.objects.get_or_create(
             user=self.request.user)[0]
         session_object = Session.objects.create(
             user=user,
-            city=city,
-            address=address,
-            postcode=postcode,
-            country=country,
+            location=location,
+            latitude=latitude,
+            longitude=longitude,
             user_browser=str(user_agent),
             start_timestamp=datetime.now(timezone.utc),
         )
@@ -297,10 +282,7 @@ class ThankYouView(TemplateView):
             logger.error(
                 f"Can't send email, user={request.user.email}, {e}")
         else:
-            request.session.pop("address", None)
-            request.session.pop("city", None)
-            request.session.pop("postcode", None)
-            request.session.pop("country", None)
+            request.session.pop("location", None)
             request.session.pop("mobilito_session_id", None)
         return super().get(request, *args, **kwargs)
 
