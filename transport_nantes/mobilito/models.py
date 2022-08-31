@@ -25,10 +25,9 @@ class MobilitoUser(models.Model):
 class Session(models.Model):
     """A user recording session: a collection of Event's."""
     user = models.ForeignKey(MobilitoUser, on_delete=models.PROTECT)
-    address = models.CharField(max_length=500, blank=True, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
-    postcode = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True)
+    location = models.CharField(max_length=1000, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     user_browser = models.CharField(max_length=255, blank=True, null=True)
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField(null=True, blank=True)
