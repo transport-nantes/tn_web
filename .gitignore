@@ -9,6 +9,8 @@ Pipfile*
 
 # Django
 db.sqlite3
+media/
+static/
 
 # Config
 aws_config
