@@ -1,6 +1,8 @@
 import logging
 from datetime import date
+import imghdr
 from io import BytesIO
+from hashlib import sha3_256
 from typing import Union
 from urllib.parse import urlparse
 
@@ -21,6 +23,8 @@ logger = logging.getLogger("django")
 
 
 class PressMentionListView(ListView):
+    """Public list view of press citations."""
+
     model = PressMention
     template_name = "press/press_list_view.html"
     queryset = PressMention.objects.all()
@@ -29,6 +33,8 @@ class PressMentionListView(ListView):
 
 
 class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
+    """Admin list view of press citations."""
+
     model = PressMention
     template_name = "press/press_list.html"
     queryset = PressMention.objects.all()
@@ -101,14 +107,15 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
 
 
 @csrf_protect
-def fetch_opengraph_data(request, url=None, isView=False) \
+def fetch_opengraph_data(request, url=None, is_view=False) \
         -> Union[tuple, JsonResponse]:
     """Fetch OpenGraph data from a URL.
 
     Keywords arguments:
     request -- The request object
-    url -- the URL to fetch when called from view, request object if called ajax
-    isView -- if the function is called from a view
+    url     -- URL to fetch when called from view, request object if called
+               via ajax.
+    is_view -- if the function is called from a view
 
     Returns one of the following :
     - a tuple containing the title, description, image, newspaper_name and
@@ -116,7 +123,7 @@ def fetch_opengraph_data(request, url=None, isView=False) \
     - a JSONResponse containing the title, description, image, newspaper_name
     and publication_date if the function is called from browser (Ajax)
     """
-    if not isView:
+    if not is_view:
         url = request.POST["url"]
 
     try:
@@ -126,11 +133,12 @@ def fetch_opengraph_data(request, url=None, isView=False) \
         description = tree.xpath(
             '//meta[@property="og:description"]/@content')
         image = tree.xpath('//meta[@property="og:image"]/@content')
-        newspaper_name = tree.xpath('//meta[@property="og:site_name"]/@content')
+        newspaper_name = tree.xpath(
+            '//meta[@property="og:site_name"]/@content')
         publication_date = tree.xpath(
             '//meta[@property="og:article:published_time"]/@content')
 
-        if isView:
+        if is_view:
             return title, description, image, newspaper_name, publication_date
         else:
             return JsonResponse({
@@ -147,6 +155,8 @@ def fetch_opengraph_data(request, url=None, isView=False) \
 
 
 class PressMentionCreateView(PermissionRequiredMixin, CreateView):
+    """Admin citation creation view."""
+
     template_name = "press/press_create.html"
     form_class = PressMentionForm
     permission_required = 'press.press-editor'
@@ -157,6 +167,8 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
 
 
 class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
+    """Admin citatio update view."""
+
     model = PressMention
     template_name = "press/press_update.html"
     form_class = PressMentionForm
@@ -176,6 +188,8 @@ class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
 
 
 class PressMentionDeleteView(PermissionRequiredMixin, DeleteView):
+    """Admin citation deletion view."""
+
     model = PressMention
     template_name = "press/press_delete.html"
     success_url = reverse_lazy('press:list_items')
@@ -183,15 +197,19 @@ class PressMentionDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 class PressMentionDetailView(PermissionRequiredMixin, DetailView):
+    """Admin detail view."""
+
     model = PressMention
     template_name = "press/press_detail.html"
     permission_required = 'press.press-editor'
 
 
-def update_opengraph_data(form=False, presmention_id=None):
+def update_opengraph_data(form=None, pressmention_id=None):
     """
+    Fetch open graph data of a web page.
+
     This function allow fetch open graph data of an url from
-    a form or from the get data of the url and return None
+    a form or from the get data of the url and return None.
     """
     if form:
         url = form.cleaned_data['article_link']
@@ -200,20 +218,20 @@ def update_opengraph_data(form=False, presmention_id=None):
         form.instance.og_description = form.cleaned_data['article_summary']
     else:
         press_mention = PressMention.objects.get(
-            pk=presmention_id)
+            pk=pressmention_id)
         url = press_mention.article_link
     try:
-        page = requests.get(url)
+        page_html = requests.get(url)
     except Exception as e:
         # It would be better to log the status code rather than a
         # semi-meaningless "can't access".
         logger.warning(f"Can't acess {e}.")
         return None
-    tree = html.fromstring(page.content.decode("utf-8"))
-    og_title = tree.xpath('//meta[@property="og:title"]/@content')
-    og_description = tree.xpath(
+    doc_tree = html.fromstring(page_html.content.decode("utf-8"))
+    og_title = doc_tree.xpath('//meta[@property="og:title"]/@content')
+    og_description = doc_tree.xpath(
         '//meta[@property="og:description"]/@content')
-    og_image = tree.xpath('//meta[@property="og:image"]/@content')
+    og_image_url = doc_tree.xpath('//meta[@property="og:image"]/@content')
     if not og_title or not og_description:
         logger.info(f"No opengraph data at {url}.")
         return None
@@ -221,40 +239,62 @@ def update_opengraph_data(form=False, presmention_id=None):
         if form:
             form.instance.og_title = og_title[0]
             form.instance.og_description = og_description[0]
+            print(form.instance.og_title)
         else:
             press_mention.og_title = og_title[0]
             press_mention.og_description = og_description[0]
+            print(press_mention.og_title)
     try:
-        resp = requests.get(og_image[0])
+        http_response = requests.get(og_image_url[0])
     except IndexError:
         logger.warning("This website doesn't have open graph image.")
         return None
     except requests.exceptions.MissingSchema:
-        # if the website doest give the full path of the url
+        # If the website doesn't give the full path of the url, try to
+        # provide a schema to make a fully qualified URL.
         parsed_uri = urlparse(url)
         protocol_and_domain = f'{parsed_uri.scheme}://{parsed_uri.netloc}/'
         try:
-            resp = requests.get(protocol_and_domain + og_image[0])
+            http_response = requests.get(protocol_and_domain + og_image_url[0])
         except Exception as e:
             logger.warning(f"Can't acess to the open graph image {e}.")
             return None
-    if resp.status_code != requests.codes.ok:
+    if http_response.status_code != requests.codes.ok:
         logger.warning("The link of the open graph "
                        "image may be dead, or doesn't exist.")
         return None
+
+    def get_image_extension(file_contents):
+        """Return as a string the image file type.
+
+        Precede with a dot so we can use the output of this function
+        direction in appending to the desired filename.
+
+        """
+        for tf in imghdr.tests:
+            result = tf(file_contents, None)
+            if result:
+                return "." + result
+        logger.warning("Failed to determine image type, {bytes} bytes.".format(
+            bytes=len(file_contents)))
+        return ""
+
+    # Init the buffered I/O
+    image_fp = BytesIO()
+    # Write the open graph image contents to its destination.
+    image_fp.write(http_response.content)
+    # Retrieve the file name of the opengraph image
+    raw_image_filename = og_image_url[0]
+    base_image_filename = sha3_256(raw_image_filename.encode()
+                               ).hexdigest()
+    image_filename = base_image_filename + get_image_extension(
+        http_response.content)
+    if form:
+        # Add the image to the PressMention form
+        form.instance.og_image.save(image_filename, files.File(image_fp))
+        return None
     else:
-        # Init the buffered I/O
-        fp = BytesIO()
-        # Copy the open graph image
-        fp.write(resp.content)
-        # Retrieve the file name of the opengraph image
-        file_name = og_image[0].split('/')[-1]
-        if form:
-            # Add the image to the PressMention form
-            form.instance.og_image.save(file_name, files.File(fp))
-            return None
-        else:
-            # Add the open graph image on the PressMention object
-            press_mention.og_image.save(file_name, files.File(fp))
-            press_mention.save()
-            return None
+        # Add the open graph image on the PressMention object
+        press_mention.og_image_url.save(image_filename, files.File(image_fp))
+        press_mention.save()
+        return None
