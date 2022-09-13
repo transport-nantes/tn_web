@@ -22,8 +22,14 @@ urlpatterns = [
 
     ## Copyright page needed.
 
-    path('jobs', AssoView.as_view(title="Jobs",
-                                  template_name='asso_tn/jobs.html',),
+    path('jobs', AssoView.as_view(
+        title="Jobs",
+        template_name='asso_tn/jobs.html',
+        meta_descr="""<meta name="description" content="Les Mobilitains oeuvrent pour une mobilité plus sécurisée, plus fluide et plus vertueuse."/>""",
+        twitter_title = "Les Mobilitains cherchent un-e chargé-e de comme militant-e.",
+        twitter_descr = "Ensemble changeons la mobilité dans la région nantaise, les Pays de la Loire et le Grand Ouest.",
+        hero_image="asso_tn/images-quentin-boulegon/pont-rousseau-1.jpg",
+    ),
          name='jobs'),
 
     path('crowdfunding-2021', AssoView.as_view(

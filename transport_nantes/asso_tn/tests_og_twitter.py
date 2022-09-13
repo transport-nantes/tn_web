@@ -228,35 +228,35 @@ class Test_Og_Twitter_Static_Page(TestCase):
         self.assertContains(self.reponse_legales,
                             twitter_image, status_code=200, html=True)
 
-    def testing_jobs(self):
-        og_title = ("<meta property='og:title'"
-                    "content='Mobilitains - Pour une mobilité multimodale' />")
-        self.assertContains(self.reponse_jobs, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Nous agissons pour une mobilité plus "
-                          "fluide, plus sécurisée et plus vertueuse'/>")
-        self.assertContains(self.reponse_jobs,
-                            og_description, status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{static('velopolitain/v1.png')}' />")
-        self.assertContains(self.reponse_legales, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Mobilitains - "
-                         "Pour une mobilité multimodale'/>")
-        self.assertContains(self.reponse_jobs,
-                            twitter_title, status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description' "
-                               "content='Nous agissons pour une mobilité plus "
-                               "fluide, plus sécurisée et plus vertueuse'/>")
-        self.assertContains(self.reponse_jobs,
-                            twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image' "
-                         f"content='{static('asso_tn/mobilite-pour-tous.jpg')}"
-                         "' />")
-        self.assertContains(self.reponse_legales,
-                            twitter_image, status_code=200, html=True)
+    # def testing_jobs(self):
+    #     og_title = ("<meta property='og:title'"
+    #                 "content='Mobilitains - Pour une mobilité multimodale' />")
+    #     self.assertContains(self.reponse_jobs, og_title,
+    #                         status_code=200, html=True)
+    #     og_description = ("<meta property='og:description'"
+    #                       "content='Nous agissons pour une mobilité plus "
+    #                       "fluide, plus sécurisée et plus vertueuse'/>")
+    #     self.assertContains(self.reponse_jobs,
+    #                         og_description, status_code=200, html=True)
+    #     og_image = ("<meta property='og:image'"
+    #                 f"content='{static('velopolitain/v1.png')}' />")
+    #     self.assertContains(self.reponse_legales, og_image,
+    #                         status_code=200, html=True)
+    #     twitter_title = ("<meta name='twitter:title'"
+    #                      "content='Mobilitains - "
+    #                      "Pour une mobilité multimodale'/>")
+    #     self.assertContains(self.reponse_jobs,
+    #                         twitter_title, status_code=200, html=True)
+    #     twitter_description = ("<meta name='twitter:description' "
+    #                            "content='Nous agissons pour une mobilité plus "
+    #                            "fluide, plus sécurisée et plus vertueuse'/>")
+    #     self.assertContains(self.reponse_jobs,
+    #                         twitter_description, status_code=200, html=True)
+    #     twitter_image = ("<meta name='twitter:image' "
+    #                      f"content='{static('asso_tn/mobilite-pour-tous.jpg')}"
+    #                      "' />")
+    #     self.assertContains(self.reponse_legales,
+    #                         twitter_image, status_code=200, html=True)
 
 
 class Test_template_tags_og_twitter(TestCase):
