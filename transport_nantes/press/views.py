@@ -128,7 +128,7 @@ def fetch_opengraph_data(request, url=None, is_view=False) \
 
     try:
         response = requests.get(url)
-        tree = html.fromstring(response.content)
+        tree = html.fromstring(response.content.decode("utf-8"))
         title = tree.xpath('//meta[@property="og:title"]/@content')
         description = tree.xpath(
             '//meta[@property="og:description"]/@content')
@@ -167,7 +167,7 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
 
 
 class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
-    """Admin citatio update view."""
+    """Admin citation update view."""
 
     model = PressMention
     template_name = "press/press_update.html"
@@ -239,11 +239,9 @@ def update_opengraph_data(form=None, pressmention_id=None):
         if form:
             form.instance.og_title = og_title[0]
             form.instance.og_description = og_description[0]
-            print(form.instance.og_title)
         else:
             press_mention.og_title = og_title[0]
             press_mention.og_description = og_description[0]
-            print(press_mention.og_title)
     try:
         http_response = requests.get(og_image_url[0])
     except IndexError:
