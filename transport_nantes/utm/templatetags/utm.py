@@ -2,7 +2,7 @@ from django import template
 import datetime
 from django.utils.timezone import make_aware
 from django.db.models import Count, Max
-from utm.models import UTM
+from utm.models import Visit
 
 register = template.Library()
 
@@ -13,9 +13,9 @@ def visit_overview(context):
     time_now = make_aware(datetime.datetime.now())
     request = context['request']
     path = request.path
-    robots = UTM.objects.filter(base_url=path, ua_is_bot=True)
-    humans = UTM.objects.filter(base_url=path, ua_is_bot=False)
-    humans_unique = UTM.objects.filter(base_url=path, ua_is_bot=False) \
+    robots = Visit.objects.filter(base_url=path, ua_is_bot=True)
+    humans = Visit.objects.filter(base_url=path, ua_is_bot=False)
+    humans_unique = Visit.objects.filter(base_url=path, ua_is_bot=False) \
                                .values('session_id').distinct()
     context['robots_48h'] = robots.filter(
         timestamp__gt=(time_now - datetime.timedelta(hours=48))).\
@@ -41,12 +41,12 @@ def visit_overview(context):
     context['humans'] = humans.count()
     context['humans_unique'] = humans_unique.count()
 
-    sources = UTM.objects.filter(base_url=path, ua_is_bot=False) \
+    sources = Visit.objects.filter(base_url=path, ua_is_bot=False) \
                          .values('source').distinct()
     context['sources'] = {}
     for source in sources:
         this_source = source['source']
-        the_count = UTM.objects.filter(
+        the_count = Visit.objects.filter(
             base_url=path, source=this_source, ua_is_bot=False) \
                                .values('session_id').distinct().count()
         if "" == this_source:
@@ -54,12 +54,12 @@ def visit_overview(context):
             # but that's not working for me.
             this_source = "<aucun>"
         context['sources'][this_source] = the_count
-    mediums = UTM.objects.filter(base_url=path, ua_is_bot=False) \
+    mediums = Visit.objects.filter(base_url=path, ua_is_bot=False) \
                          .values('medium').distinct()
     context['mediums'] = {}
     for medium in mediums:
         this_medium = medium['medium']
-        the_count = UTM.objects.filter(
+        the_count = Visit.objects.filter(
             base_url=path, medium=this_medium, ua_is_bot=False) \
                                .values('session_id').distinct().count()
         if "" == this_medium:
