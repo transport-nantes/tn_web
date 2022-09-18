@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'topicblog.apps.TopicBlogConfig',
     'dashboard.apps.DashboardConfig',
     'utm.apps.UtmConfig',
+    'gom_jabbar.apps.GomJabbarConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
     'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
     'utm.middleware.utm.UtmMiddleware',
+    'gom_jabbar.middleware.gom_jabbar.GomJabbarMiddleware',
 ]
 
 if ROLE in ("beta", "production"):
