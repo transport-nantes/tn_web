@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import UTM
+from .models import Visit
 from django.utils.crypto import get_random_string
 
 # This is used for creating probably distinct test values.
@@ -23,7 +23,7 @@ class SimpleTest(TestCase):
         the_twclid = get_random_string(k_string_length)
         url = f"/?a=b&utm_campaign={the_campaign}&utm_medium={the_medium}&utm_content={the_content}&c=1&utm_term={the_term}&utm_source={the_source}&gclid={the_gclid}&fbclid={the_fbclid}&twclid={the_twclid}&msclkid={the_msclkid}&aclk={the_aclk}"
         response = self.client.get(url)
-        objects = UTM.objects.all()
+        objects = Visit.objects.all()
         self.assertEqual(len(objects), 1)
         object = objects[0]
         self.assertEqual(object.campaign, the_campaign)
@@ -46,7 +46,7 @@ class SimpleTest(TestCase):
         the_term = get_random_string(k_string_length)
         url = f"/?a=b&utm_campaign={the_campaign}&utm_medium={the_medium}&utm_content={the_content}&c=1&utm_term={the_term}&utm_source={the_source}"
         response = self.client.get(url)
-        objects = UTM.objects.all()
+        objects = Visit.objects.all()
         self.assertEqual(len(objects), 1)
         object = objects[0]
         self.assertEqual(object.campaign, the_campaign)

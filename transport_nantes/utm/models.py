@@ -1,11 +1,11 @@
 from django.db import models
 
 
-class UTM(models.Model):
+class Visit(models.Model):
     """Model used to track where our traffic comes from.
 
-    We call this model UTM, but this is historical.  It should be
-    understood as tracking visitor properties without tracking PII.
+    Track visitor properties without tracking PII.  This model tracks
+    each visit to the site.
 
     We also track arriving advertising tokens, although we can't do
     anything with them besides note that, by their presence, they
@@ -46,8 +46,7 @@ class UTM(models.Model):
     # Twitter
     twclid = models.BooleanField(blank=True, default=False)
 
-    # So this isn't just about UTM anymore but also about all
-    # visitors and how they visit.
+    # Non-identifying visitor information and how they visit.
     ua_device = models.CharField(max_length=100, blank=True)
     ua_os = models.CharField(max_length=100, blank=True)
     ua_browser = models.CharField(max_length=100, blank=True)

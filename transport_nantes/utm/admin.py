@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UTM
+from .models import Visit
 
 
 class UtmAdmin(admin.ModelAdmin):
@@ -9,4 +9,4 @@ class UtmAdmin(admin.ModelAdmin):
     search_fields = ('source', 'campaign', 'content', 'base_url', 'session_id')
 
 
-admin.site.register(UTM, UtmAdmin)
+admin.site.register(Visit, UtmAdmin)

@@ -142,11 +142,5 @@ urlpatterns = [
          name="get_number_of_recipients"),
 ]
 
-# Need topic creation.
-# Need markdown translator.
-# Need click middleware (or something in view here)
-# to tabulate articles served.
-# Need middleware to record visit record with utm, tnclid, tntid, tnsid.
-# Need to assign a tnclid to each page served and record
-# that with visit record.
+# Need better markdown translator.
 # Need media chooser.
