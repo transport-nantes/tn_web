@@ -25,7 +25,10 @@ class Visit(models.Model):
     # The URL without ? arguments.
     base_url = models.CharField(max_length=300, blank=False)
     # A cookie that is unique to visitors for a while so that we can
-    # stitch together multiple visits.
+    # stitch together multiple visits.  This is not point to
+    # Visitor.session_id as a foreign key because our workflow creates
+    # visits and only later, asynchronously, visitors.  So this must
+    # stand alone.
     session_id = models.CharField(max_length=200, blank=False)
 
     # Cf. https://en.wikipedia.org/wiki/UTM_parameters
@@ -60,3 +63,19 @@ class Visit(models.Model):
     user_is_authenticated = models.BooleanField(blank=True, default=False)
 
     timestamp = models.DateTimeField(auto_now=True)
+
+
+class Visitor(models.Model):
+    """Track visitors to the site.
+
+    A visitor is a set of statisticcs concerning a set of visits with
+    a distinct session_id.
+
+    """
+    session_id = models.CharField(max_length=200, blank=False, unique=True)
+    # Counters of the number of human vs non-human visitors, as
+    # measured only by examination of individual Visit records.  As a
+    # first approximation, a visit flagged as a bot is a non-human,
+    # otherwise it is a human.
+    visits_from_humans = models.IntegerField()
+    visits_from_non_humans = models.IntegerField()
