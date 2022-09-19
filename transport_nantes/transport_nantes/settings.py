@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'topicblog.apps.TopicBlogConfig',
     'dashboard.apps.DashboardConfig',
-    'utm.apps.UtmConfig',
+    'utm.apps.UtmConfig',       # Deprecated, but breaks old migrations if removed.
     'gom_jabbar.apps.GomJabbarConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,7 +75,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'asso_tn.middleware.default_context.DefaultContextMiddleware',
     'asso_tn.middleware.sessionCookie.SessionCookieMiddleWare',
-    'utm.middleware.utm.UtmMiddleware',
     'gom_jabbar.middleware.gom_jabbar.GomJabbarMiddleware',
 ]
 
