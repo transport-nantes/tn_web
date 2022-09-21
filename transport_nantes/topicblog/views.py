@@ -41,11 +41,11 @@ from .models import (SendRecordTransactionalEmail,
                      TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
                      SendRecordMarketingEmail, SendRecordMarketingPress,
-                     SendRecordTransactional)
+                     SendRecordTransactional, TopicBlogWrapper)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm,
-                    SendToSelfForm)
+                    SendToSelfForm, TopicBlogWrapperForm)
 
 # Doesn't actually import at runtime, it's for type hinting
 if TYPE_CHECKING:
@@ -104,6 +104,7 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
                 "slug", "subject", "title", "template_name", 'template',
                 "header_title", "header_description", "header_image",
                 "mailing_list", "article_slug", "campaign_name",
+                "underlying_slug", "original_model",
             ],
             "form_content_a": [
                 "body_text_1_md", "cta_1_slug", 'body_image',
@@ -1158,6 +1159,10 @@ class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     permission_required = 'topicblog.tbla.may_view'
 
 
+######################################################################
+# TopicBlogMailingListPitch
+
+
 class TopicBlogMailingListPitchView(TopicBlogBaseView):
     """View a published mailing list pitch."""
 
@@ -1205,6 +1210,17 @@ class TopicBlogMailingListPitchViewOne(
 
     model = TopicBlogMailingListPitch
 
+
+######################################################################
+# TopicBlogWrapper
+
+
+class TopicBlogWrapperEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
+    """Create a TBWrapper."""
+
+    model = TopicBlogWrapper
+    permission_required = 'topicblog.tbw.may_edit'
+    form_class = TopicBlogWrapperForm
 
 def beacon_view(response, **kwargs):
     """Process received mail beacon."""
@@ -1394,7 +1410,7 @@ def mark_moribund_and_delete(slug_queryset):
             logger.info(f"Deleting object {tb_object.id}.")
             tb_object.delete()
         elif tb_object.is_moribund() and \
-             tb_object.scheduled_for_deletion_date is None:
+                tb_object.scheduled_for_deletion_date is None:
             logger.info(f"Marking as moribund object {tb_object.id}.")
             tb_object.scheduled_for_deletion_date = datetime.now(timezone.utc)
             tb_object.save()

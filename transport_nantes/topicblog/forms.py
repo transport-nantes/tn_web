@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import ModelForm
 from .models import (TopicBlogItem, TopicBlogLauncher,
-                     TopicBlogEmail, TopicBlogMailingListPitch, TopicBlogPress)
+                     TopicBlogEmail, TopicBlogMailingListPitch, TopicBlogPress,
+                     TopicBlogWrapper)
 from mailing_list.models import MailingList
 
 
@@ -148,3 +149,14 @@ class SendToSelfForm(forms.Form):
     sent_object_transactional_send_record_class = forms.CharField(
         required=True)
     redirect_url = forms.CharField(required=True)
+
+
+class TopicBlogWrapperForm(ModelForm):
+
+    class Meta:
+        model = TopicBlogWrapper
+        fields = [
+            "slug", "underlying_slug", "original_model", "social_description",
+            "twitter_title", "twitter_description", "twitter_image",
+            "og_title", "og_description", "og_image", "author_notes",
+        ]
