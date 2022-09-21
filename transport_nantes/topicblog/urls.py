@@ -21,6 +21,8 @@ urlpatterns = [
          name='view_launcher_by_slug'),
     path('mlp/<slug:the_slug>/', views.TopicBlogMailingListPitchView.as_view(),
          name='view_mlp_by_slug'),
+    path('w/<slug:the_slug>/', views.TopicBlogWrapperView.as_view(),
+         name='view_wrapper_by_slug'),
 
     path('e/i/<str:token>', views.beacon_view,
          name='beacon_view'),
