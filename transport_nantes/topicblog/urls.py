@@ -35,6 +35,8 @@ urlpatterns = [
          name='view_press_by_pkid_only'),
     path('admin/la/view/<int:pkid>/', views.TopicBlogLauncherViewOne.as_view(),
          name='view_launcher_by_pkid_only'),
+    path('admin/w/view/<int:pkid>/', views.TopicBlogWrapperViewOne.as_view(),
+         name='view_wrapper_by_pkid_only'),
 
     path('admin/t/view/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogItemViewOne.as_view(),
@@ -51,6 +53,9 @@ urlpatterns = [
     path('admin/mlp/view/<int:pkid>/<slug:the_slug>/',
          views.TopicBlogMailingListPitchViewOne.as_view(),
          name='view_mlp_by_pkid'),
+    path('admin/w/view/<int:pkid>/<slug:the_slug>/',
+         views.TopicBlogWrapperViewOne.as_view(),
+         name='view_wrapper_by_pkid'),
     path('admin/self-send/', views.TopicBlogSelfSendView.as_view(),
          name='self_send'),
 
