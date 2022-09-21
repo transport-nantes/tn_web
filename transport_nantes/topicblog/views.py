@@ -1327,6 +1327,12 @@ class TopicBlogWrapperView(TemplateView):
         return context
 
 
+class TopicBlogWrapperList(PermissionRequiredMixin,
+                           TopicBlogBaseList):
+    model = TopicBlogWrapper
+    permission_required = 'topicblog.tbw.may_view'
+
+
 def beacon_view(response, **kwargs):
     """Process received mail beacon."""
     def update_send_record_open_time(token: str) -> None:

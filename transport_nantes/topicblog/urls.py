@@ -127,6 +127,8 @@ urlpatterns = [
          name='list_launcher'),
     path('admin/mlp/list/', views.TopicBlogMailingListPitchList.as_view(),
          name='list_mlp'),
+    path('admin/w/list/', views.TopicBlogWrapperList.as_view(),
+         name='list_wrapper'),
 
     path('admin/t/list/<slug:the_slug>/', views.TopicBlogItemList.as_view(),
          name='list_items_by_slug'),
@@ -140,6 +142,10 @@ urlpatterns = [
     path('admin/mlp/list/<slug:the_slug>/',
          views.TopicBlogMailingListPitchList.as_view(),
          name='list_mlp_by_slug'),
+    path('admin/w/list/<slug:the_slug>/',
+         views.TopicBlogWrapperList.as_view(),
+         name='list_wrapper_by_slug'),
+
 
     path('admin/e/send/<slug:the_slug>/', views.TopicBlogEmailSend.as_view(),
          name='send_email'),
