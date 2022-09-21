@@ -328,6 +328,8 @@ class TopicBlogObjectBase(models.Model):
                     fields.add('og_description')
                     fields.add('og_image')
                     continue
+                if field_name == "underlying_slug":
+                    fields.add("underlying_slug")
         return fields
 
     def is_moribund(self) -> bool:
@@ -1352,3 +1354,91 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
 
     description_of_object = 'Inscriptions'
 
+
+class TopicBlogWrapper(TopicBlogObjectSocialBase):
+
+    class Meta:
+        verbose_name_plural = "Topic blog wrappers"
+        permissions = (
+            ("tbw.may_view",
+             "May view the list of existing wrappers"),
+            ("tbw.may_edit",
+             "May create and edit TopicBlogWrapper"),
+            ("tbw.may_publish",
+             "May publish TopicBlogWrapper"),
+            ("tbw.may_publish_self",
+                "May publish own TopicBlogWrapper"),
+        )
+
+    class WrappedObjectsChoices(models.TextChoices):
+        """Choices for the wrapped object type.
+        """
+        TBI = 'topicblogitem', 'Article de blog'
+        TBM = 'topicblogmailinglistpitch', 'Inscription'
+        TBE = 'topicblogemail', 'Mail'
+        TBP = 'topicblogpress', 'Communiqué de presse'
+
+    underlying_slug = models.SlugField(
+        max_length=300, allow_unicode=True, blank=True, null=True,
+        verbose_name="Slug sous-jacent")
+    original_model = models.CharField(max_length=200,
+                                      choices=WrappedObjectsChoices.choices,
+                                      default=WrappedObjectsChoices.TBI,
+                                      verbose_name="Type de contenu")
+
+    viewbyslug_object_url = 'topicblog:view_wrapper_by_slug'
+    new_object_url = 'topicblog:new_wrapper'
+    listall_object_url = 'topicblog:list_wrapper'
+    description_of_object = 'Wrapper pour les articles'
+    listone_object_url = 'topicblog:list_wrapper_by_slug'
+    viewbypkid_object_url = 'topicblog:view_wrapper_by_pkid'
+    viewbypkid_only_object_url = "topicblog:view_wrapper_by_pkid_only"
+    edit_object_url = "topicblog:edit_wrapper"
+    editbypkid_object_url = "topicblog:edit_wrapper_by_pkid"
+
+    # Configuration template
+    template_name = models.CharField(max_length=200, default="default")
+    template_config_default = {
+        "optional_fields_for_publication": (
+            # We can omit these fields and fallback to default
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image',
+        ),
+        # Fields that, if required for publication, the requirement is
+        # satisfied by providing any one of them.
+        "one_of_fields_for_publication": [
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+        ],
+    }
+    template_config = {
+        'default': {
+            'default_choice': True,
+            'user_template_name': 'Article',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'underlying_slug': True,
+                'social_media': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
+
+    # Extra fields inherited but unused, turned to None to avoid
+    # confusion. These aren't added to DB table.
+    title = None
+    header_title = None
+    header_image = None
+    header_description = None
+
+    def __str__(self) -> str:
+        return f'{self.slug} | {self.underlying_slug} - {self.original_model}'
