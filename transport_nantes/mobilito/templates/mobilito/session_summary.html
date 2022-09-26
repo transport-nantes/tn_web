@@ -1,0 +1,23 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load tz %}
+
+{% block app_content %}
+    <article class="p-3">
+        <h1>
+            {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
+                Résumé de votre session du
+                    {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i" }}
+                    (durée : {{start|timesince:end}})
+                
+            {% endwith %}
+        </h1>
+        <p>
+            Lors de cette session, vous avez noté
+            {{ mobilito_session.number_of_pedestrians|default:"0" }} piétons, 
+            {{ mobilito_session.number_of_bicycles|default:"0" }} vélos,
+            {{ mobilito_session.number_of_cars|default:"0" }} voitures et camions,
+            et {{ mobilito_session.number_of_public_transports|default:"0" }} transports collectifs.
+        </p>
+        
+    </article>
+{% endblock app_content %}
