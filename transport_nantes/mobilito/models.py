@@ -35,6 +35,7 @@ class Session(models.Model):
     bicycle_count = models.IntegerField(default=0)
     motor_vehicle_count = models.IntegerField(default=0)
     public_transport_count = models.IntegerField(default=0)
+    published = models.BooleanField(default=True)
 
     def __str__(self):
         return f'{self.user.user.email} - {self.start_timestamp}'
