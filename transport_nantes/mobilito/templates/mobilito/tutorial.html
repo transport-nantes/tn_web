@@ -27,13 +27,14 @@
             </li>
         </ul>
         {% block tutorial_content %}{% endblock tutorial_content %}
-        {% include 'mobilito/next_page_arrow.html' with next_page=the_next_page %}
         {% if seen_all_pages %}
             <div style="text-align: center">
             <a href="{% url 'mobilito:address_form'%}" class="btn donation-button mx-auto" style="border-radius:5px;">
                 Passer à l'enregistrement >>
             </a>
             </div>
+        {% else %}
+            {% include 'mobilito/next_page_arrow.html' with next_page=the_next_page %}
         {% endif %}
     </section>
 </div>
