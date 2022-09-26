@@ -9,3 +9,6 @@ h2 {
     color: var(--mobilitains-bleu);
     background-color: white;
 }
+.mobilito-tutorial-icons {
+    max-height: 20vh;
+}
