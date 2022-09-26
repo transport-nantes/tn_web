@@ -8,7 +8,7 @@ https://developers.google.com/maps/documentation/geocoding/requests-reverse-geoc
 */
 
 // Initializing the map
-var map = L.map('map').fitWorld();
+var map = L.map('map').setView([47.218371, -1.553621], 8);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -55,13 +55,6 @@ $('#share-location').on('click', function () {
 // What happens when user has granted permission to share location and it's
 // been found.
 function onLocationFound(e) {
-    // Display the map with the user's location.
-    $('#map').css('display', 'block');
-    // Display None prevents the map from knowing its size, calling
-    // invalidateSize() once the map has an actual size fixes a bug where the
-    // map doesn't display properly. (Apparently, it doesn't know how many
-    // tiles it has to load)
-    map.invalidateSize();
     // setView centers the map on the user's location, whith a zoom level that
     // depends on the event's accuracy. (More accurate = zoom level higher)
     // https://leafletjs.com/examples/zoom-levels/
