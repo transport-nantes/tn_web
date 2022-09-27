@@ -18,3 +18,7 @@ footer {
     border: 1px solid black;
     color: black;
 }
+div.leaflet-control-locate > a > span {
+    font-size: large;
+    vertical-align: middle;
+}
