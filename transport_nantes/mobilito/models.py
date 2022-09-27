@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.contrib.auth.models import User
 
 import logging
@@ -36,6 +37,7 @@ class Session(models.Model):
     motor_vehicle_count = models.IntegerField(default=0)
     public_transport_count = models.IntegerField(default=0)
     published = models.BooleanField(default=True)
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
 
     def __str__(self):
         return f'{self.user.user.email} - {self.start_timestamp}'
