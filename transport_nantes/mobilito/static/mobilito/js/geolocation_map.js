@@ -24,7 +24,28 @@ const LOCATE_OPTIONS = {
     }
 }
 L.control.locate(LOCATE_OPTIONS).addTo(map);
-
+var marker;
+// geocoder uses per default nominatim.openstreetmap.org as geocoding service
+// https://nominatim.org/release-docs/develop/api/Search/
+// This API doesn't require an API key, but it's limited to 1 request per second.
+// (see : https://operations.osmfoundation.org/policies/nominatim/)
+// This geocoder's source code is accessible here :
+// https://github.com/perliedman/leaflet-control-geocoder
+// It's compatible with Google Maps API according to its readme, but I couldn't
+// find where to set the API key just yet.
+// Because the number of requests has very low chance to exceed 1 per sec
+// for now, we can stick to nominatim but the Google Maps API is still an option
+// if we need to.
+var geocoder = L.Control.geocoder(
+    { defaultMarkGeocode: false, }
+).on(
+    'markgeocode', function (e) {
+        var customEvent = {
+            latlng: e.geocode.center,
+        }
+        onMapClick(customEvent);
+    })
+geocoder.addTo(map);
 // Pressing share-location button will trigger the geolocation, once user
 // has granted permission to share location.
 $('#share-location').on('click', function () {
@@ -33,7 +54,6 @@ $('#share-location').on('click', function () {
 
 // What happens when user has granted permission to share location and it's
 // been found.
-var marker;
 function onLocationFound(e) {
     // Display the map with the user's location.
     $('#map').css('display', 'block');

@@ -13,6 +13,8 @@
     <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     {{ MAPS_API_KEY|json_script:"maps_api_key" }}
+    {# Leaflet JS geocoder control #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
 {% endblock styles %}
 
@@ -25,8 +27,11 @@
     {# Leaflet JS locate control #}
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 
+    {# Leaflet JS geocoder control #}
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
     <script src="{% static 'mobilito/js/geolocation_map.js' %}"></script>
-    
+
 {% endblock scripts %}
 
 {% block navbar %}
