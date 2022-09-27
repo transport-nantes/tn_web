@@ -21,7 +21,15 @@ const LOCATE_OPTIONS = {
             return `<p>Vous êtes dans les ${distance} ${unit} de ce point.</p>`
         },
         metersUnit: "mètres"
-    }
+    },
+    setView: false,
+    clickBehavior: {
+        inView: 'stop',
+        outOfView: 'stop',
+        inViewNotFollowing: 'stop'
+    },
+    icon: 'fa-solid fa-location-crosshairs'
+
 }
 L.control.locate(LOCATE_OPTIONS).addTo(map);
 var marker;
@@ -71,6 +79,15 @@ map.on('locationfound', onLocationFound);
 var isLoading = false;
 // What happens when user clicks on the map.
 function onMapClick(e) {
+    // If position location is toggled ON and user clicks on the map, we
+    // toggle off the control. A way to see if the location is toggled on is
+    // to check if the div with the class 'leaflet-control-locate' has the
+    // class 'active'.
+    if ($('.leaflet-control-locate').hasClass('active')) {
+        // The <a> element inside the control effectively toggles the control
+        // on/off.
+        $('a.leaflet-bar-part')[0].click();
+    }
     // If the user is already loading, don't do anything.
     if (isLoading) {
         return;
