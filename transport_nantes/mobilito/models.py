@@ -23,6 +23,12 @@ class MobilitoUser(models.Model):
 
 
 class Session(models.Model):
+
+    class Meta:
+        permissions = (
+            ("session.view_session", "Can view an unpublished session"),
+        )
+
     """A user recording session: a collection of Event's."""
     user = models.ForeignKey(MobilitoUser, on_delete=models.PROTECT)
     location = models.CharField(max_length=1000, null=True, blank=True)
