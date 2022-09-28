@@ -11,6 +11,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404
 
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
@@ -404,3 +405,33 @@ def get_MobilitoUser(self: Union[TemplateView, FormView]) -> Union[MobilitoUser,
         user = None
 
     return user
+
+
+class SessionSummaryView(TemplateView):
+    """Display the details of a Mobilito Session"""
+    model = Session
+    template_name = 'mobilito/session_summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session_sha1 = self.kwargs.get('session_sha1')
+        requested_session = get_object_or_404(Session, session_sha1=session_sha1)
+        context["mobilito_session"] = requested_session
+        return context
+
+    def check_view_permission(self, obj: Session) -> None:
+        """Check if the user has permission to view the session
+
+        Only author and authorised users can see the session if it's unpublished
+        """
+
+        if obj.published is False:
+            mobilito_user = get_MobilitoUser(self)
+            if (not self.request.user.has_perm('mobilito.session.view_session')
+                    and mobilito_user != obj.user):
+                raise Http404
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        context = self.get_context_data(**kwargs)
+        self.check_view_permission(context["mobilito_session"])
+        return self.render_to_response(context)
