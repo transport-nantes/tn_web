@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 import logging
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.forms import ValidationError
 
 logger = logging.getLogger("django")
@@ -36,6 +36,7 @@ class Session(models.Model):
     motor_vehicle_count = models.IntegerField(default=0)
     public_transport_count = models.IntegerField(default=0)
     published = models.BooleanField(default=True)
+    session_sha1 = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return f'{self.user.user.email} - {self.start_timestamp}'
@@ -46,6 +47,28 @@ class Session(models.Model):
             event_type=event_type,
         )
         logger.info(f"{self.user.user.email} created an event of type {event_type}")
+
+    def save(self, *args, **kwargs):
+        if not self.session_sha1:
+            self.session_sha1 = self.generate_session_sha1()
+
+        try:
+            super().save(*args, **kwargs)
+        except IntegrityError:
+            logger.warning(f"Session {self.session_sha1} already exists")
+            self.session_sha1 = self.generate_session_sha1()
+            logger.warning(f"New session SHA1: {self.session_sha1}")
+            super().save(*args, **kwargs)
+
+    def generate_session_sha1(self):
+        """Compute a sha1 from now() and the users's ID"""
+        import hashlib
+        import time
+        return hashlib.sha1(
+            (
+                str(time.monotonic_ns()) + "|" + str(self.user.user.id)
+            ).encode('utf-8')
+        ).hexdigest()
 
 
 def event_type_validator(value):
