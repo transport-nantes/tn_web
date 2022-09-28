@@ -356,6 +356,7 @@ def prepare_email(
     logger.info(f'Preparing email for {session_object.user.user.email}')
     template = "mobilito/result_email.html"
     context = {
+        'request': request,
         'session_object': session_object,
         'nb_pedestrians': session_object.pedestrian_count,
         'nb_bicycles': session_object.bicycle_count,
