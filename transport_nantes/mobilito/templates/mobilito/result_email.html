@@ -1,5 +1,6 @@
 {% extends 'topicblog/base_email_client.html' %}
 {% load absolute_url %}
+{% load tz %}
 {% load static %}
 
 {% block email_content %}
@@ -20,19 +21,40 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
         </td> <!-- End Logo -->
     </tr>
     <tr>
+        <td>Bonjour de la part des Mobilitains.</td>
+    </tr>
+    <tr>
         <td>
-            Date : {{ session_object.start_timestamp }}
+            {% with start=session_object.start_timestamp end=session_object.end_timestamp %}
+                Voici le résumé de votre session du
+                    {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i" }}
+                    (durée : {{start|timesince:end}})
+
+            {% endwith %}
         </td>
     </tr>
     <tr>
         <td>
             <ul>
-                <li>Mobilito session ID : {{ session_object.id }}</li>
-                <li> # Of pedestrians : {{ nb_pedestrians }}</li>
-                <li> # Of cars : {{ nb_cars }}</li>
-                <li> # Of bicycles : {{ nb_bicycles }}</li>
-                <li> # Of TC : {{ nb_TC }}</li> 
+                <li> Identifiant de votre session : {{ session_object.session_sha1 }}</li>
+                <li> Nombre de citoyens à pied : {{ nb_pedestrians }}</li>
+                <li> Nombre de voitures, motos, camions : {{ nb_cars }}</li>
+                <li> Nombre de vélos et trotinettes : {{ nb_bicycles }}</li>
+                <li> Nombre de transports en commun : {{ nb_TC }}</li> 
             </ul>
+            <p style="margin-bottom:2em;">
+                Vous pouvez retrouver les détails de votre session sur le site Mobilitains à l'addresse suivante :
+                <p>
+                    <a href="{% absolute_url 'mobilito:session_summary' session_object.session_sha1 %}">
+                        {% absolute_url 'mobilito:session_summary' session_object.session_sha1 %}
+                    </a>
+                </p>
+                <p>
+                    Merci de votre participation, c'est grâce à vous que la voix des citoyens est entendue !
+                    <br/>
+                    A très bientôt.
+                </p>
+            </p>
         </td>
     </tr>
     <tr> <!-- Footer -->
