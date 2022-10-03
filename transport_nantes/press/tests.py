@@ -229,3 +229,50 @@ class PressMentionTestCase(TestCase):
                     }))
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
+
+    def test_check_for_duplicate_permission(self):
+        """Check that only authorized users can check for duplicates"""
+        url = reverse("press:check_for_duplicate")
+        data = {"url": self.journal_report.article_link}
+
+        response = self.client.get(url, data=data)
+        self.assertEqual(
+            response.status_code, 302,
+            msg="Auth users without permission can't access to this page")
+
+        response = self.unauth_client.get(url, data=data)
+        self.assertEqual(
+            response.status_code, 302,
+            msg="Unauth users don't have access to check for duplicates endpoint")
+
+        response = self.user_permited_client.get(url, data=data)
+        self.assertEqual(
+            response.status_code, 200,
+            msg=("Auth users with permission have access to check "
+                 "for duplicates endpoint")
+        )
+
+    def test_check_for_duplicate(self):
+        """Check that the check for duplicates endpoint works"""
+        url = reverse("press:check_for_duplicate")
+        data = {"url": self.journal_report.article_link}
+
+        response = self.user_permited_client.get(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                "is_duplicate": True,
+                "edit_url": reverse(
+                        'press:update_item',
+                        kwargs={
+                            'pk': self.journal_report.pk
+                        }
+                    )
+            }
+        )
+
+        response = self.user_permited_client.get(
+            url, data={"url": "http://example.com/new-url/"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"is_duplicate": False})
