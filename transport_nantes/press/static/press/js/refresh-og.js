@@ -24,7 +24,20 @@ const isValidUrl = urlString => {
     }
 }
 
-$("#id_article_link").on("input", (e) => {
+async function checkForDuplicate(url) {
+    let data = await $.ajax({
+        url: '/presse/ajax/check-for-duplicate/',
+        type: 'GET',
+        headers: { "X-CSRFToken": getCookie('csrftoken') },
+        data: {
+            'url': url
+        },
+        mode: 'same-origin',
+    })
+    return data;
+}
+
+$("#id_article_link").on("change", async (e) => {
     let UrlIsValid = isValidUrl(e.target.value);
     if (!UrlIsValid) {
         return;
@@ -47,4 +60,9 @@ $("#id_article_link").on("input", (e) => {
             $("#id_article_publication_date").val(data.publication_date.slice(0, 10));
         }
     })
+    let data = await checkForDuplicate(e.target.value);
+    console.log(data);
+    if (data.is_duplicate) {
+        window.location.href = data.edit_url;
+    }
 });

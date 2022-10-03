@@ -15,4 +15,6 @@ urlpatterns = [
     path('admin/detail/<int:pk>', views.PressMentionDetailView.as_view(),
          name='detail_item'),
     path('ajax/fetch-og-data/', views.fetch_opengraph_data, name='fetch_og_data'),
+    path('ajax/check-for-duplicate/', views.check_for_duplicate,
+         name='check_for_duplicate'),
 ]

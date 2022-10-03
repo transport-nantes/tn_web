@@ -7,10 +7,11 @@ from typing import Union
 from urllib.parse import urlparse
 
 import requests
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core import files
 from django.http import JsonResponse
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
@@ -296,3 +297,30 @@ def update_opengraph_data(form=None, pressmention_id=None):
         press_mention.og_image_url.save(image_filename, files.File(image_fp))
         press_mention.save()
         return None
+
+
+@csrf_protect
+@permission_required('press.press-editor')
+def check_for_duplicate(request, *args, **kwargs):
+    """Check if the provided URL already exists in PressMention."""
+    url = request.GET.get("url")
+    if url:
+        try:
+            # Article_link has a unique constraint
+            press_mention = PressMention.objects.get(article_link=url)
+        except PressMention.DoesNotExist:
+            press_mention = None
+
+        if press_mention:
+            return JsonResponse(
+                {
+                    "is_duplicate": True,
+                    "edit_url": reverse(
+                        'press:update_item',
+                        kwargs={
+                            'pk': press_mention.pk
+                        }
+                    )
+                }
+            )
+    return JsonResponse({"is_duplicate": False})
