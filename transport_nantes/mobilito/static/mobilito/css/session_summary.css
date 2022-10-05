@@ -1,0 +1,15 @@
+#report-abuse {
+    margin-top: 3em;
+    cursor: pointer;
+}
+.fa-ellipsis::before {
+    content: "\f141";
+    vertical-align: middle;
+}
+a.dropdown-item {
+    color: var(--body-text);
+    text-decoration: none;
+}
+ #dropdownMenuLink {
+    color: var(--body-text);
+}
