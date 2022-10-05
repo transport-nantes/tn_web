@@ -1,30 +1,32 @@
-from base64 import b64decode, b64encode
-from datetime import datetime, timedelta, timezone
 import json
 import logging
 import pickle
-import requests
-from user_agents import parse
+from base64 import b64decode, b64encode
+from datetime import datetime, timedelta, timezone
 from typing import Union
 
+import requests
+from asso_tn.utils import make_timed_token, token_valid
+from authentication.views import create_send_record
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
 from django.http import (Http404, HttpRequest, HttpResponse,
-                         HttpResponseRedirect, JsonResponse,)
+                         HttpResponseRedirect, JsonResponse)
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import get_object_or_404
 from django.views import View
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from asso_tn.utils import make_timed_token, token_valid
-
-from mobilito.models import MobilitoUser, MobilitoSession
-from mobilito.forms import AddressForm
-from authentication.views import create_send_record
+from ipware import get_client_ip
 from topicblog.models import SendRecordTransactionalAdHoc
 from transport_nantes.settings import MAPS_API_KEY
+from user_agents import parse
+
+from mobilito.forms import AddressForm
+from mobilito.models import (InappropriateFlag, MobilitoSession, MobilitoUser)
 
 logger = logging.getLogger("django")
 
@@ -435,6 +437,19 @@ class MobilitoSessionSummaryView(TemplateView):
         requested_mobilito_session = get_object_or_404(
             MobilitoSession, session_sha1=session_sha1)
         context["mobilito_session"] = requested_mobilito_session
+        user = self.request.user
+        if user.is_authenticated:
+            user_has_reported_this_session = InappropriateFlag.objects.filter(
+                session=requested_mobilito_session,
+                reporter_user=user).exists()
+        else:
+            user_has_reported_this_session = InappropriateFlag.objects.filter(
+                session=requested_mobilito_session,
+                reporter_tn_session_id=self.request.session.get(
+                    'tn_session')
+            )
+
+        context["user_has_reported_this_session"] = user_has_reported_this_session
         return context
 
     def check_view_permission(self, obj: MobilitoSession) -> None:
@@ -472,3 +487,47 @@ class ReverseGeocodingView(View):
             return JsonResponse(response.json())
 
         return HttpResponse(status=400)
+
+
+@csrf_protect
+def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
+    """Flag a session as inappropriate"""
+
+    if request.method == 'POST':
+        user = request.user if request.user.is_authenticated else None
+
+        session_sha1 = kwargs['session_sha1']
+        try:
+            # In the event that somehow, in spite of CSRF protection, a user
+            # tries to flag a session that doesn't exist, we don't want to
+            # crash the app, so we catch the exception, log it and return a 404
+            session_object = get_object_or_404(
+                MobilitoSession, session_sha1=session_sha1)
+        except Http404:
+            logger.error(f"{user or 'Anonymous User'} tried to flag a "
+                         f"non-existing session : {session_sha1}")
+            raise Http404
+
+        client_ip, _ = get_client_ip(request)
+        _, created = InappropriateFlag.objects.get_or_create(
+            session=session_object,
+            reporter_user=user,
+            reporter_tn_session_id=request.session.get('tn_session'),
+            defaults={
+                'session': session_object,
+                'reporter_user': user,
+                'reporter_tn_session_id': request.session.get('tn_session'),
+                'report_details': request.POST.get('report-abuse-text'),
+                'reporter_ip_address': client_ip,
+            })
+        if created:
+            logger.info(f"{user or 'Anonymous User'} flagged session "
+                        f"{session_object.id}")
+        else:
+            logger.info(f"{user or 'Anonymous User'} tried to flag session "
+                        f"{session_object.id} but they already flagged it")
+
+        return HttpResponse(status=200)
+
+    if request.method == 'GET':
+        return HttpResponse(status=405)
