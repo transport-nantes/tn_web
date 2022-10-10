@@ -1,5 +1,6 @@
 {% extends "asso_tn/base_mobilitain.html" %}
 {% load static %}
+{% load compress %}
 {% load crispy_forms_tags %}
 
 {% block metas %}
@@ -9,9 +10,10 @@
 
 {% block content %}
 <script src="https://js.stripe.com/v3/"></script>
-<script src="{% static 'stripe_app/form_flow.js' %}" defer></script>
-<script src="{% static 'stripe_app/form_style.js' %}" defer></script>
-
+{% compress js %}
+	<script src="{% static 'stripe_app/form_flow.js' %}" defer></script>
+	<script src="{% static 'stripe_app/form_style.js' %}" defer></script>
+{% endcompress %}
 <div id="progress-bar" class="col-xl-5 col-lg-7 col-md-10 col-sm-12 pt-4 pb-1">
 	<ul class="progressbar">
 		<li id="progress_bar_step_1" class="active">Le don</li>

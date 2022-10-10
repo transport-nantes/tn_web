@@ -1,6 +1,7 @@
 {% load static %}
 {% load don %}
 {% load og_twitter %}
+{% load compress %}
 <!DOCTYPE html>
 <html lang="fr">
 {% block html %}
@@ -47,50 +48,56 @@
 				</style>
 				{# Favico #}
 				<link rel="icon" type="image/png" href="{% static 'asso_tn/favico.png' %}" />
-				{# Mobilitains #}
-				<link rel="stylesheet" href="{% static 'asso_tn/mobilitains.css' %}">
-				{% if is_production %}
-				{# Matomo #}
-				<!-- Matomo -->
-				<script type="text/javascript">
-					var _paq = window._paq = window._paq || [];
-					/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-					_paq.push(["setDomains", ["*.www.mobilitains.fr","*.www.transport-nantes.com"]]);
-					_paq.push(['trackPageView']);
-					_paq.push(['enableLinkTracking']);
-					(function() {
-					var u="//wa.mobilitains.fr/";
-					_paq.push(['setTrackerUrl', u+'matomo.php']);
-					_paq.push(['setSiteId', '3']);
-					var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-					g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-					})();
-				</script>
-				<noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
-				<!-- End Matomo Code -->
-				{% endif %}
+				{% compress css %}
+					{# Mobilitains #}
+					<link rel="stylesheet" href="{% static 'asso_tn/mobilitains.css' %}">
 
-				{% if page.hero_image %}
-					<style>
-						.hero-image {
-							/*
-							Use "linear-gradient" to add a darken background effect to the
-							image (photographer.jpg). This will make the text easier to read
-						*/
-							background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-							url("{% static page.hero_image %}");
+					{% if page.hero_image %}
+						<style>
+							.hero-image {
+								/*
+								Use "linear-gradient" to add a darken background effect to the
+								image (photographer.jpg). This will make the text easier to read
+							*/
+								background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+								url("{% static page.hero_image %}");
 
-							/* Set a specific height */
-							height: 40%;
+								/* Set a specific height */
+								height: 40%;
 
-							/* Position and center the image to scale nicely on all screens */
-							background-position: center;
-							background-repeat: no-repeat;
-							background-size: cover;
-							position: relative;
-							}
-					</style>
-				{% endif %}
+								/* Position and center the image to scale nicely on all screens */
+								background-position: center;
+								background-repeat: no-repeat;
+								background-size: cover;
+								position: relative;
+								}
+						</style>
+					{% endif %}
+				{% endcompress %}
+				{% compress js %}
+					{% if is_production %}
+					{# Matomo #}
+					<!-- Matomo -->
+					<script type="text/javascript">
+						var _paq = window._paq = window._paq || [];
+						/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+						_paq.push(["setDomains", ["*.www.mobilitains.fr","*.www.transport-nantes.com"]]);
+						_paq.push(['trackPageView']);
+						_paq.push(['enableLinkTracking']);
+						(function() {
+						var u="//wa.mobilitains.fr/";
+						_paq.push(['setTrackerUrl', u+'matomo.php']);
+						_paq.push(['setSiteId', '3']);
+						var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+						g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+						})();
+					</script>
+					<noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+					<!-- End Matomo Code -->
+					{% endif %}
+				{% endcompress %}
+
+
 
 			{% endblock styles %}
 			{# OG title #}

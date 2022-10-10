@@ -1,5 +1,6 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
+{% load compress %}
 {% load crispy_forms_tags %}
 
 {% block styles %}
@@ -30,7 +31,9 @@
     {# Leaflet JS geocoder control #}
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <script src="{% static 'mobilito/js/geolocation_map.js' %}"></script>
+    {% compress js %}
+        <script src="{% static 'mobilito/js/geolocation_map.js' %}"></script>
+    {% endcompress %}
 
 {% endblock scripts %}
 

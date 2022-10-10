@@ -1,5 +1,6 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
+{% load compress %}
 
 {% block styles %}
     {{ block.super }}
@@ -8,7 +9,9 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'mobilito/js/plus_minus_buttons.js' %}" defer></script>
+    {% compress js %}
+        <script src="{% static 'mobilito/js/plus_minus_buttons.js' %}" defer></script>
+    {% endcompress %}
 {% endblock scripts %}
 
 {% block navbar %}
