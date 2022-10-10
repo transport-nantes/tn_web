@@ -1,9 +1,12 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
 {% load static %}
+{% load compress %}
 
 {% block styles %}
     {{block.super}}
-    <link rel="stylesheet" href="{% static 'mobilito/css/tutorial.css' %}">
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'mobilito/css/tutorial.css' %}">
+    {% endcompress %}
 {% endblock styles %}
 
 {% block app_content %}
