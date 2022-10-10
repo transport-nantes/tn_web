@@ -1,0 +1,55 @@
+{% extends 'topicblog/base_email_client.html' %}
+{% load static %}
+
+{% block email_content %}
+{% comment %} This table is the main container{% endcomment %}
+<table role="presentation"
+style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+    <tr>
+        {% comment "Logo" %}This row handles the logo display{% endcomment %}
+        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#ffffff;">
+            <a href="https://www.mobilitains.fr/" style="text-decoration:none;">
+                {% if logo_path %}
+                    <img src="{{ logo_path }}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% else %}
+                    <img src="{% static 'asso_tn/M-logo_colored-32.png' %}" width="165" alt="Logo Mobilitains"
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                {% endif %}
+            </a>
+        </td> <!-- End Logo -->
+    </tr>
+    <tr>
+        <td style="padding:30px;padding-bottom:15px;background-color:#ffffff;">
+            <p>
+                Bonjour des Mobilitains,
+	        </p>
+	        <p>
+                Merci d'avoir effectué une donation, c'est grâce à vous que 
+                nous pouvons continuer à faire vivre le projet Mobilitains.
+	        </p>
+            <p>
+                Vous recevrez un reçu fiscal pour votre don prochainement par
+                email.
+            </p>
+            <p>
+                Si ce n'est pas déjà fait vous pouvez nous suivre sur les réseaux
+                sociaux pour être au courant de nos dernières actualités :
+                <a href="https://www.facebook.com/Mobilitains/">Facebook</a>,
+                <a href="https://twitter.com/mobilitains">Twitter</a>
+            </p>
+            <p>
+                A bientôt,
+            </p>
+        </td>
+    </tr>
+    <tr> <!-- Footer -->
+        <td style="padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
+            <p style="margin:0;font-size:14px;line-height:20px;">
+                &reg; Mobilitains 2022<br>
+            </p>
+        </td>
+    </tr> <!-- End of Footer -->
+</table>
+
+{% endblock email_content %}

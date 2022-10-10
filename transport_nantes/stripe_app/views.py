@@ -1,25 +1,29 @@
 import datetime
+import json
 import logging
 import random
 import string
 
-from django.views.generic.base import TemplateView
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
-from django.http.response import HttpResponseServerError
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-
 import stripe
 import user_agents
-
-from .models import TrackingProgression, Donation
-from .forms import DonationForm, AmountForm, QuickDonationForm
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponse, JsonResponse
+from django.http.response import HttpResponseServerError
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import TemplateView
 from mailing_list.events import subscribe_user_to_list
 from mailing_list.models import MailingList
-from transport_nantes.settings import (ROLE, STRIPE_PUBLISHABLE_KEY,
-                                       STRIPE_SECRET_KEY,
-                                       STRIPE_ENDPOINT_SECRET)
+from topicblog.models import SendRecordTransactionalAdHoc
+from transport_nantes.settings import (ROLE, STRIPE_ENDPOINT_SECRET,
+                                       STRIPE_PUBLISHABLE_KEY,
+                                       STRIPE_SECRET_KEY)
+
+from .forms import AmountForm, DonationForm, QuickDonationForm
+from .models import Donation, TrackingProgression
 
 logger = logging.getLogger("django")
 
@@ -312,6 +316,7 @@ def stripe_webhook(request):
             a new Donation. Details : {error_message}")
             return HttpResponse(status=500)
         update_user_name(event)
+        send_thank_you_email(event)
 
     # Event for subscription payments (initial or recurring)
     # cf https://stripe.com/docs/billing/subscriptions/webhooks#tracking
@@ -559,6 +564,56 @@ def save_recurring_payment_details(
     except Exception as e:
         logger.info(f"Error while creating a new donation : {e}")
         raise Exception
+
+
+def send_thank_you_email(event: dict, ) -> None:
+    """
+    Send a thank you email to the donor.
+    """
+    logger.info("Preparing thank you email...")
+    try:
+        user = get_user(event["data"]["object"]["customer_email"])
+        send_record = SendRecordTransactionalAdHoc.objects.create(
+            recipient=user)
+        custom_email = prepare_email(
+            user.email, send_record=send_record)
+        logger.info(f"Sending thank you email to {user.email}...")
+        custom_email.send()
+        logger.info("Thank you email sent.")
+        send_record.handoff_time = datetime.datetime.now(datetime.timezone.utc)
+        send_record.save()
+
+    except Exception as e:
+        logger.error(f"Error while sending thank you email : {e}")
+        send_record.status = "FAILED"
+        send_record.save()
+
+
+def prepare_email(
+        email: str,
+        send_record: SendRecordTransactionalAdHoc) -> EmailMultiAlternatives:
+    """Create a sendable Email object"""
+    template = "stripe_app/thank_you_email.html"
+    context = {}
+    html_message = render_to_string(template, context=context)
+    values_to_pass_to_ses = {
+        "send_record class": send_record.__class__.__name__,
+        "send_record id": str(send_record.id),
+    }
+    comments_header = json.dumps(values_to_pass_to_ses)
+    headers = {
+        "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
+        "Comments": comments_header}
+    email = EmailMultiAlternatives(
+        subject="Merci pour votre don !",
+        body=render_to_string(template, context),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email],
+        headers=headers,
+    )
+    email.attach_alternative(html_message, 'text/html')
+
+    return email
 
 
 class QuickDonationView(TemplateView):
