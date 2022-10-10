@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'photo',
     'mobilito',
+    'compressor',
 ] + settings_local.MORE_INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -256,6 +257,13 @@ MEDIA_ROOT = settings_local.MEDIA_ROOT
 # Define this for nginx contexts.
 if 'STATIC_ROOT' in dir(settings_local):
     STATIC_ROOT = settings_local.STATIC_ROOT
+
+# FileSystemFinder and AppDirectoriesFinder are enabled by default.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
 
 # CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
 ## I have a low success rate on the captcha with noise_arcs enabled.
