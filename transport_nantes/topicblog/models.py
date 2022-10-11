@@ -439,15 +439,6 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
         verbose_name="Notes libres pour éditeurs",
         blank=True, null=True)
 
-    def clean(self):
-        if any([self.header_description, self.header_title]):
-            if not self.header_image:
-                raise ValidationError({
-                    'header_image': (
-                        "Si vous renseignez un titre ou une description,"
-                        " vous devez fournir une image pour le header")
-                })
-        return super().clean()
 
     def set_social_context(self, context):
         """
@@ -634,6 +625,7 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
             ['cta_2_slug', 'cta_2_label'],
             ['cta_3_slug', 'cta_3_label'],
             ['body_image', 'body_image_alt_text'],
+            ['header_image', 'header_title'],
         ],
     }
     template_config = {
@@ -841,6 +833,7 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             ['body_image_2', 'body_image_2_alt_text'],
             ['cta_1_slug', 'cta_1_label'],
             ['cta_2_slug', 'cta_2_label'],
+            ['header_image', 'header_title'],
         ],
     }
     template_config = {
@@ -1042,6 +1035,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         # be as well before we can publish.
         "dependent_field_names": [
             ['body_image_1', 'body_image_1_alt_text'],
+            ['header_image', 'header_title'],
         ],
     }
     template_config = {
@@ -1360,6 +1354,7 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
         # be as well before we can publish.
         "dependent_field_names": [
             ['cta_1_slug', 'cta_1_label'],
+            ['header_image', 'header_title'],
         ],
     }
     template_config = {
