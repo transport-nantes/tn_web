@@ -410,9 +410,6 @@ span.centered {
     opacity:0.9;
   }
 @media (min-width: 992px) {
-    .navbar-logo {
-        max-width: 18%;
-    }
     .navbar-logo-image {
         width: 100% !important;
         height: 100%;
@@ -585,4 +582,21 @@ span.centered {
     width: 100%;
     height: 20vh;
     object-fit: cover;
+}
+.nav-item {
+    white-space: nowrap;
+}
+.logo-menu-holder {
+    width: 100%;
+}
+@media screen and (min-width: 768px) {
+    .logo-menu-holder {
+        width: auto;
+    }
+}
+#nosProjetsDropdown + .dropdown-menu > a {
+    color: #fff;
+}
+#nosProjetsDropdown {
+    color: #fff;
 }
