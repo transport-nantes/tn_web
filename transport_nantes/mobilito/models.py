@@ -42,7 +42,7 @@ class Session(models.Model):
     motor_vehicle_count = models.IntegerField(default=0)
     public_transport_count = models.IntegerField(default=0)
     published = models.BooleanField(default=True)
-    session_sha1 = models.CharField(max_length=200, unique=True)
+    session_sha1 = models.CharField(max_length=200, unique=True, editable=False)
 
     def __str__(self):
         return f'{self.user.user.email} - {self.start_timestamp}'
