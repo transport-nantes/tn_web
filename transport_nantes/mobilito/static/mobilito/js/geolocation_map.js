@@ -112,15 +112,17 @@ map.on('click', onMapClick);
 
 // Function to get user's location with geocoding, limited 50 requests per second.
 async function getGeocodedAddress(lat, lng) {
-    let api_key = JSON.parse(document.getElementById('maps_api_key').textContent);
-    let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${api_key}`;
+    let url = "/mobilito/ajax/get-address/";
     let response = await $.ajax({
         url: url,
-        type: 'GET',
+        headers: {"X-CSRFToken": getCookie("csrftoken")},
+        type: 'POST',
         dataType: 'json',
-        success: function (data) {
-            console.log(data);
+        data: {
+            lat: lat,
+            lng: lng,
         },
+        mode: 'same-origin',
         error: function (err) {
             console.log(err);
         }

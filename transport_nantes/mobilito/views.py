@@ -3,16 +3,18 @@ from datetime import datetime, timedelta, timezone
 import json
 import logging
 import pickle
+import requests
 from user_agents import parse
 from typing import Union
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import (Http404, HttpRequest, HttpResponse,
+                         HttpResponseRedirect, JsonResponse,)
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404
-
+from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,6 +24,7 @@ from mobilito.models import MobilitoUser, Session
 from mobilito.forms import AddressForm
 from authentication.views import create_send_record
 from topicblog.models import SendRecordTransactionalAdHoc
+from transport_nantes.settings import MAPS_API_KEY
 
 logger = logging.getLogger("django")
 
@@ -177,7 +180,6 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        context["MAPS_API_KEY"] = settings.MAPS_API_KEY
         # If the user has to see the tutorial (because it has been updated, or
         # because it is the first time), we need to redirect to the tutorial.
         if self.get_pages_to_visit():
@@ -436,3 +438,20 @@ class SessionSummaryView(TemplateView):
         context = self.get_context_data(**kwargs)
         self.check_view_permission(context["mobilito_session"])
         return self.render_to_response(context)
+
+
+class ReverseGeocodingView(View):
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """Return the reverse-geocoded address from a lat,lng tuple"""
+        lat = request.POST.get('lat')
+        lng = request.POST.get('lng')
+        if lat and lng:
+            url = (
+                "https://maps.googleapis.com/maps/api/geocode/json?"
+                f"latlng={lat},{lng}&key={MAPS_API_KEY}"
+            )
+            response = requests.get(url)
+            return JsonResponse(response.json())
+
+        return HttpResponse(status=400)
