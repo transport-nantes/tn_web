@@ -63,6 +63,19 @@ class PhotoEntry(models.Model):
         verbose_name="Date de soumission",
         auto_now_add=True,
     )
+    # Photo entries are pending (null) until they are accepted (True)
+    # or rejected (False) after a jury session.
+    accepted = models.BooleanField(null=True, blank=True, default=None)
+    # markdown text field where we'll add some interesting information
+    # about pedestrian issues.
+    pedestrian_issues_md = models.TextField(
+        blank=True, null=True,
+        verbose_name="Problèmes rencontrés par les piétons")
+    # markdown text field where we'll add information about the submitter
+    # and how the photo was taken.
+    submitter_info_md = models.TextField(
+        blank=True, null=True,
+        verbose_name="Informations sur le photographe")
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
