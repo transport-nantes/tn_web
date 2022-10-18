@@ -1,8 +1,11 @@
 """Models for photo competition."""
-
+import logging
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
+
+
+logger = logging.getLogger('django')
 
 
 def validate_submitted_photo(value):
@@ -76,8 +79,34 @@ class PhotoEntry(models.Model):
         blank=True, null=True,
         verbose_name="Informations sur le photographe")
 
+    # sha1 is used to generate a unique URL for each photo entry while keeping
+    # the ID private.
+    sha1_name = models.CharField(max_length=200, null=True)
+
     def __str__(self):
         return f"{self.user.username} - {self.category}"
+
+    def save(self, *args, **kwargs):
+        if not self.sha1_name:
+            self.sha1_name = self.generate_entry_sha1()
+
+        try:
+            super().save(*args, **kwargs)
+        except IntegrityError:
+            logger.warning(f"PhotoEntry {self.sha1_name} already exists")
+            self.sha1_name = self.generate_entry_sha1()
+            logger.warning(f"New session SHA1: {self.sha1_name}")
+            self.save(*args, **kwargs)
+
+    def generate_entry_sha1(self):
+        """Compute a sha1 from now() and the users's ID"""
+        import hashlib
+        import time
+        return hashlib.sha1(
+            (
+                str(time.monotonic_ns()) + "|" + str(self.user.id)
+            ).encode('utf-8')
+        ).hexdigest()
 
 
 class Vote(models.Model):
