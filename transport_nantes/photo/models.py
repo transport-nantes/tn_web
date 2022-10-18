@@ -81,7 +81,7 @@ class PhotoEntry(models.Model):
 
     # sha1 is used to generate a unique URL for each photo entry while keeping
     # the ID private.
-    sha1_name = models.CharField(max_length=200, null=True)
+    sha1_name = models.CharField(max_length=200, unique=True, editable=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
