@@ -5,8 +5,8 @@ from .models import PhotoEntry
 class PhotoEntryAdmin(admin.ModelAdmin):
     readonly_fields = ('pk',)
 
-    list_display = ("category", "user")
-    list_filter = ("category", "user__email")
+    list_display = ("category", "user", "accepted")
+    list_filter = ("category", "user__email", "accepted")
     search_fields = ("category", "user__email")
 
 
