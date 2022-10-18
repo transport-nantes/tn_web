@@ -16,4 +16,6 @@ urlpatterns = [
          name='session_summary'),
 
     path('ajax/create-event/', views.create_event, name='event_creation'),
+    path('ajax/get-address/', views.ReverseGeocodingView.as_view(),
+         name='geocoding'),
 ]
