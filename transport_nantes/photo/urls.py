@@ -16,6 +16,7 @@ urlpatterns = [
          name='upload'),
     path('confirmation/', views.Confirmation.as_view(),
          name='confirmation'),
+    path("galerie/", views.PhotoListView.as_view(), name="galerie"),
     path('galerie/<str:photo_sha1>', views.PhotoView.as_view(),
          name='photo_details'),
 ]
