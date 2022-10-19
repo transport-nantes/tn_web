@@ -1,0 +1,146 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load markdown %}
+{% load static %}
+{% load compress %}
+{% load crispy_forms_tags %}
+
+{% block localscripts %}
+    {% compress js %}
+        <script src="{% static 'photo/js/vote_system.js' %}" defer></script>
+        <script type="text/javascript">
+            {% comment %}Those values are used in vote_system.js{% endcomment %}
+            {% if has_voted %}
+                var has_voted = true;
+            {% else %}
+                var has_voted = false;
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                var is_auth = true;
+            {% else %}
+                var is_auth = false;
+            {% endif %}
+        </script>
+    {% endcompress %}
+{% endblock localscripts %}
+
+{% block app_content %}
+
+    <div class="d-flex col-12 col-md-8 flex-column mx-auto">
+        <div class="d-flex flex-row w-100">
+            <a href="{{ photo.submitted_photo.url }}"
+            class='d-flex col-12 mx-auto my-3' style="max-height: 60vh; width: auto;"
+            target="_blank">
+                <img src="{{ photo.submitted_photo.url }}"
+                alt="Photo soumise à l'occasion de l'opération piéton"
+                class="d-flex mw-100 mx-auto"
+                style="filter: drop-shadow(5px 5px 10px #000);"></img>
+            </a>
+        </div>
+        {% if photo.accepted == True  %}
+            <div class="d-flex w-75 justify-content-between flex-row mb-3 mx-auto">
+                {# Previous button #}
+                <a href="
+                {% if previous_photo %}
+                    {% url 'photo:photo_details' previous_photo.sha1_name %}
+                {% endif %}"
+                class="btn navigation-button my-auto {% if not previous_photo %} disabled {% endif %}">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                {# Vote buttons #}
+
+                
+                    {# Upvote button #}
+                    <button id="upvote-button" type="button"
+                    class="d-flex p-2 mx-3 font-xl border-circle 
+                    {% if last_vote == "upvote"%}
+                    border-blue-light bg-blue-light font-blue-dark
+                    {% endif %} "
+                    {% if not has_voted %}
+                        data-toggle="modal" data-target="#first-vote-div"
+                    {% endif %}>
+                        <i class="fa-solid fa-thumbs-up my-auto"></i>
+                    </button>
+
+                    {# Downvote button #}
+                    <button id="downvote-button" type="button"
+                    class="d-flex p-2 mx-3 font-xl border-circle 
+                    {% if last_vote == "downvote"%}
+                    border-blue-light bg-blue-light font-blue-dark
+                    {% endif %} "
+                    {% if not has_voted %}
+                        data-toggle="modal" data-target="#first-vote-div"
+                    {% endif %}>
+                        <i class="fa-solid fa-thumbs-down my-auto"></i>
+                    </button>
+                
+                {# Next button #}
+                <a href="
+                {% if next_photo %}
+                    {% url 'photo:photo_details' next_photo.sha1_name %}
+                {% endif %}"
+                class="btn navigation-button my-auto {% if not next_photo %} disabled {% endif %} ">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        {% endif %}
+
+        {% tn_markdown photo.pedestrian_issues_md|default:"" %}
+
+        {% tn_markdown photo.submitter_info_md|default:"" %}
+
+        {# Modal form if user never voted #}
+        {% if not has_voted %}
+            <style>
+                #div_id_consent_box > label {
+                    font-size: small;
+                    color: #6c757d;
+                }
+                #id_captcha_1 {
+                    width: auto;
+                    display: inline-block;
+                    margin-left: 5px;
+                }
+                #hint_id_captcha {
+                    margin-top: 2em;
+                }
+            </style>
+            <div id="first-vote-div"
+            class="modal fade"
+            tabindex="-1"
+            aria-labelledby="report-about-form-title"
+            aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            {% if request.user.is_authenticated %}
+                            <p>
+                                Merci ! Vous y êtes presques !<br />
+                                Avec votre accord, nous pourrions vous tenir au
+                                courant du prix populaire et des avancées de la marche
+                                à pied.
+                            </p>
+                            {% else %}
+                            <p>
+                                Merci ! Vous y êtes presques !<br />
+                                Votre avis sur la photo nous sera encore plus
+                                précieux si nous pouvions être confiants que
+                                vous êtes humain. Ça ne vous embête pas trop ?
+                            </p>
+                            {% endif %}
+                            <form id="first-vote-form" method="post">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                <button type="submit"
+                                    class="btn donation-button">
+                                    Confirmer mon vote
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock app_content %}

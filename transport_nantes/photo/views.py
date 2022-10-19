@@ -1,18 +1,29 @@
 """Application to manage a photo competition."""
 import logging
-from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import (HttpRequest, HttpResponse,
+                         HttpResponseForbidden, HttpResponseRedirect)
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import (TemplateView, CreateView)
+from django.views.generic import (TemplateView, CreateView, FormView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
 from asso_tn.utils import make_timed_token, token_valid
-from .forms import PhotoEntryForm
-from .models import PhotoEntry
+from .forms import (PhotoEntryForm, AnonymousVoteForm,
+                    SimpleVoteForm, SimpleVoteFormWithConsent)
+from .models import PhotoEntry, Vote
+from .events import get_user_vote
 from mailing_list.models import MailingList
 from mailing_list.events import subscribe_user_to_list
 
 logger = logging.getLogger("django")
+
+
+class ForbiddenException(Exception):
+    """Exception to raise if the user is not allowed to vote"""
+    pass
 
 
 class UploadEntry(LoginRequiredMixin, CreateView):
@@ -85,3 +96,260 @@ class Confirmation(TemplateView):
                 last_submitted_photo.submitted_photo.url
 
         return context
+
+
+class PhotoView(FormView):
+    """
+    View to display a single photo and up/down vote it
+    """
+    template_name = 'photo/single_entry.html'
+    form_class = AnonymousVoteForm
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """Overriding here so we can return HttpResponseForbidden if needed"""
+        try:
+            context_or_response = self.get_context_data()
+        except ForbiddenException as exception:
+            return HttpResponseForbidden(exception)
+        return self.render_to_response(context_or_response)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        photo_sha1 = self.kwargs.get("photo_sha1")
+        photo = get_object_or_404(PhotoEntry, sha1_name=photo_sha1)
+        tn_session_id = self.request.session.get("tn_session")
+        user = self.request.user if self.request.user.is_authenticated else None
+
+        if not photo.accepted:
+            # Author and authorized users can see the photo
+            if not any([
+                self.request.user == photo.user,
+                self.request.user.has_perm('photo.may_see_unaccepted_photos')
+            ]):
+                raise ForbiddenException(
+                    "Cette photo n'as pas encore été acceptée")
+        context["photo"] = photo
+
+        if photo.accepted:
+            self.set_next_and_previous_arrows(context, photo)
+            # Because it's possible that user is not authenticated (anonymous vote)
+            # we need to check if the user has already voted for this photo
+            # using its session id as well.
+            if Vote.objects.filter(
+                    Q(user=user)
+                    | Q(tn_session_id=tn_session_id),
+                    captcha_succeeded=True,
+            ).exists():
+                context["has_voted"] = True
+            else:
+                context["has_voted"] = False
+
+            # To set the proper styles on the vote buttons, we check if the
+            # user has already voted on this photo
+            last_vote = get_user_vote(
+                self.request.user, photo, tn_session_id=tn_session_id)
+
+            if last_vote:
+                if last_vote.vote_value is True:
+                    context["last_vote"] = "upvote"
+                elif last_vote.vote_value is False:
+                    context["last_vote"] = "downvote"
+
+            if not last_vote and user:
+                # If user is logged in but never voted, we ask for consent
+                # to send them emails
+                context["form"] = SimpleVoteFormWithConsent()
+
+        return context
+
+    def set_next_and_previous_arrows(self, context: dict, photo: 'PhotoEntry') -> None:
+        """
+        Set the next and previous photo arrows
+
+        context is passed by reference.
+        """
+        all_accepted_photos = list(PhotoEntry.objects.filter(accepted=True))
+        current_photo_index = all_accepted_photos.index(photo)
+        if current_photo_index > 0:
+            context["previous_photo"] = all_accepted_photos[
+                current_photo_index - 1]
+        if current_photo_index < len(all_accepted_photos) - 1:
+            context["next_photo"] = all_accepted_photos[
+                current_photo_index + 1]
+
+    def get_initial(self):
+        """Set the initial value in the form"""
+        initial = super().get_initial()
+        initial["photoentry_sha1_name"] = self.kwargs.get("photo_sha1")
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        """
+        Instantiate the proper form instance with the passed POST variables.
+
+        This method is overriden because the default form is AnonymousVoteForm,
+        but this can be overridden under certain conditions : If the user is
+        logged in and / or has already voted on any photo.
+
+        Overriding will allow the self.get_form() method to return a different
+        form and thus form.is_valid() will be performed against the proper form.
+        """
+        user = request.user if request.user.is_authenticated else None
+        tn_session_id = request.session.get("tn_session")
+        # If there is a vote with the same user or if the user has already
+        # voted with this session, we no longer user the AnonymousVoteForm
+        # for simplicity
+        if Vote.objects.filter(
+                Q(user=user)
+                | Q(tn_session_id=tn_session_id),
+                captcha_succeeded=True).exists():
+            self.form_class = SimpleVoteForm
+
+        # If the user is logged in but never voted, we use the form with
+        # consent
+        elif not Vote.objects.filter(user=user).exists() and user:
+            self.form_class = SimpleVoteFormWithConsent
+
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Handle the forms submissions
+
+        This view can have 3 different forms, all targeted to create a vote
+        event and optionally subscribe user to a mailing list.
+
+        The 3 forms are:
+        - AnonymousVoteForm: Used when the user is not logged in and has not
+        voted yet. The form is used to create a vote and subscribe the user
+        to the mailing list if they agree to it.
+        - SimpleVoteForm: Used when the user is logged in or has already
+        voted with this session. User was already asked for consent at this
+        point and it's not asked again.
+        - SimpleVoteFormWithConsent: Used when the user is logged in but
+        never voted. The form is used to create a vote and subscribe the user
+        to the mailing list if they agree to it. The difference is that this
+        form doesn't ask for email or captcha compared to AnonymousVoteForm.
+
+        """
+        # The photo sha1 is included in the URL
+        photo_sha1 = self.kwargs.get("photo_sha1")
+        photo = get_object_or_404(PhotoEntry, sha1_name=photo_sha1)
+        if not photo.accepted:
+            return HttpResponseForbidden("Photo not accepted")
+
+        if not self.request.user.is_authenticated:
+            # email address is only asked in anonymous vote form
+            email_address = self.request.POST.get("email_address", None)
+            if email_address:
+                user = User.objects.get_or_create(email=email_address)[0]
+            else:
+                # When the user is anon and has already voted previously,
+                # we don't ask for email address
+                user = None
+        else:
+            user = self.request.user
+
+        # Consent is asked in both anonymous and logged in vote forms
+        # only while the user hasn't voted yet. Consent box is opt-in :
+        # if the user doesn't check it, we subscribe them to the mailing
+        # list.
+        no_consent = self.request.POST.get("consent_box", None)
+        if not no_consent and user and self.form_class != SimpleVoteForm:
+            try:
+                mailing_list = MailingList.objects.get(
+                    mailing_list_token="operation-pieton")
+                subscribe_user_to_list(user, mailing_list)
+                logger.info(
+                    f"Subscribed user {user.email} to list {mailing_list}.")
+            except MailingList.DoesNotExist:
+                logger.error(
+                    "Mailing list operation-pieton does not exist")
+
+        # Vote nature is a constant among the forms
+        vote_value = self.request.POST.get("vote_value", None)
+        if vote_value == "upvote":
+            vote_value = True
+        elif vote_value == "downvote":
+            vote_value = False
+        else:
+            return HttpResponseForbidden("Invalid vote")
+
+        # Always set at page load
+        tn_session_id = self.request.session.get('tn_session', None)
+
+        Vote.objects.create(
+            user=user,
+            tn_session_id=tn_session_id,
+            photo_entry=photo,
+            vote_value=vote_value,
+            captcha_succeeded=True,
+        )
+
+        # The Ajax request will execute the success function upon receiving
+        # a 200 response
+        return HttpResponse(status=200)
+
+    def form_invalid(self, form):
+        """Handle invalid forms
+
+        We keep the failed attempts because we want to gather contacts of
+        people who might be open to having conversations with us,
+        supporting us.
+        """
+        # The photo sha1 is included in the URL
+        photo_sha1 = self.kwargs.get("photo_sha1")
+        photo = get_object_or_404(PhotoEntry, sha1_name=photo_sha1)
+        if not photo.accepted:
+            return HttpResponseForbidden("Photo not accepted")
+
+        if not self.request.user.is_authenticated:
+            # email address is only asked in anonymous vote form
+            email_address = self.request.POST.get("email_address", None)
+            if email_address:
+                user = User.objects.get_or_create(email=email_address)[0]
+            else:
+                # When the user is anon and has already voted previously,
+                # we don't ask for email address
+                user = None
+        else:
+            user = self.request.user
+
+        # Consent is asked in both anonymous and logged in vote forms
+        # only while the user hasn't voted yet. Consent box is opt-in :
+        # if the user doesn't check it, we subscribe them to the mailing
+        # list.
+        no_consent = self.request.POST.get("consent_box", None)
+        if not no_consent and user:
+            try:
+                mailing_list = MailingList.objects.get(
+                    mailing_list_token="operation-pieton")
+                subscribe_user_to_list(user, mailing_list)
+                logger.info(
+                    f"Subscribed user {user.email} to list {mailing_list}.")
+            except MailingList.DoesNotExist:
+                logger.error(
+                    "Mailing list operation-pieton does not exist")
+
+        # Vote nature is a constant among the forms
+        vote_value = self.request.POST.get("vote_value", None)
+        if vote_value == "upvote":
+            vote_value = True
+        elif vote_value == "downvote":
+            vote_value = False
+        else:
+            return HttpResponseForbidden("Invalid vote")
+
+        # Always set at page load
+        tn_session_id = self.request.session.get('tn_session', None)
+
+        Vote.objects.create(
+            user=user,
+            tn_session_id=tn_session_id,
+            photo_entry=photo,
+            vote_value=vote_value,
+            # The captcha field is the only one that can have failed at this
+            # point
+            captcha_succeeded=False,
+        )
+
+        return HttpResponse(status=200)

@@ -600,3 +600,25 @@ span.centered {
 #nosProjetsDropdown {
     color: #fff;
 }
+.bg-transparent {
+    background-color: transparent !important;
+}
+.bg-blue-light {
+    background-color: var(--mobilitains-bleu) !important;
+}
+.font-blue-light {
+    color: var(--mobilitains-bleu);
+}
+.font-blue-dark {
+    color: var(--mobilitains-bleu-marine);
+}
+.font-xl {
+    font-size: x-large;
+}
+.border-circle {
+    border-radius: 50%;
+    border-style: solid;
+}
+.border-blue-light {
+    border-color: var(--mobilitains-bleu);
+}
