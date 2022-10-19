@@ -6,7 +6,7 @@ from django.http import (HttpRequest, HttpResponse,
                          HttpResponseForbidden, HttpResponseRedirect)
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import (TemplateView, CreateView, FormView)
+from django.views.generic import (TemplateView, CreateView, FormView, ListView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -265,7 +265,7 @@ class PhotoView(FormView):
                 logger.error(
                     "Mailing list operation-pieton does not exist")
 
-        # Vote nature is a constant among the forms
+        # vote value is a constant among the forms
         vote_value = self.request.POST.get("vote_value", None)
         if vote_value == "upvote":
             vote_value = True
@@ -330,7 +330,7 @@ class PhotoView(FormView):
                 logger.error(
                     "Mailing list operation-pieton does not exist")
 
-        # Vote nature is a constant among the forms
+        # vote value is a constant among the forms
         vote_value = self.request.POST.get("vote_value", None)
         if vote_value == "upvote":
             vote_value = True
@@ -353,3 +353,9 @@ class PhotoView(FormView):
         )
 
         return HttpResponse(status=200)
+
+
+class PhotoListView(ListView):
+    queryset = PhotoEntry.objects.filter(accepted=True)
+    allow_empty = True
+    paginate_by = 4

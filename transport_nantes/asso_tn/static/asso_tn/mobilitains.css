@@ -622,3 +622,19 @@ span.centered {
 .border-blue-light {
     border-color: var(--mobilitains-bleu);
 }
+.thumbnail {
+    position: relative;
+    display:block;
+    z-index:2;
+    cursor: pointer;
+    transition-property: all;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 0.3s;
+    -webkit-transition-timing-function: ease;
+}
+.thumbnail:hover {
+    transform: scale(1.1);
+    z-index:3;
+}
