@@ -25,6 +25,10 @@ class PhotoEntry(models.Model):
     class Meta:
         verbose_name = "Photo Entry"
         verbose_name_plural = "Photo Entries"
+        permissions = (
+            ('may_accept_photo', 'May accept photos'),
+            ('may_see_unaccepted_photos', 'May see unaccepted photos'),
+        )
 
     class CategoryType(models.TextChoices):
         PIETON_URBAIN = 'PIETON_URBAIN', 'Piéton urbain'
