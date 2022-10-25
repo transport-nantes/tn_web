@@ -95,6 +95,25 @@
 					<noscript><p><img src="//wa.mobilitains.fr/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 					<!-- End Matomo Code -->
 					{% endif %}
+					<script type="text/javascript">
+						// From django docs
+						// https://docs.djangoproject.com/en/dev/howto/csrf/#s-acquiring-csrf-token-from-cookie
+						function getCookie(name) {
+							let cookieValue = null;
+							if (document.cookie && document.cookie !== '') {
+								const cookies = document.cookie.split(';');
+								for (let i = 0; i < cookies.length; i++) {
+									const cookie = cookies[i].trim();
+									// Does this cookie string begin with the name we want?
+									if (cookie.substring(0, name.length + 1) === (name + '=')) {
+										cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+										break;
+									}
+								}
+							}
+							return cookieValue;
+						}
+					</script>
 				{% endcompress %}
 
 
