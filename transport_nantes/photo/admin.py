@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PhotoEntry
+from .models import PhotoEntry, Vote
 
 
 class PhotoEntryAdmin(admin.ModelAdmin):
@@ -11,3 +11,4 @@ class PhotoEntryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PhotoEntry, PhotoEntryAdmin)
+admin.site.register(Vote)
