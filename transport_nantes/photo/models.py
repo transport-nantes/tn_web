@@ -3,7 +3,6 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from datetime import datetime
 
 
 def validate_submitted_photo(value):
@@ -79,3 +78,38 @@ class PhotoEntry(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
+
+
+class Vote(models.Model):
+    """
+    Represents a vote for a photo entry.
+
+    The same user can vote several times on the same entry, but only the last
+    vote is taken into account.
+    """
+    class Meta:
+        verbose_name = "Vote"
+        verbose_name_plural = "Votes"
+
+    # the user who voted, can be none if user is anonymous
+    user = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
+    # the tn session we set with SessionMiddleware
+    tn_session_id = models.CharField(max_length=200, blank=True, null=True)
+    # the photo entry that was voted for
+    photo_entry = models.ForeignKey(PhotoEntry, on_delete=models.PROTECT)
+    # the date and time of the vote
+    timestamp = models.DateTimeField(
+        null=False,
+        blank=False,
+        verbose_name="Date du vote",
+        auto_now_add=True,
+    )
+    # A vote in favor of an entry is (True) or against (False) or Pending (None)
+    vote_value = models.BooleanField(null=False, blank=False)
+    # If the user is logged in or succeeded in the captcha, we set this to True
+    # In case the captcha failed, we set this to False
+    captcha_succeeded = models.BooleanField(null=False, blank=False, default=False)
+
+    def __str__(self):
+        return (f"{self.user.username if self.user else 'Anonymous'} -"
+                f" {self.photo_entry} - {self.vote_value}")
