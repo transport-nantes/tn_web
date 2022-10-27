@@ -148,6 +148,16 @@ class MobilitoView(TemplateView):
 
     template_name = 'mobilito/index.html'
 
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        # Need to set the boolean tutorial_done, to True if the user
+        # has finished the tutorial, to False if not.
+        tutorial_state = TutorialState()
+        if tutorial_state.pages_to_see(request):
+            context['tutorial_done'] = False
+        else:
+            context['tutorial_done'] = True
+        return self.render_to_response(context)
 
 class TutorialView(TemplateView):
     """Present the tutorial.

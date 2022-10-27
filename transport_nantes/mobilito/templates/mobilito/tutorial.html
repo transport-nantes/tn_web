@@ -36,13 +36,15 @@
         </div>
         {% block tutorial_content %}{% endblock tutorial_content %}
         {% if seen_all_pages %}
-            <div style="text-align: center">
+	<div class="row">
+	    <div class="col mt-5">
                 <a href="{% url 'mobilito:address_form'%}"
-                class="btn donation-button mx-auto"
-                style="border-radius:5px;">
+                   class="btn donation-button mx-auto"
+                   style="border-radius:5px;">
                     Passer à l'enregistrement >>
                 </a>
             </div>
+	</div>
         {% endif %}
     </section>
 </div>
