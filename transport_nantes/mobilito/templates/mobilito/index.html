@@ -2,23 +2,111 @@
 {% load static %}
 
 {% block app_content %}
-    <main id="mobilito-landing" class="container">
-        <h1>Bienvenue sur Mobilito !</h1>
+<main id="mobilito-landing" class="container">
+    <div class="row">
+	<div class="col-lg-12">
+            <h1>Bienvenue sur Mobilito !</h1>
 
-        <div id="auth-user-landing">
-            <p>{# No guarantee user is authenticated here. #}
-                Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
-            </p>
-            <a class="btn donation-button" role="button" 
-               href="{% url 'mobilito:address_form' %}">
-               Commencer à enregistrer
-            </a>
-            <p class="mt-2">
-                Mais si vous avez besoin d'explications sur comment utiliser
-                Mobilito, alors
-                <a href="{% url 'mobilito:tutorial' 'presentation' %}">on vous explique tout ici</a> !
-            </p>
+            <div id="auth-user-landing">
+		<p>{# No guarantee user is authenticated here. #}
+                    Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
+		</p>
+		<p>
+		    Vous avez dans vos mains un outil très fort pour
+		    démocratiser la circulation.  La voiture individuelle
+		    prend une place excessive sur la voie publique.  Tous
+		    les autres modes ensemble disparaissent, tellement le
+		    flux de voitures semble important.
+		</p>
+		<p>
+		    Avec Mobilito, c'est à vous de recenser la proportion
+		    des modes dans le flux devant vous.  Vous enregistrer
+		    le temps que vous voulez.  Et puis, idéalement, vous
+		    partagerez avec vos amis sur réseaux sociaux, car un
+		    secret ne sert pas à grand chose.
+		</p>
+	    </div>
+	</div>
+	{% if tutorial_done %}{# ################ not newbie ################ #}
+	<div class="row row-cols-2">
+	    <div class="col">
+		<p class="mt-2">
+		    Je suis prêt !
+		</p>
+	    </div>
+	    <div class="col">
+		<p class="mt-2">
+		    Je me rappelle des règles du jeu avant de
+		    commencer.  Je consulte le tutoriel.
+		</p>
+	    </div>
+	    <div class="col">
+		<p>
+		    <a class="btn donation-button" role="button" 
+		       href="{% url 'mobilito:address_form' %}">
+			Je commence à enregistrer
+		    </a>
+		</p>
+	    </div>
+	    <div class="col">
+		<p>
+		    <a class="btn donation-button" role="button"
+		       href="{% url 'mobilito:tutorial' 'presentation' %}">
+			Je passe vite par le tutoriel
+		    </a>
+		</p>
+	    </div>
+	</div>
+	{% elif request.user.is_authenticated %}
+	{# ################ Not new, not done with tutoriel. ################ #}
+	<div class="row">
+	    <div class="col">
+		<p class="mt-2">
+		    Je suis prêt !
+		    Je me rappelle les règles du jeu avant de
+		    commencer.
+		</p>
+		<p>
+		    <a class="btn donation-button" role="button"
+		       href="{% url 'mobilito:tutorial' 'presentation' %}">
+			Je passe vite par le tutoriel
+		    </a>
+		</p>
+	    </div>
+	</div>
+	{% else %}{# ################ Not authed, maybe new, maybe not. ################ #}
+	<div class="row row-cols-2">
+	    <div class="col">
+		<p class="mt-2">
+		    J'ai l'habitude, je me connecte pour commencer.
+		</p>
+	    </div>
+	    <div class="col">
+		<p class="mt-2">
+		    C'est ma première fois, je lis vite le tutoriel
+		    afin de connaître les règles du jeu.
+		</p>
+	    </div>
+	    <div class="col">
+		<p>
+		    <a class="btn donation-button" role="button"
+		       href="{% url 'mobilito:address_form' %}">
+			Je connecte, j'enregistre
+		    </a>
+		</p>
+	    </div>
+	    <div class="col">
+		<p>
+		    <a class="btn donation-button" role="button"
+		       href="{% url 'mobilito:tutorial' 'presentation' %}">
+			Explique-moi tout !
+		    </a>
+		</p>
+	    </div>
+	</div>
+	{% endif %}{# ################ end ################ #}
         </div>
+    </div>
     </main>
 
 {% endblock app_content %}

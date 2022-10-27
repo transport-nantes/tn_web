@@ -2,18 +2,22 @@
 {% load static %}
 
 {% block tutorial_content %}
-  
-    <section id="car-icon-presentation">
-        <img class="d-flex mx-auto mobilito-tutorial-icons" 
-            src="{% static 'mobilito/images/car-icon.png' %}"
-            alt="Icône de voiture">
-        <hr />
-        <h2><b>L'icône voiture</b></h2>
-        <p>
-            Cliquez ce bouton une fois pour compter le passage d'une <b>voiture</b>,
-            peu importe son nombre d'occupants. Utilisez également ce bouton
-            pour compter les <b>motos, camions et utilitaires.</b>
-        </p>
+
+<section id="car-icon-presentation">
+    <div class="row">
+	<div class="col-sm-4">
+            <img class="mobilito-tutorial-icons" 
+		 src="{% static 'mobilito/images/car-icon.png' %}"
+		 alt="Icône de voiture">
+	</div>
+	<div class="col-sm-8">
+            <p>
+		<b>Une voiture</b>, c'est aussi une <b>camionnette</b>
+		ou un <b>camion</b>.  Un <b>moto</b>, <b>scooter</b>, ou
+		<b>utilitaire</b> également.  Et ce, que le moteur
+		soit thermique ou électrique.
+            </p>
+	</div>
     </section>
 
 {% endblock tutorial_content %}

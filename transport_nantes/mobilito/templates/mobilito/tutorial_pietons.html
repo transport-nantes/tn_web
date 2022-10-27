@@ -3,15 +3,24 @@
 
 {% block tutorial_content %}
   
-    <section id="ped-icon-presentation">
-        <img class="d-flex mx-auto mobilito-tutorial-icons" 
+<section id="ped-icon-presentation">
+    <div class="row">
+	<div class="col-sm-4">
+            <img class="mobilito-tutorial-icons" 
             src="{% static 'mobilito/images/ped-icon.png' %}"
             alt="Icône de piéton">
-        <hr />
-        <h2><b>L'icône piéton</b></h2>
-        <p>
-            Cliquez ce bouton une fois pour compter le passage d'un piéton.
-        </p>
-    </section>
+	</div>
+	<div class="col-sm-8">
+            <p>
+		<b>Un piéton</b> est une personne qui marche à pied,
+		mais pas que !  Un parent avec son enfant, je clique
+		<b>deux fois</b> si l'enfant marche, mais <b>une fois</b> si l'enfant est
+		porté ou en poussette (pour les tous petits !).  Un
+		<b>cycliste qui marche</b> avec son vélo, pied à terre, je
+		clique "piéton" et pas "vélo".
+            </p>
+	</div>
+    </div>
+</section>
 
 {% endblock tutorial_content %}

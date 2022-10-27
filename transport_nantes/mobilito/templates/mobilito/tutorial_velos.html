@@ -3,17 +3,23 @@
 
 {% block tutorial_content %}
   
-    <section id="bike-icon-presentation">
-        <img class="d-flex mx-auto mobilito-tutorial-icons" 
-            src="{% static 'mobilito/images/bike-icon.png' %}"
-            alt="Icône de vélo">
-        <hr />
-        <h2><b>L'icône vélo</b></h2>
-        <p>
-            Cliquez ce bouton une fois pour compter le passage d'un <b>vélo</b>. 
-            Utilisez également ce bouton pour compter les
-            <b>trottinettes, et pourquoi pas les monocylces !</b>
-        </p>
+<section id="bike-icon-presentation">
+    <div class="row">
+	<div class="col-sm-4">
+            <img class="mobilito-tutorial-icons" 
+		 src="{% static 'mobilito/images/bike-icon.png' %}"
+		 alt="Icône de vélo">
+	</div>
+	<div class="col-sm-8">
+            <p>
+		<b>Un vélo</b> est tout ce qui se déplace à puissance
+		humaine.  Je clique vélo pour un vélo, mais aussi pour une
+		<b>trottinette</b>, un <b>monocycle</b>, un
+		<b>cargo</b>, ou un <b>VAE</b>.  Même s'il y a un
+		passager, je ne clique qu'une fois.
+            </p>
+	</div>
+    </div>
     </section>
 
 {% endblock tutorial_content %}
