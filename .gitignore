@@ -8,9 +8,9 @@ venv.vagrant
 Pipfile*
 
 # Django
-db.sqlite3
-media/
-static/
+/transport_nantes/db.sqlite3*
+/transport_nantes/media/
+/transport_nantes/static/
 
 # Config
 aws_config
