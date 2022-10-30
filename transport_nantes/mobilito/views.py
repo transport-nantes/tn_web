@@ -29,6 +29,111 @@ from transport_nantes.settings import MAPS_API_KEY
 logger = logging.getLogger("django")
 
 
+class TutorialState:
+    """Track tutorial pages viewed.
+
+    We track tutorial page views with a short-timeout cookie that
+    represents a set of tutorial pages seen.  If the cookie is absent
+    (and the user is not authenticated with a record of having
+    completed the tutorial), then the set of pages seen is empty.
+    Once the user has seen all the pages, and only then, we permit
+    recording sessions.
+
+    Once the user is authenticated and has completed all pages, we
+    persist that fact to the user record.
+
+    Note that we don't persist tutorial views for authenticated users
+    who have only seen some tutorial records.  They depend on the
+    short timeout cookie.  Once they have seen all pages, we persist
+    the fact that they are done.
+
+    Similarly, unauthenticated users who don't authenticate will time
+    out their tutorial views with the cookie and so have to review the
+    tutorial.
+
+    The tutorial is intended to be short enough that none of this
+    should be particularly bothersome.  Our goal is simply to make
+    sure everyone who records has some chance of knowing what our
+    expectations are, what the different buttons mean.
+
+    """
+    tutorial_cookie_name = 'mobilito_tutorial'
+    all_tutorial_pages = set(['presentation', 'pietons', 'voitures',
+                              'velos', 'transports-collectifs',])
+
+    def default_page(self) -> str:
+        """Return the tutorial page to view if no page requested."""
+        return "presentation"
+
+    def canonical_page(self, page_name) -> str:
+        """Return a valid tutorial page name."""
+        if page_name in self.all_tutorial_pages:
+            return page_name
+        return self.default_page()
+
+    def persist_pages_seen(self, response, pages_seen) -> None:
+        """Persist the tutorial cookie."""
+        response.set_cookie(
+            key=self.tutorial_cookie_name,
+            value=b64encode(pickle.dumps(pages_seen)).hex(),
+            expires=datetime.now(timezone.utc) + timedelta(hours=2))
+
+    def pages_seen(self, request) -> set:
+        """Return the set of pages the user has seen.
+
+        The set is based on the tutorial cookie, and so expires when
+        it does.
+
+        """
+        if 'user' in request and request.user.is_authenticated:
+            mobilito_user = get_MobilitoUser(request)
+            if mobilito_user.completed_tutorial_timestamp:
+                return all_tutorial_pages
+        tutorial_cookie = request.COOKIES.get(
+            self.tutorial_cookie_name, '')
+        if not tutorial_cookie:
+            return set()
+        pages_seen: set = pickle.loads(b64decode(bytes.fromhex(tutorial_cookie)))
+        return pages_seen
+
+    def pages_to_see(self, request, this_page=None) -> set:
+        """Return the set of pages the user must see.
+
+        If the user is still required to view tutorial pages, return
+        the set required.  If we are composing a tutorial page for the
+        user, do not count it as needing to be seen, since it will
+        have been see by the time it matters.
+
+        """
+        if 'user' in request and request.user.is_authenticated:
+            mobilito_user = get_MobilitoUser(request)
+            if mobilito_user.completed_tutorial_timestamp:
+                # User has seen all tutorial pages, nothing left to see.
+                return set()
+        return self.all_tutorial_pages - self.pages_seen(request) - set([this_page])
+
+    def next_page_to_see(self, request, this_page) -> str:
+        """Return the next tutorial page to visit.
+
+        If the user must still see some tutorial pages, this function
+        will provide one to visit next.  We maintain no concept of the
+        order in which visitors _should_ visit pages, and so this
+        function is free to choose any non-visited tutorial page to
+        propose as the next page to visit.
+
+        If we are currently composing a tutorial page, do not consider
+        it as unseen and so a potential next page.
+        Cf. pages_to_see().
+
+        If the user has seen all tutorial pages, return None.
+
+        """
+        try:
+            return next(iter(self.pages_to_see(request, this_page)))
+        except StopIteration:
+            return None
+
+
 class MobilitoView(TemplateView):
     """Present Mobilito landing page.
 
@@ -43,133 +148,34 @@ class TutorialView(TemplateView):
     """
 
     template_name = 'mobilito/tutorial.html'
-    tutorial_cookie_name = 'mobilito_tutorial'
-
-    # Map each tutorial page name to the datetime before which the
-    # user is assumed not to have see it (i.e., the page's last
-    # modification or its creation or just we want to show it again).
-    last_mod_date = datetime(
-        year=2022, month=8, day=3, tzinfo=timezone.utc)
-    all_tutorial_pages = {
-        'presentation': {"last_modified": last_mod_date},
-        'pietons': {"last_modified": last_mod_date},
-        'voitures': {"last_modified": last_mod_date},
-        'velos': {"last_modified": last_mod_date},
-        'transports-collectifs': {"last_modified": last_mod_date},
-    }
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        tutorial_cookie_value = context.get('mobilito_tutorial', '')
-        response = self.render_to_response(context)
-        response.set_cookie(
-            key='mobilito_tutorial',
-            value=tutorial_cookie_value,
-            expires=datetime.now(timezone.utc) + timedelta(hours=2))
-
+        response = super().get(request, *args, **kwargs)
+        # It's modestly wasteful to set the tutorial cookie for auth'd
+        # users who have completed the tutorial, but it's manifestly
+        # easier to express.  We'll ingore the cookie if necessary.
+        tutorial_state = TutorialState()
+        pages_seen = tutorial_state.pages_seen(self.request)
+        this_page = self.kwargs.get("tutorial_page", None)
+        if this_page:
+            pages_seen.add(this_page)
+        tutorial_state.persist_pages_seen(response, pages_seen)
         return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        this_page = kwargs.get('tutorial_page', 'presentation')
-        if this_page not in self.all_tutorial_pages:
-            # Trying to access a tutorial page that doesn't exist.
-            raise Http404()
-        context['active_page'] = this_page
+        tutorial_state = TutorialState()
+        this_page = tutorial_state.canonical_page(
+            kwargs.get('tutorial_page', None))
         self.template_name = f'mobilito/tutorial_{this_page}.html'
 
-        pages_seen = self.get_seen_pages_from_cookie(this_page)
-        pickled_pages_seen = pickle.dumps(pages_seen)
-        pages_seen = make_timed_token(
-            string_key=b64encode(pickled_pages_seen).decode(),
-            minutes=120)
-
-        # Store the list in context to then be added to the response.
-        context['mobilito_tutorial'] = pages_seen
-
-        next_page = self.get_next_tutorial_page()
+        next_page = tutorial_state.next_page_to_see(self.request, this_page)
         if next_page:
             context["the_next_page"] = next_page
-        else:
-            if self.request.user.is_authenticated:
-                user = get_MobilitoUser(self)
-                user.completed_tutorial_timestamp = datetime.now(
-                    timezone.utc)
-                user.first_time = False
-                user.save()
-            context["seen_all_pages"] = True
-            context["the_next_page"] = self.not_this_page(this_page)
-
         return context
 
-    def get_seen_pages_from_cookie(self, this_page=None) -> list:
-        """Return the list of pages seen from the cookie."""
-        pages_seen = self.request.COOKIES.get(
-            self.tutorial_cookie_name, '')
-        if pages_seen:
-            pickled_pages_seen, _ = token_valid(pages_seen)
-            if pickled_pages_seen:
-                pages_seen_list: list = pickle.loads(
-                    b64decode(pickled_pages_seen))
-                if this_page and this_page not in pages_seen_list:
-                    pages_seen_list.append(this_page)
-                return pages_seen_list
-            else:
-                logger.info(
-                    "Invalid token provided for mobilito "
-                    f"tutorial : {pages_seen}")
 
-        if this_page:
-            return [this_page]
-
-        return []
-
-    def get_pages_to_visit(self) -> list:
-        """Return the list of pages yet to visit in the tutorial.
-
-        This is used by the bottom arrow to redirect to the next page, and
-        determine if one has seen all pages required or not.
-        """
-        this_page = self.kwargs.get("tutorial_page", None)
-        # This returns a list of pages visited.
-        pages_seen: list = self.get_seen_pages_from_cookie(this_page)
-        completed_tutorial_timestamp = None
-        if self.request.user.is_authenticated:
-            user = get_MobilitoUser(self)
-            completed_tutorial_timestamp = user.completed_tutorial_timestamp
-
-        if not completed_tutorial_timestamp:
-            completed_tutorial_timestamp = datetime(
-                year=2022, month=8, day=2, tzinfo=timezone.utc)
-        pages_to_visit = [page for page, last_mod_date
-                          in self.all_tutorial_pages.items()
-                          if page not in pages_seen
-                          and completed_tutorial_timestamp
-                          < last_mod_date["last_modified"]]
-        return pages_to_visit
-
-    def get_next_tutorial_page(self) -> str:
-        """Return the name of the next tutorial page to visit.
-
-        This is used for the forward arrow.  Return None if the user
-        has seen all tutorial pages.
-        """
-        pages_to_visit = self.get_pages_to_visit()
-        if pages_to_visit:
-            return pages_to_visit[0]
-        return None
-
-    def not_this_page(self, this_page) -> str:
-        """Return the next tutorial page, if all pages have been visited.
-        """
-        possible_pages = list(self.all_tutorial_pages.keys())
-        index_of_this_page = possible_pages.index(this_page)
-        if index_of_this_page == len(possible_pages) - 1:
-            return possible_pages[0]
-        return possible_pages[index_of_this_page + 1]
-
-
-class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
+class AddressFormView(LoginRequiredMixin, FormView):
     """Present the address form.
     The form is optional to fill.
     """
@@ -179,16 +185,13 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
     success_url = reverse_lazy('mobilito:recording')
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        # If the user has to see the tutorial (because it has been updated, or
-        # because it is the first time), we need to redirect to the tutorial.
-        if self.get_pages_to_visit():
+        tutorial_state = TutorialState()
+        if tutorial_state.pages_to_see(self.request):
+            next_page = tutorial_state.next_page_to_see(request)
             return HttpResponseRedirect(
                 reverse('mobilito:tutorial',
-                        kwargs={'tutorial_page': self.get_next_tutorial_page()}))
-        else:
-            self.template_name = 'mobilito/geolocation_form.html'
-        return self.render_to_response(context)
+                        kwargs={'tutorial_page': next_page}))
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.request.session["location"] = form.cleaned_data['location']
@@ -200,7 +203,7 @@ class AddressFormView(LoginRequiredMixin, TutorialView, FormView):
         return super().form_valid(form)
 
 
-class RecordingView(TutorialView, TemplateView):
+class RecordingView(LoginRequiredMixin, TemplateView):
     template_name = 'mobilito/recording.html'
 
     def get_context_data(self, **kwargs) -> dict:
@@ -221,19 +224,17 @@ class RecordingView(TutorialView, TemplateView):
         )
         self.request.session["mobilito_session_id"] = session_object.id
         logger.info(
-            f'{self.request.user.email} started a new session '
-            f'id={session_object.id}')
+            f'{self.request.user.email} started session {session_object.id}')
         return context
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        # If the user has to see the tutorial (because it has been updated, or
-        # because it is the first time), we need to redirect to the tutorial.
-        if self.get_pages_to_visit():
+        tutorial_state = TutorialState()
+        if tutorial_state.pages_to_see(self.request):
+            next_pag = tutorial_state.next_page_to_see(request)
             return HttpResponseRedirect(
                 reverse('mobilito:tutorial',
-                        kwargs={'tutorial_page': self.get_next_tutorial_page()}))
-        return self.render_to_response(context)
+                        kwargs={'tutorial_page': next_page}))
+        return super().get(request, *args, **kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs) \
             -> HttpResponseRedirect:
@@ -254,9 +255,11 @@ class RecordingView(TutorialView, TemplateView):
             session_object.public_transport_count = \
                 number_of_public_transports
             session_object.save()
+            send_results(request, session_object)
         except Session.DoesNotExist as e:
             logger.error(
                 f"Can't update a non-existing session, "
+                f"id={request.session.get('mobilito_session_id', '')}, "
                 f"user={request.user.email}, {e}")
 
         # Thank you page
@@ -279,16 +282,9 @@ class RecordingView(TutorialView, TemplateView):
 class ThankYouView(TemplateView):
     template_name = 'mobilito/thanks.html'
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        try:
-            send_results(request)
-        except Exception as e:
-            logger.error(
-                f"Can't send email, user={request.user.email}, {e}")
-        else:
-            request.session.pop("location", None)
-            request.session.pop("mobilito_session_id", None)
-        return super().get(request, *args, **kwargs)
+#    def get_context_data(self, **kwargs) -> dict:
+#        context = super(TemplateView, self).get_context_data(**kwargs)
+#        return context
 
 
 def get_session_object(request: HttpRequest) -> Union[Session, None]:
@@ -330,25 +326,25 @@ def create_event(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=403)
 
 
-def send_results(request: HttpRequest) -> None:
+def send_results(request: HttpRequest, session_object: Session) -> None:
     """Send session's results by email to user"""
     logger.info(f'Sending session results to {request.user.email}')
-    session_object = get_session_object(request)
-    if session_object:
-        try:
-            logger.info(f'Session id : {session_object.id}')
-            logger.info("Creating send record ...")
-            send_record = create_send_record(request.user.email)
-            custom_email = prepare_email(request, session_object, send_record)
-            logger.info(f'Sending email to {request.user.email}')
-            custom_email.send(fail_silently=False)
-            logger.info(f'Email sent to {request.user.email}')
-            send_record.handoff_time = datetime.now(timezone.utc)
-            send_record.save()
-        except Exception as e:
-            logger.error(f'Error sending email to {request.user.email} : {e}')
-            send_record.status = "FAILED"
-            send_record.save()
+    try:
+        logger.info(f'Session id : {session_object.id}')
+        logger.info("Creating send record ...")
+        send_record = create_send_record(request.user.email)
+        custom_email = prepare_email(request, session_object, send_record)
+        logger.info(f'Sending email to {request.user.email}')
+        custom_email.send(fail_silently=False)
+        logger.info(f'Email sent to {request.user.email}')
+        send_record.handoff_time = datetime.now(timezone.utc)
+        send_record.save()
+    except Exception as e:
+        # We don't really know that this is why we are here.
+        # We've caught a generic exception.
+        logger.error(f'Error sending email to {request.user.email} : {e}')
+        send_record.status = "FAILED"
+        send_record.save()
 
 
 def prepare_email(
@@ -391,13 +387,18 @@ def prepare_email(
     return email
 
 
-def get_MobilitoUser(self: Union[TemplateView, FormView]) -> Union[MobilitoUser, None]:
-    """Get the MobilitoUser object for the current user"""
-    if self.request.user.is_authenticated:
+def get_MobilitoUser(request):
+    """Get the MobilitoUser object for the current user.
+
+    If the user is authenticated, return the related MobilitoUser
+    object, creating it if necessary.
+
+    """
+    if request.user.is_authenticated:
         user, created = MobilitoUser.objects.get_or_create(
-            user=self.request.user,
+            user=request.user,
             defaults={
-                "user": self.request.user,
+                "user": request.user,
                 'first_time': True,
             })
         user: MobilitoUser
@@ -429,7 +430,7 @@ class SessionSummaryView(TemplateView):
         """
 
         if obj.published is False:
-            mobilito_user = get_MobilitoUser(self)
+            mobilito_user = get_MobilitoUser(self.request)
             if (not self.request.user.has_perm('mobilito.session.view_session')
                     and mobilito_user != obj.user):
                 raise Http404
