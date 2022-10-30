@@ -1,10 +1,40 @@
 from datetime import datetime, timezone
 
 from django.contrib.auth.models import User, Permission
-from django.test import TestCase, Client
-from django.urls import reverse_lazy
+from django.test import TestCase, Client, RequestFactory
+from django.urls import reverse_lazy, reverse
+from http.cookies import SimpleCookie
 
 from .models import Session, MobilitoUser
+from .views import TutorialState, TutorialView
+
+
+class TutorialStateTests(TestCase):
+
+    def setUp(self):
+        self.tutorial_state = TutorialState()
+
+    def test_static_state(self):
+        self.assertEqual(self.tutorial_state.default_page(), "presentation")
+        self.assertEqual(self.tutorial_state.canonical_page("presentation"), "presentation")
+        self.assertEqual(self.tutorial_state.canonical_page("velos"), "velos")
+        self.assertEqual(self.tutorial_state.canonical_page("unknown"), "presentation")
+
+
+class TutorialViewTests(TestCase):
+
+    def setUp(self):
+        self.tutorial_state = TutorialState()
+
+    def test_state_progression(self):
+        client = Client()
+        response_1 = client.get(
+            reverse("mobilito:tutorial",
+                    kwargs={"tutorial_page": "presentation"}))
+        self.assertEqual(response_1.status_code, 200)
+        next_page = response_1.context["next_page"]
+        # A too-weak constraint.
+        self.assertTrue(next_page in self.tutorial_state.all_tutorial_pages)
 
 
 class SessionViewTests(TestCase):
