@@ -230,7 +230,7 @@ class RecordingView(LoginRequiredMixin, TemplateView):
         user_agent = parse(self.request.META.get('HTTP_USER_AGENT'))
         user = MobilitoUser.objects.get_or_create(
             user=self.request.user)[0]
-        mobilito_session_object = MobilitoSession.objects.create(
+        mobilito_session = MobilitoSession.objects.create(
             user=user,
             location=location,
             latitude=latitude,
@@ -238,9 +238,9 @@ class RecordingView(LoginRequiredMixin, TemplateView):
             user_browser=str(user_agent),
             start_timestamp=datetime.now(timezone.utc),
         )
-        self.request.session["mobilito_session_id"] = mobilito_session_object.id
+        self.request.session["mobilito_session_id"] = mobilito_session.id
         logger.info(
-            f'{self.request.user.email} started mobilito_session {mobilito_session_object.id}')
+            f'{self.request.user.email} started mobilito_session {mobilito_session.id}')
         return context
 
     def get(self, request, *args, **kwargs):
@@ -261,18 +261,18 @@ class RecordingView(LoginRequiredMixin, TemplateView):
         number_of_public_transports = request.POST.get('public-transport')
         # Update of associated mobilito_session
         try:
-            mobilito_session_object: MobilitoSession = \
+            mobilito_session: MobilitoSession = \
                 MobilitoSession.objects.get(
                     id=request.session.get('mobilito_session_id'))
-            mobilito_session_object.end_timestamp = now
-            mobilito_session_object.pedestrian_count = number_of_pedestrians
-            mobilito_session_object.bicycle_count = number_of_bicycles
-            mobilito_session_object.motor_vehicle_count = \
+            mobilito_session.end_timestamp = now
+            mobilito_session.pedestrian_count = number_of_pedestrians
+            mobilito_session.bicycle_count = number_of_bicycles
+            mobilito_session.motor_vehicle_count = \
                 number_of_cars
-            mobilito_session_object.public_transport_count = \
+            mobilito_session.public_transport_count = \
                 number_of_public_transports
-            mobilito_session_object.save()
-            send_results(request, mobilito_session_object)
+            mobilito_session.save()
+            send_results(request, mobilito_session)
         except MobilitoSession.DoesNotExist as e:
             logger.error(
                 f"Can't update a non-existing mobilito_session, "
@@ -284,7 +284,7 @@ class RecordingView(LoginRequiredMixin, TemplateView):
         request.session['recording_duration_minutes'] = int(
             (
                 datetime.now(timezone.utc)
-                - mobilito_session_object.start_timestamp
+                - mobilito_session.start_timestamp
             ).total_seconds() // 60
         )
         request.session['number_of_pedestrians'] = number_of_pedestrians
@@ -300,23 +300,23 @@ class ThankYouView(TemplateView):
     template_name = 'mobilito/thanks.html'
 
 
-def get_mobilito_session_object(request: HttpRequest) -> Union[MobilitoSession, None]:
+def get_mobilito_session(request: HttpRequest) -> Union[MobilitoSession, None]:
     """Get the mobilito_session object, convenience function."""
     try:
-        mobilito_session_object = MobilitoSession.objects.get(
+        mobilito_session = MobilitoSession.objects.get(
             id=request.session.get('mobilito_session_id'))
     except MobilitoSession.DoesNotExist as e:
         logger.error(
             f'{request.user.email} tried to get a non-existing '
             f'mobilito_session : {e}')
-        mobilito_session_object = None
-    return mobilito_session_object
+        mobilito_session = None
+    return mobilito_session
 
 
 def create_event(request: HttpRequest) -> HttpResponse:
     """Create a Mobilito event from a POST request"""
     if request.method == 'POST':
-        mobilito_session_object = get_mobilito_session_object(request)
+        mobilito_session = get_mobilito_session(request)
         event_type = request.POST.get('event_type').lower()
         if event_type == 'pedestrian':
             event_type = 'ped'
@@ -326,8 +326,8 @@ def create_event(request: HttpRequest) -> HttpResponse:
             event_type = 'car'
         elif event_type == 'public-transport':
             event_type = 'TC'
-        if mobilito_session_object:
-            mobilito_session_object.create_event(event_type)
+        if mobilito_session:
+            mobilito_session.create_event(event_type)
             return HttpResponse(status=200)
 
         logger.error(f"{request.user.email} tried to create an event from a "
@@ -339,14 +339,14 @@ def create_event(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=403)
 
 
-def send_results(request: HttpRequest, mobilito_session_object: MobilitoSession) -> None:
+def send_results(request: HttpRequest, mobilito_session: MobilitoSession) -> None:
     """Send mobilito_session's results by email to user"""
     logger.info(f'Sending mobilito_session results to {request.user.email}')
     try:
-        logger.info(f'MobilitoSession id : {mobilito_session_object.id}')
+        logger.info(f'MobilitoSession id : {mobilito_session.id}')
         logger.info("Creating send record ...")
         send_record = create_send_record(request.user.email)
-        custom_email = prepare_email(request, mobilito_session_object, send_record)
+        custom_email = prepare_email(request, mobilito_session, send_record)
         logger.info(f'Sending email to {request.user.email}')
         custom_email.send(fail_silently=False)
         logger.info(f'Email sent to {request.user.email}')
@@ -361,18 +361,18 @@ def send_results(request: HttpRequest, mobilito_session_object: MobilitoSession)
 
 
 def prepare_email(
-        request: HttpRequest, mobilito_session_object: MobilitoSession,
+        request: HttpRequest, mobilito_session: MobilitoSession,
         send_record: SendRecordTransactionalAdHoc) -> EmailMultiAlternatives:
     """Prepare the email to be sent"""
-    logger.info(f'Preparing email for {mobilito_session_object.user.user.email}')
+    logger.info(f'Preparing email for {mobilito_session.user.user.email}')
     template = "mobilito/result_email.html"
     context = {
         'request': request,
-        'mobilito_session_object': mobilito_session_object,
-        'nb_pedestrians': mobilito_session_object.pedestrian_count,
-        'nb_bicycles': mobilito_session_object.bicycle_count,
-        'nb_cars': mobilito_session_object.motor_vehicle_count,
-        'nb_TC': mobilito_session_object.public_transport_count,
+        'mobilito_session': mobilito_session,
+        'nb_pedestrians': mobilito_session.pedestrian_count,
+        'nb_bicycles': mobilito_session.bicycle_count,
+        'nb_cars': mobilito_session.motor_vehicle_count,
+        'nb_TC': mobilito_session.public_transport_count,
     }
 
     html_message = render_to_string(template, context=context, request=request)

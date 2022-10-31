@@ -45,8 +45,8 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
             <p style="margin-bottom:2em;">
                 Vous pouvez retrouver les détails de votre session sur le site Mobilitains à l'addresse suivante :
                 <p>
-                    <a href="{% absolute_url 'mobilito:mobilito_session_summary' mobilito_session_object.session_sha1 %}">
-                        {% absolute_url 'mobilito:mobilito_session_summary' mobilito_session_object.session_sha1 %}
+                    <a href="{% absolute_url 'mobilito:mobilito_session_summary' mobilito_session.session_sha1 %}">
+                        {% absolute_url 'mobilito:mobilito_session_summary' mobilito_session.session_sha1 %}
                     </a>
                 </p>
                 <p>
