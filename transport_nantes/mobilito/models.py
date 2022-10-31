@@ -22,11 +22,11 @@ class MobilitoUser(models.Model):
         return self.user.email
 
 
-class Session(models.Model):
+class MobilitoSession(models.Model):
 
     class Meta:
         permissions = (
-            ("session.view_session", "Can view an unpublished session"),
+            ("mobilito_session.view_session", "Can view an unpublished session"),
         )
 
     """A user recording session: a collection of Event's."""
@@ -49,7 +49,7 @@ class Session(models.Model):
 
     def create_event(self, event_type):
         Event.objects.create(
-            session=self,
+            mobilito_session=self,
             event_type=event_type,
         )
         logger.info(f"{self.user.user.email} created an event of type {event_type}")
@@ -93,7 +93,7 @@ class Event(models.Model):
         MOTOR_VEHICLE = 'car'
         PUBLIC_TRANSPORT = 'TC'
 
-    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+    mobilito_session = models.ForeignKey(MobilitoSession, on_delete=models.PROTECT)
     timestamp = models.DateTimeField(auto_now_add=True)
     event_type = models.CharField(
         max_length=50,          # Arbitrary, too much is enough.
@@ -102,7 +102,7 @@ class Event(models.Model):
         blank=False)
 
     def __str__(self):
-        return f'{self.session.user.user.email} - {self.timestamp} - {self.event_type}'
+        return f'{self.mobilito_session.user.user.email} - {self.timestamp} - {self.event_type}'
 
     def save(self, *args, **kwargs) -> None:
         """Override save method to run validators on create"""

@@ -12,8 +12,8 @@ urlpatterns = [
 
     path('enregistrement/', views.RecordingView.as_view(), name='recording'),
     path('merci/', views.ThankYouView.as_view(), name='thanks'),
-    path('session/<str:session_sha1>/', views.SessionSummaryView.as_view(),
-         name='session_summary'),
+    path('session/<str:session_sha1>/', views.MobilitoSessionSummaryView.as_view(),
+         name='mobilito_session_summary'),
 
     path('ajax/create-event/', views.create_event, name='event_creation'),
     path('ajax/get-address/', views.ReverseGeocodingView.as_view(),
