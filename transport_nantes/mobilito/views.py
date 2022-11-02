@@ -11,6 +11,7 @@ from authentication.views import create_send_record
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q
 from django.http import (Http404, HttpRequest, HttpResponse,
                          HttpResponseRedirect, JsonResponse)
 from django.shortcuts import get_object_or_404
@@ -61,7 +62,7 @@ class TutorialState:
     """
     tutorial_cookie_name = 'mobilito_tutorial'
     all_tutorial_pages = set(['presentation', 'pietons', 'voitures',
-                              'velos', 'transports-collectifs',])
+                              'velos', 'transports-collectifs', ])
 
     def default_page(self) -> str:
         """Return the tutorial page to view if no page requested."""
@@ -160,6 +161,7 @@ class MobilitoView(TemplateView):
         else:
             context['tutorial_done'] = True
         return self.render_to_response(context)
+
 
 class TutorialView(TemplateView):
     """Present the tutorial.
@@ -437,17 +439,14 @@ class MobilitoSessionSummaryView(TemplateView):
         requested_mobilito_session = get_object_or_404(
             MobilitoSession, session_sha1=session_sha1)
         context["mobilito_session"] = requested_mobilito_session
-        user = self.request.user
-        if user.is_authenticated:
-            user_has_reported_this_session = InappropriateFlag.objects.filter(
-                session=requested_mobilito_session,
-                reporter_user=user).exists()
-        else:
-            user_has_reported_this_session = InappropriateFlag.objects.filter(
-                session=requested_mobilito_session,
-                reporter_tn_session_id=self.request.session.get(
-                    'tn_session')
-            )
+        user = self.request.user if self.request.user.is_authenticated else None
+        reporter_tn_session_id = self.request.session.get('tn_session')
+
+        user_has_reported_this_session = InappropriateFlag.objects.filter(
+            Q(reporter_user=user)
+            | Q(reporter_tn_session_id=reporter_tn_session_id),
+            session=requested_mobilito_session,
+        ).exists()
 
         context["user_has_reported_this_session"] = user_has_reported_this_session
         return context
