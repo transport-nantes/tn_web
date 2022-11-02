@@ -15,6 +15,11 @@ urlpatterns = [
     path('session/<str:session_sha1>/', views.MobilitoSessionSummaryView.as_view(),
          name='mobilito_session_summary'),
 
+    path('session_ts_img/<str:session_sha1>/', views.mobilito_session_timeseries_image,
+         name='mobilito_session_timeseries_image'),
+    path('session_frac_img/<str:session_sha1>/', views.mobilito_session_fraction_image,
+         name='mobilito_session_fraction_image'),
+
     path('ajax/create-event/', views.create_event, name='event_creation'),
     path('ajax/get-address/', views.ReverseGeocodingView.as_view(),
          name='geocoding'),
