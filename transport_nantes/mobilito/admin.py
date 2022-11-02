@@ -26,6 +26,17 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ("mobilito_session", "event_type",)
 
 
+class InappropriateFlagAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        'pk', 'session', 'creation_timestamp', 'reporter_user', 'report_details',
+        'reporter_tn_session_id', 'reporter_ip_address',
+    )
+
+    search_fields = ("session__session_sha1", 'reporter_user__email')
+    list_display = ("session", "creation_timestamp", "reporter_user",)
+
+
 admin.site.register(models.MobilitoSession, MobilitoSessionAdmin)
 admin.site.register(models.Event, EventAdmin)
 admin.site.register(models.MobilitoUser)
+admin.site.register(models.InappropriateFlag, InappropriateFlagAdmin)
