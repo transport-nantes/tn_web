@@ -44,28 +44,18 @@
             L.marker([{{ mobilito_session.latitude}}, {{ mobilito_session.longitude }}]).addTo(map)
         </script>
     {% endif %}
-
 {% endblock scripts %}
 
+
 {% block app_content %}
-    {{ mobilito_session.session_sha1|json_script:'mobilito_session_sha1'}}
-    <article class="p-3">
-        <h1 class="d-flex">
-            {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
-                <p>
-                    Résumé de votre session du
-                        {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i" }}
-                        (durée : {{start|timesince:end}})
-                </p>
-            {% endwith %}
-        </h1>
-        <p>
-            Lors de cette session, vous avez noté
-            {{ mobilito_session.pedestrian_count|default:"0" }} piétons, 
-            {{ mobilito_session.bicycle_count|default:"0" }} vélos,
-            {{ mobilito_session.motor_vehicle_count|default:"0" }} voitures et camions,
-            et {{ mobilito_session.public_transport_count|default:"0" }} transports collectifs.
-        </p>
+<div class="container">
+    <div class="row">
+	<div class="col-lg-12">
+	    {# name of recorder, some day #}
+	    <p>{{ mobilito_session.start_timestamp|timesince:mobilito_session.end_timestamp }}
+		à partir de {{ mobilito_session.start_timestamp|timezone:'Europe/Paris'|date:"l j F Y à G:i" }}.
+	    </p>
+	    <p><b>{{ mobilito_session.location }}</b></p>
 
         <style>
             #map {
@@ -81,6 +71,31 @@
         {% if mobilito_session.latitude and mobilito_session.longitude %}
             <div id="map" class="col-10 col-md-8 col-lg-6 mx-auto"></div>
         {% endif %}
+
+	    <p>
+		<img src="{% url 'mobilito:mobilito_session_timeseries_image' mobilito_session.session_sha1 %}" alt="{{ mobilito_session.location }}" width="90%">
+	    </p>
+	</div>
+    </div>
+    <div class="row">
+	<div class="col-xs-3">
+	    <p>
+		<img src="{% url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}" alt="{{ mobilito_session.location }}" width="90%">
+	    </p>
+        </div>
+	<div class="col-xs-9">
+	    <p>
+		<ul>
+		    <li> {{ mobilito_session.pedestrian_count|default:"0" }} piétons</li>
+		    <li> {{ mobilito_session.bicycle_count|default:"0" }} vélos</li>
+		    <li> {{ mobilito_session.motor_vehicle_count|default:"0" }} voitures et camions</li>
+		    <li> {{ mobilito_session.public_transport_count|default:"0" }}
+			transports collectifs</li>
+		</ul>
+	    </p>
+	</div>
+    </div>
+</div>
 
         {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
                 <div class="dropdown show">
@@ -161,7 +176,5 @@
                 </div>
             </div>
         {% endif %}
-        
-        
     </article>
 {% endblock app_content %}
