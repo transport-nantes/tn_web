@@ -1,9 +1,9 @@
-{% extends 'asso_tn/base_mobilitain.html' %}
+{% extends 'mobilito/base_mobilito.html' %}
 
 {% block app_content %}
 
 <section class="container">
-    <h1>Merci pour votre contribution !</h1>
+    <h1 style="text-align: unset">Merci pour votre contribution !</h1>
 
     <p>Dans l'espace de {{ request.session.recording_duration_minutes }} minute(s),
 	vous avez noté {{ request.session.number_of_pedestrians }} piétons, 
@@ -14,7 +14,8 @@
 
     <p>À très vite et à la prochaine&nbsp;!</p>
 
-    <a href="{% url 'mobilito:address_form' %}" class="btn navigation-button">
+    <a href="{% url 'mobilito:address_form' %}" class="btn navigation-button"
+    style="background-color:white;color:var(--mobilitains-bleu-fonce)">
         Faire un autre enregistrement
         <i class="fa fa-arrow-right"></i>
     </a>
