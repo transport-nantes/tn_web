@@ -1,0 +1,26 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% load compress %}
+
+{% block styles %}
+    {{ block.super }}
+    {% compress css %}
+        <link
+        rel="stylesheet" href="{% static 'mobilito/css/mobilito.css' %}">
+    {% endcompress %}
+{% endblock styles %}
+
+{% block navbar %}
+    <div class="d-flex col-10 col-sm-8 col-md-6 col-lg-4 col-xl-3
+    justify-content-center mx-auto mt-2"
+    style="flex-basis: 0;">
+        <a href="{% url 'index' %}">
+            <img src="{% static 'asso_tn/M-logo_white.png' %}" alt="logo mobilitains" class="w-100 h-100" />
+        </a>
+    </div>
+{% endblock navbar %}
+
+{% block head %}
+    <title>Mobilito : un projet des Mobilitains</title>
+    {{ block.super }}
+{% endblock head %}

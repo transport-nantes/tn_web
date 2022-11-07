@@ -1,0 +1,18 @@
+/* Base styling for mobilito app */
+body {
+    display: flex;
+    color: white;
+    flex-direction: column;
+    background-color: var(--mobilitains-bleu-marine);
+    overscroll-behavior: contain;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+    color: white;
+}
+#notre-approche p {
+    color: var(--body-text);
+}

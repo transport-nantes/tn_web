@@ -1,4 +1,4 @@
-{% extends 'asso_tn/base_mobilitain.html' %}
+{% extends 'mobilito/base_mobilito.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
 
@@ -6,12 +6,6 @@
     {{ block.super }}
     <link rel='stylesheet' type='text/css' href="{% static 'mobilito/css/address_form.css' %}">
 {% endblock styles %}
-
-{% block navbar %}
-    <div class="d-flex col-10 col-sm-8 col-md-6 col-lg-4 col-xl-3 justify-content-center mx-auto">
-        <img src="{% static 'asso_tn/M-logo_white.png' %}" alt="logo mobilitains" class="w-100 h-100" />
-    </div>
-{% endblock navbar %}
 
 {% block app_content %}
 
