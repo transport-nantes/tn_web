@@ -15,17 +15,31 @@
         <div class="d-flex justify-content-between">
         <ul class="nav nav-pills mb-1">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Sommaire</a>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                {% if tutorial_page == 'presentation' %}
+                    Présentation
+                {% elif tutorial_page == 'pietons' %}
+                    Piéton
+                {% elif tutorial_page == 'voiture' %}
+                    Voiture
+                {% elif tutorial_page == 'velos' %}
+                    Vélo
+                {% elif tutorial_page == 'transports-collectifs' %}
+                    Transports collectifs
+                {% else %}
+                    Sommaire
+                {% endif %}
+                </a>
               <div class="dropdown-menu">
-                <a class="dropdown-item {% if active_page == 'presentation' %}active{% endif %}" href="{% url 'mobilito:tutorial' 'presentation' %}">Présention</a>
+                <a class="dropdown-item {% if tutorial_page == 'presentation' %}active{% endif %}" href="{% url 'mobilito:tutorial' 'presentation' %}">Présentation</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item {% if active_page == 'pietons' %}active{% endif %}"
+                <a class="dropdown-item {% if tutorial_page == 'pietons' %}active{% endif %}"
                    href="{% url 'mobilito:tutorial' 'pietons' %}">Piéton</a>
-                <a class="dropdown-item {% if active_page == 'voitures' %}active{% endif %}"
+                <a class="dropdown-item {% if tutorial_page == 'voitures' %}active{% endif %}"
                    href="{% url 'mobilito:tutorial' 'voitures' %}">Voiture</a>
-                <a class="dropdown-item {% if active_page == 'velos' %}active{% endif %}"
+                <a class="dropdown-item {% if tutorial_page == 'velos' %}active{% endif %}"
                    href="{% url 'mobilito:tutorial' 'velos' %}">Vélo</a>
-                <a class="dropdown-item {% if active_page == 'transports-collectifs' %}active{% endif %}"
+                <a class="dropdown-item {% if tutorial_page == 'transports-collectifs' %}active{% endif %}"
                    href="{% url 'mobilito:tutorial' 'transports-collectifs' %}">Transports collectifs</a>
               </div>
             </li>
