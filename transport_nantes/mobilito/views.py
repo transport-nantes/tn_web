@@ -21,7 +21,6 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from ipware import get_client_ip
 from topicblog.models import SendRecordTransactionalAdHoc
 from transport_nantes.settings import MAPS_API_KEY
 from user_agents import parse
@@ -507,7 +506,6 @@ def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
                          f"non-existing session : {session_sha1}")
             raise Http404
 
-        client_ip, _ = get_client_ip(request)
         _, created = InappropriateFlag.objects.get_or_create(
             session=session_object,
             reporter_user=user,
@@ -517,7 +515,6 @@ def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
                 'reporter_user': user,
                 'reporter_tn_session_id': request.session.get('tn_session'),
                 'report_details': request.POST.get('report-abuse-text'),
-                'reporter_ip_address': client_ip,
             })
         if created:
             logger.info(f"{user or 'Anonymous User'} flagged session "

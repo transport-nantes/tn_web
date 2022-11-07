@@ -29,7 +29,7 @@ class EventAdmin(admin.ModelAdmin):
 class InappropriateFlagAdmin(admin.ModelAdmin):
     readonly_fields = (
         'pk', 'session', 'creation_timestamp', 'reporter_user', 'report_details',
-        'reporter_tn_session_id', 'reporter_ip_address',
+        'reporter_tn_session_id',
     )
 
     search_fields = ("session__session_sha1", 'reporter_user__email')
