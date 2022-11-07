@@ -160,6 +160,15 @@ class PhotoView(FormView):
                 # to send them emails
                 context["form"] = SimpleVoteFormWithConsent()
 
+            context["social"] = {
+                "og_title": "Les mobilitains organisent l'opération piéton",
+                "og_description": "Votez pour vos clichés préférés !",
+                "og_image": photo.submitted_photo.url,
+                "twitter_image": photo.submitted_photo.url,
+                "twitter_creator": "@mobilitain",
+                "twitter_site": "mobilitains.fr",
+            }
+
         return context
 
     def set_next_and_previous_arrows(self, context: dict, photo: 'PhotoEntry') -> None:
