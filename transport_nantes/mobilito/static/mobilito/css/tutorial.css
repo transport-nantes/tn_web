@@ -2,13 +2,42 @@
 h2 {
     font-size: 1.5rem;
 }
-.nav-link {
-    padding-left: 0;
-}
 .nav-pills .show > .nav-link{
     color: var(--mobilitains-bleu);
-    background-color: white;
+    background-color: var(--mobilitains-bleu-fonce);
+}
+.dropdown-menu {
+    background-color: var(--mobilitains-bleu-fonce);
 }
 .mobilito-tutorial-icons {
     max-height: 20vh;
+}
+.mobilito-btn {
+    background-color: var(--mobilitains-bleu);
+    border-color: var(--mobilitains-bleu);
+    border-radius: 15px;
+    width:30vw;
+    height:30vw;
+    max-width:200px;
+    max-height:200px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #fff;
+    margin:  0.35rem;
+}
+.mobilito-btn i {
+    display: table;
+    color: white;
+    font-size: 13vw;
+}
+@media screen and (min-width: 768px) {
+    .mobilito-btn i {
+        font-size: 8vw;
+    }
+}
+@media screen and (min-width: 992px) {
+    .mobilito-btn i {
+        font-size: 6vw;
+    }
 }
