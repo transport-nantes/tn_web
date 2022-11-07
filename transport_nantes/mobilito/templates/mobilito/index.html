@@ -4,28 +4,29 @@
 {% block app_content %}
 <main id="mobilito-landing" class="container">
     <div class="row">
-	<div class="col-lg-12">
+		<div class="col-lg-12">
             <h1>Bienvenue sur Mobilito !</h1>
 
             <div id="auth-user-landing">
-		<p>{# No guarantee user is authenticated here. #}
-                    Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
-		</p>
-		<p>
-		    Vous avez dans vos mains un outil très fort pour
-		    démocratiser la circulation.  La voiture individuelle
-		    prend une place excessive sur la voie publique.  Tous
-		    les autres modes ensemble disparaissent, tellement le
-		    flux de voitures semble important.
-		</p>
-		<p>
-		    Avec Mobilito, c'est à vous de recenser la proportion
-		    des modes dans le flux devant vous.  Vous enregistrer
-		    le temps que vous voulez.  Et puis, idéalement, vous
-		    partagerez avec vos amis sur réseaux sociaux, car un
-		    secret ne sert pas à grand chose.
-		</p>
-	    </div>
+				<p>{# No guarantee user is authenticated here. #}
+							Bonjour {{ request.user.first_name|default:"" }}&nbsp;!
+				</p>
+				<p>
+					Vous avez dans vos mains un outil très fort pour
+					démocratiser la circulation.  La voiture individuelle
+					prend une place excessive sur la voie publique.  Tous
+					les autres modes ensemble disparaissent, tellement le
+					flux de voitures semble important.
+				</p>
+				<p>
+					Avec Mobilito, c'est à vous de recenser la proportion
+					des modes dans le flux devant vous.  Vous enregistrer
+					le temps que vous voulez.  Et puis, idéalement, vous
+					partagerez avec vos amis sur réseaux sociaux, car un
+					secret ne sert pas à grand chose.
+				</p>
+			</div>
+		</div>
 	</div>
 	{% if tutorial_done %}{# ################ not newbie ################ #}
 	<div class="row row-cols-2">

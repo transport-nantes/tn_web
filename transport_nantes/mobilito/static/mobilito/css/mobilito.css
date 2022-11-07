@@ -12,6 +12,8 @@ h3,
 h4,
 p {
     color: white;
+    text-align: justify;
+    text-justify: auto;
 }
 #notre-approche p {
     color: var(--body-text);
