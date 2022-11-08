@@ -35,7 +35,7 @@ color:#fff;background-color:#333F48;">
     </tr>
     <tr>
         <td>
-            {% with start=session_object.start_timestamp end=session_object.end_timestamp %}
+            {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
                 Voici le résumé de votre session du
                     {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i" }}
                     (durée : {{start|timesince:end}})
@@ -46,7 +46,7 @@ color:#fff;background-color:#333F48;">
     <tr>
         <td>
             <ul>
-                <li> Identifiant de votre session : {{ session_object.session_sha1 }}</li>
+                <li> Identifiant de votre session : {{ mobilito_session.session_sha1 }}</li>
                 <li> Nombre de citoyens à pied : {{ nb_pedestrians }}</li>
                 <li> Nombre de voitures, motos, camions : {{ nb_cars }}</li>
                 <li> Nombre de vélos et trotinettes : {{ nb_bicycles }}</li>
