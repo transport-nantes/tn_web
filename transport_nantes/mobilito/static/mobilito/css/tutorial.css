@@ -1,6 +1,7 @@
 #presentation-mobilito > h1,
 h2 {
     font-size: 1.5rem;
+    text-align: unset;
 }
 .nav-pills .show > .nav-link{
     color: var(--mobilitains-bleu);
@@ -40,4 +41,8 @@ h2 {
     .mobilito-btn i {
         font-size: 6vw;
     }
+}
+#float-left {
+    float: left;
+    margin: 0 1rem 1rem 0rem;
 }
