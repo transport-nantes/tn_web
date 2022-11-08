@@ -92,9 +92,11 @@
     </style>
     <script src="https://kit.fontawesome.com/46b82563d9.js" crossorigin="anonymous"></script>
 </head>
+{% block background_color %}
 <body style="margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
     <div role="article" aria-roledescription="email" lang="fr"
     style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:white;">
+{% endblock background_color %}
         {% comment %}
         This scaffold is necessary so that our email will be centered across all email clients.
         We create a 100% wide table, and then set the border and border-spacing to zero.
