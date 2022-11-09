@@ -80,7 +80,7 @@
 					Mentions des Mobilitains dans la presse
 				</td>
 				<td>
-					<a class="ml-1" href="{% url 'press:list_items' %}"><i class="fas fa-list"></i></a>
+					<a class="ml-1" href="{% url 'press:list_items' %}?active="><i class="fas fa-list"></i></a>
 					<a class="ml-1" href="{% url 'press:new_item' %}"><i class="fas fa-plus"></i></a>
 				</td>
 			</tr>
@@ -97,6 +97,21 @@
 						title="Voir les listes de diffusion"></i>
 					</a>
 					<i class="fas fa-plus ml-1" style="color:#d9d9d9"></i>
+				</td>
+			</tr>
+			<tr>
+				<td>Panels</td>
+				<td>
+					Courts extraits intégrés à d'autres types de contenus
+				</td>
+				<td>
+					<a class="ml-1" href="{% url 'topicblog:list_panel' %}?active=panel">
+						<i class="fas fa-list"
+						data-toggle="tooltip"
+						data-placement="bottom"
+						title="Voir les listes panels"></i>
+					</a>
+					<a class="ml-1" href="{% url 'topicblog:new_panel' %}"><i class="fas fa-plus"></i></a>
 				</td>
 			</tr>
 		</tbody>
