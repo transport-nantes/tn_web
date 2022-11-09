@@ -439,7 +439,6 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
         verbose_name="Notes libres pour éditeurs",
         blank=True, null=True)
 
-
     def set_social_context(self, context):
         """
         inherited from original TB, it adds socials related
@@ -1408,5 +1407,97 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
                            kwargs={"pkid": self.pk})
         else:
             return reverse("topicblog:edit_mlp",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+
+
+class TopicBlogPanel(TopicBlogObjectBase):
+    """Represent an template that can be embedded in other items.
+
+    A TBPanel is a template that can be embedded in other items. It
+    can be embedded in Markdown fields and using template tags.
+    """
+
+    class Meta:
+        verbose_name_plural = "Panels"
+        permissions = (
+            ("tbpanel.may_view",
+             "May view unpublished TopicBlogPanel"),
+            ("tbpanel.may_edit",
+             "May create and modify TopicBlogPanel"),
+            ("tbpanel.may_publish",
+             "May publish TopicBlogPanel"),
+            ("tbpanel.may_publish_self",
+             "May publish own TopicBlogPanel"),
+        )
+
+    title = models.CharField(max_length=80, blank=True)
+    body_text_1_md = models.TextField(blank=True)
+    body_image_1 = models.ImageField(upload_to='body/', blank=True)
+    body_image_1_alt_text = models.CharField(max_length=80, blank=True)
+
+    new_object_url = "topicblog:new_panel"
+    listone_object_url = "topicblog:list_panel_by_slug"
+    listall_object_url = "topicblog:list_panel"
+    viewbyslug_object_url = "topicblog:view_panel_by_slug"
+    viewbypkid_object_url = "topicblog:view_panel_by_pkid"
+    # The description is meant to be a really short string description
+    # of what the object is supposed to render into.
+    # e.g. a TopicBlogItem is a "Page de blog"
+    # This is used as header in object-related forms
+    description_of_object = "Panel"
+
+    template_config_default = {
+        "optional_fields_for_publication": (
+        ),
+        "one_of_fields_for_publication": [
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+           ['body_image_1', 'body_image_1_alt_text']
+        ],
+    }
+    template_config = {
+        'topicblog/panel_did_you_know_tip_1.html': {
+            'email_template': 'topicblog/panel_did_you_know_tip_1_mail_client.html',
+            'default_choice': True,
+            'user_template_name': 'Le saviez-vous? 1',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'title': True,
+                'body_text_1_md': True,
+                'body_image_1': True,
+                'body_image_1_alt_text': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse("topicblog:view_panel_by_pkid",
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse("topicblog:view_panel_by_pkid_only",
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse("topicblog:edit_panel_by_pkid",
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse("topicblog:edit_panel",
                            kwargs={"pkid": self.pk,
                                    "the_slug": self.slug})

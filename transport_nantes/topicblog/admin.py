@@ -5,6 +5,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
                      SendRecordTransactionalPress,
                      SendRecordTransactionalEmail,
                      SendRecordTransactionalAdHoc,
+                     TopicBlogPanel,
                      )
 
 
@@ -60,3 +61,4 @@ admin.site.register(SendRecordMarketingPress, SendRecordMarketingPressAdmin)
 admin.site.register(SendRecordTransactionalEmail)
 admin.site.register(SendRecordTransactionalPress)
 admin.site.register(SendRecordTransactionalAdHoc)
+admin.site.register(TopicBlogPanel)
