@@ -1766,3 +1766,34 @@ class TopicBlogPanelsViewsTests(TestCase):
         response = self.authorized_user_client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_list_panel_get(self):
+        """Test list_panel GET"""
+        url = reverse("topicblog:list_panel")
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+    def test_list_panel_by_slug(self):
+        """Test list_panel_by_slug GET"""
+        url = reverse("topicblog:list_panel_by_slug",
+                      kwargs={"the_slug": "test-panel"})
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+        url = reverse(
+            "topicblog:list_panel_by_slug",
+            kwargs={"the_slug": "bad-slug"}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertContains(response, "Aucun résultat.")
