@@ -1,21 +1,17 @@
 import io
 import json
 import logging
+import pickle
+import random
+from base64 import b64decode, b64encode
+from datetime import datetime, timedelta, timezone
+from typing import Union
+
 import matplotlib.dates as mdates
 import matplotlib.font_manager as font_manager
 import matplotlib.image as mpimg
-import matplotlib.text
 import matplotlib.pyplot as plt
-import numpy as np
-import pickle
-from base64 import b64decode, b64encode
-from datetime import datetime, timedelta, timezone
-from PIL import Image, ImageDraw, ImageFont
-import random
-import requests
-from user_agents import parse
-from typing import Union
-
+import matplotlib.text
 import requests
 from asso_tn.utils import make_timed_token, token_valid
 from authentication.views import create_send_record
@@ -32,21 +28,16 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from asso_tn.utils import make_timed_token, token_valid
-
-from authentication.views import create_send_record
+from mobilito.forms import AddressForm
+from mobilito.models import (Event, InappropriateFlag, MobilitoSession,
+                             MobilitoUser)
 from topicblog.models import SendRecordTransactionalAdHoc
-from transport_nantes.settings import MAPS_API_KEY
 from user_agents import parse
 
-from mobilito.forms import AddressForm
-from mobilito.models import (InappropriateFlag, MobilitoSession, MobilitoUser, Event)
+from transport_nantes.settings import MAPS_API_KEY
 
 logger = logging.getLogger("django")
 
-#matplotlib.rcParams['font.family'] = 'Montserraat-Bold'
-#matplotlib.rcParams['font.family'] = 'Montserraat'
 
 class TutorialState:
     """Track tutorial pages viewed.
@@ -76,6 +67,7 @@ class TutorialState:
     expectations are, what the different buttons mean.
 
     """
+
     tutorial_cookie_name = 'mobilito_tutorial'
     all_tutorial_pages = set(['presentation', 'pietons', 'voitures',
                               'velos', 'transports-collectifs', ])
@@ -135,7 +127,9 @@ class TutorialState:
             if mobilito_user.completed_tutorial_timestamp:
                 # User has seen all tutorial pages, nothing left to see.
                 return set()
-        return self.all_tutorial_pages - self.pages_seen(request) - set([this_page])
+        return self.all_tutorial_pages \
+            - self.pages_seen(request) \
+            - set([this_page])
 
     def next_page_to_see(self, request, this_page=None) -> str:
         """Return the next tutorial page to visit.
@@ -213,6 +207,7 @@ class TutorialView(TemplateView):
 
 class AddressFormView(LoginRequiredMixin, FormView):
     """Present the address form.
+
     The form is optional to fill.
     """
 
@@ -240,6 +235,8 @@ class AddressFormView(LoginRequiredMixin, FormView):
 
 
 class RecordingView(LoginRequiredMixin, TemplateView):
+    """Show four-button recording view."""
+
     template_name = 'mobilito/recording.html'
 
     def get_context_data(self, **kwargs) -> dict:
@@ -260,7 +257,8 @@ class RecordingView(LoginRequiredMixin, TemplateView):
         )
         self.request.session["mobilito_session_id"] = mobilito_session.id
         logger.info(
-            f'{self.request.user.email} started mobilito_session {mobilito_session.id}')
+            f"{self.request.user.email} started "
+            "mobilito_session {mobilito_session.id}")
         return context
 
     def get(self, request, *args, **kwargs):
@@ -317,6 +315,8 @@ class RecordingView(LoginRequiredMixin, TemplateView):
 
 
 class ThankYouView(TemplateView):
+    """Thank user on ending recording session."""
+
     template_name = 'mobilito/thanks.html'
 
 
@@ -334,7 +334,7 @@ def get_mobilito_session(request: HttpRequest) -> Union[MobilitoSession, None]:
 
 
 def create_event(request: HttpRequest) -> HttpResponse:
-    """Create a Mobilito event from a POST request"""
+    """Create a Mobilito event from a POST request."""
     if request.method == 'POST':
         mobilito_session = get_mobilito_session(request)
         event_type = request.POST.get('event_type').lower()
@@ -359,8 +359,9 @@ def create_event(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=403)
 
 
-def send_results(request: HttpRequest, mobilito_session: MobilitoSession) -> None:
-    """Send mobilito_session's results by email to user"""
+def send_results(request: HttpRequest,
+                 mobilito_session: MobilitoSession) -> None:
+    """Send mobilito_session's results by email to user."""
     logger.info(f'Sending mobilito_session results to {request.user.email}')
     try:
         logger.info(f'MobilitoSession id : {mobilito_session.id}')
@@ -383,7 +384,7 @@ def send_results(request: HttpRequest, mobilito_session: MobilitoSession) -> Non
 def prepare_email(
         request: HttpRequest, mobilito_session: MobilitoSession,
         send_record: SendRecordTransactionalAdHoc) -> EmailMultiAlternatives:
-    """Prepare the email to be sent"""
+    """Compose and return email summary of Mobilito session."""
     logger.info(f'Preparing email for {mobilito_session.user.user.email}')
     template = "mobilito/result_email.html"
     context = {
@@ -445,7 +446,8 @@ def get_MobilitoUser(request) -> Union[MobilitoUser, None]:
 
 
 class MobilitoSessionSummaryView(TemplateView):
-    """Display the details of a Mobilito Session"""
+    """Display a summary of a Mobilito Session."""
+
     model = MobilitoSession
     template_name = 'mobilito/mobilito_session_summary.html'
 
@@ -455,7 +457,8 @@ class MobilitoSessionSummaryView(TemplateView):
         requested_mobilito_session = get_object_or_404(
             MobilitoSession, session_sha1=session_sha1)
         context["mobilito_session"] = requested_mobilito_session
-        user = self.request.user if self.request.user.is_authenticated else None
+        user = self.request.user if self.request.user.is_authenticated \
+            else None
         reporter_tn_session_id = self.request.session.get('tn_session')
 
         user_has_reported_this_session = InappropriateFlag.objects.filter(
@@ -464,21 +467,22 @@ class MobilitoSessionSummaryView(TemplateView):
             session=requested_mobilito_session,
         ).exists()
 
-        context["user_has_reported_this_session"] = user_has_reported_this_session
+        context["user_has_reported_this_session"] = \
+            user_has_reported_this_session
         return context
 
     def check_view_permission(self, obj: MobilitoSession) -> None:
-        """Check if the user has permission to view the mobilito session
+        """Check if the user has permission to view the mobilito session.
 
         Only the session creator and authorised users can see the
         mobilito session if it's unpublished.
 
         """
-
         if obj.published is False:
             mobilito_user = get_MobilitoUser(self.request)
-            if (not self.request.user.has_perm('mobilito.mobilito_session.view_session')
-                    and mobilito_user != obj.user):
+            if not self.request.user.has_perm(
+                    'mobilito.mobilito_session.view_session') \
+                    and mobilito_user != obj.user:
                 raise Http404
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -489,6 +493,7 @@ class MobilitoSessionSummaryView(TemplateView):
 
 fonts_inited = False
 
+
 def init_brand_font():
     """Initialise our brand font.
 
@@ -498,12 +503,13 @@ def init_brand_font():
     global fonts_inited
     if not fonts_inited:
         logger.info('Initing fonts.')
-        fontdir="open_graph/base_images/Montserrat/"
+        fontdir = "open_graph/base_images/Montserrat/"
         font_manager.findSystemFonts(fontdir)
         for font in font_manager.findSystemFonts(fontdir):
             font_manager.fontManager.addfont(font)
         matplotlib.rcParams['font.family'] = "Montserrat"
         fonts_inited = True
+
 
 def mobilito_session_timeseries_image(request, session_sha1):
     """Generate a time series visualisation of a Mobilito session.
@@ -523,11 +529,6 @@ def mobilito_session_timeseries_image(request, session_sha1):
     mobilito_session = get_object_or_404(
         MobilitoSession, session_sha1=session_sha1)
     events = Event.objects.filter(mobilito_session=mobilito_session)
-    # Specify our brand font.
-    #### This will only work in dev due to path name.
-    tn_font_path = 'open_graph/base_images/Montserrat/Montserrat-Bold.otf'
-    tn_font_size = 150
-    tn_font = ImageFont.truetype(tn_font_path, tn_font_size)
     scatter_map = {
         Event.EventTypes.PEDESTRIAN: 0,
         Event.EventTypes.BICYCLE: 1,
@@ -539,14 +540,14 @@ def mobilito_session_timeseries_image(request, session_sha1):
     mobilitains_light_blue = (91./255, 194./255, 231./255)
     mobilitains_dark_blue = (67./255, 82./255, 110./255)
     mobilitains_gray = (219./255, 227./255, 235./255)
-    mobilitains_red = (250./255, 70./255, 22./255)
-    mobilitains_maroon = (128./255, 105./255, 102./255)
+    # mobilitains_red = (250./255, 70./255, 22./255)
+    # mobilitains_maroon = (128./255, 105./255, 102./255)
 
-    img_walking = mpimg.imread("mobilito/static/mobilito/images/ped-icon-small.png")
-    img_bicycle = mpimg.imread("mobilito/static/mobilito/images/bike-icon-small.png")
-    img_car = mpimg.imread("mobilito/static/mobilito/images/car-icon-small.png")
-    img_tc = mpimg.imread("mobilito/static/mobilito/images/tc-icon-small.png")
-    image_icons = [img_walking, img_bicycle, img_car, img_tc]
+    icon_path = "mobilito/static/mobilito/images"
+    img_walking = mpimg.imread(f"{icon_path}/ped-icon-small.png")
+    img_bicycle = mpimg.imread(f"{icon_path}/bike-icon-small.png")
+    img_car = mpimg.imread(f"{icon_path}/car-icon-small.png")
+    img_tc = mpimg.imread(f"{icon_path}/tc-icon-small.png")
     intermode_vertical = 1
     vertical_jitter = .3
     event_timestamps = [an_event.timestamp for an_event in events]
@@ -555,21 +556,13 @@ def mobilito_session_timeseries_image(request, session_sha1):
     # the plot register correctly, even if some modes have no data.
     x_scatter_points = [min_timestamp] * 4 + event_timestamps
     y_scatter_points = [0, 1, 2, 3] + \
-        [intermode_vertical * scatter_map[an_event.event_type] \
+        [intermode_vertical * scatter_map[an_event.event_type]
          + vertical_jitter * (random.random() - .5)
          for an_event in events]
-    point_colors = [mobilitains_dark_blue] * 4 + [mobilitains_light_blue] * len(events)
+    point_colors = [mobilitains_dark_blue] * 4 + \
+        [mobilitains_light_blue] * len(events)
 
-    fig, ax = plt.subplots(figsize=(8,5), dpi=100)
-
-    #ax.scatter(x_scatter_points, y_scatter_points, s=10, c=(mobilitains_gray))
-    # print('tick locs', ax.get_xaxis().get_ticklocs())
-    # print('major ticks', ax.get_xaxis().get_major_ticks())
-    # print('extents', ax.get_xaxis().get_major_ticks()[0].get_clip_box().extents)
-
-    yaxis_0 = ax.get_yaxis()
-    tick_locs_0 = yaxis_0.get_ticklocs()
-    #ax.set_clip_on(False)
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
 
     # Place a new axes for each image where we want the image.
     # (x, y, width, height).
@@ -578,19 +571,27 @@ def mobilito_session_timeseries_image(request, session_sha1):
     base_height = 0.17
     incr_height = 0.21
 
-    walk_icon = fig.add_axes([horizontal_offset, base_height + 0 * incr_height, 0.05, 0.05])
+    walk_icon = fig.add_axes([horizontal_offset,
+                              base_height + 0 * incr_height,
+                              0.05, 0.05])
     walk_icon.set_axis_off()
     walk_icon.imshow(img_walking, aspect="equal")
 
-    bicycle_icon = fig.add_axes([horizontal_offset, base_height + 1 * incr_height, 0.05, 0.05])
+    bicycle_icon = fig.add_axes([horizontal_offset,
+                                 base_height + 1 * incr_height,
+                                 0.05, 0.05])
     bicycle_icon.set_axis_off()
     bicycle_icon.imshow(img_bicycle, aspect="equal")
 
-    car_icon = fig.add_axes([horizontal_offset, base_height + 2 * incr_height, 0.05, 0.05])
+    car_icon = fig.add_axes([horizontal_offset,
+                             base_height + 2 * incr_height,
+                             0.05, 0.05])
     car_icon.set_axis_off()
     car_icon.imshow(img_car, aspect="equal")
 
-    tc_icon = fig.add_axes([horizontal_offset, base_height + 3 * incr_height, 0.05, 0.05])
+    tc_icon = fig.add_axes([horizontal_offset,
+                            base_height + 3 * incr_height,
+                            0.05, 0.05])
     tc_icon.set_axis_off()
     tc_icon.imshow(img_tc, aspect="equal")
 
@@ -639,24 +640,13 @@ def mobilito_session_fraction_image(request, session_sha1):
     """
     mobilito_session = get_object_or_404(
         MobilitoSession, session_sha1=session_sha1)
-    events = Event.objects.filter(mobilito_session=mobilito_session)
     # Specify our brand font.
-    #### This will only work in dev due to path name.
-    tn_font_path = 'open_graph/base_images/Montserrat/Montserrat-Bold.otf'
-    tn_font_size = 150
-    tn_font = ImageFont.truetype(tn_font_path, tn_font_size)
-    scatter_map = {
-        Event.EventTypes.PEDESTRIAN: 0,
-        Event.EventTypes.BICYCLE: 1,
-        Event.EventTypes.MOTOR_VEHICLE: 2,
-        Event.EventTypes.PUBLIC_TRANSPORT: 3,
-    }
 
-    img_walking = mpimg.imread("mobilito/static/mobilito/images/ped-icon-small.png")
-    img_bicycle = mpimg.imread("mobilito/static/mobilito/images/bike-icon-small.png")
-    img_car = mpimg.imread("mobilito/static/mobilito/images/car-icon-small.png")
-    img_tc = mpimg.imread("mobilito/static/mobilito/images/tc-icon-small.png")
-    image_icons = [img_walking, img_bicycle, img_car, img_tc]
+    icon_path = "mobilito/static/mobilito/images"
+    img_walking = mpimg.imread(f"{icon_path}/ped-icon-small.png")
+    img_bicycle = mpimg.imread(f"{icon_path}/bike-icon-small.png")
+    img_car = mpimg.imread(f"{icon_path}/car-icon-small.png")
+    img_tc = mpimg.imread(f"{icon_path}/tc-icon-small.png")
 
     init_brand_font()
     mobilitains_light_blue = (91./255, 194./255, 231./255)
@@ -665,23 +655,23 @@ def mobilito_session_fraction_image(request, session_sha1):
     mobilitains_red = (250./255, 70./255, 22./255)
     mobilitains_maroon = (128./255, 105./255, 102./255)
 
-    fig, ax = plt.subplots(figsize=(3,3), dpi=100)
+    fig, ax = plt.subplots(figsize=(3, 3), dpi=100)
 
     modal_values = [mobilito_session.pedestrian_count,
                     mobilito_session.bicycle_count,
                     mobilito_session.motor_vehicle_count,
-                    mobilito_session.public_transport_count,]
+                    mobilito_session.public_transport_count, ]
     modal_colors = [mobilitains_light_blue,
                     mobilitains_light_blue,
                     mobilitains_red,
-                    mobilitains_maroon,]
+                    mobilitains_maroon, ]
     modal_explosion = [.01] * 4
     pie = ax.pie(modal_values,
                  colors=modal_colors,
                  explode=modal_explosion)
     pie_text = pie[1]
-    #print(pie_text)
-    #print(pie_text[0].get_position())
+    # print(pie_text)
+    # print(pie_text[0].get_position())
 
     # Bug: these axes are being positioned in the coordinate system of
     # the figure rather than relative to the pie axes.
@@ -729,6 +719,7 @@ def mobilito_session_fraction_image(request, session_sha1):
 
 
 class ReverseGeocodingView(View):
+    """Translate map clicks to geo coordinates."""
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Return the reverse-geocoded address from a lat,lng tuple"""
@@ -748,26 +739,6 @@ class ReverseGeocodingView(View):
 @csrf_protect
 def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
     """Flag a session as inappropriate"""
-
-    def get_client_ip(request):
-        """Remove dependence on ipware module.
-
-        We should stop relying on remote ip address unless we can
-        document a real interest in storing it.  It's questionnable
-        from a GDPR standpoint, it's 100% unactionnable for us, and we
-        don't have engineering resources to confirm that we're
-        reliably recovering remote ip and not a proxy ip along the
-        route (or a hacked ip).
-
-        https://www.djangoproject.com/weblog/2009/jul/28/security/#secondary-issue
-
-        """
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        return ip
 
     if request.method == 'POST':
         user = request.user if request.user.is_authenticated else None
