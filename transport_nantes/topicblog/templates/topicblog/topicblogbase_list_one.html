@@ -26,7 +26,7 @@
                 [{{ object.id }}]
             </span>
 
-            {{ object.header_title }}
+            {{ object.header_title|default:object }}
 
             <span class="text-muted">{{ object.header_description }}</span>
             <br>

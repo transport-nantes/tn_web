@@ -1,0 +1,18 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}
+
+    <form method="POST" action="{% url 'topicblog:new_wrapper' %}"
+    class="d-flex col-12 col-sm-10 col-md-6 flex-column mx-auto">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn donation-button">Sauvegarder</button>
+    </form>
+
+{% endblock app_content %}
+
+{% block bottom_appeal %}
+{% endblock bottom_appeal %}
+{% block footer %}
+{% endblock footer %}

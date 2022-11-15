@@ -32,6 +32,10 @@
                 <a class="nav-link {% if request.GET.active == "mlp" %}active{% endif %}"
                 href="{% url 'topicblog:list_mlp' %}?active=mlp">Pitchs ML</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.GET.active == "wrapper" %}active{% endif %}"
+                href="{% url 'topicblog:list_wrapper' %}?active=wrapper">Wrappers</a>
+              </li>
             </ul>
         </div>
         <a href="{% url new_object_url %}" class="btn btn-outline-info mb-3 mt-2 mr-auto">+ Nouveau...</a>

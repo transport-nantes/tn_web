@@ -5,6 +5,7 @@ from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
                      SendRecordTransactionalPress,
                      SendRecordTransactionalEmail,
                      SendRecordTransactionalAdHoc,
+                     TopicBlogWrapper,
                      )
 
 
@@ -50,6 +51,14 @@ class TopicBlogMailingListPitchAdmin(admin.ModelAdmin):
     search_fields = ("title", "slug", "mailing_list")
 
 
+class TopicBlogWrapperAdmin(admin.ModelAdmin):
+    readonly_fields = ('pk',)
+
+    list_display = ("slug", "underlying_slug", "publication_date")
+    list_filter = ('slug', 'underlying_slug')
+    search_fields = ('slug', 'underlying_slug')
+
+
 admin.site.register(TopicBlogItem, TopicBlogItemAdmin)
 admin.site.register(TopicBlogEmail, TopicBlogEmailAdmin)
 admin.site.register(TopicBlogPress, TopicBlogPressAdmin)
@@ -60,3 +69,4 @@ admin.site.register(SendRecordMarketingPress, SendRecordMarketingPressAdmin)
 admin.site.register(SendRecordTransactionalEmail)
 admin.site.register(SendRecordTransactionalPress)
 admin.site.register(SendRecordTransactionalAdHoc)
+admin.site.register(TopicBlogWrapper, TopicBlogWrapperAdmin)

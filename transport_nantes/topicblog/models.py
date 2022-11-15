@@ -148,6 +148,10 @@ class TopicBlogObjectBase(models.Model):
     listall_object_url = None
     viewbyslug_object_url = None
     viewbypkid_object_url = None
+    viewbypkid_only_object_url = None
+    edit_object_url = None
+    editbypkid_object_url = None
+
     # The description is meant to be a really short string description
     # of what the object is supposed to render into.
     # e.g. a TopicBlogItem is a "Page de blog"
@@ -324,6 +328,8 @@ class TopicBlogObjectBase(models.Model):
                     fields.add('og_description')
                     fields.add('og_image')
                     continue
+                if field_name == "underlying_slug":
+                    fields.add("underlying_slug")
         return fields
 
     def is_moribund(self) -> bool:
@@ -381,6 +387,28 @@ class TopicBlogObjectBase(models.Model):
             if days_remaining > 0:
                 return days_remaining
             return 0
+
+    def get_absolute_url(self):
+        """Provide a link to view this object (by slug and id).
+        """
+        if self.slug:
+            return reverse(self.viewbypkid_object_url,
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
+        else:
+            return reverse(self.viewbypkid_only_object_url,
+                           kwargs={"pkid": self.pk})
+
+    def get_edit_url(self):
+        """Provide a link to edit this object (by slug and id).
+        """
+        if not self.slug:
+            return reverse(self.editbypkid_object_url,
+                           kwargs={"pkid": self.pk})
+        else:
+            return reverse(self.edit_object_url,
+                           kwargs={"pkid": self.pk,
+                                   "the_slug": self.slug})
 
 
 class TopicBlogObjectSocialBase(TopicBlogObjectBase):
@@ -705,29 +733,11 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     listall_object_url = 'topicblog:list_items'
     viewbyslug_object_url = 'topicblog:view_item_by_slug'
     viewbypkid_object_url = 'topicblog:view_item_by_pkid'
+    viewbypkid_only_object_url = "topicblog:view_item_by_pkid_only"
+    edit_object_url = "topicblog:edit_item"
+    editbypkid_object_url = "topicblog:edit_item_by_pkid"
+
     description_of_object = 'Page de blog'
-
-    def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
-        if self.slug:
-            return reverse("topicblog:view_item_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
-        else:
-            return reverse("topicblog:view_item_by_pkid_only",
-                           kwargs={"pkid": self.pk})
-
-    def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
-        if not self.slug:
-            return reverse("topicblog:edit_item_by_pkid",
-                           kwargs={"pkid": self.pk})
-        else:
-            return reverse("topicblog:edit_item",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
 
     def get_participating_field_names(self) -> set:
         """
@@ -889,29 +899,11 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     viewbyslug_object_url = 'topicblog:view_email_by_slug'
     viewbypkid_object_url = 'topicblog:view_email_by_pkid'
     send_object_url = 'topicblog:send_email'
+    viewbypkid_only_object_url = "topicblog:view_email_by_pkid_only"
+    edit_object_url = "topicblog:edit_email"
+    editbypkid_object_url = "topicblog:edit_email_by_pkid"
+
     description_of_object = 'Email'
-
-    def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
-        if self.slug:
-            return reverse("topicblog:view_email_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
-        else:
-            return reverse("topicblog:view_email_by_pkid_only",
-                           kwargs={"pkid": self.pk})
-
-    def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
-        if not self.slug:
-            return reverse("topicblog:edit_email_by_pkid",
-                           kwargs={"pkid": self.pk})
-        else:
-            return reverse("topicblog:edit_email",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
 
     def get_participating_field_names(self) -> set:
         """
@@ -1084,30 +1076,12 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     listall_object_url = 'topicblog:list_press'
     viewbyslug_object_url = 'topicblog:view_press_by_slug'
     viewbypkid_object_url = 'topicblog:view_press_by_pkid'
+    viewbypkid_only_object_url = "topicblog:view_press_by_pkid_only"
+    edit_object_url = "topicblog:edit_press"
+    editbypkid_object_url = "topicblog:edit_press_by_pkid"
     send_object_url = 'topicblog:send_press'
+
     description_of_object = 'Communiqué de presse'
-
-    def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
-        if self.slug:
-            return reverse("topicblog:view_press_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
-        else:
-            return reverse("topicblog:view_press_by_pkid_only",
-                           kwargs={"pkid": self.pk})
-
-    def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
-        if not self.slug:
-            return reverse("topicblog:edit_press_by_pkid",
-                           kwargs={"pkid": self.pk})
-        else:
-            return reverse("topicblog:edit_press",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
 
     def get_participating_field_names(self) -> set:
         """
@@ -1270,29 +1244,11 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     listall_object_url = 'topicblog:list_launcher'
     viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
     viewbypkid_object_url = 'topicblog:view_launcher_by_pkid'
-    description_of_object = 'Lanceur'
+    viewbypkid_only_object_url = "topicblog:view_launcher_by_pkid_only"
+    edit_object_url = "topicblog:edit_launcher"
+    editbypkid_object_url = "topicblog:edit_launcher_by_pkid"
 
-    def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
-        if self.slug:
-            return reverse("topicblog:view_launcher_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
-        else:
-            return reverse("topicblog:view_launcher_by_pkid_only",
-                           kwargs={"pkid": self.pk})
-
-    def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
-        if not self.slug:
-            return reverse("topicblog:edit_launcher_by_pkid",
-                           kwargs={"pkid": self.pk})
-        else:
-            return reverse("topicblog:edit_launcher",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+    description_of_object = 'Carrés'
 
     def set_social_context(self, context):
         """We don't need this function here, but I don't see (today) an easy
@@ -1387,26 +1343,97 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
     viewbyslug_object_url = 'topicblog:view_mlp_by_slug'
     viewbyid_object_url = 'topicblog:view_mlp_by_pkid'
     viewbypkid_object_url = 'topicblog:view_mlp_by_pkid'
-    description_of_object = 'Pitch de mailing list'
+    viewbypkid_only_object_url = "topicblog:view_mlp_by_pkid_only"
+    edit_object_url = "topicblog:edit_mlp"
+    editbypkid_object_url = "topicblog:edit_mlp_by_pkid"
 
-    def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
-        if self.slug:
-            return reverse("topicblog:view_mlp_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
-        else:
-            return reverse("topicblog:view_mlp_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+    description_of_object = 'Inscriptions'
 
-    def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
+
+class TopicBlogWrapper(TopicBlogObjectSocialBase):
+
+    class Meta:
+        verbose_name_plural = "Topic blog wrappers"
+        permissions = (
+            ("tbw.may_view",
+             "May view the list of existing wrappers"),
+            ("tbw.may_edit",
+             "May create and edit TopicBlogWrapper"),
+            ("tbw.may_publish",
+             "May publish TopicBlogWrapper"),
+            ("tbw.may_publish_self",
+                "May publish own TopicBlogWrapper"),
+        )
+
+    class WrappedObjectsChoices(models.TextChoices):
+        """Choices for the wrapped object type.
         """
-        if not self.slug:
-            return reverse("topicblog:edit_mlp_by_pkid",
-                           kwargs={"pkid": self.pk})
-        else:
-            return reverse("topicblog:edit_mlp",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+        TBI = 'topicblogitem', 'Article de blog'
+        TBM = 'topicblogmailinglistpitch', 'Inscription'
+        TBE = 'topicblogemail', 'Mail'
+        TBP = 'topicblogpress', 'Communiqué de presse'
+
+    underlying_slug = models.SlugField(
+        max_length=300, allow_unicode=True, blank=True, null=True,
+        verbose_name="Slug sous-jacent")
+    original_model = models.CharField(max_length=200,
+                                      choices=WrappedObjectsChoices.choices,
+                                      default=WrappedObjectsChoices.TBI,
+                                      verbose_name="Type de contenu")
+
+    viewbyslug_object_url = 'topicblog:view_wrapper_by_slug'
+    new_object_url = 'topicblog:new_wrapper'
+    listall_object_url = 'topicblog:list_wrapper'
+    description_of_object = 'Wrapper pour les articles'
+    listone_object_url = 'topicblog:list_wrapper_by_slug'
+    viewbypkid_object_url = 'topicblog:view_wrapper_by_pkid'
+    viewbypkid_only_object_url = "topicblog:view_wrapper_by_pkid_only"
+    edit_object_url = "topicblog:edit_wrapper"
+    editbypkid_object_url = "topicblog:edit_wrapper_by_pkid"
+
+    # Configuration template
+    template_name = models.CharField(max_length=200, default="default")
+    template_config_default = {
+        "optional_fields_for_publication": (
+            # We can omit these fields and fallback to default
+            'twitter_title', 'twitter_description',
+            'twitter_image', 'og_title',
+            'og_description', 'og_image',
+        ),
+        # Fields that, if required for publication, the requirement is
+        # satisfied by providing any one of them.
+        "one_of_fields_for_publication": [
+        ],
+        # Dependent fields: if one in a group is provided, the others must
+        # be as well before we can publish.
+        "dependent_field_names": [
+        ],
+    }
+    template_config = {
+        'default': {
+            'default_choice': True,
+            'user_template_name': 'Article',
+            'active': True,
+            "fields": {
+                'slug': True,
+                'underlying_slug': True,
+                'social_media': True,
+            },
+            "optional_fields_for_publication":
+                template_config_default['optional_fields_for_publication'],
+            "one_of_fields_for_publication":
+                template_config_default['one_of_fields_for_publication'],
+            "dependent_field_names":
+                template_config_default['dependent_field_names'],
+        },
+    }
+
+    # Extra fields inherited but unused, turned to None to avoid
+    # confusion. These aren't added to DB table.
+    title = None
+    header_title = None
+    header_image = None
+    header_description = None
+
+    def __str__(self) -> str:
+        return f'{self.slug} | {self.underlying_slug} - {self.original_model}'

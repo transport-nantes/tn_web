@@ -26,7 +26,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, BaseFormView
 from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy, resolve
 from django.utils.html import strip_tags
 from django_ses.signals import (open_received, click_received,
                                 send_received)
@@ -41,15 +41,16 @@ from .models import (SendRecordTransactionalEmail,
                      TopicBlogEmail, TopicBlogMailingListPitch,
                      TopicBlogPress, TopicBlogLauncher,
                      SendRecordMarketingEmail, SendRecordMarketingPress,
-                     SendRecordTransactional)
+                     SendRecordTransactional, TopicBlogWrapper)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
                     TopicBlogMailingListPitchForm, TopicBlogPressForm,
-                    SendToSelfForm)
+                    SendToSelfForm, TopicBlogWrapperForm)
 
 # Doesn't actually import at runtime, it's for type hinting
 if TYPE_CHECKING:
     from .models import TopicBlogObjectBase
+    from django.views.generic import View
 
 
 logger = logging.getLogger("django")
@@ -104,6 +105,7 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
                 "slug", "subject", "title", "template_name", 'template',
                 "header_title", "header_description", "header_image",
                 "mailing_list", "article_slug", "campaign_name",
+                "underlying_slug", "original_model",
             ],
             "form_content_a": [
                 "body_text_1_md", "cta_1_slug", 'body_image',
@@ -1158,6 +1160,10 @@ class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     permission_required = 'topicblog.tbla.may_view'
 
 
+######################################################################
+# TopicBlogMailingListPitch
+
+
 class TopicBlogMailingListPitchView(TopicBlogBaseView):
     """View a published mailing list pitch."""
 
@@ -1204,6 +1210,262 @@ class TopicBlogMailingListPitchViewOne(
     """View a TBMailingListPitch by pk id."""
 
     model = TopicBlogMailingListPitch
+
+
+######################################################################
+# TopicBlogWrapper
+
+
+class TopicBlogWrapperEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
+    """Create a TBWrapper."""
+
+    model = TopicBlogWrapper
+    permission_required = 'topicblog.tbw.may_edit'
+    form_class = TopicBlogWrapperForm
+
+
+class TopicBlogWrapperView(TemplateView):
+    """Display a TBWrapper's underlying content.
+
+    Because TBWrappers do not have their own content, this view
+    simply displays the content of the underlying TB object.
+    """
+
+    model = None
+
+    def set_model(self, tb_wrapper: TopicBlogWrapper) -> None:
+        """Set self.model to the wrapped object original model class
+
+        e.g. TopicBlogItem, TopicBlogPress, TopicBlogEmail, etc.
+        """
+
+        self.model: Type['TopicBlogObjectBase'] = \
+            apps.get_model("topicblog", tb_wrapper.original_model)
+
+    def override_social_context(
+            self, tb_wrapper: TopicBlogWrapper, context: dict) -> dict:
+        """Override the social context for the wrapped object."""
+        social = {}
+        social['twitter_title'] = tb_wrapper.twitter_title
+        social['twitter_description'] = tb_wrapper.twitter_description
+        social['twitter_image'] = tb_wrapper.twitter_image
+
+        social['og_title'] = tb_wrapper.og_title
+        social['og_description'] = tb_wrapper.og_description
+        social['og_image'] = tb_wrapper.og_image
+
+        context['social'] = social
+
+        return context
+
+    def get_wrapped_object_viewbyslug_view_class(
+            self, tb_wrapper: TopicBlogWrapper) -> Type['View']:
+        """Return the the wrapped object's viewbyslug view class
+
+        The wrapped object has a custom get_context_data method in the
+        view that usually displays it, for example TopicBlogItems are displayed
+        by TopicBlogItemView, which defines a get_context_data method.
+
+        We return the class that displays the wrapped object so we can use
+        appropriate functions to set context.
+        """
+        if not self.model:
+            self.set_model(tb_wrapper)
+
+        # Get the path that usually displays the wrapped object by slug
+        wrapped_object_viewbyslug_url = (
+            reverse(self.model.viewbyslug_object_url,
+                    kwargs={"the_slug": tb_wrapper.underlying_slug})
+        )
+
+        # Resolve the path to a view class, e.g. TopicBlogItemView if the
+        # wrapped object is a TopicBlogItem
+        wrapped_object_viewbyslug_view = (
+            resolve(wrapped_object_viewbyslug_url).func.view_class
+        )
+
+        return wrapped_object_viewbyslug_view
+
+    def instantiate_view_class(
+            self, view_class: Type['View'], tb_wrapper: TopicBlogWrapper) -> 'View':
+        """Instantiate a view class with the request and kwargs
+
+        We need to instantiate the view class so we can use its
+        get_context_data method to set context.
+        """
+        view = view_class()
+        view.request = self.request
+        view.kwargs: dict = self.kwargs
+        # By default, the "the_slug" kwarg comes from URL, but we don't
+        # want to use the wrapper's slug, we want to use the underlying
+        # object's slug
+        view.kwargs.update({"the_slug": tb_wrapper.underlying_slug})
+        return view
+
+    def get_context_data(self, **kwargs):
+        tb_wrapper: TopicBlogWrapper = get_object_or_404(
+            TopicBlogWrapper,
+            slug=self.kwargs["the_slug"],
+        )
+        self.set_model(tb_wrapper)
+        # Get the view class that usually displays the wrapped object
+        viewbyslug_view_class = (
+            self.get_wrapped_object_viewbyslug_view_class(tb_wrapper)
+        )
+
+        # Instantiate the wrapped object's view class so we can use its
+        # get_context_data
+        view = self.instantiate_view_class(viewbyslug_view_class, tb_wrapper)
+        # Depending on the view, we fetch kwargs either in self.kwargs or
+        # in **kwargs. So we update both to not use the URL slug, but the
+        # underlying slug to make the queries in both cases.
+        context = viewbyslug_view_class.get_context_data(
+            view, the_slug=tb_wrapper.underlying_slug)
+        # The template name is defined in the wrapped object's view class
+        self.template_name = view.template_name
+        context = self.override_social_context(tb_wrapper, context)
+        return context
+
+
+class TopicBlogWrapperViewOnePermissions(PermissionRequiredMixin):
+    """Permission class for TopicBlogWrapperViewOne."""
+
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbw.may_edit')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbw.may_view')
+        return super().has_permission()
+
+
+class TopicBlogWrapperViewOne(
+        TopicBlogWrapperViewOnePermissions,
+        TopicBlogWrapperView):
+    """THIS IS A TEMP VIEW
+
+    This View isn't meant to be used this way, as it displays its
+    wrapped object's ViewOne, it has little to no point.
+
+    View a TBWrapper by pk id.
+
+    This view re-use parts of TopicBlogWrapperView with the difference that
+    we actually need to fetch the wrapped object to get its ID, as it's a
+    required parameter for the wrapped object's viewbyslug view class.
+    """
+
+    model = TopicBlogWrapper
+
+    def get_wrapped_object_viewbypkid_view_class(
+            self,
+            tb_wrapper: TopicBlogWrapper,
+            wrapped_object: Type['TopicBlogObjectBase']
+            ) -> Type['View']:
+        """Return the the wrapped object's viewbypkid view class
+
+        The wrapped object has a custom get_context_data method in the
+        view that usually displays it, for example TopicBlogItems are displayed
+        by TopicBlogItemView, which defines a get_context_data method.
+
+        We return the class that displays the wrapped object so we can use
+        appropriate functions to set context.
+        """
+        if not self.model:
+            self.set_model(tb_wrapper)
+
+        # Get the path that usually displays the wrapped object by pk id
+        wrapped_object_viewbypkid_url = (
+            reverse(
+                self.model.viewbypkid_object_url,
+                kwargs=(
+                    {
+                        "pkid": wrapped_object.pk,
+                        "the_slug": wrapped_object.slug
+                    }
+                )
+            )
+        )
+        # Resolve the path to a view class, e.g. TopicBlogItemView if the
+        # wrapped object is a TopicBlogItem
+        wrapped_object_viewbypkid_view = (
+            resolve(wrapped_object_viewbypkid_url).func.view_class
+        )
+
+        return wrapped_object_viewbypkid_view
+
+    def get_wrapped_object(self, tb_wrapper: TopicBlogWrapper) \
+            -> Type['TopicBlogObjectBase']:
+        """Return the wrapped object."""
+        if not self.model:
+            self.set_model(tb_wrapper)
+
+        # Get the wrapped object
+        try:
+            wrapped_object = self.model.objects.filter(
+                slug=tb_wrapper.underlying_slug,
+                publication_date__isnull=False
+            ).order_by("publication_date").last()
+        except ObjectDoesNotExist:
+            raise Http404("Page non trouvée")
+        if wrapped_object is None:
+            raise Http404("Page non trouvée")
+
+        return wrapped_object
+
+    def instantiate_view_class(
+            self,
+            view_class: Type['View'],
+            wrapped_object: Type['TopicBlogObjectBase']) -> 'View':
+        """Instantiate a view class with the request and kwargs
+
+        We need to instantiate the view class so we can use its
+        get_context_data method to set context.
+        """
+        view = view_class()
+        view.request = self.request
+        view.kwargs: dict = self.kwargs
+        # By default, the "the_slug"/"pkid" kwargs comes from URL, but we don't
+        # want to use the wrapper's slug/pkid, we want to use the underlying
+        # object's slug and pkid
+        view.kwargs.update(
+            {
+                "the_slug": wrapped_object.slug,
+                "pkid": wrapped_object.pk
+            }
+        )
+        return view
+
+    def get_context_data(self, **kwargs):
+        tb_wrapper: TopicBlogWrapper = get_object_or_404(
+            TopicBlogWrapper,
+            slug=self.kwargs["the_slug"],
+            id=self.kwargs["pkid"],
+        )
+        self.set_model(tb_wrapper)
+        wrapped_object = self.get_wrapped_object(tb_wrapper)
+        # Get the view class that usually displays the wrapped object
+        viewbypkid_view_class = (
+            self.get_wrapped_object_viewbypkid_view_class(tb_wrapper, wrapped_object)
+        )
+
+        # Instantiate the wrapped object's view class so we can use its
+        # get_context_data
+        view = self.instantiate_view_class(viewbypkid_view_class, wrapped_object)
+        # Depending on the view, we fetch kwargs either in self.kwargs or
+        # in **kwargs. So we update both to not use the URL slug, but the
+        # underlying slug to make the queries in both cases.
+        context = viewbypkid_view_class.get_context_data(
+            view, the_slug=tb_wrapper.underlying_slug, pkid=wrapped_object.pk)
+        # The template name is defined in the wrapped object's view class
+        self.template_name = view.template_name
+        context = self.override_social_context(tb_wrapper, context)
+        return context
+
+
+class TopicBlogWrapperList(PermissionRequiredMixin,
+                           TopicBlogBaseList):
+    model = TopicBlogWrapper
+    permission_required = 'topicblog.tbw.may_view'
 
 
 def beacon_view(response, **kwargs):
@@ -1394,7 +1656,7 @@ def mark_moribund_and_delete(slug_queryset):
             logger.info(f"Deleting object {tb_object.id}.")
             tb_object.delete()
         elif tb_object.is_moribund() and \
-             tb_object.scheduled_for_deletion_date is None:
+                tb_object.scheduled_for_deletion_date is None:
             logger.info(f"Marking as moribund object {tb_object.id}.")
             tb_object.scheduled_for_deletion_date = datetime.now(timezone.utc)
             tb_object.save()
