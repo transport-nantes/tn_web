@@ -1,9 +1,15 @@
-from datetime import date, datetime, timedelta, timezone
-from django.test import TestCase, Client
-from .models import TopicBlogEmail, TopicBlogPress, TopicBlogLauncher
-from .models import TopicBlogObjectBase as TBObject
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
 from django.contrib.auth.models import Permission, User
+from django.core.files.images import ImageFile
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase
 from django.urls import reverse
+
+from .models import TopicBlogEmail, TopicBlogLauncher
+from .models import TopicBlogObjectBase as TBObject
+from .models import TopicBlogPanel, TopicBlogPress
 
 
 class TBETest(TestCase):
@@ -1350,3 +1356,413 @@ class MoribundAndDelete(TestCase):
         self.assertTrue(self.moribund_email.is_moribund())
         self.assertTrue(self.deletable_email.is_moribund())
         self.assertFalse(self.email_ok.is_moribund())
+
+
+class TopicBlogPanelsViewsTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='testuser',
+        )
+
+        self.authorized_user = User.objects.create(
+            username='authorized_user',
+        )
+        may_view = Permission.objects.get(codename='tbpanel.may_view')
+        may_edit = Permission.objects.get(codename='tbpanel.may_edit')
+        may_publish = Permission.objects.get(codename='tbpanel.may_publish')
+        may_publish_self = Permission.objects.get(
+            codename='tbpanel.may_publish_self')
+        self.authorized_user.user_permissions.add(
+            may_view, may_edit,
+            may_publish, may_publish_self
+        )
+
+        self.authorized_user_client = Client()
+        self.authorized_user_client.force_login(self.authorized_user)
+
+        self.unauthorized_user = User.objects.create(
+            username='unauthorized_user',
+        )
+        self.no_permissions_client = Client()
+        self.no_permissions_client.force_login(self.unauthorized_user)
+
+        # Image that can be used to fake a file upload
+        THIS_DIR = Path(__file__).resolve().parent
+        FILE_PATH = THIS_DIR / 'test_data' / '300x300.png'
+        with open(FILE_PATH, 'rb') as f:
+            content = f.read()
+
+        self.uploaded_image = SimpleUploadedFile(
+            name='test_image.png',
+            content=content,
+            content_type='image/png'
+        )
+
+        FILE_PATH_2 = THIS_DIR / 'test_data' / '250x250.png'
+        # Image that can be used as an image in TBPanels
+        # No context manager used here, because the file must be open
+        # when the test is run. The file is closed in the tearDown method.
+        self.content_2 = open(FILE_PATH_2, 'rb')
+        self.image = ImageFile(self.content_2, name='250x250.png')
+
+        self.published_panel = TopicBlogPanel.objects.create(
+            title="Test Panel Title",
+            slug="test-panel",
+            body_text_1_md="**This is a published test panel.**",
+            body_image_1=self.image,
+            body_image_1_alt_text="Test image",
+            user=self.user,
+            template_name="topicblog/panel_did_you_know_tip_1.html",
+            publication_date=datetime.now(timezone.utc),
+            publisher=self.user,
+        )
+        self.unpublished_panel = TopicBlogPanel.objects.create(
+            title="Test Panel Title",
+            slug="test-panel",
+            body_text_1_md="**This is an unpublished panel.**",
+            user=self.user,
+            template_name="topicblog/panel_did_you_know_tip_1.html",
+        )
+        self.slugless_panel = TopicBlogPanel.objects.create(
+            title="Test Panel Title",
+            body_text_1_md="**This is a slugless panel.**",
+            user=self.user,
+            template_name="topicblog/panel_did_you_know_tip_1.html",
+        )
+
+        # Anonymous users are invited to log in and from there, you
+        # land either on 403 Forbidden or 200 OK depending on the
+        # user's permissions.
+        self.perm_needed_responses = [
+            {"client": self.client, "code": 302,
+             "msg": "Anonymous users are redirected to login."},
+            {"client": self.authorized_user_client, "code": 200,
+             "msg": ("Logged in users with proper permissions can have "
+                     "access to this page.")},
+            {"client": self.no_permissions_client, "code": 403,
+             "msg": ("Logged in users without proper permissions can't have "
+                     "access to this page.")},
+        ]
+        self.no_perm_needed_responses = [
+            {"client": self.client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."},
+            {"client": self.authorized_user_client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."},
+            {"client": self.no_permissions_client, "code": 200,
+             "msg": "The page must return 200 independently of permissions."}
+        ]
+
+    def tearDown(self):
+        self.content_2.close()
+
+    def test_view_panel_by_slug(self):
+        """Test that the panel view returns the correct panel."""
+        url = reverse(
+            "topicblog:view_panel_by_slug",
+            kwargs={"the_slug": "test-panel"}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is a published test panel.")
+
+        # We now publish the unpublished panel and check that it is visible
+        self.unpublished_panel.publish()
+        self.unpublished_panel.save()
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is an unpublished panel.")
+
+        # Test that the panel view returns 404 for a bad slug.
+        url = reverse(
+            "topicblog:view_panel_by_slug",
+            kwargs={"the_slug": "bad-slug"}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_view_panel_by_pkid_only(self):
+        """Test that the panel ViewOne returns the correct panel."""
+        url = reverse(
+            "topicblog:view_panel_by_pkid_only",
+            kwargs={"pkid": self.slugless_panel.id}
+        )
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+            if response.status_code == 200:
+                self.assertContains(response, self.slugless_panel.title)
+
+        # Test that the panel view returns 404 for a bad pkid.
+        url = reverse(
+            "topicblog:view_panel_by_pkid_only",
+            kwargs={"pkid": 999999999}
+        )
+        response = self.authorized_user_client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+        # Test status code for panels with slug
+        url = reverse(
+            "topicblog:view_panel_by_pkid_only",
+            kwargs={"pkid": self.published_panel.id}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_view_panel_by_pkid(self):
+        """Test that the panel ViewOne returns the correct panel."""
+        url = reverse(
+            "topicblog:view_panel_by_pkid",
+            kwargs={
+                "pkid": self.published_panel.id,
+                "the_slug": "test-panel"
+            }
+        )
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+            if response.status_code == 200:
+                self.assertContains(response, self.published_panel.title)
+
+        # Test that the panel view returns 404 for a bad pkid.
+        url = reverse(
+            "topicblog:view_panel_by_pkid",
+            kwargs={"pkid": 999999999, "the_slug": "test-panel"}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_new_panel_get(self):
+        """Test that the new_panel url is reachable."""
+        url = reverse("topicblog:new_panel")
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+    def test_new_panel_post(self):
+        """Test that new_panel url POST creates TBPanels."""
+        url = reverse("topicblog:new_panel")
+
+        form_data = {
+            "slug": "test-panel-2",
+            "title": "Test Panel Title (post)",
+            "body_text_1_md": "**POST**",
+            "template_name": "topicblog/panel_did_you_know_tip_1.html",
+        }
+
+        response = self.authorized_user_client.post(url, form_data)
+        created_panel = TopicBlogPanel.objects.last()
+        self.assertEqual(created_panel.title, form_data["title"])
+        self.assertEqual(created_panel.body_text_1_md,
+                         form_data["body_text_1_md"])
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, created_panel.get_absolute_url())
+
+        response = self.no_permissions_client.post(url, form_data)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("authentication:login") + "?next=" + url)
+
+    def test_edit_panel_by_pkid_get(self):
+        """Test that we can edit slugless panels."""
+        url = reverse(
+            "topicblog:edit_panel_by_pkid",
+            kwargs={"pkid": self.slugless_panel.id}
+        )
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+        # Test that the panel view returns 404 for a bad pkid.
+        url = reverse(
+            "topicblog:edit_panel_by_pkid",
+            kwargs={"pkid": 999999999}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        # Test that the panel view returns 40X for a panel with a slug
+        # or redirects to login if not logged in.
+        url = reverse(
+            "topicblog:edit_panel_by_pkid",
+            kwargs={"pkid": self.published_panel.id}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.no_permissions_client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("authentication:login") + "?next=" + url)
+
+    def test_edit_panel_by_pkid_post(self):
+        url = reverse(
+            "topicblog:edit_panel_by_pkid",
+            kwargs={"pkid": self.slugless_panel.id}
+        )
+
+        form_data = {
+            "title": "Test Panel Title slugless (post)",
+            "body_text_1_md": "**POST**",
+            "template_name": "topicblog/panel_did_you_know_tip_1.html",
+        }
+
+        response = self.authorized_user_client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            TopicBlogPanel.objects.last().get_absolute_url())
+
+        response = self.no_permissions_client.post(url, form_data)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("authentication:login") + "?next=" + url)
+
+    def test_edit_panel_get(self):
+        """Test edit_panel GET"""
+        url = reverse(
+            "topicblog:edit_panel",
+            kwargs={
+                "pkid": self.published_panel.id,
+                "the_slug": "test-panel"
+            }
+        )
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+        # Test that the panel view returns 404 for a bad pkid.
+        url = reverse(
+            "topicblog:edit_panel",
+            kwargs={"pkid": 999999999, "the_slug": "test-panel"}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        # Test that the panel view returns 40X for a panel without a slug
+        # or redirects to login if not logged in.
+        url = reverse(
+            "topicblog:edit_panel",
+            kwargs={"pkid": self.slugless_panel.id, "the_slug": "test-panel"}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.no_permissions_client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("authentication:login") + "?next=" + url)
+
+    def test_edit_panel_post(self):
+        """Test edit_panel POST"""
+        url = reverse(
+            "topicblog:edit_panel",
+            kwargs={
+                "pkid": self.published_panel.id,
+                "the_slug": self.published_panel.slug
+            }
+        )
+
+        form_data = {
+            "title": "Test Panel Title (post)",
+            "body_text_1_md": "**POST (edit)**",
+            "template_name": "topicblog/panel_did_you_know_tip_1.html",
+            "body_image_1": self.uploaded_image,
+            "body_image_1_alt_text": "Test Image Alt Text",
+        }
+
+        response = self.authorized_user_client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        last_panel = TopicBlogPanel.objects.last()
+        self.assertEqual(
+            response.url,
+            last_panel.get_absolute_url())
+        self.assertEqual(last_panel.title, form_data["title"])
+        self.assertEqual(last_panel.body_text_1_md,
+                         form_data["body_text_1_md"])
+        self.assertEqual(last_panel.template_name, form_data["template_name"])
+        # Because the uploaded image is converted from SimpleUploadedFile
+        # to ImageField, the image name is different,
+        # and class is also different. Best we can do to check image persistence
+        # is to check that the image changed, and isn't None.
+        self.assertNotEqual(last_panel.body_image_1, None)
+        self.assertNotEqual(last_panel.body_image_1, self.image)
+
+        response = self.no_permissions_client.post(url, form_data)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("authentication:login") + "?next=" + url)
+
+    def test_edit_panel_by_slug_get(self):
+        """Test edit_panel_by_slug GET"""
+        url = reverse(
+            "topicblog:edit_panel_by_slug",
+            kwargs={"the_slug": "test-panel"}
+        )
+
+        # Testing status codes for valid urls
+        for user_type in self.perm_needed_responses:
+            response = user_type["client"].get(url)
+            self.assertEqual(
+                response.status_code, user_type["code"],
+                user_type["msg"]
+            )
+
+        # If a bad slug is provided, the form is equivalennt to a new panel
+        url = reverse(
+            "topicblog:edit_panel_by_slug",
+            kwargs={"the_slug": "bad-slug"}
+        )
+        response = self.authorized_user_client.get(url)
+        self.assertEqual(response.status_code, 200)
+

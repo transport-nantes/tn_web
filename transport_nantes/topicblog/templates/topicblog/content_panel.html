@@ -1,0 +1,7 @@
+{% extends 'topicblog/base_topicblog.html' %}
+{% load panels %}
+{# Default template for TopicBlogPanel's ViewOne #}
+
+{% block app_content %}
+    {% panel page.slug is_preview=True %}
+{% endblock app_content %}
