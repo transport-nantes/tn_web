@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import ModelForm
 from .models import (TopicBlogItem, TopicBlogLauncher,
-                     TopicBlogEmail, TopicBlogMailingListPitch, TopicBlogPress)
+                     TopicBlogEmail, TopicBlogMailingListPitch,
+                     TopicBlogPanel, TopicBlogPress)
 from mailing_list.models import MailingList
 
 
@@ -125,6 +126,16 @@ class TopicBlogPressForm(ModelFormTemplateList):
 
     class Meta:
         model = TopicBlogPress
+        # Admins can still edit those values
+        exclude = ('first_publication_date', 'publisher', 'user',
+                   'publication_date', 'scheduled_for_deletion_date')
+
+
+class TopicBlogPanelForm(ModelFormTemplateList):
+    """Generates a form to create and edit TopicBlogPanel objects."""
+
+    class Meta:
+        model = TopicBlogPanel
         # Admins can still edit those values
         exclude = ('first_publication_date', 'publisher', 'user',
                    'publication_date', 'scheduled_for_deletion_date')

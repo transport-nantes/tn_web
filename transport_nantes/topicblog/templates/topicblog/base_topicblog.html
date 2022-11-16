@@ -21,7 +21,7 @@ Maybe there's a better way, I just haven't found it yet.
 		<p>
 			{% block tb_admin_button_row %}
 				<a type="button" class="btn btn-outline-info btn-sm"
-				href="{% url page.listone_object_url page.slug|default:'--sans-slug--' %}">Liste</a>
+				href="{% url page.listone_object_url page.slug|default:'--sans-slug--' %}?from={{request.GET.active}}">Liste</a>
 				{% if page.publication_date %}
 					
 					{% if page.id == served_object.id %}

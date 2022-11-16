@@ -159,6 +159,35 @@ topicblogmailinglistpitch_urls = [
          views.TopicBlogMailingListPitchList.as_view(),
          name='list_mlp_by_slug'),
 ]
+topicblogpanel_urls = [
+    path('panel/<slug:the_slug>/',
+         views.TopicBlogPanelView.as_view(),
+         name='view_panel_by_slug'),
+    path("admin/panel/view/<int:pkid>/",
+         views.TopicBlogPanelViewOne.as_view(),
+         name="view_panel_by_pkid_only"),
+    path("admin/panel/view/<int:pkid>/<slug:the_slug>/",
+         views.TopicBlogPanelViewOne.as_view(),
+         name="view_panel_by_pkid"),
+    path("admin/panel/new/",
+         views.TopicBlogPanelEdit.as_view(),
+         name="new_panel"),
+    path("admin/panel/edit/<int:pkid>/",
+         views.TopicBlogPanelEdit.as_view(),
+         name="edit_panel_by_pkid"),
+    path("admin/panel/edit/<int:pkid>/<slug:the_slug>/",
+         views.TopicBlogPanelEdit.as_view(),
+         name="edit_panel"),
+    path("admin/panel/edit/<slug:the_slug>/",
+         views.TopicBlogPanelEdit.as_view(),
+         name="edit_panel_by_slug"),
+    path("admin/panel/list/",
+         views.TopicBlogPanelList.as_view(),
+         name="list_panel"),
+    path("admin/panel/list/<slug:the_slug>/",
+         views.TopicBlogPanelList.as_view(),
+         name="list_panel_by_slug"),
+]
 ajax_urls = [
     path('ajax/get-slug-dict/',
          views.get_slug_dict,
@@ -186,6 +215,7 @@ urlpatterns += (
     + topicblogpress_urls
     + topicbloglauncher_urls
     + topicblogmailinglistpitch_urls
+    + topicblogpanel_urls
     + ajax_urls
     + mail_sending_urls
 )

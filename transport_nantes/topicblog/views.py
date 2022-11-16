@@ -38,13 +38,13 @@ from mailing_list.models import MailingList
 
 from .models import (SendRecordTransactionalEmail,
                      SendRecordTransactionalPress, TopicBlogItem,
-                     TopicBlogEmail, TopicBlogMailingListPitch,
+                     TopicBlogEmail, TopicBlogMailingListPitch, TopicBlogPanel,
                      TopicBlogPress, TopicBlogLauncher,
                      SendRecordMarketingEmail, SendRecordMarketingPress,
                      SendRecordTransactional)
 from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
                     TopicBlogLauncherForm, TopicBlogEmailForm,
-                    TopicBlogMailingListPitchForm, TopicBlogPressForm,
+                    TopicBlogMailingListPitchForm, TopicBlogPanelForm, TopicBlogPressForm,
                     SendToSelfForm)
 
 # Doesn't actually import at runtime, it's for type hinting
@@ -80,13 +80,16 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
         slug = self.kwargs.get('the_slug', '')
         if pk_id > 0:
             tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
-            kwargs["form"] = kwargs.get(
-                "form",
-                self.form_class(instance=tb_object))
-            context = super().get_context_data(**kwargs)
         else:
-            tb_object = self.model()
-            context = super().get_context_data(**kwargs)
+            tb_object = self.model.objects.filter(
+                slug=slug).order_by('-publication_date').first()
+            if not tb_object:
+                tb_object = self.model()
+
+        kwargs["form"] = kwargs.get(
+            "form",
+            self.form_class(instance=tb_object))
+        context = super().get_context_data(**kwargs)
         context['tb_object'] = tb_object
         context["slug_fields"] = tb_object.get_slug_fields()
         context["model_name"] = self.model.__name__
@@ -196,10 +199,11 @@ class TopicBlogBaseView(TemplateView):
 
         # The template is set in the model, it's a str referring to an
         # existing template in the app.
-        self.template_name = tb_object.template_name
+        if not self.template_name:
+            self.template_name = tb_object.template_name
         context['page'] = tb_object
-        tb_object: self.model  # Type hint for linter
-        context = tb_object.set_social_context(context)
+        if hasattr(tb_object, "set_social_context"):
+            context = tb_object.set_social_context(context)
 
         return context
 
@@ -228,20 +232,22 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
 
         # We check that the object's template is valid and configured, or
         # raise a 500 error.
-        if tb_object.template_name in tb_object.template_config:
-            self.template_name = tb_object.template_name
-        else:
-            logger.error(
-                f"Current template ({tb_object.template_name}) is not configured.")
-            logger.debug(f"Template config: {tb_object.template_config}"
-                         f"\nTemplate name: {tb_object.template_name}"
-                         f"\nObject ID : {tb_object.id}"
-                         f"\nObject class : {tb_object.__class__.__name__}")
-            raise ImproperlyConfigured(
-                f"Template {tb_object.template_name} is not configured")
+        if not self.template_name:
+            if tb_object.template_name in tb_object.template_config:
+                self.template_name = tb_object.template_name
+            else:
+                logger.error(
+                    f"Current template ({tb_object.template_name}) is not configured.")
+                logger.debug(f"Template config: {tb_object.template_config}"
+                            f"\nTemplate name: {tb_object.template_name}"
+                            f"\nObject ID : {tb_object.id}"
+                            f"\nObject class : {tb_object.__class__.__name__}")
+                raise ImproperlyConfigured(
+                    f"Template {tb_object.template_name} is not configured")
 
         context['page'] = tb_object
-        context = tb_object.set_social_context(context)
+        if hasattr(tb_object, "set_social_context"):
+            context = tb_object.set_social_context(context)
         context['topicblog_admin'] = True
         context["base_model"] = self.model.__name__.lower()
 
@@ -1204,6 +1210,88 @@ class TopicBlogMailingListPitchViewOne(
     """View a TBMailingListPitch by pk id."""
 
     model = TopicBlogMailingListPitch
+
+
+class TopicBlogPanelView(TopicBlogBaseView):
+    """This view is a bit curious.  In real life, TBPanel's will be
+    inserted into pages via a templatetag.  But for the purpose of
+    editing and viewing them, we need a single page that displays
+    them.  That is this page.
+
+    """
+    model = TopicBlogPanel
+    template_name = "topicblog/template_tags/panel.html"
+
+
+class TopicBlogPanelEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
+    """Edit a TBPanel."""
+
+    model = TopicBlogPanel
+    permission_required = 'topicblog.tbpanel.may_edit'
+    form_class = TopicBlogPanelForm
+
+    def form_post_process(self, tb_item, tb_existing, form):
+        """
+        Perform any post-processing of the form.
+        Following args are defined in TopicBlogEditBase.form_valid()
+
+            tb_item : Item created from the form's POST
+
+            tb_existing : Item retrieved from the database if we are
+            editing an existing item. None otherwise.
+
+            form : form from request.POST
+        """
+
+        # If we are editing an existing item, the ImageField values
+        # won't be copied over -- they aren't included in the rendered
+        # form.  Checking the "clear" box in the form will still clear
+        # the image fields if needed.
+        pkid = self.kwargs.get('pkid', -1)
+        if pkid > 0:
+            image_fields = tb_existing.get_image_fields()
+            for field in image_fields:
+                if field in form.cleaned_data and \
+                        form.cleaned_data[field] is None:
+                    setattr(tb_item, field, getattr(tb_existing, field))
+
+        # template field being set in the ModelForm it needs to be specifically
+        # set here before saving.
+        tb_item.template_name = form.cleaned_data["template_name"]
+
+        return tb_item
+
+
+class TopicBlogPanelViewOnePermissions(PermissionRequiredMixin):
+    """Custom Permission class to require different permissions
+    depending on whether the user is requesting a GET or a POST.
+
+    Default behaviour is at class level and doesn't allow a
+    per-method precision.
+    """
+
+    def has_permission(self) -> bool:
+        user = self.request.user
+        if self.request.method == 'POST':
+            return user.has_perm('topicblog.tbpanel.may_publish')
+        elif self.request.method == 'GET':
+            return user.has_perm('topicblog.tbpanel.may_view')
+        return super().has_permission()
+
+
+class TopicBlogPanelViewOne(TopicBlogPanelViewOnePermissions,
+                            TopicBlogBaseViewOne):
+    """View a TBPanel by pk id."""
+
+    model = TopicBlogPanel
+    template_name = "topicblog/content_panel.html"
+
+
+class TopicBlogPanelList(PermissionRequiredMixin, TopicBlogBaseList):
+    """List available TBPanels."""
+
+    model = TopicBlogPanel
+    permission_required = 'topicblog.tbpanel.may_view'
 
 
 def beacon_view(response, **kwargs):
