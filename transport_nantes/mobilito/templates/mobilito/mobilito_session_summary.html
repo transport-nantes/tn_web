@@ -47,7 +47,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                             <a class="dropdown-item" href="#"
-                            {% if user_has_reported_this_session %}
+                            {% if user_has_reported_this_session or request.user == mobilito_session.user.user %}
                                 style="pointer-events: none; color: grey;"
                             {% endif %}
                             >
@@ -66,6 +66,10 @@
                                             Signaler
                                         </span>
                                     {% endif %}
+                                {% else %}
+                                    <span>
+                                        Signaler
+                                    </span>
                                 {% endif %}
                             </a>
 
