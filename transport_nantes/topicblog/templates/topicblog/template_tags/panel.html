@@ -1,1 +1,21 @@
-{% include page.template_name %}
+{% if not render_as_email %}
+    {# web rendering #}
+    {% include page.template_name %}
+{% else %}
+{% comment "Email rendering" %}
+Because we can't use a panel.template_config[panel.template_name]
+in Jinja templates, I came up with this for-loop to get the
+email template : It iterates over panel.template_config dict to find
+its current template and extract the email template from it
+by re-looping over its result.
+{% endcomment %}
+    {% for template_name, template_params in page.template_config.items %}
+        {% if template_name == page.template_name %}
+            {% for param, value in template_params.items %}
+                {% if param == "email_template" %}
+                    {% include value %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}

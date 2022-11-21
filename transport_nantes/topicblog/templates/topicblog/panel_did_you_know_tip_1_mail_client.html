@@ -1,0 +1,25 @@
+{% load markdown %}
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<div style="display:flex;flex-direction:row;">
+    <div style="display:flex;background-color:#5BC2E7;min-width:4px;margin-right:10px;"></div>
+    {% if page.body_image_1|length > 0 %}
+        <img
+            src="{{ page.body_image_1.url }}"
+            alt="{{ page.body_image_1_alt_text }}"
+            style="max-width: 10vw;
+            max-height: 15vh;
+            object-fit: contain;
+            margin: auto 0;
+            margin-right: 10px;
+            "
+            id="tip-image">
+    {% endif %}
+    <div>
+        <h1 style="font-size:1.5em;font-weight:600;display:block;">
+            {{ page.title }}
+        </h1>
+        <p style="font-size:12px;display:block;">
+            {% tn_markdown page.body_text_1_md %}
+        </p>
+    </div>
+</div>
