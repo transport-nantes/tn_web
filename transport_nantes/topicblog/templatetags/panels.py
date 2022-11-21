@@ -1,6 +1,7 @@
 from django import template
 from topicblog.models import TopicBlogPanel
 import logging
+from topicblog.views import k_render_as_email
 
 register = template.Library()
 
@@ -16,4 +17,7 @@ def panel(context: dict, slug: str, is_preview=False):
             slug__iexact=slug).order_by("-publication_date").first()
     if panel is None:
         logger.error(f"panel failed to find slug: \"{slug}\".")
-    return {'page': panel}
+    return {
+        'page': panel,
+        "render_as_email": k_render_as_email in context,
+    }
