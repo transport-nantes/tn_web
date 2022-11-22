@@ -296,7 +296,10 @@ class RecordingView(LoginRequiredMixin, TemplateView):
         request.session['number_of_public_transports'] = \
             number_of_public_transports
 
-        return HttpResponseRedirect(reverse('mobilito:thanks'))
+        return HttpResponseRedirect(
+            reverse('mobilito:mobilito_session_summary',
+                    kwargs={'session_sha1': mobilito_session.session_sha1})
+        )
 
 
 class ThankYouView(TemplateView):
