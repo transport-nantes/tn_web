@@ -6,6 +6,17 @@
 {% block styles %}
     {{block.super}}
     <link rel="stylesheet" href="{% static 'mobilito/css/session_summary.css' %}">
+
+    {# Leaflet JS #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+    {# Leaflet JS locate control #}
+    <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    {# Leaflet JS geocoder control #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
 {% endblock styles %}
 
 {% block scripts %}
@@ -16,6 +27,24 @@
           defer>
         </script>
     {% endcompress %}
+
+    {% if mobilito_session.latitude and mobilito_session.longitude %}
+        {# Leaflet JS #}
+        <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""></script>
+
+        <script type="text/javascript">
+            // Initializing the map
+            var map = L.map('map').setView([{{ mobilito_session.latitude}}, {{ mobilito_session.longitude }}], 16);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            L.marker([{{ mobilito_session.latitude}}, {{ mobilito_session.longitude }}]).addTo(map)
+        </script>
+    {% endif %}
+
 {% endblock scripts %}
 
 {% block app_content %}
@@ -38,49 +67,59 @@
             et {{ mobilito_session.public_transport_count|default:"0" }} transports collectifs.
         </p>
 
+        <style>
+            #map {
+                margin-bottom: 1em;
+                height: 300px;
+                width: 100%;
+                border: 1px solid black;
+                border-radius: 10px;
+                color: black;
+            }
+        </style>
 
-	<p>
-            {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
-                    <div class="dropdown show">
-                        <a href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa-solid fa-ellipsis ml-md-3"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#"
-                            {% if user_has_reported_this_session or request.user == mobilito_session.user.user %}
-                                style="pointer-events: none; color: grey;"
-                            {% endif %}
-                            >
-                                {% if request.user != mobilito_session.user.user %}
-                                    {% if user_has_reported_this_session %}
-                                        <span id="reported">
-                                            Session signalée
-                                        </span>
-                                    {% else%}
-                                        <span id="reported" class="d-none"
-                                        style="color: grey;">
-                                            Session signalée
-                                        </span>
-                                        <span id="report-abuse"
-                                        data-toggle="modal" data-target="#report-abuse-div">
-                                            Signaler
-                                        </span>
-                                    {% endif %}
-                                {% else %}
-                                    <span>
+        {% if mobilito_session.latitude and mobilito_session.longitude %}
+            <div id="map" class="col-10 col-md-8 col-lg-6 mx-auto"></div>
+        {% endif %}
+
+        {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
+                <div class="dropdown show">
+                    <a href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis ml-md-3"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#"
+                        {% if user_has_reported_this_session or request.user == mobilito_session.user.user %}
+                            style="pointer-events: none; color: grey;"
+                        {% endif %}
+                        >
+                            {% if request.user != mobilito_session.user.user %}
+                                {% if user_has_reported_this_session %}
+                                    <span id="reported">
+                                        Session signalée
+                                    </span>
+                                {% else%}
+                                    <span id="reported" class="d-none"
+                                    style="color: grey;">
+                                        Session signalée
+                                    </span>
+                                    <span id="report-abuse"
+                                    data-toggle="modal" data-target="#report-abuse-div">
                                         Signaler
                                     </span>
                                 {% endif %}
-                            </a>
+                            {% else %}
+                                <span>
+                                    Signaler
+                                </span>
+                            {% endif %}
+                        </a>
 
-                        </div>
                     </div>
-                    {% comment %} <i class="fa-solid fa-ellipsis ml-md-3"></i> {% endcomment %}
-            {% endwith %}
-	</p>
+                </div>
+        {% endwith %}
 
-        {% if request.user != mobilito_session.user.user %}
-        {% if not user_has_reported_this_session %}
+        {% if request.user != mobilito_session.user.user and not user_has_reported_this_session %}
             <div id="report-abuse-div"
             class="modal fade"
             tabindex="-1"
@@ -121,7 +160,6 @@
                     </div>
                 </div>
             </div>
-        {% endif %}
         {% endif %}
         
         
