@@ -24,32 +24,35 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform('[dog]((hat))'), '[dog]((hat))')
         self.assertEqual(self.parser.transform('[dog:cat]'), '[dog:cat]')
         self.assertEqual(self.parser.transform('[[hello'), '[[hello')
-        self.assertEqual(self.parser.transform('[[hello]]((goodbye))'), '[[hello]]((goodbye))')
-        self.assertEqual(self.parser.transform('[[hello:goodbye'), '[[hello:goodbye')
-        self.assertEqual(self.parser.transform('[[hello:goodbye]'), '[[hello:goodbye]')
+        self.assertEqual(self.parser.transform(
+            '[[hello]]((goodbye))'), '[[hello]]((goodbye))')
+        self.assertEqual(self.parser.transform(
+            '[[hello:goodbye'), '[[hello:goodbye')
+        self.assertEqual(self.parser.transform(
+            '[[hello:goodbye]'), '[[hello:goodbye]')
         self.assertEqual(self.parser.transform('dog [[hello:goodbye]] cat'),
                          'dog [[hello:goodbye]] cat')
 
     def test_bad_url(self):
         self.assertEqual(self.parser.transform(
             '[[action:Do something!]]((does-not-exist))'),
-                         don.action_button(reverse('topic_blog:view_item_by_slug',
-                                                   args=['does-not-exist']),
-                                           'Do something!'))
+            don.action_button(reverse('topic_blog:view_item_by_slug',
+                                      args=['does-not-exist']),
+                              'Do something!'))
 
     def test_buttons(self):
-        self.assertEqual(self.parser.transform('[[don:]]((give!))'), \
+        self.assertEqual(self.parser.transform('[[don:]]((give!))'),
                          don.bouton_don('give!'))
-        self.assertEqual(self.parser.transform('[[don:large]]((give!))'), \
+        self.assertEqual(self.parser.transform('[[don:large]]((give!))'),
                          don.bouton_don_lg('give!'))
-        self.assertEqual(self.parser.transform('[[don:adhésion]]((give!))'), \
+        self.assertEqual(self.parser.transform('[[don:adhésion]]((give!))'),
                          don.bouton_join('give!'))
         self.assertEqual(self.parser.transform(
-            '[[contact:Hello, World!]]((Je veux être bénévole))'), \
-                         don.contact_button('Hello, World!', 'Je veux être bénévole'))
-        self.assertEqual(self.parser.transform('[[don:fixed|1]]((give!))'), \
+            '[[contact:Hello, World!]]((Je veux être bénévole))'),
+            don.contact_button('Hello, World!', 'Je veux être bénévole'))
+        self.assertEqual(self.parser.transform('[[don:fixed|1]]((give!))'),
                          don.fixed_amount_donation_button(1, 'give!'))
-        self.assertEqual(self.parser.transform('[[don:fixed|5]]((give!))'), \
+        self.assertEqual(self.parser.transform('[[don:fixed|5]]((give!))'),
                          don.fixed_amount_donation_button(5, 'give!'))
 
     def test_news(self):
@@ -77,14 +80,16 @@ class TnLinkParserTest(TestCase):
         html = don.external_url(url, label)
         self.assertEqual(self.parser.transform(markdown), html)
 
-        markdown = 'dog [[externe:{label}]](({url})) cat'.format(label=label, url=url)
+        markdown = 'dog [[externe:{label}]](({url})) cat'.format(
+            label=label, url=url)
         html = 'dog ' + don.external_url(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
         self.parser = TNLinkParser({}, verbose=False)
         pdll = 'Pays de la Loire'
         pdll_url = 'https://dog/cat/horse'
-        markdown = '[[externe:{label}]](({url}))'.format(label=pdll, url=pdll_url)
+        markdown = '[[externe:{label}]](({url}))'.format(
+            label=pdll, url=pdll_url)
         html = don.external_url(pdll_url, pdll)
         self.assertEqual(self.parser.transform(markdown), html)
 
@@ -95,14 +100,16 @@ class TnLinkParserTest(TestCase):
         html = don.external_url_button(url, label)
         self.assertEqual(self.parser.transform(markdown), html)
 
-        markdown = 'dog [[EXTERNE:{label}]](({url})) cat'.format(label=label, url=url)
+        markdown = 'dog [[EXTERNE:{label}]](({url})) cat'.format(
+            label=label, url=url)
         html = 'dog ' + don.external_url_button(url, label) + ' cat'
         self.assertEqual(self.parser.transform(markdown), html)
 
         self.parser = TNLinkParser({}, verbose=False)
         pdll = 'Pays de la Loire'
         pdll_url = 'https://dog/cat/horse'
-        markdown = '[[EXTERNE:{label}]](({url}))'.format(label=pdll, url=pdll_url)
+        markdown = '[[EXTERNE:{label}]](({url}))'.format(
+            label=pdll, url=pdll_url)
         html = don.external_url_button(pdll_url, pdll)
         self.assertEqual(self.parser.transform(markdown), html)
 
@@ -127,17 +134,17 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform(markdown), html)
 
     def test_call_to_action(self):
-        self.assertEqual(self.parser.transform('[[cta:join us!]]((my_topic_name))'), \
+        self.assertEqual(self.parser.transform('[[cta:join us!]]((my_topic_name))'),
                          don.action_button(reverse(
                              'topic_blog:view_item_by_slug',
                              args=['my_topic_name']),
-                                           'join us!'))
+            'join us!'))
         # Deprecated version:
-        self.assertEqual(self.parser.transform('[[action:join us!]]((my_topic_name))'), \
+        self.assertEqual(self.parser.transform('[[action:join us!]]((my_topic_name))'),
                          don.action_button(reverse(
                              'topic_blog:view_item_by_slug',
                              args=['my_topic_name']),
-                                           'join us!'))
+            'join us!'))
 
     def test_two_buttons(self):
         button1 = '[[action:join us!]]((my_topic_name))'
@@ -146,6 +153,5 @@ class TnLinkParserTest(TestCase):
                                   'join us!')
         button2 = '[[don:adhésion]]((give!))'
         html2 = don.bouton_join('give!')
-        one = self.parser.transform(button1 + button2)
-        self.assertEqual(self.parser.transform(button1 + button2), \
+        self.assertEqual(self.parser.transform(button1 + button2),
                          html1 + html2)
