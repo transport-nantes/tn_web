@@ -1,5 +1,5 @@
 from django import template
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
 
 from mailing_list.forms import (FirstStepQuickMailingListSignupForm,
@@ -28,7 +28,7 @@ def show_mailing_list(context, **kwargs):
         initial={
             "mailinglist": mailinglist,
             "origin_url": context.get('request').build_absolute_uri()
-            })
+        })
     context['form'] = form
     return context
 
