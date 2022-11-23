@@ -11,6 +11,7 @@
     {{ block.super }}
     {% compress js %}
         <script src="{% static 'mobilito/js/plus_minus_buttons.js' %}" defer></script>
+        <script src="{% static 'mobilito/js/chronometer.js' %}" defer></script>
     {% endcompress %}
 {% endblock scripts %}
 
@@ -24,6 +25,10 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
             <i class="fa-solid fa-stop align-self-center mr-1"></i>
             <span>Terminer l'enregistrement<span>
         </button>
+    </div>
+
+    <div id="chrono" class="d-flex m-auto h1" style="font-feature-settings:'tnum';">
+        00:00:00
     </div>
 
     {# Recording area #}
