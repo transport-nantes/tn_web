@@ -4,29 +4,33 @@ let hours = 0;
 
 var chronometer = document.getElementById('chrono');
 var progressBar = document.getElementById('bar');
+var cheerTextElement = document.getElementById('cheer-text');
 
 var completedBarTime = 0;
 
 var FirstStage = {
-    duration: 5,
-    styles: () =>{return;}
+    duration: 60*3,
+    styles: () =>{return;},
+    cheerText: "Go !"
 }
 var SecondStage = {
-    duration: 3,
+    duration: 60*2,
     styles: () =>{
         $(".progress")[0].classList.add("bg-success");
         progressBar.classList.remove("bg-success");
         progressBar.classList.add("bg-warning");
-    }
+    },
+    cheerText: "Super ! Continuez comme ça !"
 }
 var ThirdStage = {
-    duration: 4,
+    duration: 60*5,
     styles: () =>{
         $(".progress")[0].classList.remove("bg-success");
         $(".progress")[0].classList.add("bg-warning");
         progressBar.classList.remove("bg-warning");
         progressBar.classList.add("bg-danger");
-    }
+    },
+    cheerText: "Vous êtes au top !"
 }
 
 var stages = [FirstStage, SecondStage, ThirdStage];
@@ -42,6 +46,7 @@ var goal = currentStage.duration;
 var applyStyles = () => {
     currentStage.styles();
 }
+cheerTextElement.textContent = currentStage.cheerText;
 
 const updateTime = () => {
     seconds = parseInt(seconds);
@@ -81,8 +86,10 @@ const updateProgressBar = (total_seconds) => {
     total_seconds -= completedBarTime;
     var progress = (total_seconds / goal) * 100;
 
-    progressBar.style.width = `${progress}%`;
-    applyStyles();
+    if (currentStage) {
+        progressBar.style.width = `${progress}%`;
+        applyStyles();
+    }
 
     if (progress >= 100) {
         if (currentStage) {
@@ -92,6 +99,7 @@ const updateProgressBar = (total_seconds) => {
         if (currentStage) {
             goal = currentStage.duration
             applyStyles = currentStage.styles;
+            cheerTextElement.textContent = currentStage.cheerText;
         }
     }
 }
