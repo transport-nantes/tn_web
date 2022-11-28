@@ -227,10 +227,8 @@ class TNLinkParser(object):
                 self.context,
                 'newsletter',
                 'show_mailing_list',
-                {"mailinglist": mailinglist_name,
-                 "title": description_text})
-            # Bug: this doesn't take into account the mailing list
-            # requested or the label we request.
+                **{"mailinglist": mailinglist_name,
+                   "title": description_text})
         elif 'panel' == self.bracket_class_string:
             self.out_string += render_inclusion_tag_to_html(
                 self.context,

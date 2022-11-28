@@ -1,12 +1,12 @@
-# from django.test import TestCase
-from django.conf import settings
+from django.http import HttpRequest
+from django.test import TestCase
 from django.urls import reverse
-from unittest import TestCase
 
 from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
 from .templatetags import slug
 from .tn_links import TNLinkParser, render_inclusion_tag_to_html
+
 
 class TnLinkParserTest(TestCase):
     def setUp(self):
@@ -52,14 +52,23 @@ class TnLinkParserTest(TestCase):
         self.assertEqual(self.parser.transform('[[don:fixed|5]]((give!))'), \
                          don.fixed_amount_donation_button(5, 'give!'))
 
-    ## Disabled due to captcha matching.
-    ## Think of better way to test [[news:*]]((...)).
-    #def test_news(self):
-    #    settings.csrf_token = 'some text that must exist'
-    #    self.assertEqual(self.parser.transform('[[news:kangaroo]]((aardvark))'), \
-    #                     render_inclusion_tag_to_html('newsletter',              \
-    #                                                  'show_mailing_list',       \
-    #                                                  {'mailinglist': 'kangaroo'}))
+    def test_news(self):
+        def mock_get_host():
+            return "127.0.0.1:8000"
+
+        http_request = HttpRequest()
+        http_request.get_host = mock_get_host
+        self.parser.context['request'] = http_request
+
+        self.assertEqual(
+            self.parser.transform('[[news:kangaroo]]((aardvark))'),
+            render_inclusion_tag_to_html(
+                {'request': http_request},
+                'newsletter',
+                'show_mailing_list',
+                **{'mailinglist': 'kangaroo', 'title': 'aardvark'},
+            )
+        )
 
     def test_external_url(self):
         url = 'my-url'
