@@ -1,0 +1,16 @@
+.vertical-line {
+    display: flex;
+    background-color:var(--mobilitains-bleu);
+    min-width: 4px;
+    margin-right: 10px;
+}
+.panel-left-img {
+    max-width: 10vw;
+    max-height: 15vh;
+    object-fit: contain;
+    margin-right: 10px;
+}
+.panel-text h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+}

@@ -1,6 +1,5 @@
 from enum import Enum, unique, auto
 
-from django.conf import settings
 from django.template import Template, Context
 from django.urls import reverse, NoReverseMatch
 
@@ -42,6 +41,10 @@ Some examples:
     [[don:fixed|1]]((text))    equivalent to {% fixed_amount_donation_button 1 "text" %}
 
     [[news:name]]((text))      equivalent to {% show_mailing_list name %}
+    [[panel:]]((slug))         equivalent to {% panel 'slug' %}
+                               The associated test is located in test_templatetags.py
+                               because it requires some setup that induces changes
+                               in how the rendering is done.
 
     [[slug:text]]((item_slug)) equivalent to [text](/tb/t/item_slug/)
     [[cta:text]]((item_slug))  CTA labeled [text] to (/tb/t/item_slug/)
@@ -64,12 +67,21 @@ functions in order to permit HTML on the output.
 """
 
 
-def render_inclusion_tag_to_html(context, tag_source, tag_name, kwargs):
+def render_inclusion_tag_to_html(context, tag_source, tag_name, *args, **kwargs):
     """Render an inclusion tag to a string.
     """
-    context['title'] = kwargs['title']
-    context['mailinglist'] = kwargs['mailinglist']
-    template_string = f"{{% load {tag_source} %}}{{% {tag_name} %}}"
+    context['title'] = kwargs.get('title')
+    context['mailinglist'] = kwargs.get('mailinglist')
+    context = Context(context)
+    args_list = ""
+    if args:
+        for arg in args:
+            args_list += f"'{arg}' "
+
+    template_string = (
+        f"{{% load {tag_source} %}}"
+        f"{{% {tag_name} {args_list} %}}"
+    )
     return Template(template_string).render(context)
 
 
@@ -219,6 +231,12 @@ class TNLinkParser(object):
                  "title": description_text})
             # Bug: this doesn't take into account the mailing list
             # requested or the label we request.
+        elif 'panel' == self.bracket_class_string:
+            self.out_string += render_inclusion_tag_to_html(
+                self.context,
+                'panels',
+                'panel',
+                self.paren_string)
         elif 'cta' == self.bracket_class_string or 'action' == self.bracket_class_string:
             # Deprecated "action:".
             try:

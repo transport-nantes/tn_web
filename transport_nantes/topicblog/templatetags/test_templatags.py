@@ -1,11 +1,10 @@
-from django.conf import settings
 from django.http import HttpRequest
 from django.template import Template, Context
 from django.test.client import RequestFactory
 from django.test import TestCase
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from topicblog.models import TopicBlogItem, TopicBlogLauncher
+from topicblog.models import TopicBlogItem, TopicBlogLauncher, TopicBlogPanel
 from datetime import datetime, timezone
 
 from topicblog.templatetags.markdown import tn_markdown
@@ -61,7 +60,8 @@ class TBEmailTemplateTagsTests(TestCase):
             <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
             background-color:#ffffff;text-align:center;">
                 <p>
-                    <a href="http://127.0.0.1:8000{slug}" class="btn donation-button btn-lg" 
+                    <a href="http://127.0.0.1:8000{slug}"
+                    class="btn donation-button btn-lg"
                     style="background-color: #5BC2E7;color:white;font-weight: 600;">
                         {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                     </a>
@@ -172,3 +172,49 @@ class TBItemTeaserTemplateTagsTests(TestCase):
         self.assertIn(title, rendered_template)
         self.assertIn(description, rendered_template)
         self.assertIn(text, rendered_template)
+
+
+class TestTopicBlogPanel(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(
+            username='testuser',
+        )
+        self.panel = TopicBlogPanel.objects.create(
+            title="Test Panel Title",
+            slug="test-panel",
+            body_text_1_md="**This is a test panel.**",
+            user=self.user,
+            template_name="topicblog/panel_did_you_know_tip_1.html"
+        )
+
+    def test_inclusion_tag(self):
+        """Check that the TBPanel is rendered with markdown using inclusion tag."""
+        template_string = """{% load panels %}{% panel "test-panel" %}"""
+        context = Context()
+        context["request"] = RequestFactory().get("/")
+        rendered = Template(
+            template_string=template_string).render(context=context)
+        self.assertIn("Test Panel Title", rendered)
+        self.assertIn("This is a test panel.", rendered)
+        self.assertIn("<strong>This is a test panel.</strong>", rendered)
+
+    def test_tn_markdown_synthax(self):
+        """Check that the TBPanel is rendered with markdown using tn_markdown.
+
+        This test isn't in test_tn_links.py because the use of panel requires
+        some setup : All panels aren't rendered the same, as they use
+        a property to set their template, that will in turn set their rendering.
+        """
+        template_string = (
+            """
+            {% load markdown %}
+            {% tn_markdown "[[panel:]]((test-panel))" %}
+            """
+        )
+        context = Context({"panel": self.panel})
+        rendered = Template(
+            template_string=template_string).render(context=context)
+        self.assertIn("Test Panel Title", rendered)
+        self.assertIn("This is a test panel.", rendered)
+        self.assertIn("<strong>This is a test panel.</strong>", rendered)
