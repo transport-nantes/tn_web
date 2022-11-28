@@ -3,6 +3,43 @@
 {% load static %}
 {% load compress %}
 
+
+{% block head %}
+    {{ block.super }}
+    {# https://panzi.github.io/SocialSharePrivacy/ #}
+    <script type="application/x-social-share-privacy-settings">
+        {
+            "path_prefix":"http://panzi.github.io/SocialSharePrivacy/",
+            "layout":"line",
+            "services":
+                {
+                    "buffer":{"status":false},
+                    "facebook":{"status":false},
+                    "fbshare": {"txt_info": 'Partager sur Facebook'},
+                    "delicious":{"status":false},
+                    "disqus":{"status":false},
+                    "flattr":{"status":false},
+                    "gplus":{"status":false},
+                    "hackernews":{"status":false},
+                    "linkedin":{"status":false},
+                    "mail":{"status":false},
+                    "pinterest":{"status":false},
+                    "reddit":{"status":false},
+                    "stumbleupon":{"status":false},
+                    "tumblr":{"status":false},
+                    "twitter":{
+                        "txt_info": `Partager sur Twitter.
+                        2 clics : Le premier active le bouton et envoie des informations à Twitter,
+                        le deuxième partage cette page`,
+                    },
+                    "xing":{"status":false}
+                },
+            "settings_perma":false,
+            "language":"fr"
+        }
+        </script>
+{% endblock head %}
+
 {% block styles %}
     {{block.super}}
     <link rel="stylesheet" href="{% static 'mobilito/css/session_summary.css' %}">
@@ -61,7 +98,7 @@
         </h1>
         <p>
             Lors de cette session, vous avez noté
-            {{ mobilito_session.pedestrian_count|default:"0" }} piétons, 
+            {{ mobilito_session.pedestrian_count|default:"0" }} piétons,
             {{ mobilito_session.bicycle_count|default:"0" }} vélos,
             {{ mobilito_session.motor_vehicle_count|default:"0" }} voitures et camions,
             et {{ mobilito_session.public_transport_count|default:"0" }} transports collectifs.
@@ -161,7 +198,21 @@
                 </div>
             </div>
         {% endif %}
-        
-        
+
+
     </article>
+    <div data-social-share-privacy='true' class="p-3"></div>
 {% endblock app_content %}
+
+{% block localscripts %}
+    <script type="text/javascript">
+        (function () {
+            var s = document.createElement('script');
+            var t = document.getElementsByTagName('script')[0];
+            s.type = 'text/javascript';
+            s.async = true;
+            s.src = 'https://panzi.github.io/SocialSharePrivacy/javascripts/jquery.socialshareprivacy.min.autoload.js';
+            t.parentNode.insertBefore(s, t);
+        })();
+    </script>
+{% endblock localscripts %}

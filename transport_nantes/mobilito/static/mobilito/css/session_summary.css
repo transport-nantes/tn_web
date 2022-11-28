@@ -13,3 +13,12 @@ a.dropdown-item {
  #dropdownMenuLink {
     color: var(--body-text);
 }
+.settings_info {
+    display: none !important;
+}
+li.help_info > div.info {
+    z-index: 99999 !important;
+}
+div.dummy_btn.tweet {
+    width: auto !important;
+}
