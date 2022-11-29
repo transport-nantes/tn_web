@@ -1,10 +1,19 @@
 from datetime import datetime, timezone
+import time
 
-from django.contrib.auth.models import User, Permission
-from django.test import TestCase, Client
-from django.urls import reverse_lazy, reverse
+from django.contrib.auth.models import Permission, User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import Client, TestCase
+from django.urls import reverse, reverse_lazy
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
-from .models import MobilitoSession, MobilitoUser, InappropriateFlag
+from .models import Event, InappropriateFlag, MobilitoSession, MobilitoUser
 from .views import TutorialState
 
 
@@ -174,3 +183,57 @@ class MobilitoSessionViewTests(TestCase):
         self.assertEqual(InappropriateFlag.objects.count(), 2,
                          ("No new report should be created when there isn't a"
                           " matching mobilitoSession."))
+
+
+class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
+    """Test the flag session page using Selenium."""
+
+    def setUp(self):
+        MobilitoSessionViewTests.setUp(self)
+        Event.objects.create(
+            mobilito_session=self.mobilito_session,
+            timestamp=datetime.now(),
+            event_type="ped"
+        )
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
+        self.browser = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
+
+        self.browser.implicitly_wait(5)
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_flag_session(self):
+        """Test the ability to flag a session."""
+        self.browser.get(self.live_server_url + self.mobilito_session_url)
+        self.browser.find_element(By.ID, 'dropdownMenuLink').click()
+        self.browser.find_element(By.ID, 'report-abuse').click()
+        self.browser.find_element(By.ID, 'report-abuse-text').send_keys(
+            "This is a test report.")
+        self.submit_button = self.browser.find_element(
+            By.CSS_SELECTOR, '#report-abuse-form button')
+
+        def click_until_button_is_ready(browser: webdriver.Chrome) -> bool:
+            """Click the submit button until it is ready.
+
+            The submit button is present but not ready to be used before
+            a little bit of time. This function will click the button
+            until it is ready.
+            """
+            callable = EC.invisibility_of_element_located(
+                (By.ID, 'report-abuse-form'))
+            modal_disappeared = callable(browser)
+            if not modal_disappeared:
+                self.submit_button.click()
+
+            return bool(modal_disappeared)
+
+        WebDriverWait(self.browser, 10).until(click_until_button_is_ready)
+
+        self.assertEqual(
+            InappropriateFlag.objects.count(), 1,
+            "An InappropriateFlag must be created")
