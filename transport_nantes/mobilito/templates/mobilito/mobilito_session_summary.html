@@ -48,6 +48,9 @@
 
 
 {% block app_content %}
+
+{# Used to get the session's sha1 in Javascript #}
+{{ mobilito_session.session_sha1|json_script:'mobilito_session_sha1'}}
 <div class="container">
     <div class="d-flex flex-wrap col-12">
         
