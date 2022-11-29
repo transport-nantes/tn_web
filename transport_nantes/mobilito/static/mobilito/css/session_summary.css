@@ -13,3 +13,11 @@ a.dropdown-item {
  #dropdownMenuLink {
     color: var(--body-text);
 }
+#map {
+    margin-bottom: 1em;
+    height: 300px !important;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 10px;
+    color: black;
+}

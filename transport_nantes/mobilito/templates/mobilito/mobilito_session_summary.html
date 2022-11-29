@@ -49,132 +49,127 @@
 
 {% block app_content %}
 <div class="container">
-    <div class="row">
-	<div class="col-lg-12">
-	    {# name of recorder, some day #}
-	    <p>{{ mobilito_session.start_timestamp|timesince:mobilito_session.end_timestamp }}
-		à partir de {{ mobilito_session.start_timestamp|timezone:'Europe/Paris'|date:"l j F Y à G:i" }}.
-	    </p>
-	    <p><b>{{ mobilito_session.location }}</b></p>
-
-        <style>
-            #map {
-                margin-bottom: 1em;
-                height: 300px;
-                width: 100%;
-                border: 1px solid black;
-                border-radius: 10px;
-                color: black;
-            }
-        </style>
-
+    <div class="d-flex flex-wrap col-12">
+        
+        {# Duration + Location #}
+        <p class="col-12">
+            {{ mobilito_session.start_timestamp|timesince:mobilito_session.end_timestamp }}
+            à partir de {{ mobilito_session.start_timestamp|timezone:'Europe/Paris'|date:"l j F Y à G:i" }}.
+            <br/>
+            <b><i class="fa-solid fa-crosshairs"></i> {{ mobilito_session.location }}</b>
+        </p>
+        
+        {# Map, if location has lat/lng #}
         {% if mobilito_session.latitude and mobilito_session.longitude %}
             <div id="map" class="col-10 col-md-8 col-lg-6 mx-auto"></div>
         {% endif %}
 
-	    <p>
-		<img src="{% url 'mobilito:mobilito_session_timeseries_image' mobilito_session.session_sha1 %}" alt="{{ mobilito_session.location }}" width="90%">
-	    </p>
-	</div>
-    </div>
-    <div class="row">
-	<div class="col-xs-3">
-	    <p>
-		<img src="{% url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}" alt="{{ mobilito_session.location }}" width="90%">
-	    </p>
+        {# Timeseries #}
+        <div style="overflow: auto;">
+            <img src="{% url 'mobilito:mobilito_session_timeseries_image' mobilito_session.session_sha1 %}"
+            alt="{{ mobilito_session.location }}"
+            width="90%"
+            style="min-width:600px;"
+            class="d-flex mx-auto"
+            >
         </div>
-	<div class="col-xs-9">
-	    <p>
-		<ul>
-		    <li> {{ mobilito_session.pedestrian_count|default:"0" }} piétons</li>
-		    <li> {{ mobilito_session.bicycle_count|default:"0" }} vélos</li>
-		    <li> {{ mobilito_session.motor_vehicle_count|default:"0" }} voitures et camions</li>
-		    <li> {{ mobilito_session.public_transport_count|default:"0" }}
-			transports collectifs</li>
-		</ul>
-	    </p>
-	</div>
+    
+        {# Pie chart with labels #}
+        <div class="d-flex flex-wrap col-10 mx-auto">
+            <img src="{% url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}"
+            alt="{{ mobilito_session.location }}"
+            width="90%"
+            class="col-10 col-md-8 mx-auto"
+            style="max-width:400px;"
+            >
+            <ul class="d-flex flex-column col-10 col-md-4 my-auto">
+                <li> {{ mobilito_session.pedestrian_count|default:"0" }} piétons</li>
+                <li> {{ mobilito_session.bicycle_count|default:"0" }} vélos</li>
+                <li> {{ mobilito_session.motor_vehicle_count|default:"0" }} voitures et camions</li>
+                <li> {{ mobilito_session.public_transport_count|default:"0" }}
+                transports collectifs</li>
+            </ul>
+        </div>
     </div>
-</div>
 
-        {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
-                <div class="dropdown show">
-                    <a href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis ml-md-3"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#"
-                        {% if user_has_reported_this_session or request.user == mobilito_session.user.user %}
-                            style="pointer-events: none; color: grey;"
-                        {% endif %}
-                        >
-                            {% if request.user != mobilito_session.user.user %}
-                                {% if user_has_reported_this_session %}
-                                    <span id="reported">
-                                        Session signalée
-                                    </span>
-                                {% else%}
-                                    <span id="reported" class="d-none"
-                                    style="color: grey;">
-                                        Session signalée
-                                    </span>
-                                    <span id="report-abuse"
-                                    data-toggle="modal" data-target="#report-abuse-div">
-                                        Signaler
-                                    </span>
-                                {% endif %}
-                            {% else %}
-                                <span>
-                                    Signaler
-                                </span>
-                            {% endif %}
-                        </a>
+    {# Dropdown menu #}
+    <div class="dropdown show">
+        <a href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis ml-md-3"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="#"
+            {% if user_has_reported_this_session or request.user == mobilito_session.user.user %}
+                style="pointer-events: none; color: grey;"
+            {% endif %}
+            >
+                {% if request.user != mobilito_session.user.user %}
+                    {% if user_has_reported_this_session %}
+                        <span id="reported">
+                            Session signalée
+                        </span>
+                    {% else%}
+                        <span id="reported" class="d-none"
+                        style="color: grey;">
+                            Session signalée
+                        </span>
+                        <span id="report-abuse"
+                        data-toggle="modal" data-target="#report-abuse-div">
+                            Signaler
+                        </span>
+                    {% endif %}
+                {% else %}
+                    <span>
+                        Signaler
+                    </span>
+                {% endif %}
+            </a>
+        </div>
+    </div>
 
+    {# Flag session modal #}
+    {% if request.user != mobilito_session.user.user and not user_has_reported_this_session %}
+        <div id="report-abuse-div"
+        class="modal fade"
+        tabindex="-1"
+        aria-labelledby="report-about-form-title"
+        aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="report-about-form-title">
+                            Signaler une session mobilito
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </div>
-        {% endwith %}
-
-        {% if request.user != mobilito_session.user.user and not user_has_reported_this_session %}
-            <div id="report-abuse-div"
-            class="modal fade"
-            tabindex="-1"
-            aria-labelledby="report-about-form-title"
-            aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="report-about-form-title">
-                                Signaler une session mobilito
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                    <div class="modal-body">
+                        <form id="report-abuse-form" method="post">
+                            {% csrf_token %}
+                            <input type="hidden"
+                                name="mobilito_session_id"
+                                value="{{ mobilito_session.id }}"/>
+                            <div class="form-group">
+                                <label for="report-abuse-text">
+                                    Raison du signalement
+                                </label>
+                                <textarea
+                                class="form-control"
+                                id="report-abuse-text"
+                                name="report-abuse-text"
+                                rows="3"></textarea>
+                            </div>
+                            <button type="submit"
+                                class="btn donation-button">
+                                Signaler
                             </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="report-abuse-form" method="post">
-                                {% csrf_token %}
-                                <input type="hidden"
-                                    name="mobilito_session_id"
-                                    value="{{ mobilito_session.id }}"/>
-                                <div class="form-group">
-                                    <label for="report-abuse-text">
-                                        Raison du signalement
-                                    </label>
-                                    <textarea
-                                    class="form-control"
-                                    id="report-abuse-text"
-                                    name="report-abuse-text"
-                                    rows="3"></textarea>
-                                </div>
-                                <button type="submit"
-                                    class="btn donation-button">
-                                    Signaler
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        {% endif %}
-    </article>
+        </div>
+    {% endif %}
+
+</div>
 {% endblock app_content %}
