@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.font_manager as font_manager
 import matplotlib.image as mpimg
@@ -9,7 +10,6 @@ import matplotlib.pyplot as plt
 import pickle
 from base64 import b64decode, b64encode
 from datetime import datetime, timedelta, timezone
-from PIL import ImageFont
 import random
 import requests
 from user_agents import parse
@@ -39,6 +39,7 @@ from mobilito.models import (
     InappropriateFlag, MobilitoSession, MobilitoUser, Event)
 
 logger = logging.getLogger("django")
+matplotlib.use('Agg')
 
 
 class TutorialState:
