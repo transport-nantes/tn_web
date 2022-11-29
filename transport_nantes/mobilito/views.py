@@ -18,6 +18,7 @@ from typing import Union
 from asso_tn.utils import make_timed_token, token_valid
 from authentication.views import create_send_record
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -300,19 +301,8 @@ class RecordingView(LoginRequiredMixin, TemplateView):
                 f"id={request.session.get('mobilito_session_id', '')}, "
                 f"user={request.user.email}, {e}")
 
-        # Thank you page
-        # request.session is used to fill the thank you page
-        request.session['recording_duration_minutes'] = int(
-            (
-                datetime.now(timezone.utc)
-                - mobilito_session.start_timestamp
-            ).total_seconds() // 60
-        )
-        request.session['number_of_pedestrians'] = number_of_pedestrians
-        request.session['number_of_bicycles'] = number_of_bicycles
-        request.session['number_of_cars'] = number_of_cars
-        request.session['number_of_public_transports'] = \
-            number_of_public_transports
+        messages.add_message(
+            request, messages.SUCCESS, 'Merci de votre participation !')
 
         return HttpResponseRedirect(
             reverse('mobilito:mobilito_session_summary',
