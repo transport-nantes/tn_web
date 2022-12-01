@@ -99,12 +99,22 @@ function onMapClick(e) {
     isLoading = true;
     // Geocode the latitude and longitude of the click and display the address.
     getGeocodedAddress(e.latlng.lat, e.latlng.lng).then(function (data) {
-        let addr = data.results[0].formatted_address;
-        marker = L.marker(e.latlng).addTo(map)
-            .bindPopup(`${addr}`).openPopup();
-        $('#id_location').val(`${addr}`)
-        $('#id_latitude').val(`${e.latlng.lat}`)
-        $('#id_longitude').val(`${e.latlng.lng}`)
+        if (data.status === "OK") {
+            let addr = data.results[0].formatted_address;
+            marker = L.marker(e.latlng).addTo(map)
+                .bindPopup(`${addr}`).openPopup();
+            $('#id_location').val(`${addr}`)
+            $('#id_latitude').val(`${e.latlng.lat}`)
+            $('#id_longitude').val(`${e.latlng.lng}`)
+        } else {
+            // Maps API has a spec for status codes, see :
+            // https://developers.google.com/maps/documentation/geocoding/requests-reverse-geocoding#reverse-status-codes
+            // If the status is not OK, we display the error message,
+            // as the result is that the user doesn't get a formatted address.
+            // The goal of this alert is to inform the user something went wrong
+            // and not really to handle the error.
+            alert("La localisation n'est pas disponible pour le moment.")
+        }
         isLoading = false;
     });
 }

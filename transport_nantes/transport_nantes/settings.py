@@ -202,6 +202,12 @@ LOGGING = {
             # 'when': 'd',
             # 'utc': True,
             # 'backupCount': 10,
+        },
+        'gcp_handler': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': settings_local.LOG_DIR + "gcp.log",
+            'formatter': 'django.server',
         }
     },
     'loggers': {
@@ -227,6 +233,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'gcp': {
+            'handlers': ['gcp_handler'],
+            'level': 'INFO',
+            'propagate': True,
+        }
     }
 }
 
