@@ -1,0 +1,64 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load markdown %}
+
+{% block content %}
+
+    <div class="d-flex col-12 col-md-8 flex-column mx-auto my-3">
+        <h1 style="font-size:2rem;">Nos communiqués de presse</h1>
+        <hr>
+        <ol class="pl-0" style="list-style-type:none;">
+            {% for press_release in press_releases_list %}
+                <li class="no-gutters">
+                    <article class="d-flex col-12 flex-column">
+                        <a href="{% url press_release.viewbyslug_object_url press_release.slug %}">
+                            <h1 style="font-size:1.4em;">{{ press_release.title }}</h1>
+                        </a>
+                        <span><i>{{ press_release.publication_date|date:"l j F Y à G:i" }}</i></span>
+                        {% tn_markdown press_release.body_text_1_md|truncatechars:100 %}
+                    </article>
+                </li>
+                <hr>
+            {% endfor %}
+        </ol>
+    </div>
+
+
+    {% block pagination %}
+        <nav aria-label="pagination naviguation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1"><i class="fas fa-angle-double-left"></i> Première</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                    </li>
+                {% endif %}
+                {% for number in number_pagination_list %}
+                    {% if number == page_obj.number %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link active" href="#">{{ page_obj.number }}</a>
+                    </li>
+                    {% elif number in paginator.page_range %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ number }}">{{ number }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="?page={{ number }}">{{ number }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière <i class="fas fa-angle-double-right"></i></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endblock pagination %}
+
+{% endblock content %}

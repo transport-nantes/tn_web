@@ -884,6 +884,52 @@ class TBPTest(TestCase):
             self.assertEqual(response.status_code,
                              user_type["code"], msg=user_type["msg"])
 
+    def test_press_release_index(self):
+        now = datetime.now()
+        published_press_release = TopicBlogPress.objects.create(
+            title="Published Press Release",
+            slug="published-press-release",
+            body_text_1_md="This is the body",
+            publication_date=now,
+            user=self.staff,
+            template_name=self.template_press,
+        )
+        older_published_press_release = TopicBlogPress.objects.create(
+            title="Older Press Release",
+            slug="published-press-release",
+            body_text_1_md="This is the body",
+            publication_date=now - timedelta(days=1),
+            user=self.staff,
+            template_name=self.template_press,
+        )
+        published_press_release_with_different_slug = (
+            TopicBlogPress.objects.create(
+                title="Different Slug Press Release",
+                slug="published-press-release-with-different-slug",
+                body_text_1_md="This is the body",
+                publication_date=now,
+                user=self.staff,
+                template_name=self.template_press,
+            )
+        )
+        unpublished_press_release = TopicBlogPress.objects.create(
+            title="Unpublished Press Release",
+            slug="unpublished-press-release",
+            body_text_1_md="This is the body",
+            publication_date=None,
+            user=self.staff,
+            template_name=self.template_press,
+        )
+
+        url = reverse("topicblog:press_releases_index")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, published_press_release.title, count=1)
+        self.assertContains(
+            response, published_press_release_with_different_slug.title, count=1)
+        self.assertNotContains(response, unpublished_press_release.title)
+        self.assertNotContains(response, older_published_press_release.title)
+
 
 class TBLATest(TestCase):
     def setUp(self):

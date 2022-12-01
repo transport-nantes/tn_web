@@ -10,7 +10,7 @@ from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.db import IntegrityError
 
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Subquery, OuterRef, F
 from django.dispatch import receiver
 from django.http import (Http404, HttpResponseBadRequest,
                          HttpResponseServerError, FileResponse)
@@ -1086,8 +1086,31 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
     success_url = "/"
 
 
+class TopicBlogPressIndex(ListView):
+    model = TopicBlogPress
+    template_name = 'topicblog/topicblogpress_index.html'
+    context_object_name = 'press_releases_list'
+    paginate_by = 10
+
+    def get_queryset(self) -> list:
+
+        # Subquery preparation
+        latest_press_release = TopicBlogPress.objects.filter(
+            slug=OuterRef('slug'),
+            publication_date__isnull=False).order_by('-publication_date')
+
+        queryset = TopicBlogPress.objects.annotate(
+            latest_press_release=Subquery(latest_press_release.values(
+                'publication_date')[:1])).filter(
+            publication_date=F('latest_press_release')).order_by(
+            '-publication_date')
+
+        return queryset
+
+
 ######################################################################
 # TopicBlogLauncher
+
 
 class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
     """Custom Permission class to require different permissions

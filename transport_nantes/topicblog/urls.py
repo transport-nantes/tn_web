@@ -73,6 +73,9 @@ topicblogemail_urls = [
          name='send_email'),
 ]
 topicblogpress_urls = [
+    path("communiques-de-presse/",
+         views.TopicBlogPressIndex.as_view(),
+         name="press_releases_index"),
     path('p/<slug:the_slug>/',
          views.TopicBlogPressView.as_view(),
          name='view_press_by_slug'),
