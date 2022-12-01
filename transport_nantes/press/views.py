@@ -128,7 +128,18 @@ def fetch_opengraph_data(request, url=None, is_view=False) \
         url = request.POST["url"]
 
     try:
-        response = requests.get(url)
+        # Some websites may filter the default user agent python-requests
+        # We use a custom one to avoid this
+        headers = {
+            # My Chrome user agent
+            "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64)"
+                           " AppleWebKit/537.36"
+                           " (KHTML, like Gecko) Chrome/108.0.0.0 "
+                           "Safari/537.36"),
+        }
+        # The url comes from the user, but this form is only accessible to
+        # authorized users. We trust it as much as we trust the user.
+        response = requests.get(url, headers=headers)
         tree = html.fromstring(response.content.decode("utf-8"))
         title = tree.xpath('//meta[@property="og:title"]/@content')
         description = tree.xpath(
