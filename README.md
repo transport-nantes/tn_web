@@ -136,6 +136,8 @@ It must be written in English.
 * Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
 * Reference issues and pull requests liberally after the first line
 
+See [this classic post](https://cbea.ms/git-commit/) on the subject.
+
 
 ## I want to contribute
 
