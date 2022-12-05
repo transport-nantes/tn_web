@@ -367,4 +367,4 @@ class PhotoView(FormView):
 class PhotoListView(ListView):
     queryset = PhotoEntry.objects.filter(accepted=True)
     allow_empty = True
-    paginate_by = 4
+    paginate_by = 20
