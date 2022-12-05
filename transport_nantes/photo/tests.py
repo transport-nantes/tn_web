@@ -1,10 +1,18 @@
 from pathlib import Path
 
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 from asso_tn.utils import make_timed_token
 from mailing_list.models import MailingList, MailingListEvent
 
@@ -137,6 +145,10 @@ class TestPhotoView(TestCase):
             reverse('photo:photo_details', args=[self.photo_entry.sha1_name]))
         self.assertEqual(response.status_code, 200)
 
+        # Anonymous client trying to see the photo gallery
+        response = self.client.get(reverse('photo:galerie'))
+        self.assertEqual(response.status_code, 200)
+
     def test_post_form_valid(self):
         url = reverse('photo:photo_details', args=[self.photo_entry.sha1_name])
         # Users trying to vote on an unaccepted photo
@@ -215,3 +227,169 @@ class TestPhotoView(TestCase):
         self.assertEqual(
             Vote.objects.filter(captcha_succeeded=True).count(), 1
         )
+
+
+class TestVotes(StaticLiveServerTestCase):
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(
+            username='testuser',
+            email="testuser@example.com",
+            password='testpassword',
+        )
+
+        THIS_DIR = Path(__file__).resolve().parent
+        FILE_PATH = THIS_DIR / 'test_data' / '1920x1080.png'
+        self.photo_entry = PhotoEntry.objects.create(
+            user=self.user,
+            category='LE_TRAVAIL',
+            accepted=True,
+        )
+        self.photo_entry_2 = PhotoEntry.objects.create(
+            user=self.user,
+            category='L_AMOUR',
+            accepted=True,
+        )
+        self.photo_entry_3 = PhotoEntry.objects.create(
+            user=self.user,
+            category='PIETON_URBAIN',
+        )
+        self.photo_entry_4 = PhotoEntry.objects.create(
+            user=self.user,
+            category='LE_TRAVAIL',
+            accepted=True,
+        )
+        with open(FILE_PATH, 'rb') as f:
+            self.photo_entry.submitted_photo = ImageFile(
+                f, name='1920x1080.png')
+            self.photo_entry.save()
+
+        self.mailing_list = MailingList.objects.create(
+            mailing_list_name='Operation pieton',
+            mailing_list_token="operation-pieton")
+
+        self.auth_client = Client()
+        self.auth_client.force_login(self.user)
+        self.auth_user_cookie = self.auth_client.cookies['sessionid'].value
+
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
+        self.anon_browser = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
+        self.auth_browser = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options)
+        # Use the commented out code below if you want to login with selenium
+        # self.auth_browser.get(self.live_server_url + reverse('/'))
+        # self.auth_browser.add_cookie(
+        #     {'name': 'sessionid', 'value': self.auth_user_cookie,
+        #      'secure': False, 'path': '/'})
+
+        self.anon_browser.implicitly_wait(5)
+        self.auth_browser.implicitly_wait(5)
+
+    def test_vote_anon(self):
+
+        # Anon user
+        self.anon_browser.get(self.live_server_url + reverse(
+            'photo:photo_details', args=[self.photo_entry.sha1_name]))
+        self.anon_browser.find_element(By.ID, 'upvote-button').click()
+        self.anon_browser.find_element(By.ID, 'id_captcha_1').send_keys("PASSED")
+        self.submit_button = self.anon_browser.find_element(
+            By.CSS_SELECTOR, '#first-vote-form button')
+
+        def click_until_button_is_ready(browser: webdriver.Chrome) -> bool:
+            """Click the submit button until it is ready.
+
+            The submit button is present but not ready to be used before
+            a little bit of time. This function will click the button
+            until it is ready.
+            """
+            callable = EC.invisibility_of_element_located(
+                (By.ID, 'first-vote-div'))
+            # Returns True if the element is invisible in the provided browser
+            modal_disappeared = callable(browser)
+            if not modal_disappeared:
+                self.submit_button.click()
+
+            return bool(modal_disappeared)
+
+        WebDriverWait(self.anon_browser, 5).until(click_until_button_is_ready)
+
+        # We check the first vote was saved
+        self.assertEqual(Vote.objects.count(), 1)
+        self.assertEqual(Vote.objects.first().captcha_succeeded, True)
+        self.assertEqual(Vote.objects.first().user, None)
+        self.assertEqual(Vote.objects.first().vote_value, True)
+
+        # We now simply click on downvote button, this should produce a new Vote
+        self.anon_browser.find_element(By.ID, 'downvote-button').click()
+
+        # The POST request can take some time to process, we wait until it's
+        # done
+        WebDriverWait(self.anon_browser, 5).until(
+            lambda x: Vote.objects.count() == 2)
+
+        self.assertEqual(Vote.objects.count(), 2)
+        self.assertEqual(Vote.objects.last().user, None)
+        self.assertEqual(Vote.objects.last().vote_value, False)
+
+    def test_vote_auth(self):
+        # Login with selenium
+        self.auth_browser.get(self.live_server_url)
+        self.auth_browser.add_cookie(
+            {'name': 'sessionid', 'value': self.auth_user_cookie,
+             'secure': False, 'path': '/'})
+        # Auth user
+        self.auth_browser.get(self.live_server_url + reverse(
+            'photo:photo_details', args=[self.photo_entry.sha1_name]))
+        self.auth_browser.find_element(By.ID, 'upvote-button').click()
+
+        WebDriverWait(self.auth_browser, 5).until(
+            EC.visibility_of_element_located((By.ID, 'first-vote-form')))
+
+        self.submit_button = self.auth_browser.find_element(
+            By.CSS_SELECTOR, '#first-vote-form button')
+
+        def click_until_button_is_ready(browser: webdriver.Chrome) -> bool:
+            """Click the submit button until it is ready.
+
+            The submit button is present but not ready to be used before
+            a little bit of time. This function will click the button
+            until it is ready.
+            """
+            callable = EC.invisibility_of_element_located(
+                (By.ID, 'first-vote-div'))
+            # Returns True if the element is invisible in the provided browser
+            modal_disappeared = callable(browser)
+            if not modal_disappeared:
+                self.submit_button.click()
+
+            return bool(modal_disappeared)
+
+        WebDriverWait(self.auth_browser, 5).until(click_until_button_is_ready)
+
+        # The POST request can take some time to process, we wait until it's
+        # done
+        WebDriverWait(self.auth_browser, 20).until(
+            lambda x: Vote.objects.count() == 1)
+
+        self.assertEqual(Vote.objects.count(), 1)
+        self.assertEqual(Vote.objects.first().captcha_succeeded, True)
+        self.assertEqual(Vote.objects.first().user, self.user)
+        self.assertEqual(Vote.objects.first().vote_value, True)
+
+        # We now simply click on downvote button, this should produce a new Vote
+        self.auth_browser.find_element(By.ID, 'downvote-button').click()
+
+        # The POST request can take some time to process, we wait until it's
+        # done
+        WebDriverWait(self.auth_browser, 5).until(
+            lambda x: Vote.objects.count() == 2)
+
+        self.assertEqual(Vote.objects.count(), 2)
+        self.assertEqual(Vote.objects.last().user, self.user)
+        self.assertEqual(Vote.objects.last().vote_value, False)

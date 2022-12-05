@@ -5,9 +5,9 @@ from asso_tn.utils import make_timed_token, token_valid
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
-from django.http import (HttpRequest, HttpResponse, HttpResponseForbidden,
-                         HttpResponseRedirect)
+from django.db.models import Q, When, Case, Subquery, Value
+from django.http import (HttpRequest, HttpResponse,
+                         HttpResponseForbidden, HttpResponseRedirect)
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -187,14 +187,87 @@ class PhotoView(FormView):
 
         context is passed by reference.
         """
-        all_accepted_photos = list(PhotoEntry.objects.filter(accepted=True))
-        current_photo_index = all_accepted_photos.index(photo)
-        if current_photo_index > 0:
-            context["previous_photo"] = all_accepted_photos[
-                current_photo_index - 1]
-        if current_photo_index < len(all_accepted_photos) - 1:
-            context["next_photo"] = all_accepted_photos[
-                current_photo_index + 1]
+        # Preparing conditions for readability
+
+        # When() are like a filter that returns the value of the 'then' argument
+        # if the condition is met.
+        # They are lazily evaluated.
+        lower_id_exists = When(
+            # 'pk' refers to the annotated object
+            pk__in=Subquery(
+                PhotoEntry.objects.filter(
+                    accepted=True,
+                    pk__lt=photo.pk
+                ).order_by('-pk').values('pk')[:1]
+            ),
+            # If the condition is met, we return a truthy value
+            then=Value(True)
+        )
+        no_lower_id_exists = When(
+            # 'pk' refers to the annotated object
+            pk__in=Subquery(
+                PhotoEntry.objects.filter(
+                    accepted=True,
+                ).order_by('-pk').values('pk')[:1]
+            ),
+            then=Value(True)
+        )
+        higher_id_exists = When(
+            # 'pk' refers to the annotated object
+            pk__in=Subquery(
+                PhotoEntry.objects.filter(
+                    accepted=True,
+                    pk__gt=photo.pk
+                ).order_by('pk').values('pk')[:1]
+            ),
+            # If the condition is met, we return a truthy value
+            then=Value(True)
+        )
+        no_higher_id_exists = When(
+            # 'pk' refers to the annotated object
+            pk__in=Subquery(
+                PhotoEntry.objects.filter(
+                    accepted=True,
+                ).order_by('pk').values('pk')[:1]
+            ),
+            then=Value(True)
+        )
+
+        # We annotate the queryset with the previous and next photo
+        qs = PhotoEntry.objects.filter(accepted=True).annotate(
+            # Case() will evaluate the conditions (When()) in order and return the
+            # value of the first condition that is met, or the default value if
+            # none of the conditions are met.
+            previous=Case(
+                lower_id_exists,
+                no_lower_id_exists,
+                default=Value(None),
+            ),
+            next_pic=Case(
+                higher_id_exists,
+                no_higher_id_exists,
+                default=Value(None),
+            )
+            # We only retrieve the annotated objects
+        ).filter(Q(previous__isnull=False) | Q(next_pic__isnull=False))
+
+        # Preparation of the queries
+        # you can't pipe two objects, using [:1] will return a queryset
+        # with one object that we can pipe to evaluate both queries at the same time
+        prev_pic = qs.filter(previous__isnull=False).order_by("pk")[:1]
+        next_pic = qs.filter(next_pic__isnull=False).order_by("-pk")[:1]
+
+        # The pipe operator is used to concatenate two queries
+        # We evaluate the two queries at the same time doing a single query
+        prev_and_next_qs = prev_pic | next_pic
+        if len(prev_and_next_qs) == 2:
+            p, n = prev_and_next_qs
+        elif len(prev_and_next_qs) == 1:
+            p = n = prev_and_next_qs[0]
+        else:
+            p = n = None
+        context["previous_photo"] = p
+        context["next_photo"] = n
 
     def get_initial(self):
         """Set the initial value in the form"""
