@@ -136,7 +136,9 @@ class PhotoView(FormView):
             # we need to check if the user has already voted for this photo
             # using its session id as well.
             if Vote.objects.filter(
-                    Q(user=user)
+                    # user here could be null hence the
+                    # need to check if user is authenticated
+                    Q(user=user) if user else Q()
                     | Q(tn_session_id=tn_session_id),
                     captcha_succeeded=True,
             ).exists():
