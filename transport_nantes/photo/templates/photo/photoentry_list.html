@@ -2,9 +2,9 @@
 
 {% block app_content %}
 
-<main class="d-flex col-12 col-md-8 justify-content-center flex-wrap mx-auto">
+<main class="d-flex flex-column col-12 col-md-8 justify-content-center flex-wrap mx-auto">
 
-    <div class="d-flex flex-column">
+    <div class="d-flex col-12 flex-column">
         <h1>L'opération piéton</h1>
         <p>
             Toutes les photos acceptées par le Jury vous sont présentées ici,
@@ -13,30 +13,32 @@
         </p>
     </div>
 
-    {% for photoentry in photoentry_list %}
-        <div class="d-flex col-12 col-md-6 my-3 justify-content-center">
-            <div class="my-auto">
-                <a href="{% url 'photo:photo_details' photoentry.sha1_name %}">
-                    <img src="{{ photoentry.submitted_photo.url }}"
-                    class="img-fluid thumbnail"
-                    style="filter: drop-shadow(5px 5px 10px #000); max-height:45vh;"
-                    alt="Participation au concours photo">
-                </a>
+    <div id="entries-container" class="d-flex col-12 justify-content-center flex-wrap">
+        {% for photoentry in photoentry_list %}
+            <div class="d-flex col-12 col-md-6 col-xl-4 my-3 justify-content-center">
+                <div class="my-auto">
+                    <a href="{% url 'photo:photo_details' photoentry.sha1_name %}">
+                        <img src="{{ photoentry.submitted_photo.url }}"
+                        class="img-fluid thumbnail"
+                        style="filter: drop-shadow(5px 5px 10px #000); max-height:45vh;"
+                        alt="Participation au concours photo">
+                    </a>
+                </div>
             </div>
-        </div>    
-    {% endfor %}
+        {% endfor %}
+    </div>
 
-    <div class="pagination">
+    <div class="pagination mx-auto mt-4">
         <span class="step-links">
             {% if page_obj.has_previous %}
                 <a href="?page=1">&laquo;</a>
                 <a href="?page={{ page_obj.previous_page_number }}">Préc.</a>
             {% endif %}
-    
+
             <span class="current">
                 Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
             </span>
-    
+
             {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}">Suiv.</a>
                 <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
