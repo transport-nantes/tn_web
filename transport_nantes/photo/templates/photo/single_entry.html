@@ -26,16 +26,6 @@
 {% block app_content %}
 
     <div class="d-flex col-12 col-md-8 flex-column mx-auto">
-        <div class="d-flex flex-row w-100">
-            <a href="{{ photo.submitted_photo.url }}"
-            class='d-flex col-12 mx-auto my-3' style="max-height: 60vh; width: auto;"
-            target="_blank">
-                <img src="{{ photo.submitted_photo.url }}"
-                alt="Photo soumise à l'occasion de l'opération piéton"
-                class="d-flex mw-100 mx-auto"
-                style="filter: drop-shadow(5px 5px 10px #000);"></img>
-            </a>
-        </div>
         {% if photo.accepted == True  %}
             <div class="d-flex w-75 justify-content-between flex-row mb-3 mx-auto">
                 {# Previous button #}
@@ -47,11 +37,9 @@
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 {# Vote buttons #}
-
-                
                     {# Upvote button #}
                     <button id="upvote-button" type="button"
-                    class="d-flex p-2 mx-3 font-xl border-circle 
+                    class="d-flex p-2 mx-3 font-xl border-circle
                     {% if last_vote == "upvote"%}
                     border-blue-light bg-blue-light font-blue-dark
                     {% endif %} "
@@ -63,7 +51,7 @@
 
                     {# Downvote button #}
                     <button id="downvote-button" type="button"
-                    class="d-flex p-2 mx-3 font-xl border-circle 
+                    class="d-flex p-2 mx-3 font-xl border-circle
                     {% if last_vote == "downvote"%}
                     border-blue-light bg-blue-light font-blue-dark
                     {% endif %} "
@@ -72,7 +60,7 @@
                     {% endif %}>
                         <i class="fa-solid fa-thumbs-down my-auto"></i>
                     </button>
-                
+
                 {# Next button #}
                 <a href="
                 {% if next_photo %}
@@ -83,6 +71,17 @@
                 </a>
             </div>
         {% endif %}
+
+        <div class="d-flex flex-row w-100">
+            <a href="{{ photo.submitted_photo.url }}"
+            class='d-flex col-12 mx-auto my-3' style="max-height: 60vh; width: auto;"
+            target="_blank">
+                <img src="{{ photo.submitted_photo.url }}"
+                alt="Photo soumise à l'occasion de l'opération piéton"
+                class="d-flex mw-100 mx-auto"
+                style="filter: drop-shadow(5px 5px 10px #000);"></img>
+            </a>
+        </div>
 
         {% tn_markdown photo.pedestrian_issues_md|default:"" %}
 
