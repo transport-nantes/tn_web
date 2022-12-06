@@ -1,22 +1,25 @@
 """Application to manage a photo competition."""
 import logging
-from django.contrib.auth.models import User
-from django.db.models import Q
-from django.http import (HttpRequest, HttpResponse,
-                         HttpResponseForbidden, HttpResponseRedirect)
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.views.generic import (TemplateView, CreateView, FormView, ListView)
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist
 
 from asso_tn.utils import make_timed_token, token_valid
-from .forms import (PhotoEntryForm, AnonymousVoteForm,
-                    SimpleVoteForm, SimpleVoteFormWithConsent)
-from .models import PhotoEntry, Vote
-from .events import get_user_vote
-from mailing_list.models import MailingList
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.http import (HttpRequest, HttpResponse, HttpResponseForbidden,
+                         HttpResponseRedirect)
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.generic import CreateView, FormView, ListView, TemplateView
 from mailing_list.events import subscribe_user_to_list
+from mailing_list.models import MailingList
+
+from .events import get_user_vote
+from .forms import (AnonymousVoteForm, PhotoEntryForm, SimpleVoteForm,
+                    SimpleVoteFormWithConsent)
+from .models import PhotoEntry, Vote
 
 logger = logging.getLogger("django")
 
@@ -98,6 +101,11 @@ class Confirmation(TemplateView):
         return context
 
 
+# The PhotoView is a FormView but the HTML template doesn't contain a form
+# so it doesn't contain a csrf token tag.
+# This decorator ensures that the csrf token is sent to the client, in place
+# of the csrf token tag.
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class PhotoView(FormView):
     """
     View to display a single photo and up/down vote it
