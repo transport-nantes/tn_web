@@ -5,22 +5,27 @@
 {% load crispy_forms_tags %}
 
 {% block localscripts %}
+    {% comment %}
+        The use of Javascript allows us to make AJAX requests to the server
+        without reloading the page. This is useful to avoid reloading the page
+        when the user votes.
+    {% endcomment %}
     {% compress js %}
         <script src="{% static 'photo/js/vote_system.js' %}" defer></script>
-        <script type="text/javascript">
-            {% comment %}Those values are used in vote_system.js{% endcomment %}
-            {% if has_voted %}
-                var has_voted = true;
-            {% else %}
-                var has_voted = false;
-            {% endif %}
-            {% if request.user.is_authenticated %}
-                var is_auth = true;
-            {% else %}
-                var is_auth = false;
-            {% endif %}
-        </script>
     {% endcompress %}
+    <script type="text/javascript">
+        {% comment %}Those values are used in vote_system.js{% endcomment %}
+        {% if has_voted %}
+            var has_voted = true;
+        {% else %}
+            var has_voted = false;
+        {% endif %}
+        {% if request.user.is_authenticated %}
+            var is_auth = true;
+        {% else %}
+            var is_auth = false;
+        {% endif %}
+    </script>
 {% endblock localscripts %}
 
 {% block app_content %}
