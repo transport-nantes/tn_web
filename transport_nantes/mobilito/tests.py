@@ -8,6 +8,7 @@ from django.urls import reverse, reverse_lazy
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -210,7 +211,15 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
     def test_flag_session(self):
         """Test the ability to flag a session."""
         self.browser.get(self.live_server_url + self.mobilito_session_url)
-        self.browser.find_element(By.ID, 'dropdownMenuLink').click()
+        # The button would sometimes not be clickable, possibly because
+        # it wasn't visible. The error didn't happen consistently.
+        # https://stackoverflow.com/a/44119817/16279937
+        # I've found that sleeping would help, not entirely sure about what's
+        # not loading fast enough sometimes, but sleeping seems to fix it.
+        time.sleep(2)
+        button = self.browser.find_element(By.ID, 'dropdownMenuLink')
+        self.browser.implicitly_wait(5)
+        ActionChains(self.browser).move_to_element(button).click(button).perform()
         self.browser.find_element(By.ID, 'report-abuse').click()
         self.browser.find_element(By.ID, 'report-abuse-text').send_keys(
             "This is a test report.")
