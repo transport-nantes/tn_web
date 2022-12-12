@@ -14,11 +14,12 @@
                             <h1 style="font-size:1.4em;">{{ press_release.title }}</h1>
                         </a>
                         <span><i>{{ press_release.publication_date|date:"l j F Y à G:i" }}</i></span>
-                        {% tn_markdown press_release.body_text_1_md|truncatechars:100 %}
+                        {{ press_release.first_paragraph|safe }}
                     </article>
                 </li>
                 <hr>
             {% endfor %}
+            
         </ol>
     </div>
 

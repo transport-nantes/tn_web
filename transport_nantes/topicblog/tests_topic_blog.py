@@ -1127,3 +1127,39 @@ class TopicBlogPressTests(TransactionTestCase):
         self.assertEqual(response.status_code, 302)
         # Check if the emails were sent once
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_press_release_list_markdown_rendering(self):
+
+        TopicBlogPress.snippet_char_limit = 100
+        self.markdown_press_release = TopicBlogPress.objects.create(
+            subject="Test subject",
+            user=self.superuser,
+            body_text_1_md=(
+                "#The title is here\n"
+                "This is _text in italic_ and **bold** and some more text"
+            ),
+            slug="test-markodwn",
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            template_name="topicblog/content_press.html",
+            title="Test title")
+
+        url = reverse('topicblog:press_releases_index')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "The title is here")
+        self.assertContains(response, "<em>text in italic</em>")
+        self.assertContains(response, "<strong>bold</strong>")
+
+        # We want to cut in the middle of the bold text
+        #                               ↓ 30 characters
+        # "This is text in italic and bold and some more text"
+        TopicBlogPress.snippet_char_limit = 30
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "The title is here")
+        self.assertContains(response, "<em>text in italic</em>")
+        self.assertContains(response, "<strong>bol…</strong>")
+        self.assertNotContains(response, "and some more text")
