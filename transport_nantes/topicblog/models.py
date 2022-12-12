@@ -1,12 +1,16 @@
 from datetime import datetime, timezone, timedelta
 import logging
+from typing import Union
 
+import bs4
+from bs4 import BeautifulSoup as bs
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.urls import reverse
 from django.db import models
 
 from mailing_list.models import MailingList
+
 
 logger = logging.getLogger("django")
 
@@ -1085,6 +1089,56 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     viewbypkid_object_url = 'topicblog:view_press_by_pkid'
     send_object_url = 'topicblog:send_press'
     description_of_object = 'Communiqué de presse'
+
+    # This is the value that defines the length of the first_paragraph property.
+    snippet_char_limit = 100
+
+    @property
+    def first_paragraph(self):
+        """Return the first paragraph of the body text.
+        """
+        from topicblog.templatetags.markdown import tn_markdown
+        rendered_text = tn_markdown({}, self.body_text_1_md)
+        soup = bs(rendered_text, 'html.parser')
+        # Finds the first "p" tag inside body_text_1_md.
+        first_paragraph = soup.find('p')
+        if first_paragraph:
+            # passed by reference
+            self.truncate_first_pragraph(first_paragraph)
+
+        return str(first_paragraph) or rendered_text[:self.snippet_char_limit] + '…'
+
+    def truncate_first_pragraph(
+            self,
+            element: Union[bs4.element.NavigableString, bs4.element.Tag],
+            total_length: int = 0):
+        """Trucnate the first paragraph from an element while preserving
+        the html tags.
+        The output is limited to 100 characters, not including the HTML
+        tags.
+        """
+        # NavigableString is a string inside a tag, like the text inside
+        # <p>text</p>. We can access the string with element.string.
+        # and we can replace it with element.string.replace_with().
+        if type(element) == bs4.element.NavigableString:
+            if total_length >= self.snippet_char_limit:
+                # When the cumulated length of the text is greater than
+                # self.snippet_char_limit, we remove the remaining text.
+                element.string.replace_with('')
+                return total_length
+            if total_length + len(str(element)) >= self.snippet_char_limit:
+                # When the cumulated length of the text is greater than
+                # self.snippet_char_limit, we truncate the text and add an ellipsis.
+                element.string.replace_with(
+                    str(element)[:self.snippet_char_limit - total_length] + '…')
+            return total_length + len(str(element))
+        else:
+            # We recursively inspect all children while counting the chars
+            # until we run out of children or reach self.snippet_char_limit chars.
+            for child in element.children:
+                total_length = self.truncate_first_pragraph(child, total_length)
+
+            return total_length
 
     def get_absolute_url(self):
         """Provide a link to view this object (by slug and id).
