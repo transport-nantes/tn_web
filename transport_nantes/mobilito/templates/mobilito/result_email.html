@@ -5,9 +5,9 @@
 
 
 {% block background_color %}
-<body style="margin:0;padding:0;word-spacing:normal;background-color:#333F48;">
+<body style="margin:0;padding:0;word-spacing:normal;background-color:#43526e;">
     <div role="article" aria-roledescription="email" lang="fr"
-    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#333F48;">
+    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#43526e;">
 {% endblock background_color %}
 
 {% block email_content %}
@@ -15,17 +15,17 @@
 style="width:94%;max-width:600px;
 border:none;border-spacing:0;
 text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;
-color:#fff;background-color:#333F48;">
+color:#DDE5ED;background-color:#43526e;">
     <tr>
         {% comment "Logo" %}This row handles the logo display{% endcomment %}
-        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#333F48;">
+        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#43526e;">
             <a href="https://www.mobilitains.fr/" style="text-decoration:none;">
                 {% if logo_path %}
                     <img src="{{ logo_path }}" width="165" alt="Logo Mobilitains"
-                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#DDE5ED;">
                 {% else %}
                     <img src="{% static 'asso_tn/M-logo_white.png' %}" width="165" alt="Logo Mobilitains"
-                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#ffffff;">
+                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#DDE5ED;">
                 {% endif %}
             </a>
         </td> <!-- End Logo -->
@@ -77,7 +77,7 @@ color:#fff;background-color:#333F48;">
         </td>
     </tr>
     <tr> <!-- Footer -->
-        <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;font-weight:bold;background-color:#333F48;color:#fff;">
+        <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;font-weight:bold;background-color:#43526e;color:#DDE5ED;">
             <p style="margin:0;font-size:14px;line-height:20px;">
                 &reg; Mobilitains 2022<br>
             </p>
