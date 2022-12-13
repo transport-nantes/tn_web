@@ -11,7 +11,7 @@ h2,
 h3,
 h4,
 p {
-    color: white;
+    color: var(--mobilitains-gris);
     text-align: justify;
     text-justify: auto;
 }
