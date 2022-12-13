@@ -5,12 +5,7 @@
 <main class="d-flex flex-column col-12 col-md-8 justify-content-center flex-wrap mx-auto">
 
     <div class="d-flex col-12 flex-column">
-        <h1>L'opération piéton</h1>
-        <p>
-            Toutes les photos acceptées par le Jury vous sont présentées ici,
-            n'hésitez pas à cliquer sur les photos pour les agrandir et voter
-            pour vos préférées !
-        </p>
+        <h1 class="mx-auto">L'opération piéton</h1>
     </div>
 
     <div id="entries-container" class="d-flex col-12 justify-content-center flex-wrap">
@@ -25,6 +20,9 @@
                     </a>
                 </div>
             </div>
+
+        {% empty %}
+            <p class="d-flex mx-auto">Aucune photo n'a encore été acceptée par le jury !</p>
         {% endfor %}
     </div>
 
