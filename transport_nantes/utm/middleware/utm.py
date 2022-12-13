@@ -31,7 +31,7 @@ class UtmMiddleware:
         if not request.path.startswith('/admin/') and \
            not request.path.startswith('/favicon.ico'):
             utm = UTM()
-            utm.base_url = request.path
+            utm.base_url = request.path.split('&')[0]
             utm.session_id = request.session.get('tn_session', '-')
 
             # If for some reason we receive no user agent data, the
