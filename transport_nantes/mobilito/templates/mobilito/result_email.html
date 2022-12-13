@@ -50,8 +50,17 @@ color:#fff;background-color:#333F48;">
                 <li> Nombre de citoyens à pied : {{ nb_pedestrians }}</li>
                 <li> Nombre de voitures, motos, camions : {{ nb_cars }}</li>
                 <li> Nombre de vélos et trotinettes : {{ nb_bicycles }}</li>
-                <li> Nombre de transports en commun : {{ nb_TC }}</li> 
+                <li> Nombre de transports en commun : {{ nb_TC }}</li>
             </ul>
+
+            <p>Voici les graphiques de votre session :</p>
+            <img src="{% absolute_url 'mobilito:mobilito_session_timeseries_image' mobilito_session.session_sha1 %}"
+            alt="Graphique temporel de votre session"
+            style="display: block; margin: auto; ">
+            <img src="{% absolute_url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}"
+            alt="Graphique camembert de votre session"
+            style="display: block; margin: auto; ">
+
             <p style="margin-bottom:2em;">
                 Vous pouvez retrouver les détails de votre session sur le site Mobilitains à l'addresse suivante :
                 <p>
