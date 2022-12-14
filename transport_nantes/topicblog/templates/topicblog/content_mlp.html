@@ -8,6 +8,7 @@
 {% load don %}
 {% load mpanels %}
 {% load newsletter %}
+{% load social %}
 {% block og_image_alt %}{% endblock og_image_alt %}
 {% block og_image_type %}{% endblock og_image_type %}
 {% block og_image_image %}{% endblock og_image_image %}
@@ -91,6 +92,11 @@
           {% endif %}
 
      </div>
+     {% block social_buttons %}
+          <div class="my-3">
+               {% socials_share_buttons %}
+          </div>
+     {% endblock social_buttons %}
 
      {% endblock app_content%}
 </div>

@@ -14,6 +14,7 @@
 {% load don %}
 {% load mpanels %}
 {% load newsletter %}
+{% load social %}
 {% block og_image_alt %}{% endblock og_image_alt %}
 {% block og_image_type %}{% endblock og_image_type %}
 {% block og_image_image %}{% endblock og_image_image %}
@@ -82,10 +83,10 @@
           </button>
           {% endif %}
           {# First paragraph of text #}
-          {% tn_markdown page.body_text_1_md %} 
+          {% tn_markdown page.body_text_1_md %}
           {# First CTA, if any #}
           {% if page.cta_1_slug|length > 0 %}
-               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}" 
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_1_slug %}"
 		  class="btn donation-button my-3 centered-inline-button">
 		   {{ page.cta_1_label }}
 		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
@@ -96,7 +97,7 @@
           {% tn_markdown page.body_text_2_md %}
           {# Second CTA, if any #}
           {% if page.cta_2_slug|length > 0 %}
-               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}" 
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_2_slug %}"
                class="btn donation-button my-3 centered-inline-button">
 		   {{ page.cta_2_label }}
 		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
@@ -114,14 +115,18 @@
           {% tn_markdown page.body_text_3_md %}
           {# Third CTA, if any #}
           {% if page.cta_3_slug|length > 0 %}
-               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}" 
+               <a href="{% url 'topic_blog:view_item_by_slug' page.cta_3_slug %}"
 		  class="btn donation-button my-3 centered-inline-button ">
 		   {{ page.cta_3_label }}
 		   <i class="fa fa-arrow-right" aria-hidden="true"></i>
 	       </a>
           {% endif %}
-
      </div>
+     {% block social_buttons %}
+          <div class="my-3">
+               {% socials_share_buttons %}
+          </div>
+     {% endblock social_buttons %}
 
      {% endblock app_content%}
 </div>
@@ -133,5 +138,5 @@
               {% show_volunteer %}
           </div>
      </div>
-     
+
 {% endblock content %}

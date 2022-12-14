@@ -3,6 +3,7 @@
 {% load static %}
 {% load compress %}
 {% load crispy_forms_tags %}
+{% load social %}
 
 {% block localscripts %}
     {% comment %}
@@ -91,6 +92,12 @@
         {% tn_markdown photo.pedestrian_issues_md|default:"" %}
 
         {% tn_markdown photo.submitter_info_md|default:"" %}
+
+        {% block social_buttons %}
+            <div class="my-3">
+                {% socials_share_buttons %}
+            </div>
+        {% endblock social_buttons %}
 
         {# Modal form if user never voted #}
         {% if not has_voted %}

@@ -4,6 +4,7 @@
 {% load don %}
 {% load mpanels %}
 {% load newsletter %}
+{% load social %}
 
 {% block styles %}
      {% comment %}
@@ -62,4 +63,9 @@
 	Contact: press@mobilitains.fr
     </div>
 </div>
+{% block social_buttons %}
+     <div class="my-3">
+          {% socials_share_buttons %}
+     </div>
+{% endblock social_buttons %}
 {% endblock content %}
