@@ -40,36 +40,7 @@
 {% block app_content %}
 
     <div class="d-flex col-12 col-md-8 flex-column mx-auto">
-        {% if photo.accepted == True  %}
-            <div class="d-flex w-75 justify-content-between flex-row mb-3 mx-auto">
-                {# Upvote button #}
-                <button id="upvote-button" type="button"
-                class="d-flex p-2 mx-3 font-xl border-circle
-                {% if last_vote == "upvote"%}
-                border-blue-light bg-blue-light font-blue-dark
-                {% endif %} "
-                {% if not has_voted %}
-                    data-toggle="modal" data-target="#first-vote-div"
-                {% endif %}>
-                    <i class="fa-solid fa-thumbs-up my-auto"></i>
-                </button>
-
-                {# Downvote button #}
-                <button id="downvote-button" type="button"
-                class="d-flex p-2 mx-3 font-xl border-circle
-                {% if last_vote == "downvote"%}
-                border-blue-light bg-blue-light font-blue-dark
-                {% endif %} "
-                {% if not has_voted %}
-                    data-toggle="modal" data-target="#first-vote-div"
-                {% endif %}>
-                    <i class="fa-solid fa-thumbs-down my-auto"></i>
-                </button>
-            </div>
-        {% endif %}
-
         <div class="photo-container" style="position: relative; height:50vh;">
-            
             <img src="{{ photo.submitted_photo.url }}"
             alt="Photo soumise à l'occasion de l'opération piéton"
             class=""
@@ -96,6 +67,21 @@
                 </a>
             {% endif %}
         </div>
+        {% if photo.accepted == True  %}
+            <div class="d-flex mx-auto">
+                {# Upvote button #}
+                <button id="upvote-button" type="button"
+                class="d-flex p-2 m-3 font-xl border-circle
+                {% if last_vote == "upvote"%}
+                border-blue-light bg-blue-light font-blue-dark
+                {% endif %} "
+                {% if not has_voted %}
+                    data-toggle="modal" data-target="#first-vote-div"
+                {% endif %}>
+                    <i class="fa-solid fa-heart"></i>
+                </button>
+            </div>
+        {% endif %}
 
         {% tn_markdown photo.pedestrian_issues_md|default:"" %}
 

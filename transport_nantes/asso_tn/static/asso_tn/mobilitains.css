@@ -612,6 +612,9 @@ span.centered {
 .font-blue-dark {
     color: var(--mobilitains-bleu-marine);
 }
+.font-white {
+    color: white;
+}
 .font-xl {
     font-size: x-large;
 }
@@ -621,6 +624,9 @@ span.centered {
 }
 .border-blue-light {
     border-color: var(--mobilitains-bleu);
+}
+.border-white {
+    border-color: white;
 }
 .thumbnail {
     position: relative;

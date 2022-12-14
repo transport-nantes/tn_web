@@ -357,17 +357,24 @@ class PhotoView(FormView):
                 logger.error(
                     "Mailing list operation-pieton does not exist")
 
-        # vote value is a constant among the forms
-        vote_value = self.request.POST.get("vote_value", None)
-        if vote_value == "upvote":
-            vote_value = True
-        elif vote_value == "downvote":
-            vote_value = False
-        else:
-            return HttpResponseForbidden("Invalid vote")
-
         # Always set at page load
         tn_session_id = self.request.session.get('tn_session', None)
+
+        # Button only sends "upvotes" so we reverse the last vote to have the
+        # opposite vote
+        vote_value = self.request.POST.get("vote_value", None)
+        if vote_value:
+            if user:
+                last_vote = Vote.objects.filter(
+                    user=user).order_by("timestamp").last()
+            else:
+                last_vote = Vote.objects.filter(
+                    tn_session_id=tn_session_id).order_by("timestamp").last()
+
+            vote_value = not last_vote.vote_value if last_vote else True
+
+        else:
+            return HttpResponseForbidden("Invalid vote")
 
         Vote.objects.create(
             user=user,

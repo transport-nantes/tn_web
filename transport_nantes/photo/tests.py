@@ -325,8 +325,8 @@ class TestVotes(StaticLiveServerTestCase):
         self.assertEqual(Vote.objects.first().user, None)
         self.assertEqual(Vote.objects.first().vote_value, True)
 
-        # We now simply click on downvote button, this should produce a new Vote
-        self.anon_browser.find_element(By.ID, 'downvote-button').click()
+        # We now simply click on vote button again, this should produce a new Vote
+        self.anon_browser.find_element(By.ID, 'upvote-button').click()
 
         # The POST request can take some time to process, we wait until it's
         # done
@@ -382,8 +382,8 @@ class TestVotes(StaticLiveServerTestCase):
         self.assertEqual(Vote.objects.first().user, self.user)
         self.assertEqual(Vote.objects.first().vote_value, True)
 
-        # We now simply click on downvote button, this should produce a new Vote
-        self.auth_browser.find_element(By.ID, 'downvote-button').click()
+        # We now simply click on vote button again, this should produce a new Vote
+        self.auth_browser.find_element(By.ID, 'upvote-button').click()
 
         # The POST request can take some time to process, we wait until it's
         # done
