@@ -1,9 +1,9 @@
 /**
  * Cast vote when the user has already voted on any photo.
- * This function is called when the user clicks on the upvote/downvote buttons
+ * This function is called when the user clicks on the vote button
  * It doesn't refresh the page on refresh, it just updates the DOM, contrary to
  * the first vote function
- * @param {boolean} vote_value "upvote" or "downvote"
+ * @param {boolean} vote_value "upvote"
  * @param {HTMLElement} element "the button that has been pressed to cast vote"
  */
 function castVote(vote_value, element) {
@@ -57,60 +57,31 @@ function castFirstVote(data, element) {
 
 /**
  * 
- * @param {HTMLElement} element Element that is being applied the 
- * "selected" styles
+ * @param {HTMLElement} element Element that is being applied the styles
  */
 function applySelectedVoteStyles(element) {
-    element.classList.add(
-        'border-blue-light',
-        'bg-blue-light',
-        'font-blue-dark'
+    ['border-blue-light','bg-blue-light','font-blue-dark'].map(
+        (className) => {
+            element.classList.toggle(className);
+        }
     )
-    // The inverse attribute is the other button (upvote/downvote)
-    element.inverse.classList.remove(
-        'border-blue-light',
-        'bg-blue-light',
-        'font-blue-dark'
-    )
-}
-
-function changeVoteValue(element) {
-    if (element === upvoteButton) {
-        $('#id_vote_value').val('upvote');
-    } else {
-        $('#id_vote_value').val('downvote');
-    }
 }
 
 var upvoteButton = document.getElementById("upvote-button");
-var downvoteButton = document.getElementById("downvote-button");
 var anonVoteForm = document.getElementById("first-vote-form");
-var clickedButton = null;
-upvoteButton.inverse = downvoteButton;
-downvoteButton.inverse = upvoteButton;
 
+// has_voted is directly embedded in the HTML from Django
 if (has_voted) {
     upvoteButton.addEventListener("click", function () {
         castVote("upvote", this);
     });
-
-    downvoteButton.addEventListener("click", function () {
-        castVote("downvote", this);
-    });
 } else {
-    upvoteButton.addEventListener("click", function () {
-        clickedButton = this;
-    });
-
-    downvoteButton.addEventListener("click", function () {
-        clickedButton = this;
-    });
     // Change the display size of captcha
     $('#id_captcha_1').attr('size', 5);
     anonVoteForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        changeVoteValue(clickedButton);
+        $('#id_vote_value').val('upvote');
         var data = $('#first-vote-form').serialize();
-        castFirstVote(data, clickedButton);
+        castFirstVote(data, upvoteButton);
     })
 }
