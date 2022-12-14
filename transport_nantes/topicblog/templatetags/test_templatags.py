@@ -1,3 +1,4 @@
+from urllib.parse import quote
 from django.http import HttpRequest
 from django.template import Template, Context
 from django.test.client import RequestFactory
@@ -218,3 +219,43 @@ class TestTopicBlogPanel(TestCase):
         self.assertIn("Test Panel Title", rendered)
         self.assertIn("This is a test panel.", rendered)
         self.assertIn("<strong>This is a test panel.</strong>", rendered)
+
+
+class SocialTests(TestCase):
+
+    def setUp(self) -> None:
+        self.admin = \
+            User.objects.create_superuser(username='test-user',
+                                          password='test-pass')
+        self.item = TopicBlogItem.objects.create(
+            slug="home",
+            date_created=datetime.now(timezone.utc),
+            publication_date=datetime.now(timezone.utc),
+            first_publication_date=datetime.now(timezone.utc),
+            user=self.admin,
+            template_name="topicblog/content.html",
+            body_text_1_md="body 1",
+            header_image="picture.png",
+            title="Test-title")
+
+    def test_social_tag_rendering(self):
+        template_string = (
+            "{% load social %}"
+            "{% socials_share_buttons %}")
+        rendered_template = Template(template_string).render(Context({}))
+        self.assertIn(
+            "https://twitter.com/intent/tweet?url=", rendered_template)
+        self.assertIn(
+            "http://www.facebook.com/share.php?u=", rendered_template)
+
+    def test_social_tag_rendering_with_url(self):
+        url = reverse_lazy(self.item.viewbyslug_object_url, args=[self.item.slug])
+        response = self.client.get(url)
+        absolute_url = self.client.get(url).wsgi_request.build_absolute_uri()
+
+        self.assertIn(
+            "https://twitter.com/intent/tweet?url=" + quote(absolute_url),
+            response.content.decode("utf-8"),)
+        self.assertIn(
+            "http://www.facebook.com/share.php?u=" + quote(absolute_url),
+            response.content.decode("utf-8"),)

@@ -638,3 +638,8 @@ span.centered {
     transform: scale(1.1);
     z-index:3;
 }
+#share-buttons a:visited,
+#share-buttons a:link {
+    color: inherit;
+    text-decoration: none !important;
+}

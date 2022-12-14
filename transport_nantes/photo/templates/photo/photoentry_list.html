@@ -1,4 +1,5 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+{% load social %}
 
 {% block app_content %}
 
@@ -45,6 +46,12 @@
             {% endif %}
         </span>
     </div>
+
+    {% block social_buttons %}
+        <div class="my-3">
+            {% socials_share_buttons %}
+        </div>
+    {% endblock social_buttons %}
 
 </main>
 
