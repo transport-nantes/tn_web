@@ -11,14 +11,14 @@
     <div id="entries-container" class="d-flex col-12 justify-content-center flex-wrap">
         {% for photoentry in photoentry_list %}
             <div class="d-flex col-12 col-md-6 col-xl-4 my-3 justify-content-center">
-                <div class="my-auto">
-                    <a href="{% url 'photo:photo_details' photoentry.sha1_name %}">
-                        <img src="{{ photoentry.submitted_photo.url }}"
-                        class="img-fluid thumbnail"
-                        style="filter: drop-shadow(5px 5px 10px #000); max-height:45vh;"
-                        alt="Participation au concours photo">
-                    </a>
-                </div>
+                <a href="{% url 'photo:photo_details' photoentry.sha1_name %}" style="max-height:212px;">
+                    <img src="{{ photoentry.submitted_photo.url }}"
+                    class="thumbnail"
+                    width="100%"
+                    height="100%"
+                    style="filter: drop-shadow(5px 5px 10px #000); object-fit:cover; aspect-ratio: 1/1;"
+                    alt="Participation au concours photo">
+                </a>
             </div>
 
         {% empty %}
