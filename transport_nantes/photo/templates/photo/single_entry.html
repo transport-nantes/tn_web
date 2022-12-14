@@ -5,6 +5,13 @@
 {% load crispy_forms_tags %}
 {% load social %}
 
+{% block styles %}
+    {{ block.super }}
+    {% compress css inline %}
+        <link rel="stylesheet" href="{% static 'photo/css/single_entry.css' %}">
+    {% endcompress %}
+{% endblock styles %}
+
 {% block localscripts %}
     {% comment %}
         The use of Javascript allows us to make AJAX requests to the server
@@ -14,6 +21,7 @@
     {% compress js %}
         <script src="{% static 'photo/js/vote_system.js' %}" defer></script>
     {% endcompress %}
+
     <script type="text/javascript">
         {% comment %}Those values are used in vote_system.js{% endcomment %}
         {% if has_voted %}
@@ -34,59 +42,59 @@
     <div class="d-flex col-12 col-md-8 flex-column mx-auto">
         {% if photo.accepted == True  %}
             <div class="d-flex w-75 justify-content-between flex-row mb-3 mx-auto">
+                {# Upvote button #}
+                <button id="upvote-button" type="button"
+                class="d-flex p-2 mx-3 font-xl border-circle
+                {% if last_vote == "upvote"%}
+                border-blue-light bg-blue-light font-blue-dark
+                {% endif %} "
+                {% if not has_voted %}
+                    data-toggle="modal" data-target="#first-vote-div"
+                {% endif %}>
+                    <i class="fa-solid fa-thumbs-up my-auto"></i>
+                </button>
+
+                {# Downvote button #}
+                <button id="downvote-button" type="button"
+                class="d-flex p-2 mx-3 font-xl border-circle
+                {% if last_vote == "downvote"%}
+                border-blue-light bg-blue-light font-blue-dark
+                {% endif %} "
+                {% if not has_voted %}
+                    data-toggle="modal" data-target="#first-vote-div"
+                {% endif %}>
+                    <i class="fa-solid fa-thumbs-down my-auto"></i>
+                </button>
+            </div>
+        {% endif %}
+
+        <div class="photo-container" style="position: relative; height:50vh;">
+            
+            <img src="{{ photo.submitted_photo.url }}"
+            alt="Photo soumise à l'occasion de l'opération piéton"
+            class=""
+            width="100%"
+            height="100%"
+            style="filter: drop-shadow(5px 5px 10px #000); object-fit:contain"></img>
+                
+            {% if photo.accepted == True  %}
                 {# Previous button #}
                 <a href="
                 {% if previous_photo %}
                     {% url 'photo:photo_details' previous_photo.sha1_name %}
                 {% endif %}"
-                class="btn navigation-button my-auto {% if not previous_photo %} disabled {% endif %}">
-                    <i class="fas fa-arrow-left"></i>
+                class="prev {% if not previous_photo %} disabled {% endif %}">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </a>
-                {# Vote buttons #}
-                    {# Upvote button #}
-                    <button id="upvote-button" type="button"
-                    class="d-flex p-2 mx-3 font-xl border-circle
-                    {% if last_vote == "upvote"%}
-                    border-blue-light bg-blue-light font-blue-dark
-                    {% endif %} "
-                    {% if not has_voted %}
-                        data-toggle="modal" data-target="#first-vote-div"
-                    {% endif %}>
-                        <i class="fa-solid fa-thumbs-up my-auto"></i>
-                    </button>
-
-                    {# Downvote button #}
-                    <button id="downvote-button" type="button"
-                    class="d-flex p-2 mx-3 font-xl border-circle
-                    {% if last_vote == "downvote"%}
-                    border-blue-light bg-blue-light font-blue-dark
-                    {% endif %} "
-                    {% if not has_voted %}
-                        data-toggle="modal" data-target="#first-vote-div"
-                    {% endif %}>
-                        <i class="fa-solid fa-thumbs-down my-auto"></i>
-                    </button>
-
                 {# Next button #}
                 <a href="
                 {% if next_photo %}
                     {% url 'photo:photo_details' next_photo.sha1_name %}
                 {% endif %}"
-                class="btn navigation-button my-auto {% if not next_photo %} disabled {% endif %} ">
-                    <i class="fas fa-arrow-right"></i>
+                class="next {% if not next_photo %} disabled {% endif %} ">
+                    <i class="fa-solid fa-chevron-right"></i>
                 </a>
-            </div>
-        {% endif %}
-
-        <div class="d-flex flex-row w-100">
-            <a href="{{ photo.submitted_photo.url }}"
-            class='d-flex col-12 mx-auto my-3' style="max-height: 60vh; width: auto;"
-            target="_blank">
-                <img src="{{ photo.submitted_photo.url }}"
-                alt="Photo soumise à l'occasion de l'opération piéton"
-                class="d-flex mw-100 mx-auto"
-                style="filter: drop-shadow(5px 5px 10px #000);"></img>
-            </a>
+            {% endif %}
         </div>
 
         {% tn_markdown photo.pedestrian_issues_md|default:"" %}
