@@ -1,0 +1,37 @@
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 43%;
+  width: auto;
+  padding: 16px;
+  color: white !important;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+.prev {
+  left: 0;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.photo-container {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  max-height: 60vh;
+}
