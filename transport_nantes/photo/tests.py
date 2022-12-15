@@ -291,6 +291,33 @@ class TestVotes(StaticLiveServerTestCase):
         self.anon_browser.implicitly_wait(5)
         self.auth_browser.implicitly_wait(5)
 
+    # This class is an adaptation from Selenium's documentation:
+    # https://selenium-python.readthedocs.io/waits.html#explicit-waits
+    # This has been implemented in place of a polling on the database
+    # because the polling was raising occasionally a table locked error
+    # on the CI server. (#1077)
+    # Instead we wait from the DOM to update as a response to the server.
+    class element_has_css_class:
+        """
+        An expectation for checking that an element has a particular css class.
+
+        locator - used to find the element
+        reverse - used to check if the element does not have the css class
+        returns the WebElement once it has the particular css class
+        """
+        def __init__(self, locator, css_class: str, reverse: bool = False):
+            self.locator = locator
+            self.css_class = css_class
+            self.rev = reverse
+
+        def __call__(self, driver: webdriver.Chrome):
+            # Finding the referenced element
+            element = driver.find_element(*self.locator)
+            if self.css_class in element.get_attribute("class"):
+                return element and not self.rev
+            else:
+                return self.rev
+
     def test_vote_anon(self):
 
         # Anon user
@@ -330,8 +357,16 @@ class TestVotes(StaticLiveServerTestCase):
 
         # The POST request can take some time to process, we wait until it's
         # done
-        WebDriverWait(self.anon_browser, 5).until(
-            lambda x: Vote.objects.count() == 2)
+        WebDriverWait(self.anon_browser, 10).until(
+            # css class 'bg-blue-light' is present when the user has liked
+            # the photo, and is removed when user clicks again
+            self.element_has_css_class(
+                (By.ID, 'upvote-button'),
+                'bg-blue-light',
+                # We want the class to be absent
+                reverse=True
+            )
+        )
 
         self.assertEqual(Vote.objects.count(), 2)
         self.assertEqual(Vote.objects.last().user, None)
@@ -375,7 +410,13 @@ class TestVotes(StaticLiveServerTestCase):
         # The POST request can take some time to process, we wait until it's
         # done
         WebDriverWait(self.auth_browser, 20).until(
-            lambda x: Vote.objects.count() == 1)
+            # css class 'bg-blue-light' is present when the user has liked
+            # the photo, and is removed when user clicks again
+            self.element_has_css_class(
+                (By.ID, 'upvote-button'),
+                'bg-blue-light',
+            )
+        )
 
         self.assertEqual(Vote.objects.count(), 1)
         self.assertEqual(Vote.objects.first().captcha_succeeded, True)
@@ -388,7 +429,15 @@ class TestVotes(StaticLiveServerTestCase):
         # The POST request can take some time to process, we wait until it's
         # done
         WebDriverWait(self.auth_browser, 5).until(
-            lambda x: Vote.objects.count() == 2)
+            # css class 'bg-blue-light' is present when the user has liked
+            # the photo, and is removed when user clicks again
+            self.element_has_css_class(
+                (By.ID, 'upvote-button'),
+                'bg-blue-light',
+                # We want the class to be absent
+                reverse=True
+            )
+        )
 
         self.assertEqual(Vote.objects.count(), 2)
         self.assertEqual(Vote.objects.last().user, self.user)
