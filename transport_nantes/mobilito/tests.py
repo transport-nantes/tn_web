@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-import time
 
 from django.contrib.auth.models import Permission, User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -55,6 +54,7 @@ class MobilitoSessionViewTests(TestCase):
         self.mobilito_session = MobilitoSession.objects.create(
             user=self.user,
             start_timestamp=datetime.now(timezone.utc),
+            location="Foo"
         )
         self.mobilito_session_url = reverse_lazy(
             'mobilito:mobilito_session_summary',
@@ -62,12 +62,18 @@ class MobilitoSessionViewTests(TestCase):
         self.flag_session_url = reverse_lazy(
             'mobilito:flag_session',
             args=[self.mobilito_session.session_sha1])
+        self.update_location_url = reverse_lazy(
+            'mobilito:edit_location',
+            args=[self.mobilito_session.session_sha1])
 
         # User with permission to view unpublished  mobilito sessions
         self.authorised_user = User.objects.create(username='bar', password='foo')
         may_view_sessions = Permission.objects.get(
             codename="mobilito_session.view_session")
+        may_edit_sessions = Permission.objects.get(
+            codename="change_mobilitosession")
         self.authorised_user.user_permissions.add(may_view_sessions)
+        self.authorised_user.user_permissions.add(may_edit_sessions)
 
         # Creating 3 clients for each user type :
         # - author_client : Is the MobilitoSession's creator (author)
@@ -183,6 +189,47 @@ class MobilitoSessionViewTests(TestCase):
         self.assertEqual(InappropriateFlag.objects.count(), 2,
                          ("No new report should be created when there isn't a"
                           " matching mobilitoSession."))
+
+    def test_presence_of_edit_button(self):
+        """Test the presence of the edit button."""
+        button_id = "mobilito-session-edit-btn"
+
+        response = self.author_client.get(self.mobilito_session_url)
+        self.assertContains(response, button_id)
+
+        response = self.authorised_user_client.get(self.mobilito_session_url)
+        self.assertContains(response, button_id)
+
+        response = self.anonymous_client.get(self.mobilito_session_url)
+        self.assertNotContains(response, button_id)
+
+    def test_ability_to_edit_session_location(self):
+        """Test the ability to edit a session location."""
+        post_data = {
+            "location": "New location",
+        }
+        response = self.author_client.post(self.update_location_url, post_data)
+        self.assertRedirects(response, self.mobilito_session_url)
+        self.mobilito_session.refresh_from_db()
+        self.assertEqual(self.mobilito_session.location, "New location")
+
+        post_data = {
+            "location": "Bar",
+        }
+        response = self.authorised_user_client.post(
+            self.update_location_url, post_data)
+        self.assertRedirects(response, self.mobilito_session_url)
+        self.mobilito_session.refresh_from_db()
+        self.assertEqual(self.mobilito_session.location, "Bar")
+
+        post_data = {
+            "location": "Foo",
+        }
+        response = self.anonymous_client.post(
+            self.update_location_url, post_data)
+        self.assertRedirects(response, self.mobilito_session_url)
+        self.mobilito_session.refresh_from_db()
+        self.assertEqual(self.mobilito_session.location, "Bar")
 
 
 class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):

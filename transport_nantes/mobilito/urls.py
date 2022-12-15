@@ -14,6 +14,8 @@ urlpatterns = [
     path('merci/', views.ThankYouView.as_view(), name='thanks'),
     path('session/<str:session_sha1>/', views.MobilitoSessionSummaryView.as_view(),
          name='mobilito_session_summary'),
+    path('update-location/<str:session_sha1>/', views.EditLocationView.as_view(),
+         name='edit_location'),
 
     path('session_ts_img/<str:session_sha1>/', views.mobilito_session_timeseries_image,
          name='mobilito_session_timeseries_image'),
