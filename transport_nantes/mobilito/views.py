@@ -1,43 +1,44 @@
 import io
 import json
 import logging
+import pickle
+import random
+from base64 import b64decode, b64encode
+from datetime import datetime, timedelta, timezone
+from typing import Union
+
 import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.font_manager as font_manager
 import matplotlib.image as mpimg
-import matplotlib.text
 import matplotlib.pyplot as plt
-import pickle
-from base64 import b64decode, b64encode
-from datetime import datetime, timedelta, timezone
-import random
+import matplotlib.text
 import requests
-from user_agents import parse
-from typing import Union
-
 from asso_tn.utils import make_timed_token, token_valid
 from authentication.views import create_send_record
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.http import (Http404, HttpRequest, HttpResponse,
-                         HttpResponseRedirect, JsonResponse)
+                         HttpResponseNotAllowed, HttpResponseRedirect,
+                         JsonResponse)
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView
-from django.views.generic.edit import FormView
-
+from django.views.generic.edit import FormView, UpdateView
+from mobilito.forms import AddressForm, LocationEditForm
+from mobilito.models import (Event, InappropriateFlag, MobilitoSession,
+                             MobilitoUser)
 from topicblog.models import SendRecordTransactionalAdHoc
-from transport_nantes.settings import MAPS_API_KEY
+from user_agents import parse
 
-from mobilito.forms import AddressForm
-from mobilito.models import (
-    InappropriateFlag, MobilitoSession, MobilitoUser, Event)
+from transport_nantes.settings import MAPS_API_KEY
 
 logger = logging.getLogger("django")
 gcp_logger = logging.getLogger('gcp')
@@ -467,6 +468,17 @@ class MobilitoSessionSummaryView(TemplateView):
 
         context["user_has_reported_this_session"] = \
             user_has_reported_this_session
+
+        context["can_edit"] = all(
+            [
+                self.request.user.has_perm('mobilito.change_mobilitosession')
+                or self.request.user == requested_mobilito_session.user.user,
+
+                requested_mobilito_session.start_timestamp + timedelta(
+                    days=7) > datetime.now(timezone.utc),
+            ]
+        )
+
         return context
 
     def check_view_permission(self, obj: MobilitoSession) -> None:
@@ -761,6 +773,49 @@ class ReverseGeocodingView(View):
             f" {lat=}, {lng=}")
 
         return HttpResponse(status=400)
+
+
+class EditLocationView(UpdateView):
+    """Edit the location of a MobilitoSession."""
+    # Criteria to filter the MobilitoSession to edit
+    slug_url_kwarg = "session_sha1"
+    slug_field = "session_sha1"
+    model = MobilitoSession
+    form_class = LocationEditForm
+
+    def get(self, *args, **kwargs):
+        return HttpResponseNotAllowed(["POST"])
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            self.check_object_permissions()
+        except PermissionDenied:
+            return HttpResponseRedirect(self.object.get_absolute_url())
+        return super().post(request, *args, **kwargs)
+
+    def check_object_permissions(self):
+        """Check that the user is allowed to change this MobilitoSession."""
+        if (self.request.user != self.object.user.user
+            and not self.request.user.has_perm(
+                'mobilito.change_mobilitosession')):
+            logger.warning(
+                f"{self.request.user} tried to edit location of session "
+                f"{self.object.session_sha1} but is not allowed to do so")
+            raise PermissionDenied()
+
+        if self.object.start_timestamp < datetime.now(timezone.utc) - timedelta(days=7):
+            logger.warning(
+                f"{self.request.user} tried to edit location of session "
+                f"{self.object.session_sha1} but the session is too old")
+            raise PermissionDenied()
+
+    def form_valid(self, *args, **kwargs):
+        """Log the location edit."""
+        logger.info(
+            f"{self.request.user} edited location of session "
+            f"{self.object.session_sha1}")
+        return super().form_valid(*args, **kwargs)
 
 
 @csrf_protect

@@ -4,6 +4,7 @@ import logging
 
 from django.db import models, IntegrityError
 from django.forms import ValidationError
+from django.urls import reverse
 
 logger = logging.getLogger("django")
 
@@ -75,6 +76,11 @@ class MobilitoSession(models.Model):
                 str(time.monotonic_ns()) + "|" + str(self.user.user.id)
             ).encode('utf-8')
         ).hexdigest()
+
+    def get_absolute_url(self):
+        return reverse(
+            "mobilito:mobilito_session_summary",
+            kwargs={"session_sha1": self.session_sha1})
 
 
 def event_type_validator(value):
