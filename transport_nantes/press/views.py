@@ -70,7 +70,7 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
                 self.request.GET.get("article_date_end")
         if self.request.GET.get("press_mention_refresh"):
             update_opengraph_data(
-                presmention_id=self.request.GET.get(
+                pressmention_id=self.request.GET.get(
                     "press_mention_refresh"))
         return context
 
@@ -305,7 +305,7 @@ def update_opengraph_data(form=None, pressmention_id=None):
         return None
     else:
         # Add the open graph image on the PressMention object
-        press_mention.og_image_url.save(image_filename, files.File(image_fp))
+        press_mention.og_image.save(image_filename, files.File(image_fp))
         press_mention.save()
         return None
 
