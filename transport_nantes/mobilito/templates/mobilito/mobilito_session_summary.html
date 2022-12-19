@@ -2,6 +2,17 @@
 {% load tz %}
 {% load static %}
 {% load compress %}
+{% load absolute_url %}
+
+{% block head %}
+    {{ block.super }}
+    <meta property="og:title" content="Ma session Mobilito"/>
+    <meta property="og:description" content="{{ mobilito_session.location }} - Résumé de session en graphiques"/>
+    <meta property="og:image" content="{% absolute_url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}"/>
+    <meta property="twitter:image" content="{% absolute_url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}">
+    <meta property="twitter:title" content="Ma session Mobilito">
+    <meta property="twitter:description" content="{{ mobilito_session.location }} - Résumé de session en graphiques">
+{% endblock head %}
 
 {% block styles %}
     {{block.super}}
