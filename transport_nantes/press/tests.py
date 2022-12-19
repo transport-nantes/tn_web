@@ -1,3 +1,5 @@
+from pathlib import Path
+import requests
 from unittest.mock import patch
 from django.test import TestCase, Client
 from .models import PressMention
@@ -276,3 +278,28 @@ class PressMentionTestCase(TestCase):
             url, data={"url": "http://example.com/new-url/"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"is_duplicate": False})
+
+    @patch("requests.get")
+    def test_update_og_data(self, mocked_request):
+        mocked_request.return_value.content = (
+            """
+            <!DOCTYPE html>
+            <html>
+                <head>
+                <meta property="og:title" content="Test title" />
+                <meta property="og:description" content="Test description" />
+                <meta property="og:image" content="https://example.com/test.jpg" />
+                </head>
+            </html>
+            """.encode("utf-8")
+        )
+        mocked_request.return_value.status_code = 200
+
+        url = (reverse("press:list_items") +
+               "?press_mention_refresh=" + str(self.journal_report.pk))
+        response = self.user_permited_client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.journal_report.refresh_from_db()
+        self.assertEqual(self.journal_report.og_title, "Test title")
+        self.assertEqual(self.journal_report.og_description, "Test description")
