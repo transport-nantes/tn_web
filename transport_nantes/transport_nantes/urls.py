@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 from asso_tn.views import AssoView
-from topicblog.views import TopicBlogItemView
 from django.conf import settings
 from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
@@ -26,8 +25,7 @@ from django_ses.views import SESEventWebhookView
 handler404 = 'asso_tn.views.tn_404_view'
 
 urlpatterns = [
-    path('', TopicBlogItemView.as_view(),
-         {'the_slug': 'index'},
+    path('', AssoView.as_view(template_name='asso_tn/index.html',),
          name='index'),
     path('index2', AssoView.as_view(template_name='asso_tn/index.html',),
          name='index2'),

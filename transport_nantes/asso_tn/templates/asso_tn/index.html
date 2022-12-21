@@ -1,22 +1,20 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
-{% load don %}
 {% load mpanels %}
 {% load newsletter %}
 {% load launcher %}
+
 {% block content %}
-{% item_teaser 'ligne-johanna-rolland-pour-plus-de-mobilite' %}
+{% item_teaser_index 'ligne-johanna-rolland-pour-plus-de-mobilite' %}
+
 <div class="background-ad-hoc-blue">
-    <div class="d-flex flex-column p-4 p-xl-5">
-        <h2>Les projets Mobilitains</h2>
-        <div class="row pt-1">
-            {% launcher "presidentielles-2022" %}
-            {% launcher "la-grande-mobilite" %}
-            {% launcher "velopolitain" %}
-            {% launcher "ligne-johanna-rolland-2021" %}
-        </div>
-        {% show_mailing_list mailinglist="general-quarterly" title="Restez en contact !" %}
-        {% item_teaser 'operation-pieton' %}
+    <div class="d-flex flex-column col-12 col-sm-10 col-md-7 mx-auto">
+        {% show_projects %}
+        <hr class="w-100" />
+        {% show_qui_sommes_nous %}
+        <hr class="w-100" />
+        {% show_mailing_list mailinglist="general-quarterly" title="Inscrivez-vous pour rester informé.e " %}
+        <hr class="w-100" />
         {% show_volunteer %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% load static %}
+
+
+{% if launcher.article_slug %}
+    <a href="{% url 'topic_blog:view_item_by_slug' launcher.article_slug %}">
+{% else %}
+    404
+{% endif %}
+{% if launcher.launcher_image %}
+    <img class="d-block w-100" style="height:300px; object-fit:cover;" src="{{ launcher.launcher_image.url }}" alt="{{ launcher.launcher_image_alt_text }}" />
+{% else %}
+    <img class="d-block w-100" src="{% static 'asso_tn/beacon.gif' %}" alt="No image provided">
+{% endif %}
+<div class="carousel-caption">
+    <h1 class="font-weight-bold bg-blue-light mb-0" style="font-size:1.2em; color: white;">
+        {{ launcher.headline }}
+    </h1>
+    <p class="bg-blue-light" style="color: white;">
+        {{ launcher.launcher_text_md }}
+    </p>
+</div>
+{% if launcher.article_slug %}
+    </a>
+{% endif %}

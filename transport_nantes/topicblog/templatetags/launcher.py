@@ -28,6 +28,13 @@ def launcher(context, slug, is_preview=False):
     return {'launcher': launcher}
 
 
+@register.inclusion_tag('topicblog/template_tags/launcher_carousel.html',
+                        takes_context=True)
+def launcher_carousel(context, slug, is_preview=False):
+    """Launcher, but with a different template to render inside a carousel."""
+    return launcher(context, slug, is_preview)
+
+
 @register.inclusion_tag('topicblog/template_tags/item_teaser.html',
                         takes_context=True)
 def item_teaser(context, slug, is_preview=False):
@@ -57,3 +64,10 @@ def item_teaser(context, slug, is_preview=False):
         if item is None:
             logger.error(f"item_teaser failed to find slug: \"{slug}\".")
     return {'launcher': launcher, 'item': item}
+
+
+@register.inclusion_tag('topicblog/template_tags/item_teaser_index.html',
+                        takes_context=True)
+def item_teaser_index(context, slug, is_preview=False):
+    """Item teaser, but with a different template to render in the index."""
+    return item_teaser(context, slug, is_preview)

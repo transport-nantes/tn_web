@@ -1,0 +1,19 @@
+{% if item %}
+<div class="card text-center" style="border:none;">
+    <img src="{{ item.header_image.url }}" class="card-img index-image" alt="header_image">
+    <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center" style="background-color: rgba(0,0,0,0.2);">
+        <h1 class="card-title text-white bg-blue-light p-2 header-title-index">
+            {{ item.header_title }}
+        </h1>
+        <p class="card-text text-white bg-blue-light p-1 header-description-index"
+        style="">
+            {{ item.header_description }}
+        </p>
+        <a href="{% url item.viewbyslug_object_url item.slug %}"
+        class="btn donation-button rounded btn-lg mx-auto" 
+        style="background-color: var(--mobilitains-orange)">
+            En lire plus <i class="fa fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+{% endif %}

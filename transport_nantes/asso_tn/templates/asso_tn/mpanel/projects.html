@@ -1,160 +1,74 @@
-{% load static %}
-{% load don %}
-<h2>Les projets Mobilitains</h2>
-<div class="row pt-1">
-{% comment %}
-    <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url "geoplan:map" "nantes" "velopolitain" %}">
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{% static 'asso_tn/20210228-210131-9011_velorution-psm-667.jpg' %}"
-			 alt="La Vélorution de Nantes passe devant le pont Saint-Mihiel"
-			 style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Observatoire du Vélopolitain</h3>
-		    <p>
-			Agir pour que Nantes Métropole tienne ses promesses.
-		    </p>
-		</div>
-	    </a>
-	</div>
-    </div>
-{% endcomment %}
-{% comment %}
-    <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url "surveys:questions" "presidentielles-2022" %}">
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{% static 'asso_tn/drapeau-667.jpg' %}"
-			 alt="drapeau français sous l'arc de Triomphe"
-			 style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">La mobilité régionale</h3>
-		    <p>
-			Les candidat-e-s
-		    aux présidentielles sur leurs projets de soutien
-		    de la mobilité régionale</p>
-		</div>
-	    </a>
-	</div>
-    </div>
-{% endcomment %}
-    <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url "topic_blog:view_item_by_slug" "operation-pieton-44" %}">
-		<div class="shadow-md">
-		    <img class="rounded"
-			 src="{% static 'asso_tn/jumping-guy-667.jpg' %}"
-			 alt="piéton mâle qui saute dans la rue"
-			 style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Opération piéton</h3>
-		    <p>
-			Participer à une compétition photo citoyenne, ouverte à toutes et à tous.</p>
-		</div>
-	    </a>
-	</div>
-    </div>
-    <div class="col-md-3">
-	<div class="thumbnail">
-	    <a href="{% url 'topic_blog:view_item_by_slug' 'la-grande-mobilite' %}">
-		<div class="shadow-md">
-		<img class="rounded"
-		     src="{% static 'asso_tn/images-quentin-boulegon/grande-mobilité-1.jpg' %}"
-		     alt="Un TER et un tramway" style="width:100%">
-		</div>
-		<div class="caption pt-2">
-		    <h3 class="font-weight-light"
-			style="font-variant: all-small-caps;
-			       font-size: 150%;">Grande mobilité</h3>
-		    <p>
-			Obtenir plus de dessertes et mieux bouger.
-		    </p>
-		</div>
-	    </a>
-	</div>
-    </div>
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="{% url 'topic_blog:view_item_by_slug' 'velopolitain' %}">
-            <div class="shadow-md">
-                <img class="rounded" src="{% static 'asso_tn/images-quentin-boulegon/vélopolitain-2.jpg' %}" alt="La piste cyclable sur le Pont Anne de Bretagne a Nantes" style="width:100%">
-            </div>
-            <div class="caption pt-2">
-                <h3 class="font-weight-light">Vélopolitain</h3>
-                <p>Agir pour des aménagements cyclables bien pensés.</p>
-            </div>
-            </a>
+{% load launcher %}
+
+<h1 class="my-3" style="font-weight: 600; letter-spacing:-1px; font-size: 2.2rem;">
+    Les projets Mobilitains
+</h1>
+<div class="row pt-1 d-none d-xl-flex no-gutters">
+    {% launcher "operation-pieton-44" %}
+    {% launcher "la-grande-mobilite" %}
+    {% launcher "velopolitain" %}
+    {% launcher "ligne-johanna-rolland-2021" %}
+</div>
+<div
+    id="carouselIndicators"
+    class="carousel slide d-block d-xl-none"
+    data-ride="carousel"
+>
+    <ol class="carousel-indicators">
+        <li
+            data-target="#carouselIndicators"
+            data-slide-to="0"
+            class="active"
+        ></li>
+        <li
+            data-target="#carouselIndicators"
+            data-slide-to="1"
+        ></li>
+        <li
+            data-target="#carouselIndicators"
+            data-slide-to="2"
+        ></li>
+        <li
+            data-target="#carouselIndicators"
+            data-slide-to="3"
+        ></li>
+    </ol>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            {% launcher_carousel "operation-pieton-44" %}
+        </div>
+        <div class="carousel-item">
+            {% launcher_carousel "la-grande-mobilite" %}
+        </div>
+        <div class="carousel-item">
+            {% launcher_carousel "velopolitain" %}
+        </div>
+        <div class="carousel-item">
+            {% launcher_carousel "ligne-johanna-rolland-2021" %}
         </div>
     </div>
-{% comment %}
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="{% url 'topic_blog:view_item_by_slug' 'pont-saint-mihiel' %}">
-            <img src="{% static 'asso_tn/pont-saint-mihiel-carre.jpg' %}" alt="Le Pont Saint-Mihiel a Nantes" style="width:100%">
-            <div class="caption pt-2">
-                <h3 class="font-weight-light">Pont Saint-Mihiel</h3>
-                <p>
-                Le symbole d'une métropole qui hésite&nbsp;!
-                </p>
-            </div>
-            </a>
-        </div>
-    </div>
-{% endcomment %}
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="{% url 'topic_blog:view_item_by_slug' 'ligne-johanna-rolland-2021' %}">
-            <img src="{% static 'asso_tn/ligne-johanna-rolland-stations-carre.jpg' %}" alt="La ligne Johanna Rolland" style="width:100%">
-            <div class="caption pt-2">
-                <h3 class="font-weight-light">La ligne Johanna Rolland</h3>
-                <p>
-                Votre TER sur l'Île de Nantes.  Améliorer la mobilité dans les Pays de la Loire.
-                </p>
-            </div>
-            </a>
-        </div>
-    </div>
-{% comment %}
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="{% url 'topic_blog:view_item_by_slug' '2021-regionales' %}">
-            <div class="shadow-md">
-                <img class="rounded" src="{% static 'asso_tn/traffic-667.jpg' %}" alt="bouchon sur une route" style="width:100%">
-            </div>
-            <div class="caption pt-2">
-                <h3 class="font-weight-light">Élections 2021</h3>
-                <p>
-                Mobiliser, questionner et faire bouger les lignes.
-                </p>
-            </div>
-            </a>
-        </div>
-    </div>
-    </div>
-{% endcomment %}
-{% comment %}
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="{% url 'topic_blog:view_item_by_slug' 'devenir-ambassadeur' %}">
-            <img src="{% static 'asso_tn/images-libres/ambassadeur.jpg' %}" alt="Un ambassadeur" style="width:100%">
-            <div class="caption pt-2">
-                <h3 class="font-weight-light" style="font-variant: all-small-caps; font-size: 150%;">Ambassadeurs Mobilitains</h3>
-                <p>Vous avez envie d’être un.e porte parole, de réfléchir et agir avec nous ? {# Soutenez-nous dans votre commune #}</p>
-            </div>
-            </a>
-        </div>
-    </div>
-{% endcomment %}
+    <a
+        class="carousel-control-prev"
+        href="#carouselIndicators"
+        role="button"
+        data-slide="prev"
+    >
+        <span
+            class="carousel-control-prev-icon"
+            aria-hidden="true"
+        ></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a
+        class="carousel-control-next"
+        href="#carouselIndicators"
+        role="button"
+        data-slide="next"
+    >
+        <span
+            class="carousel-control-next-icon"
+            aria-hidden="true"
+        ></span>
+        <span class="sr-only">Next</span>
+    </a>
 </div>
