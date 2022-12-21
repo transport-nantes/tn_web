@@ -97,6 +97,8 @@ function onMapClick(e) {
         map.removeLayer(marker);
     }
     isLoading = true;
+    $('#id_latitude').val(`${e.latlng.lat}`)
+    $('#id_longitude').val(`${e.latlng.lng}`)
     // Geocode the latitude and longitude of the click and display the address.
     getGeocodedAddress(e.latlng.lat, e.latlng.lng).then(function (data) {
         if (data.status === "OK") {
@@ -104,8 +106,6 @@ function onMapClick(e) {
             marker = L.marker(e.latlng).addTo(map)
                 .bindPopup(`${addr}`).openPopup();
             $('#id_location').val(`${addr}`)
-            $('#id_latitude').val(`${e.latlng.lat}`)
-            $('#id_longitude').val(`${e.latlng.lng}`)
         } else {
             // Maps API has a spec for status codes, see :
             // https://developers.google.com/maps/documentation/geocoding/requests-reverse-geocoding#reverse-status-codes
