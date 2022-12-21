@@ -2,7 +2,7 @@
 
 <div class="container-fluid p-0">
     {% if item.header_image %}
-      <div class="card text-center">
+      <div class="card text-center" style="border:none;">
           <img src="{{ item.header_image.url }}" class="card-img custom-card-image-overlay" alt="header_image">
           <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center image-overlay-dark">
             <h2 class="card-title text-white">{{ item.header_title }}</h2>

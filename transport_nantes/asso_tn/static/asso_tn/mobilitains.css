@@ -18,7 +18,7 @@ html {
 }
 /*Colours defined*/
 :root {
-    --mobilitains-gris:       #DDE5ED;
+    --mobilitains-gris:       #dbe3eb;
     --mobilitains-rouge:      #7F6966; /* éviter avec bleu-foncé */
     --mobilitains-bleu:       #5BC2E7; /* éviter avec orange     */
     --mobilitains-orange:     #FA4616; /* éviter avec bleu       */
@@ -311,6 +311,13 @@ a:hover:hover.cta-button {
     width: 100%;
     height: 250px;
 }
+.index-image {
+    object-fit: cover;
+    width: 100%;
+    min-height: 66vh;
+    max-height: 70vh;
+    height: 100%;
+}
 .smallcap {
     font-variant: small-caps;
 }
@@ -561,21 +568,12 @@ span.centered {
     position: relative;
     width: 100%; /* The size you want */
 }
-.tbla-container:after {
-    content: "";
-    display: block;
-    padding-bottom: 100%; /* The padding depends on the width, not on the height, so with a padding-bottom of 100% you will get a square */
-}
 .tbla-container img {
-    position: absolute; /* Take your picture out of the flow */
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0; /* Make the picture taking the size of it's parent */
-    width: 100%; /* This if for the object-fit */
-    height: 100%; /* This if for the object-fit */
-    object-fit: cover; /* Equivalent of the background-size: cover; of a background-image */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     object-position: center;
+    aspect-ratio: 16/9;
 }
 
 .press-card-image{
@@ -605,6 +603,9 @@ span.centered {
 }
 .bg-blue-light {
     background-color: var(--mobilitains-bleu) !important;
+}
+.bg-gray {
+    background-color: var(--mobilitains-gris) !important;
 }
 .font-blue-light {
     color: var(--mobilitains-bleu);
@@ -648,4 +649,36 @@ span.centered {
 #share-buttons a:link {
     color: inherit;
     text-decoration: none !important;
+}
+.header-title-index {
+    font-size:60px;
+    font-weight: 700; 
+    line-height: 75px;
+    text-shadow: 3px .4px 2px rgba(31,35,35,.25)
+}
+.header-description-index {
+    font-size:40px;
+    font-weight: 600;
+    line-height: 50px;
+    text-shadow: 3px .4px 2px rgba(31,35,35,.25)
+}
+@media screen and (max-width: 1200px) {
+    .header-title-index {
+        font-size: 40px;
+        line-height: 50px;
+    }
+    .header-description-index {
+        font-size: 30px;
+        line-height: 40px;
+    }
+}
+@media screen and (max-width: 992px) {
+    .header-title-index {
+        font-size: 30px;
+        line-height: 40px;
+    }
+    .header-description-index {
+        font-size: 20px;
+        line-height: 30px;
+    }
 }

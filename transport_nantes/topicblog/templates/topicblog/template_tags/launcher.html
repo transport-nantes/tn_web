@@ -1,7 +1,7 @@
 {% load static %}
 
 <div class="col-md-3">
-	<div class="thumbnail">
+	<div class="thumbnail col-10 col-sm-12">
 		{% comment %}
 	    If the launcher slug does not reference a launcher in the
 	    database, the templatetag will pass None to this template
@@ -23,7 +23,7 @@
 				{% endif %}
 			</div>
 			<div class="caption pt-2">
-				<h3 class="font-weight-light">{{ launcher.headline }}</h3>
+				<h1 class="font-weight-bold" style="font-size:1.2em">{{ launcher.headline }}</h1>
 				<p>{{ launcher.launcher_text_md }}</p>
 			</div>
 		{% if launcher.article_slug %}

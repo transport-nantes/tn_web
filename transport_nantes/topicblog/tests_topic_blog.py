@@ -16,7 +16,8 @@ class Test(TestCase):
 
     def test_main_page_status_code(self):
         response = self.client.get("/")
-        self.assertEqual(response.status_code, 404)
+        # No TB object required
+        self.assertEqual(response.status_code, 200)
 
         self.user = User.objects.create_user(username='test-user',
                                              password='test-pass')
