@@ -76,12 +76,12 @@ class PhotoEntry(models.Model):
     # markdown text field where we'll add some interesting information
     # about pedestrian issues.
     pedestrian_issues_md = models.TextField(
-        blank=True, null=True, verbose_name="Problèmes rencontrés par les piétons"
+        blank=True, null=True, verbose_name="Remarques piétons (markdown)"
     )
     # markdown text field where we'll add information about the submitter
     # and how the photo was taken.
     submitter_info_md = models.TextField(
-        blank=True, null=True, verbose_name="Informations sur le photographe"
+        blank=True, null=True, verbose_name="Remarques photo (markdown)"
     )
 
     # sha1 is used to generate a unique URL for each photo entry while keeping
