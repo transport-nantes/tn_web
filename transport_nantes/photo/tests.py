@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import bs4 as bs
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.files.images import ImageFile
@@ -17,6 +18,21 @@ from asso_tn.utils import make_timed_token
 from mailing_list.models import MailingList, MailingListEvent
 
 from .models import PhotoEntry, Vote
+
+
+def add_image_for_test(test_self):
+    """Add a (fixed) image for a unit test."""
+    k_this_dir = Path(__file__).resolve().parent
+    k_file_path = k_this_dir / "test_data" / "1920x1080.png"
+    test_self.photo_entry = PhotoEntry.objects.create(
+        user=test_self.user,
+        category="LE_TRAVAIL",
+    )
+    with open(k_file_path, "rb") as fp_img:
+        test_self.photo_entry.submitted_photo = ImageFile(
+            fp_img, name="1920x1080.png"
+        )
+        test_self.photo_entry.save()
 
 
 class TestUploadEntry(TestCase):
@@ -38,9 +54,9 @@ class TestUploadEntry(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
-        THIS_DIR = Path(__file__).resolve().parent
-        FILE_PATH = THIS_DIR / "test_data" / "1920x1080.png"
-        with open(FILE_PATH, "rb") as f:
+        k_this_dir = Path(__file__).resolve().parent
+        k_file_path = k_this_dir / "test_data" / "1920x1080.png"
+        with open(k_file_path, "rb") as f:
             image = f.read()
         form_data = {
             "terms_and_condition_checkbox": True,
@@ -70,17 +86,8 @@ class TestConfirmation(TestCase):
         self.user = User.objects.create_user(username="testuser")
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
-        THIS_DIR = Path(__file__).resolve().parent
-        FILE_PATH = THIS_DIR / "test_data" / "1920x1080.png"
-        self.photo_entry = PhotoEntry.objects.create(
-            user=self.user,
-            category="LE_TRAVAIL",
-        )
-        with open(FILE_PATH, "rb") as f:
-            self.photo_entry.submitted_photo = ImageFile(
-                f, name="1920x1080.png"
-            )
-            self.photo_entry.save()
+        add_image_for_test(self)
+
         self.encoded_object_id = make_timed_token(
             string_key="", int_key=self.photo_entry.id, minutes=60 * 24 * 30
         )
@@ -93,20 +100,11 @@ class TestConfirmation(TestCase):
 
 class TestPhotoView(TestCase):
     def setUp(self):
+        # self.driver = webdriver.Firefox()
         self.user = User.objects.create_user(username="testuser")
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
-        THIS_DIR = Path(__file__).resolve().parent
-        FILE_PATH = THIS_DIR / "test_data" / "1920x1080.png"
-        self.photo_entry = PhotoEntry.objects.create(
-            user=self.user,
-            category="LE_TRAVAIL",
-        )
-        with open(FILE_PATH, "rb") as f:
-            self.photo_entry.submitted_photo = ImageFile(
-                f, name="1920x1080.png"
-            )
-            self.photo_entry.save()
+        add_image_for_test(self)
 
         self.mailing_list = MailingList.objects.create(
             mailing_list_name="Operation pieton",
@@ -114,7 +112,6 @@ class TestPhotoView(TestCase):
         )
 
     def test_get(self):
-
         # Anonymous client trying to see an unaccepted photo
         response = self.client.get(
             reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
@@ -135,6 +132,12 @@ class TestPhotoView(TestCase):
 
         # We now make the photo accepted
         self.photo_entry.accepted = True
+        k_photographer_id = "identify the photographer here"
+        self.photo_entry.photographer_identifier = k_photographer_id
+        k_ped_issues = "some pedestrian issues"
+        self.photo_entry.pedestrian_issues_md = k_ped_issues
+        k_submitter_info = "some interesting submitter info"
+        self.photo_entry.submitter_info_md = k_submitter_info
         self.photo_entry.save()
 
         # Anonymous client trying to see an accepted photo
@@ -142,6 +145,14 @@ class TestPhotoView(TestCase):
             reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
         )
         self.assertEqual(response.status_code, 200)
+        soup = bs.BeautifulSoup(response.content, "html.parser")
+        self.assertEqual(
+            k_photographer_id, soup.find(id="photographer_ident").i.string
+        )
+        self.assertEqual(
+            k_submitter_info, soup.find(id="submitter_info").p.string
+        )
+        self.assertEqual(k_ped_issues, soup.find(id="ped_issues").p.string)
 
         # Photo entry's owner trying to see their photo
         response = self.auth_client.get(
@@ -266,8 +277,8 @@ class TestVotes(StaticLiveServerTestCase):
             password="testpassword",
         )
 
-        THIS_DIR = Path(__file__).resolve().parent
-        FILE_PATH = THIS_DIR / "test_data" / "1920x1080.png"
+        k_this_dir = Path(__file__).resolve().parent
+        k_file_path = k_this_dir / "test_data" / "1920x1080.png"
         self.photo_entry = PhotoEntry.objects.create(
             user=self.user,
             category="LE_TRAVAIL",
@@ -287,7 +298,7 @@ class TestVotes(StaticLiveServerTestCase):
             category="LE_TRAVAIL",
             accepted=True,
         )
-        with open(FILE_PATH, "rb") as f:
+        with open(k_file_path, "rb") as f:
             self.photo_entry.submitted_photo = ImageFile(
                 f, name="1920x1080.png"
             )
@@ -326,19 +337,21 @@ class TestVotes(StaticLiveServerTestCase):
     # because the polling was raising occasionally a table locked error
     # on the CI server. (#1077)
     # Instead we wait from the DOM to update as a response to the server.
-    class element_has_css_class:
+    class ElementHasCssClass:
         """
         An expectation for checking that an element has a particular css class.
 
         locator - used to find the element
-        reverse - used to check if the element does not have the css class
+        does_not_have_class - used to check if the element does not have the css class
         returns the WebElement once it has the particular css class
         """
 
-        def __init__(self, locator, css_class: str, reverse: bool = False):
+        def __init__(
+            self, locator, css_class: str, does_not_have_class: bool = False
+        ):
             self.locator = locator
             self.css_class = css_class
-            self.rev = reverse
+            self.rev = does_not_have_class
 
         def __call__(self, driver: webdriver.Chrome):
             # Finding the referenced element
@@ -349,7 +362,6 @@ class TestVotes(StaticLiveServerTestCase):
                 return self.rev
 
     def test_vote_anon(self):
-
         # Anon user
         self.anon_browser.get(
             self.live_server_url
@@ -370,11 +382,11 @@ class TestVotes(StaticLiveServerTestCase):
             a little bit of time. This function will click the button
             until it is ready.
             """
-            callable = EC.invisibility_of_element_located(
+            the_callable = EC.invisibility_of_element_located(
                 (By.ID, "first-vote-div")
             )
             # Returns True if the element is invisible in the provided browser
-            modal_disappeared = callable(browser)
+            modal_disappeared = the_callable(browser)
             if not modal_disappeared:
                 self.submit_button.click()
 
@@ -396,11 +408,11 @@ class TestVotes(StaticLiveServerTestCase):
         WebDriverWait(self.anon_browser, 10).until(
             # css class 'bg-blue-light' is present when the user has liked
             # the photo, and is removed when user clicks again
-            self.element_has_css_class(
+            self.ElementHasCssClass(
                 (By.ID, "upvote-button"),
                 "bg-blue-light",
                 # We want the class to be absent
-                reverse=True,
+                does_not_have_class=True,
             )
         )
 
@@ -441,11 +453,11 @@ class TestVotes(StaticLiveServerTestCase):
             a little bit of time. This function will click the button
             until it is ready.
             """
-            callable = EC.invisibility_of_element_located(
+            the_callable = EC.invisibility_of_element_located(
                 (By.ID, "first-vote-div")
             )
             # Returns True if the element is invisible in the provided browser
-            modal_disappeared = callable(browser)
+            modal_disappeared = the_callable(browser)
             if not modal_disappeared:
                 self.submit_button.click()
 
@@ -458,7 +470,7 @@ class TestVotes(StaticLiveServerTestCase):
         WebDriverWait(self.auth_browser, 20).until(
             # css class 'bg-blue-light' is present when the user has liked
             # the photo, and is removed when user clicks again
-            self.element_has_css_class(
+            self.ElementHasCssClass(
                 (By.ID, "upvote-button"),
                 "bg-blue-light",
             )
@@ -469,7 +481,8 @@ class TestVotes(StaticLiveServerTestCase):
         self.assertEqual(Vote.objects.first().user, self.user)
         self.assertEqual(Vote.objects.first().vote_value, True)
 
-        # We now simply click on vote button again, this should produce a new Vote
+        # We now simply click on vote button again, this should
+        # produce a new Vote
         self.auth_browser.find_element(By.ID, "upvote-button").click()
 
         # The POST request can take some time to process, we wait until it's
@@ -477,11 +490,11 @@ class TestVotes(StaticLiveServerTestCase):
         WebDriverWait(self.auth_browser, 5).until(
             # css class 'bg-blue-light' is present when the user has liked
             # the photo, and is removed when user clicks again
-            self.element_has_css_class(
+            self.ElementHasCssClass(
                 (By.ID, "upvote-button"),
                 "bg-blue-light",
                 # We want the class to be absent
-                reverse=True,
+                does_not_have_class=True,
             )
         )
 

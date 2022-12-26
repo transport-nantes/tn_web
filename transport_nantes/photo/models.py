@@ -73,12 +73,15 @@ class PhotoEntry(models.Model):
     # Photo entries are pending (null) until they are accepted (True)
     # or rejected (False) after a jury session.
     accepted = models.BooleanField(null=True, blank=True, default=None)
-    # markdown text field where we'll add some interesting information
+
+    # A publicly displayable identifier for the photographer.
+    photographer_identifier = models.TextField(blank=True, null=True)
+    # Markdown text field where we'll add some interesting information
     # about pedestrian issues.
     pedestrian_issues_md = models.TextField(
         blank=True, null=True, verbose_name="Remarques piétons (markdown)"
     )
-    # markdown text field where we'll add information about the submitter
+    # Markdown text field where we'll add information about the submitter
     # and how the photo was taken.
     submitter_info_md = models.TextField(
         blank=True, null=True, verbose_name="Remarques photo (markdown)"

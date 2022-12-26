@@ -83,9 +83,16 @@
             </div>
         {% endif %}
 
-        {% tn_markdown photo.pedestrian_issues_md|default:"" %}
-
-        {% tn_markdown photo.submitter_info_md|default:"" %}
+	{% if photo.photographer_identifier %}
+	    <p id="photographer_ident"><i>{{ photo.photographer_identifier }}</i></p>
+	{% endif %}
+	{% if photo.submitter_info_md %}
+	    <div id="submitter_info">{% tn_markdown photo.submitter_info_md|default:"" %}</div>
+	{% endif %}
+	{% if photo.pedestrian_issues_md %}
+	    <p>Remarques des Mobilitains&nbsp;:</p>
+	    <div id="ped_issues">{% tn_markdown photo.pedestrian_issues_md|default:"" %}</div>
+	{% endif %}
 
         {% block social_buttons %}
             <div class="my-3">
@@ -146,6 +153,4 @@
             </div>
         {% endif %}
     </div>
-
-
 {% endblock app_content %}
