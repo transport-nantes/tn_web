@@ -173,9 +173,7 @@ class PhotoView(FormView):
             context["social"] = {
                 "og_title": "Les mobilitains organisent l'opération piéton",
                 "og_description": "Votez pour vos clichés préférés !",
-                "og_image": photo.submitted_photo.url,
-                "twitter_image": photo.submitted_photo.url,
-                "twitter_creator": "@mobilitain",
+                "twitter_creator": "@mobilitains",
                 "twitter_site": "mobilitains.fr",
             }
 
