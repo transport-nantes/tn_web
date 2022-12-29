@@ -33,6 +33,10 @@ INTERNAL_IPS = [
     "127.0.0.1",
     "localhost",
 ]
+# When running in dev from vagrant, we listen on all interfaces in
+# order to port-forward through to the browser.
+if DEBUG:
+    INTERNAL_IPS = INTERNAL_IPS + ["0.0.0.0"]
 
 # Application definition
 
