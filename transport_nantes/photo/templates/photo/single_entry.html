@@ -1,4 +1,5 @@
 {% extends 'asso_tn/base_mobilitain.html' %}
+{% load absolute_url %}
 {% load markdown %}
 {% load static %}
 {% load compress %}
@@ -11,6 +12,17 @@
         <link rel="stylesheet" href="{% static 'photo/css/single_entry.css' %}">
     {% endcompress %}
 {% endblock styles %}
+
+{% block head %}
+    {{ block.super }}
+    {% if photo.pedestrian_issues_md %}
+	    <meta property="twitter:description" content="{{ photo.pedestrian_issues_text }}"/>
+        <meta property="og:description" content="{{ photo.pedestrian_issues_text }}"/>
+	{% endif %}
+    <meta property="og:image" content="{% absolute_url_image photo.submitted_photo.url %}"/>
+    <meta property="twitter:image" content="{% absolute_url_image photo.submitted_photo.url %}">
+
+{% endblock head %}
 
 {% block localscripts %}
     {% comment %}

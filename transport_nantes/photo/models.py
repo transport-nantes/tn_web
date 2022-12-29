@@ -1,9 +1,11 @@
 """Models for photo competition."""
 import logging
+
+import bs4
+from bs4 import BeautifulSoup as bs
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
-
 
 logger = logging.getLogger("django")
 
@@ -90,6 +92,16 @@ class PhotoEntry(models.Model):
     # sha1 is used to generate a unique URL for each photo entry while keeping
     # the ID private.
     sha1_name = models.CharField(max_length=200, unique=True, editable=False)
+
+    @property
+    def pedestrian_issues_text(self) -> str:
+        """Returns the pedestrian issues as plain text.
+
+        This is used to render the pedestrian issues on social medias.
+        """
+        from topicblog.templatetags.markdown import tn_markdown
+        rendered_text = tn_markdown({}, self.pedestrian_issues_md)
+        return bs(rendered_text, "html.parser").text
 
     def __str__(self):
         return f"{self.user.username} - {self.category}"
