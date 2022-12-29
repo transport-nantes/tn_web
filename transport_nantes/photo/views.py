@@ -6,8 +6,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, When, Case, Subquery, Value
-from django.http import (HttpRequest, HttpResponse,
-                         HttpResponseForbidden, HttpResponseRedirect)
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -17,8 +21,12 @@ from mailing_list.events import subscribe_user_to_list
 from mailing_list.models import MailingList
 
 from .events import get_user_vote
-from .forms import (AnonymousVoteForm, PhotoEntryForm, SimpleVoteForm,
-                    SimpleVoteFormWithConsent)
+from .forms import (
+    AnonymousVoteForm,
+    PhotoEntryForm,
+    SimpleVoteForm,
+    SimpleVoteFormWithConsent,
+)
 from .models import PhotoEntry, Vote
 
 logger = logging.getLogger("django")
@@ -26,6 +34,7 @@ logger = logging.getLogger("django")
 
 class ForbiddenException(Exception):
     """Exception to raise if the user is not allowed to vote"""
+
     pass
 
 
@@ -33,10 +42,11 @@ class UploadEntry(LoginRequiredMixin, CreateView):
     """
     Form to collect Photo entries
     """
+
     model = PhotoEntry
     form_class = PhotoEntryForm
 
-    success_url = reverse_lazy('photo:confirmation')
+    success_url = reverse_lazy("photo:confirmation")
 
     def get(self, request, *args, **kwargs):
         logger.info(f"UploadEntry.get() from {request.user}")
@@ -53,7 +63,8 @@ class UploadEntry(LoginRequiredMixin, CreateView):
             try:
                 logger.info("Received photo submission.")
                 mailing_list = MailingList.objects.get(
-                    mailing_list_token="operation-pieton")
+                    mailing_list_token="operation-pieton"
+                )
                 user = request.user
                 subscribe_user_to_list(user, mailing_list)
                 logger.info(f"Subscribed user {user} to list {mailing_list}.")
@@ -70,7 +81,8 @@ class UploadEntry(LoginRequiredMixin, CreateView):
         """
         self.object = form.save()
         encoded_object_id = make_timed_token(
-            string_key="", int_key=self.object.id, minutes=60*24*30)
+            string_key="", int_key=self.object.id, minutes=60 * 24 * 30
+        )
         self.success_url += f"?submission={encoded_object_id}"
         return HttpResponseRedirect(self.get_success_url())
 
@@ -79,7 +91,8 @@ class Confirmation(TemplateView):
     """
     Confirmation page after successful submit of a PhotoEntry
     """
-    template_name = 'photo/confirmation.html'
+
+    template_name = "photo/confirmation.html"
 
     def get(self, request, *args, **kwargs):
         logger.info(f"Confirmation.get() from {request.user}")
@@ -92,11 +105,11 @@ class Confirmation(TemplateView):
         string_key, photo_id = token_valid(submission_token)
 
         if photo_id and string_key == "":
-            last_submitted_photo = \
-                PhotoEntry.objects.get(id=photo_id)
+            last_submitted_photo = PhotoEntry.objects.get(id=photo_id)
         if last_submitted_photo:
-            context["submitted_photo"] = \
-                last_submitted_photo.submitted_photo.url
+            context[
+                "submitted_photo"
+            ] = last_submitted_photo.submitted_photo.url
 
         return context
 
@@ -105,12 +118,13 @@ class Confirmation(TemplateView):
 # so it doesn't contain a csrf token tag.
 # This decorator ensures that the csrf token is sent to the client, in place
 # of the csrf token tag.
-@method_decorator(ensure_csrf_cookie, name='dispatch')
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class PhotoView(FormView):
     """
     View to display a single photo and up/down vote it
     """
-    template_name = 'photo/single_entry.html'
+
+    template_name = "photo/single_entry.html"
     form_class = AnonymousVoteForm
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -126,16 +140,23 @@ class PhotoView(FormView):
         photo_sha1 = self.kwargs.get("photo_sha1")
         photo = get_object_or_404(PhotoEntry, sha1_name=photo_sha1)
         tn_session_id = self.request.session.get("tn_session")
-        user = self.request.user if self.request.user.is_authenticated else None
+        user = (
+            self.request.user if self.request.user.is_authenticated else None
+        )
 
         if not photo.accepted:
             # Author and authorized users can see the photo
-            if not any([
-                self.request.user == photo.user,
-                self.request.user.has_perm('photo.may_see_unaccepted_photos')
-            ]):
+            if not any(
+                [
+                    self.request.user == photo.user,
+                    self.request.user.has_perm(
+                        "photo.may_see_unaccepted_photos"
+                    ),
+                ]
+            ):
                 raise ForbiddenException(
-                    "Cette photo n'as pas encore été acceptée")
+                    "Cette photo n'as pas encore été acceptée"
+                )
         context["photo"] = photo
 
         if photo.accepted:
@@ -144,11 +165,10 @@ class PhotoView(FormView):
             # we need to check if the user has already voted for this photo
             # using its session id as well.
             if Vote.objects.filter(
-                    # user here could be null hence the
-                    # need to check if user is authenticated
-                    Q(user=user) if user else Q()
-                    | Q(tn_session_id=tn_session_id),
-                    captcha_succeeded=True,
+                # user here could be null hence the
+                # need to check if user is authenticated
+                Q(user=user) if user else Q() | Q(tn_session_id=tn_session_id),
+                captcha_succeeded=True,
             ).exists():
                 context["has_voted"] = True
             else:
@@ -157,7 +177,8 @@ class PhotoView(FormView):
             # To set the proper styles on the vote buttons, we check if the
             # user has already voted on this photo
             last_vote = get_user_vote(
-                self.request.user, photo, tn_session_id=tn_session_id)
+                self.request.user, photo, tn_session_id=tn_session_id
+            )
 
             if last_vote:
                 if last_vote.vote_value is True:
@@ -179,7 +200,9 @@ class PhotoView(FormView):
 
         return context
 
-    def set_next_and_previous_arrows(self, context: dict, photo: 'PhotoEntry') -> None:
+    def set_next_and_previous_arrows(
+        self, context: dict, photo: "PhotoEntry"
+    ) -> None:
         """
         Set the next and previous photo arrows
 
@@ -193,61 +216,67 @@ class PhotoView(FormView):
         lower_id_exists = When(
             # 'pk' refers to the annotated object
             pk__in=Subquery(
-                PhotoEntry.objects.filter(
-                    accepted=True,
-                    pk__lt=photo.pk
-                ).order_by('-pk').values('pk')[:1]
+                PhotoEntry.objects.filter(accepted=True, pk__lt=photo.pk)
+                .order_by("-pk")
+                .values("pk")[:1]
             ),
             # If the condition is met, we return a truthy value
-            then=Value(True)
+            then=Value(True),
         )
         no_lower_id_exists = When(
             # 'pk' refers to the annotated object
             pk__in=Subquery(
                 PhotoEntry.objects.filter(
                     accepted=True,
-                ).order_by('-pk').values('pk')[:1]
+                )
+                .order_by("-pk")
+                .values("pk")[:1]
             ),
-            then=Value(True)
+            then=Value(True),
         )
         higher_id_exists = When(
             # 'pk' refers to the annotated object
             pk__in=Subquery(
-                PhotoEntry.objects.filter(
-                    accepted=True,
-                    pk__gt=photo.pk
-                ).order_by('pk').values('pk')[:1]
+                PhotoEntry.objects.filter(accepted=True, pk__gt=photo.pk)
+                .order_by("pk")
+                .values("pk")[:1]
             ),
             # If the condition is met, we return a truthy value
-            then=Value(True)
+            then=Value(True),
         )
         no_higher_id_exists = When(
             # 'pk' refers to the annotated object
             pk__in=Subquery(
                 PhotoEntry.objects.filter(
                     accepted=True,
-                ).order_by('pk').values('pk')[:1]
+                )
+                .order_by("pk")
+                .values("pk")[:1]
             ),
-            then=Value(True)
+            then=Value(True),
         )
 
         # We annotate the queryset with the previous and next photo
-        qs = PhotoEntry.objects.filter(accepted=True).annotate(
-            # Case() will evaluate the conditions (When()) in order and return the
-            # value of the first condition that is met, or the default value if
-            # none of the conditions are met.
-            previous=Case(
-                lower_id_exists,
-                no_lower_id_exists,
-                default=Value(None),
-            ),
-            next_pic=Case(
-                higher_id_exists,
-                no_higher_id_exists,
-                default=Value(None),
+        qs = (
+            PhotoEntry.objects.filter(accepted=True)
+            .annotate(
+                # Case() will evaluate the conditions (When()) in order and return the
+                # value of the first condition that is met, or the default value if
+                # none of the conditions are met.
+                previous=Case(
+                    lower_id_exists,
+                    no_lower_id_exists,
+                    default=Value(None),
+                ),
+                next_pic=Case(
+                    higher_id_exists,
+                    no_higher_id_exists,
+                    default=Value(None),
+                )
+                # We only retrieve the annotated objects
             )
-            # We only retrieve the annotated objects
-        ).filter(Q(previous__isnull=False) | Q(next_pic__isnull=False))
+            .filter(Q(previous__isnull=False) | Q(next_pic__isnull=False))
+        )
 
         # Preparation of the queries
         # you can't pipe two objects, using [:1] will return a queryset
@@ -290,9 +319,9 @@ class PhotoView(FormView):
         # voted with this session, we no longer user the AnonymousVoteForm
         # for simplicity
         if Vote.objects.filter(
-                Q(user=user)
-                | Q(tn_session_id=tn_session_id),
-                captcha_succeeded=True).exists():
+            Q(user=user) | Q(tn_session_id=tn_session_id),
+            captcha_succeeded=True,
+        ).exists():
             self.form_class = SimpleVoteForm
 
         # If the user is logged in but never voted, we use the form with
@@ -347,27 +376,32 @@ class PhotoView(FormView):
         if not no_consent and user and self.form_class != SimpleVoteForm:
             try:
                 mailing_list = MailingList.objects.get(
-                    mailing_list_token="operation-pieton")
+                    mailing_list_token="operation-pieton"
+                )
                 subscribe_user_to_list(user, mailing_list)
                 logger.info(
-                    f"Subscribed user {user.email} to list {mailing_list}.")
+                    f"Subscribed user {user.email} to list {mailing_list}."
+                )
             except MailingList.DoesNotExist:
-                logger.error(
-                    "Mailing list operation-pieton does not exist")
+                logger.error("Mailing list operation-pieton does not exist")
 
         # Always set at page load
-        tn_session_id = self.request.session.get('tn_session', None)
+        tn_session_id = self.request.session.get("tn_session", None)
 
         # Button only sends "upvotes" so we reverse the last vote to have the
         # opposite vote
         vote_value = self.request.POST.get("vote_value", None)
         if vote_value:
             if user:
-                last_vote = Vote.objects.filter(
-                    user=user).order_by("timestamp").last()
+                last_vote = (
+                    Vote.objects.filter(user=user).order_by("timestamp").last()
+                )
             else:
-                last_vote = Vote.objects.filter(
-                    tn_session_id=tn_session_id).order_by("timestamp").last()
+                last_vote = (
+                    Vote.objects.filter(tn_session_id=tn_session_id)
+                    .order_by("timestamp")
+                    .last()
+                )
 
             vote_value = not last_vote.vote_value if last_vote else True
 
@@ -419,13 +453,14 @@ class PhotoView(FormView):
         if not no_consent and user:
             try:
                 mailing_list = MailingList.objects.get(
-                    mailing_list_token="operation-pieton")
+                    mailing_list_token="operation-pieton"
+                )
                 subscribe_user_to_list(user, mailing_list)
                 logger.info(
-                    f"Subscribed user {user.email} to list {mailing_list}.")
+                    f"Subscribed user {user.email} to list {mailing_list}."
+                )
             except MailingList.DoesNotExist:
-                logger.error(
-                    "Mailing list operation-pieton does not exist")
+                logger.error("Mailing list operation-pieton does not exist")
 
         # vote value is a constant among the forms
         vote_value = self.request.POST.get("vote_value", None)
@@ -437,7 +472,7 @@ class PhotoView(FormView):
             return HttpResponseForbidden("Invalid vote")
 
         # Always set at page load
-        tn_session_id = self.request.session.get('tn_session', None)
+        tn_session_id = self.request.session.get("tn_session", None)
 
         Vote.objects.create(
             user=user,
