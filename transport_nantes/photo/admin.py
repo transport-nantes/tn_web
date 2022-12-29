@@ -6,7 +6,7 @@ class PhotoEntryAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'sha1_name')
 
     list_display = ("category", "user", "accepted")
-    list_filter = ("category", "user__email", "accepted")
+    list_filter = ("category", "accepted")
     search_fields = ("category", "user__email")
 
 
