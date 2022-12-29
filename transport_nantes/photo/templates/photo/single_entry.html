@@ -40,6 +40,10 @@
 {% block app_content %}
 
     <div class="d-flex col-12 col-md-8 flex-column mx-auto">
+        <a class="btn navigation-button mr-auto mb-3" href="{% url 'photo:galerie' %}">
+            <i class="fa-solid fa-chevron-left"></i>
+            Retour à la galerie
+        </a>
         <div class="photo-container" style="position: relative; height:50vh;">
             <img src="{{ photo.submitted_photo.url }}"
             alt="Photo soumise à l'occasion de l'opération piéton"
