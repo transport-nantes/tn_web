@@ -1,0 +1,68 @@
+{% extends "mobilito/base_mobilito.html" %}
+
+{% block app_content %}
+    <main class="d-flex flex-column col-12 col-md-8 mx-auto">
+        <div class="d-flex col-12 px-0">
+            <a href="{% url 'mobilito:index' %}" class="btn navigation-button mb-3 mr-2"
+            >
+                <i class="fa fa-arrow-left"></i>
+                Retour à l'accueil
+            </a>
+            <a href="{% url 'mobilito:address_form' %}" class="btn navigation-button mb-3 mr-auto" data-toggle="tooltip" data-placement="bottom" title="Faire une nouvelle session">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+        <h1 class="font-xl">Mes sessions mobilito</h1>
+        {% for session in mobilito_sessions %}
+            <article>
+                <h2 style="font-size: 1.2em;">
+                    <a href="{{ session.get_absolute_url }}" style="color:inherit;">
+                        <i class="fa-solid fa-crosshairs"></i>
+                        {{ session.location|default:"Pas d'adresse" }}
+                    </a>
+                </h2>
+                <p class="mb-0"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
+            </article>
+            <hr class="w-100" />
+        {% empty %}
+            <p class="text-center">Aucune session enregistrée</p>
+        {% endfor %}
+        {% block pagination %}
+            <nav aria-label="pagination naviguation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page=1"><i class="fas fa-angle-double-left"></i> Première</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                        </li>
+                    {% endif %}
+                    {% for number in number_pagination_list %}
+                        {% if number == page_obj.number %}
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link active" style="color: inherit; background-color:inherit;" href="#">{{ page_obj.number }}</a>
+                        </li>
+                        {% elif number in paginator.page_range %}
+                        <li class="page-item">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ number }}">{{ number }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ number }}">{{ number }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.paginator.num_pages }}">Dernière <i class="fas fa-angle-double-right"></i></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endblock pagination %}
+    </main>
+{% endblock app_content %}

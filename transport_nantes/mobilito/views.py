@@ -30,7 +30,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView, UpdateView
 from mobilito.forms import AddressForm, LocationEditForm
 from mobilito.models import (Event, InappropriateFlag, MobilitoSession,
@@ -167,6 +167,17 @@ class MobilitoView(TemplateView):
     """
 
     template_name = 'mobilito/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_sessions_history"] = False
+        if self.request.user.is_authenticated:
+            mobilito_user = get_MobilitoUser(self.request)
+            context["has_sessions_history"] = (
+                MobilitoSession.objects.filter(
+                    user=mobilito_user).count() > 0
+            )
+        return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -858,3 +869,16 @@ def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
 
     if request.method == 'GET':
         return HttpResponse(status=405)
+
+
+class MySessionHistoryView(LoginRequiredMixin, ListView):
+    """Display one's own session history."""
+    model = MobilitoSession
+    template_name = 'mobilito/my_session_history.html'
+    context_object_name = 'mobilito_sessions'
+    paginate_by = 10
+
+    def get_queryset(self):
+        """Return the user's sessions."""
+        return MobilitoSession.objects.filter(
+            user__user=self.request.user).order_by('-start_timestamp')
