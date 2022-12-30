@@ -66,20 +66,12 @@
                 
             {% if photo.accepted == True  %}
                 {# Previous button #}
-                <a href="
-                {% if previous_photo %}
-                    {% url 'photo:photo_details' previous_photo.sha1_name %}
-                {% endif %}"
-                class="prev {% if not previous_photo %} disabled {% endif %}">
-                    <i class="fa-solid fa-chevron-left"></i>
+                <a href="{% url 'photo:prev_photo_details' photo.sha1_name %}"
+                   id="photo_prev" class="prev"> <i class="fa-solid fa-chevron-left"></i>
                 </a>
                 {# Next button #}
-                <a href="
-                {% if next_photo %}
-                    {% url 'photo:photo_details' next_photo.sha1_name %}
-                {% endif %}"
-                class="next {% if not next_photo %} disabled {% endif %} ">
-                    <i class="fa-solid fa-chevron-right"></i>
+                <a href="{% url 'photo:next_photo_details' photo.sha1_name %}"
+                   id="photo_next" class="next"> <i class="fa-solid fa-chevron-right"></i>
                 </a>
             {% endif %}
         </div>

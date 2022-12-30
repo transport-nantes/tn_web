@@ -20,13 +20,15 @@ from mailing_list.models import MailingList, MailingListEvent
 from .models import PhotoEntry, Vote
 
 
-def add_image_for_test(test_self):
+def add_image_for_test(test_self, accepted=False, sha1_name=None):
     """Add a (fixed) image for a unit test."""
     k_this_dir = Path(__file__).resolve().parent
     k_file_path = k_this_dir / "test_data" / "1920x1080.png"
     test_self.photo_entry = PhotoEntry.objects.create(
         user=test_self.user,
         category="LE_TRAVAIL",
+        accepted=accepted,
+        sha1_name=sha1_name,
     )
     with open(k_file_path, "rb") as fp_img:
         test_self.photo_entry.submitted_photo = ImageFile(
@@ -100,7 +102,6 @@ class TestConfirmation(TestCase):
 
 class TestPhotoView(TestCase):
     def setUp(self):
-        # self.driver = webdriver.Firefox()
         self.user = User.objects.create_user(username="testuser")
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
@@ -266,6 +267,117 @@ class TestPhotoView(TestCase):
         self.assertEqual(
             Vote.objects.filter(captcha_succeeded=True).count(), 1
         )
+
+
+class TestPhotoGallery(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser")
+        self.auth_client = Client()
+        self.auth_client.force_login(self.user)
+
+    def test_display_zero(self):
+        """Confirm that we are ok if no image is accepted.
+
+        In particular, we should display an appropriate error.
+
+        """
+        response_1 = self.client.get(reverse("photo:galerie"))
+        self.assertEqual(response_1.status_code, 200)
+
+        # The previous and next images should 404 if we have no images.
+        k_non_existant_image_name = "xxx"
+        response_prev_1 = self.client.get(
+            reverse(
+                "photo:prev_photo_details",
+                kwargs={"photo_sha1": k_non_existant_image_name},
+            )
+        )
+        self.assertEqual(response_prev_1.status_code, 404)
+        response_next_1 = self.client.get(
+            reverse(
+                "photo:next_photo_details",
+                kwargs={"photo_sha1": k_non_existant_image_name},
+            )
+        )
+        self.assertEqual(response_next_1.status_code, 404)
+
+        # Add a non-accepted image: it should behave the same as no
+        # image here.
+        add_image_for_test(self, accepted=False, sha1_name="a")
+        response_2 = self.client.get(reverse("photo:galerie"))
+        self.assertEqual(response_2.status_code, 200)
+        response_a = self.client.get(
+            reverse("photo:photo_details", kwargs={"photo_sha1": "a"})
+        )
+        self.assertEqual(response_a.status_code, 403)
+
+        response_a_prev = self.client.get(
+            reverse("photo:prev_photo_details", kwargs={"photo_sha1": "a"})
+        )
+        self.assertEqual(response_a_prev.status_code, 404)
+        response_a_next = self.client.get(
+            reverse("photo:next_photo_details", kwargs={"photo_sha1": "a"})
+        )
+        self.assertEqual(response_a_next.status_code, 404)
+
+    def test_display_one(self):
+        """Confirm that we can display a sole image.
+
+        Check that all goes well if we have precisely one image.
+
+        """
+        add_image_for_test(self, accepted=True, sha1_name="a")
+        check_image_and_prev_next(self, "a", "a", "a")
+
+        # Adding a non-accepted image should chane nothing.
+        add_image_for_test(self, accepted=False, sha1_name="b")
+        # Previous/Next links should point to the same image if there's only one.
+        check_image_and_prev_next(self, "a", "a", "a")
+
+    def test_display_several(self):
+        """Confirm that we can display multiple images."""
+        add_image_for_test(self, accepted=True, sha1_name="a")
+        add_image_for_test(self, accepted=True, sha1_name="b")
+        add_image_for_test(self, accepted=True, sha1_name="c")
+        add_image_for_test(self, accepted=False, sha1_name="x")
+        add_image_for_test(self, accepted=False, sha1_name="y")
+        check_image_and_prev_next(self, "a", "c", "b")
+        check_image_and_prev_next(self, "b", "a", "c")
+        check_image_and_prev_next(self, "c", "b", "a")
+
+
+def check_image_and_prev_next(
+    test_self, this_sha1, prev_sha1, next_sha1
+) -> None:
+    response = test_self.client.get(
+        reverse("photo:photo_details", kwargs={"photo_sha1": this_sha1})
+    )
+    test_self.assertEqual(response.status_code, 200)
+    soup = bs.BeautifulSoup(response.content, "html.parser")
+    prev_link = soup.find(id="photo_prev")
+    test_self.assertIsNotNone(prev_link)
+    prev_url = reverse(
+        "photo:prev_photo_details", kwargs={"photo_sha1": this_sha1}
+    )
+    test_self.assertEqual(prev_url, prev_link.get("href"))
+    next_link = soup.find(id="photo_next")
+    test_self.assertIsNotNone(next_link)
+    next_url = reverse(
+        "photo:next_photo_details", kwargs={"photo_sha1": this_sha1}
+    )
+    test_self.assertEqual(next_url, next_link.get("href"))
+    prev_response = test_self.client.get(prev_url)
+    test_self.assertEqual(prev_response.status_code, 302)
+    test_self.assertEqual(
+        prev_response.url,
+        reverse("photo:photo_details", kwargs={"photo_sha1": prev_sha1}),
+    )
+    next_response = test_self.client.get(next_url)
+    test_self.assertEqual(next_response.status_code, 302)
+    test_self.assertEqual(
+        next_response.url,
+        reverse("photo:photo_details", kwargs={"photo_sha1": next_sha1}),
+    )
 
 
 class TestVotes(StaticLiveServerTestCase):

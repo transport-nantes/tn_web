@@ -5,18 +5,25 @@ from asso_tn.utils import make_timed_token, token_valid
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, When, Case, Subquery, Value
+from django.db.models import Q, When, Case, Subquery, Value, QuerySet
 from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseForbidden,
     HttpResponseRedirect,
+    Http404,
 )
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.generic import CreateView, FormView, ListView, TemplateView
+from django.views.generic import (
+    CreateView,
+    FormView,
+    ListView,
+    TemplateView,
+    View,
+)
 from mailing_list.events import subscribe_user_to_list
 from mailing_list.models import MailingList
 
@@ -145,7 +152,8 @@ class PhotoView(FormView):
         )
 
         if not photo.accepted:
-            # Author and authorized users can see the photo
+            # Only the submitter and authorized users can see photos
+            # that are not accepted.
             if not any(
                 [
                     self.request.user == photo.user,
@@ -154,25 +162,20 @@ class PhotoView(FormView):
                     ),
                 ]
             ):
-                raise ForbiddenException(
-                    "Cette photo n'as pas encore été acceptée"
-                )
-        context["photo"] = photo
+                raise ForbiddenException("Désolé")
 
+        context["photo"] = photo
         if photo.accepted:
-            self.set_next_and_previous_arrows(context, photo)
-            # Because it's possible that user is not authenticated (anonymous vote)
-            # we need to check if the user has already voted for this photo
-            # using its session id as well.
-            if Vote.objects.filter(
-                # user here could be null hence the
-                # need to check if user is authenticated
+            # If the photo is accepted, display vote buttons.  As a
+            # submitter or admin, we might display a photo that is not
+            # yet accepted, but voting on it shouldn't work.
+
+            # If the user is anonymous, we use session id to check for votes.
+            context["has_voted"] = Vote.objects.filter(
+                # User here could be NULL, so check if authenticated.
                 Q(user=user) if user else Q() | Q(tn_session_id=tn_session_id),
                 captcha_succeeded=True,
-            ).exists():
-                context["has_voted"] = True
-            else:
-                context["has_voted"] = False
+            ).exists()
 
             # To set the proper styles on the vote buttons, we check if the
             # user has already voted on this photo
@@ -188,7 +191,7 @@ class PhotoView(FormView):
 
             if not last_vote and user:
                 # If user is logged in but never voted, we ask for consent
-                # to send them emails
+                # to send them emails.
                 context["form"] = SimpleVoteFormWithConsent()
 
             context["social"] = {
@@ -199,102 +202,6 @@ class PhotoView(FormView):
             }
 
         return context
-
-    def set_next_and_previous_arrows(
-        self, context: dict, photo: "PhotoEntry"
-    ) -> None:
-        """
-        Set the next and previous photo arrows
-
-        context is passed by reference.
-        """
-        # Preparing conditions for readability
-
-        # When() are like a filter that returns the value of the 'then' argument
-        # if the condition is met.
-        # They are lazily evaluated.
-        lower_id_exists = When(
-            # 'pk' refers to the annotated object
-            pk__in=Subquery(
-                PhotoEntry.objects.filter(accepted=True, pk__lt=photo.pk)
-                .order_by("-pk")
-                .values("pk")[:1]
-            ),
-            # If the condition is met, we return a truthy value
-            then=Value(True),
-        )
-        no_lower_id_exists = When(
-            # 'pk' refers to the annotated object
-            pk__in=Subquery(
-                PhotoEntry.objects.filter(
-                    accepted=True,
-                )
-                .order_by("-pk")
-                .values("pk")[:1]
-            ),
-            then=Value(True),
-        )
-        higher_id_exists = When(
-            # 'pk' refers to the annotated object
-            pk__in=Subquery(
-                PhotoEntry.objects.filter(accepted=True, pk__gt=photo.pk)
-                .order_by("pk")
-                .values("pk")[:1]
-            ),
-            # If the condition is met, we return a truthy value
-            then=Value(True),
-        )
-        no_higher_id_exists = When(
-            # 'pk' refers to the annotated object
-            pk__in=Subquery(
-                PhotoEntry.objects.filter(
-                    accepted=True,
-                )
-                .order_by("pk")
-                .values("pk")[:1]
-            ),
-            then=Value(True),
-        )
-
-        # We annotate the queryset with the previous and next photo
-        qs = (
-            PhotoEntry.objects.filter(accepted=True)
-            .annotate(
-                # Case() will evaluate the conditions (When()) in order and return the
-                # value of the first condition that is met, or the default value if
-                # none of the conditions are met.
-                previous=Case(
-                    lower_id_exists,
-                    no_lower_id_exists,
-                    default=Value(None),
-                ),
-                next_pic=Case(
-                    higher_id_exists,
-                    no_higher_id_exists,
-                    default=Value(None),
-                )
-                # We only retrieve the annotated objects
-            )
-            .filter(Q(previous__isnull=False) | Q(next_pic__isnull=False))
-        )
-
-        # Preparation of the queries
-        # you can't pipe two objects, using [:1] will return a queryset
-        # with one object that we can pipe to evaluate both queries at the same time
-        prev_pic = qs.filter(previous__isnull=False).order_by("pk")[:1]
-        next_pic = qs.filter(next_pic__isnull=False).order_by("-pk")[:1]
-
-        # The pipe operator is used to concatenate two queries
-        # We evaluate the two queries at the same time doing a single query
-        prev_and_next_qs = prev_pic | next_pic
-        if len(prev_and_next_qs) == 2:
-            p, n = prev_and_next_qs
-        elif len(prev_and_next_qs) == 1:
-            p = n = prev_and_next_qs[0]
-        else:
-            p = n = None
-        context["previous_photo"] = p
-        context["next_photo"] = n
 
     def get_initial(self):
         """Set the initial value in the form"""
@@ -487,7 +394,71 @@ class PhotoView(FormView):
         return HttpResponse(status=200)
 
 
+class NextPhotoView(View):
+    """Redirect to view the next image."""
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        photo_sha1 = self.kwargs.get("photo_sha1")
+        logger.info(f"What's after {photo_sha1}?")
+        next_sha1 = get_subsequent_sha1_name(
+            PhotoEntry.objects.filter(sha1_name__gt=photo_sha1), "sha1_name"
+        )
+        logger.info(f"Got {next_sha1}.")
+        return HttpResponseRedirect(
+            reverse("photo:photo_details", kwargs={"photo_sha1": next_sha1})
+        )
+
+
+class PrevPhotoView(View):
+    """Redirect to view the prev image."""
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        photo_sha1 = self.kwargs.get("photo_sha1")
+        logger.info(f"What's before {photo_sha1}?")
+        next_sha1 = get_subsequent_sha1_name(
+            PhotoEntry.objects.filter(sha1_name__lt=photo_sha1), "-sha1_name"
+        )
+        logger.info(f"Got {next_sha1}.")
+        return HttpResponseRedirect(
+            reverse("photo:photo_details", kwargs={"photo_sha1": next_sha1})
+        )
+
+
+def get_subsequent_sha1_name(query_set: QuerySet, order_by: str) -> str:
+    """Fetch next entry in QuerySet."""
+    try:
+        next_sha1 = (
+            query_set.filter(accepted=True)
+            .order_by(order_by)
+            .values("sha1_name")
+            .first()["sha1_name"]
+        )
+        logger.info(f"Subsequent image is {next_sha1}")
+        return next_sha1
+    except TypeError:
+        return get_first_sha1_name(query_set, order_by)
+    except PhotoEntry.DoesNotExist:
+        raise Http404
+
+
+def get_first_sha1_name(query_set: QuerySet, order_by: str) -> str:
+    """Fetch first entry in QuerySet."""
+    try:
+        next_sha1 = (
+            PhotoEntry.objects.filter(accepted=True)
+            .order_by(order_by)
+            .values("sha1_name")
+            .first()["sha1_name"]
+        )
+        logger.info(f"Falling back to first image: {next_sha1}")
+        return next_sha1
+    except TypeError:
+        # If no available objects, then first() will return None and
+        # so we'll see a type error.
+        raise Http404
+
+
 class PhotoListView(ListView):
-    queryset = PhotoEntry.objects.filter(accepted=True)
+    queryset = PhotoEntry.objects.filter(accepted=True).order_by("sha1_name")
     allow_empty = True
     paginate_by = 20
