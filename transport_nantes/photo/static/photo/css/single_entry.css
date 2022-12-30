@@ -33,5 +33,15 @@
   width: 100%;
   max-width: 800px;
   margin: auto;
-  max-height: 60vh;
+  height: 50vh;
+}
+@media screen and (max-width: 800px) {
+  .photo-container {
+    height: 40vh;
+  }
+}
+@media screen and (max-width: 600px) {
+  .photo-container {
+    height: 30vh;
+  }
 }
