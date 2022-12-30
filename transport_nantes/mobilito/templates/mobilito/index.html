@@ -38,13 +38,27 @@
 			href="{% url 'mobilito:tutorial' 'presentation' %}">
 				Je passe vite par le tutoriel
 			</a>
+			{% if has_sessions_history %}
+				<a class="btn donation-button mx-2" role="button" 
+				href="{% url 'mobilito:my_sessions' %}">
+					Voir mon historique
+				</a>
+			{% endif %}
 		</div>
 	{% elif request.user.is_authenticated %}
 	{# ################ Not new, not done with tutoriel. ################ #}
+	<div class="d-flex col-12 flex-row flex-nowrap justify-content-around">	
 		<a class="btn donation-button" role="button"
 		href="{% url 'mobilito:tutorial' 'presentation' %}">
 			Je passe vite par le tutoriel
 		</a>
+		{% if has_sessions_history %}
+			<a class="btn donation-button mx-2" role="button" 
+			href="{% url 'mobilito:my_sessions' %}">
+				Voir mon historique
+			</a>
+		{% endif %}
+	</div>
 	{% else %}{# ################ Not authed, maybe new, maybe not. ################ #}
 	<div class="d-flex col-12 flex-row flex-nowrap justify-content-around">
 		<a class="btn donation-button mx-2" role="button" 

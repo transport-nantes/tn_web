@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -26,7 +27,8 @@ class TutorialStateTests(TestCase):
         self.assertEqual(
             self.tutorial_state.canonical_page("presentation"), "presentation")
         self.assertEqual(self.tutorial_state.canonical_page("velos"), "velos")
-        self.assertEqual(self.tutorial_state.canonical_page("unknown"), "presentation")
+        self.assertEqual(self.tutorial_state.canonical_page(
+            "unknown"), "presentation")
 
 
 class TutorialViewTests(TestCase):
@@ -67,7 +69,8 @@ class MobilitoSessionViewTests(TestCase):
             args=[self.mobilito_session.session_sha1])
 
         # User with permission to view unpublished  mobilito sessions
-        self.authorised_user = User.objects.create(username='bar', password='foo')
+        self.authorised_user = User.objects.create(
+            username='bar', password='foo')
         may_view_sessions = Permission.objects.get(
             codename="mobilito_session.view_session")
         may_edit_sessions = Permission.objects.get(
@@ -232,6 +235,57 @@ class MobilitoSessionViewTests(TestCase):
         self.assertEqual(self.mobilito_session.location, "Bar")
 
 
+class MySessionHistoryViewTests(TestCase):
+    """Test the my session history view."""
+
+    def setUp(self):
+        # Creation of a MobilitoSession object
+        user = User.objects.create(username='foo', password='bar')
+        self.user = MobilitoUser.objects.create(user=user)
+        self.mobilito_session = MobilitoSession.objects.create(
+            user=self.user,
+            start_timestamp=datetime.now(timezone.utc),
+            location="Foo"
+        )
+        self.second_mobilito_session = MobilitoSession.objects.create(
+            user=self.user,
+            start_timestamp=datetime.now(timezone.utc),
+            location="Bar"
+        )
+        self.mobilito_session_url = reverse_lazy(
+            'mobilito:mobilito_session_summary',
+            args=[self.mobilito_session.session_sha1])
+        self.second_mobilito_session_url = reverse_lazy(
+            'mobilito:mobilito_session_summary',
+            args=[self.second_mobilito_session.session_sha1])
+
+        # Creating 3 clients for each user type :
+        # - author_client : Is the MobilitoSession's creator (author)
+        # - authorised_client : Is a user with permission to view the session
+        # - Anonymous client : Is a user without permission to view the session
+        self.author_client = Client()
+        self.author_client.force_login(user)
+        self.anonymous_client = Client()
+
+    def test_session_history(self):
+        """Test the session history page."""
+        response = self.author_client.get(reverse_lazy('mobilito:my_sessions'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.mobilito_session_url)
+        self.assertContains(response, self.second_mobilito_session_url)
+
+        response = self.anonymous_client.get(
+            reverse_lazy('mobilito:my_sessions'))
+        self.assertRedirects(
+            response,
+            (
+                reverse_lazy("authentication:login")
+                + "?next="
+                + reverse_lazy("mobilito:my_sessions")
+            )
+        )
+
+
 class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
     """Test the flag session page using Selenium."""
 
@@ -257,7 +311,9 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
     def test_flag_session(self):
         """Test the ability to flag a session."""
         self.browser.get(self.live_server_url + self.mobilito_session_url)
-        self.browser.find_element(By.ID, 'dropdownMenuLink').click()
+        # Click might fail because the fontAwesome icon is not ready
+        # but hitting enter on the dropdown menu will work to open it
+        self.browser.find_element(By.ID, 'dropdownMenuLink').send_keys(Keys.ENTER)
         self.browser.find_element(By.ID, 'report-abuse').click()
         self.browser.find_element(By.ID, 'report-abuse-text').send_keys(
             "This is a test report.")
