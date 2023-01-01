@@ -1,0 +1,25 @@
+name: Lint
+
+on:
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install linters
+        run: |
+          pip install --upgrade pip
+          pip install black
+      - name: Run linters
+        continue-on-error: false
+        run: |
+          black --check --verbose --line-length 79 .
