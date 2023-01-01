@@ -1,18 +1,23 @@
 from django.contrib import admin
-from .models import (TopicBlogItem, TopicBlogEmail, SendRecordMarketingEmail,
-                     TopicBlogPress, TopicBlogLauncher,
-                     TopicBlogMailingListPitch, SendRecordMarketingPress,
-                     SendRecordTransactionalPress,
-                     SendRecordTransactionalEmail,
-                     SendRecordTransactionalAdHoc,
-                     TopicBlogPanel,
-                     )
+from .models import (
+    TopicBlogItem,
+    TopicBlogEmail,
+    SendRecordMarketingEmail,
+    TopicBlogPress,
+    TopicBlogLauncher,
+    TopicBlogMailingListPitch,
+    SendRecordMarketingPress,
+    SendRecordTransactionalPress,
+    SendRecordTransactionalEmail,
+    SendRecordTransactionalAdHoc,
+    TopicBlogPanel,
+)
 
 
 class TopicBlogItemAdmin(admin.ModelAdmin):
     # Making it read-only allows admins to see its ID
     # By default, non modifyable fields are hidden in admin panel
-    readonly_fields = ('pk',)
+    readonly_fields = ("pk",)
 
 
 class TopicBlogEmailAdmin(admin.ModelAdmin):
@@ -28,7 +33,10 @@ class TopicBlogLauncherAdmin(admin.ModelAdmin):
 
 
 class SendRecordMarketingEmailAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'send_time',)
+    readonly_fields = (
+        "pk",
+        "send_time",
+    )
 
     list_display = ("mailinglist", "recipient", "send_time", "slug")
     list_filter = ("mailinglist", "recipient", "send_time", "slug")
@@ -36,7 +44,10 @@ class SendRecordMarketingEmailAdmin(admin.ModelAdmin):
 
 
 class SendRecordMarketingPressAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'send_time',)
+    readonly_fields = (
+        "pk",
+        "send_time",
+    )
 
     list_display = ("mailinglist", "recipient", "send_time", "slug")
     list_filter = ("mailinglist", "recipient", "send_time", "slug")
@@ -44,7 +55,7 @@ class SendRecordMarketingPressAdmin(admin.ModelAdmin):
 
 
 class TopicBlogMailingListPitchAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk',)
+    readonly_fields = ("pk",)
 
     list_display = ("title", "slug", "mailing_list")
     list_filter = ("title", "slug", "mailing_list")

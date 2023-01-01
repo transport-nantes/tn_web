@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utm', '0005_alter_utm_base_url'),
+        ("utm", "0005_alter_utm_base_url"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='utm',
-            name='user_is_authenticated',
+            model_name="utm",
+            name="user_is_authenticated",
             field=models.BooleanField(blank=True, default=False),
         ),
     ]

@@ -6,124 +6,124 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0020_topicblogitem_date_modified'),
+        ("topicblog", "0020_topicblogitem_date_modified"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='body1_md',
+            model_name="topicblogpage",
+            name="body1_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='body2_md',
+            model_name="topicblogpage",
+            name="body2_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='body3_md',
+            model_name="topicblogpage",
+            name="body3_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_image_1',
+            model_name="topicblogpage",
+            name="bullet_image_1",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_image_2',
+            model_name="topicblogpage",
+            name="bullet_image_2",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_image_3',
+            model_name="topicblogpage",
+            name="bullet_image_3",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_image_4',
+            model_name="topicblogpage",
+            name="bullet_image_4",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_image_5',
+            model_name="topicblogpage",
+            name="bullet_image_5",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_text_1_md',
+            model_name="topicblogpage",
+            name="bullet_text_1_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_text_2_md',
+            model_name="topicblogpage",
+            name="bullet_text_2_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_text_3_md',
+            model_name="topicblogpage",
+            name="bullet_text_3_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_text_4_md',
+            model_name="topicblogpage",
+            name="bullet_text_4_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='bullet_text_5_md',
+            model_name="topicblogpage",
+            name="bullet_text_5_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='hero_description',
+            model_name="topicblogpage",
+            name="hero_description",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='hero_image',
+            model_name="topicblogpage",
+            name="hero_image",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='hero_title',
+            model_name="topicblogpage",
+            name="hero_title",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='meta_description',
+            model_name="topicblogpage",
+            name="meta_description",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='middle_image',
+            model_name="topicblogpage",
+            name="middle_image",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='middle_image_alt',
+            model_name="topicblogpage",
+            name="middle_image_alt",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='og_description',
+            model_name="topicblogpage",
+            name="og_description",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='og_image',
+            model_name="topicblogpage",
+            name="og_image",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='og_title',
+            model_name="topicblogpage",
+            name="og_title",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='slug',
+            model_name="topicblogpage",
+            name="slug",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='template',
+            model_name="topicblogpage",
+            name="template",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='title',
+            model_name="topicblogpage",
+            name="title",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='topic',
+            model_name="topicblogpage",
+            name="topic",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='twitter_description',
+            model_name="topicblogpage",
+            name="twitter_description",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='twitter_image',
+            model_name="topicblogpage",
+            name="twitter_image",
         ),
         migrations.RemoveField(
-            model_name='topicblogpage',
-            name='twitter_title',
+            model_name="topicblogpage",
+            name="twitter_title",
         ),
     ]

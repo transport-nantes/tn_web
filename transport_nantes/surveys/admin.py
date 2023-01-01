@@ -1,7 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Survey, SurveyCommune, SurveyQuestion, SurveyResponder, SurveyResponse
+from .models import (
+    Survey,
+    SurveyCommune,
+    SurveyQuestion,
+    SurveyResponder,
+    SurveyResponse,
+)
 
 admin.site.register(Survey)
 admin.site.register(SurveyCommune)

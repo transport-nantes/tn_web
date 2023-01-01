@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geoplan', '0006_auto_20210611_0723'),
+        ("geoplan", "0006_auto_20210611_0723"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='maplayer',
-            name='layer_type',
-            field=models.CharField(choices=[('BASE', 'Base'), ('SATISFAIT', 'Satisfait'), ('NON SATISFAIT', 'Non Satisfait')], default='BASE', max_length=13),
+            model_name="maplayer",
+            name="layer_type",
+            field=models.CharField(
+                choices=[
+                    ("BASE", "Base"),
+                    ("SATISFAIT", "Satisfait"),
+                    ("NON SATISFAIT", "Non Satisfait"),
+                ],
+                default="BASE",
+                max_length=13,
+            ),
         ),
     ]

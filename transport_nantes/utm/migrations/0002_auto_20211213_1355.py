@@ -6,20 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utm', '0001_initial'),
+        ("utm", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='utm',
-            name='base_url',
-            field=models.CharField(default='none', max_length=200),
+            model_name="utm",
+            name="base_url",
+            field=models.CharField(default="none", max_length=200),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='utm',
-            name='session_cookie',
-            field=models.CharField(default='none', max_length=200),
+            model_name="utm",
+            name="session_cookie",
+            field=models.CharField(default="none", max_length=200),
             preserve_default=False,
         ),
     ]

@@ -6,33 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0055_alter_topicblogemail_scheduled_for_deletion_date_and_more'),
+        (
+            "topicblog",
+            "0055_alter_topicblogemail_scheduled_for_deletion_date_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogemail',
-            name='date_modified',
+            model_name="topicblogemail",
+            name="date_modified",
             field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='date_modified',
+            model_name="topicblogitem",
+            name="date_modified",
             field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AlterField(
-            model_name='topicbloglauncher',
-            name='date_modified',
+            model_name="topicbloglauncher",
+            name="date_modified",
             field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AlterField(
-            model_name='topicblogmailinglistpitch',
-            name='date_modified',
+            model_name="topicblogmailinglistpitch",
+            name="date_modified",
             field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AlterField(
-            model_name='topicblogpress',
-            name='date_modified',
+            model_name="topicblogpress",
+            name="date_modified",
             field=models.DateTimeField(auto_now_add=True),
         ),
     ]

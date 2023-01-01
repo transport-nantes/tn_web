@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class MobilitoConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'mobilito'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "mobilito"

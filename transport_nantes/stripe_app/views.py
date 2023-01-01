@@ -18,9 +18,12 @@ from django.views.generic.base import TemplateView
 from mailing_list.events import subscribe_user_to_list
 from mailing_list.models import MailingList
 from topicblog.models import SendRecordTransactionalAdHoc
-from transport_nantes.settings import (ROLE, STRIPE_ENDPOINT_SECRET,
-                                       STRIPE_PUBLISHABLE_KEY,
-                                       STRIPE_SECRET_KEY)
+from transport_nantes.settings import (
+    ROLE,
+    STRIPE_ENDPOINT_SECRET,
+    STRIPE_PUBLISHABLE_KEY,
+    STRIPE_SECRET_KEY,
+)
 
 from .forms import AmountForm, DonationForm, QuickDonationForm
 from .models import Donation, TrackingProgression
@@ -32,6 +35,7 @@ class StripeView(TemplateView):
     """
     Displays the two forms required to make the donation page.
     """
+
     template_name = "stripe_app/donation_form.html"
     form_class = DonationForm
 
@@ -41,7 +45,9 @@ class StripeView(TemplateView):
         """
         amount_form = AmountForm()
         amount_form.fields["payment_amount"].choices = get_amount_choices()
-        amount_form.fields["subscription_amount"].choices = get_subscription_amounts() # noqa
+        amount_form.fields[
+            "subscription_amount"
+        ].choices = get_subscription_amounts()  # noqa
         context = {}
         context["info_form"] = DonationForm()
         context["amount_form"] = amount_form
@@ -66,16 +72,20 @@ def get_subscription_amounts():
     choice.
 
     """
-    if ROLE == 'production':
-        subscription_choices = [("price_1JKfNuClnCBJWy55SxZWROd3", "5 euros"),
-                                ("price_1IIGzvClnCBJWy55MCIEkMpE", "10 euros"),
-                                ("price_1JKfOBClnCBJWy55LX4ctrrc", "15 euros"),
-                                ("price_1JKfOVClnCBJWy55HGa9OXcz", "20 euros")]
+    if ROLE == "production":
+        subscription_choices = [
+            ("price_1JKfNuClnCBJWy55SxZWROd3", "5 euros"),
+            ("price_1IIGzvClnCBJWy55MCIEkMpE", "10 euros"),
+            ("price_1JKfOBClnCBJWy55LX4ctrrc", "15 euros"),
+            ("price_1JKfOVClnCBJWy55HGa9OXcz", "20 euros"),
+        ]
     else:
-        subscription_choices = [("price_1J0of7ClnCBJWy551iIQ6ydg", "8 euros"),
-                                ("price_1J0ogXClnCBJWy552i9Bs2bg", "12 euros"),
-                                ("price_1J0ohVClnCBJWy55dAJxHjXE", "20 euros"),
-                                ("price_1JKgKtClnCBJWy55Ob7PeJs8", "30 euros")]
+        subscription_choices = [
+            ("price_1J0of7ClnCBJWy551iIQ6ydg", "8 euros"),
+            ("price_1J0ogXClnCBJWy552i9Bs2bg", "12 euros"),
+            ("price_1J0ohVClnCBJWy55dAJxHjXE", "20 euros"),
+            ("price_1JKgKtClnCBJWy55Ob7PeJs8", "30 euros"),
+        ]
     return subscription_choices
 
 
@@ -92,10 +102,12 @@ def get_amount_choices():
 
     """
 
-    amount_choices = [(5, "5 euros"),
-                      (10, "10 euros"),
-                      (25, "25 euros"),
-                      (0, "Montant libre")]
+    amount_choices = [
+        (5, "5 euros"),
+        (10, "10 euros"),
+        (25, "25 euros"),
+        (0, "Montant libre"),
+    ]
     return amount_choices
 
 
@@ -135,29 +147,29 @@ def create_checkout_session(request: dict) -> dict:
         try:
             # request.POST["donation_type"] is given with JavaScript
             # it can take two values : payment and subscription.
-            if request.POST["donation_type"] == 'payment':
+            if request.POST["donation_type"] == "payment":
                 checkout_session = stripe.checkout.Session.create(
                     # Links need to be valid
                     # Cant't use bare /donation, will raise an error.
                     success_url=domain_url + "/donation/success/",
                     cancel_url=domain_url + "/donation/",
-                    payment_method_types=['card'],
+                    payment_method_types=["card"],
                     mode=request.POST["donation_type"],
                     customer_email=request.POST["mail"],
                     line_items=[
                         {
-                            'name': 'Donation',
-                            'quantity': 1,
-                            'currency': 'eur',
+                            "name": "Donation",
+                            "quantity": 1,
+                            "currency": "eur",
                             # Amount in cents
-                            'amount': order_amount(request.POST),
+                            "amount": order_amount(request.POST),
                         }
                     ],
                     # Metadata is an optional field containing all personal
                     # informations gathered in the form.
-                    metadata=request.POST
+                    metadata=request.POST,
                 )
-                return JsonResponse({'sessionId': checkout_session['id']})
+                return JsonResponse({"sessionId": checkout_session["id"]})
 
             # There are fewer parameters for subscription because some of them
             # are set on Stripe's Dashboard.
@@ -167,23 +179,23 @@ def create_checkout_session(request: dict) -> dict:
                     # Links need to be valid
                     success_url=domain_url + "/donation/success/",
                     cancel_url=domain_url + "/donation/",
-                    payment_method_types=['card'],
+                    payment_method_types=["card"],
                     mode=request.POST["donation_type"],
                     customer_email=request.POST["mail"],
                     line_items=[
                         {
-                            'quantity': 1,
+                            "quantity": 1,
                             # product id from Stripe's Dashboard.
                             # Exemple : price_1J0of7ClnCBJWy551iIQ6ydg
                             # Hardcoded in get_subscription_amounts()
-                            'price': request.POST["subscription_amount"],
+                            "price": request.POST["subscription_amount"],
                         }
                     ],
-                    metadata=request.POST
+                    metadata=request.POST,
                 )
-                return JsonResponse({'sessionId': checkout_session['id']})
+                return JsonResponse({"sessionId": checkout_session["id"]})
         except Exception as error_message:
-            return JsonResponse({'error': str(error_message)})
+            return JsonResponse({"error": str(error_message)})
 
 
 def order_amount(items: dict) -> int:
@@ -211,6 +223,7 @@ class SuccessView(TemplateView):
     Only used to display a static template.
     This template is displayed if the Stripe payment is completed.
     """
+
     template_name = "stripe_app/success.html"
 
 
@@ -232,7 +245,7 @@ def tracking_progression(request: dict) -> TrackingProgression:
             elif data[key] == "false":
                 data[key] = False
 
-        user_agent = user_agents.parse(request.META.get('HTTP_USER_AGENT'))
+        user_agent = user_agents.parse(request.META.get("HTTP_USER_AGENT"))
 
         kwargs = {
             "amount_form_done": data["step_1_completed"],
@@ -258,12 +271,13 @@ def tracking_progression(request: dict) -> TrackingProgression:
         except Exception as error_message:
             logger.info(
                 "Error while creating TrackingProgression instance : {0}",
-                error_message)
+                error_message,
+            )
 
         return HttpResponse(status=200)
     except Exception as error_message:
         logger.info(f"error message: {error_message}")
-        return JsonResponse({'error': str(error_message)})
+        return JsonResponse({"error": str(error_message)})
 
 
 # Can't let CSRF otherwise POST from Stripe are denied.
@@ -283,7 +297,7 @@ def stripe_webhook(request):
     payload = request.body
     logger.info(f"payload: {payload}")
     try:
-        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
     except KeyError:
         logger.info("HTTP_STRIPE_SIGNATURE not present in request")
         return HttpResponse(status=400)
@@ -304,60 +318,69 @@ def stripe_webhook(request):
     logger.info(f"The event type is : {event['type']}")
     # Event when a donor completes a checkout session
     # whether it's a one-time payment or a subscription.
-    if event['type'] == 'checkout.session.completed':
+    if event["type"] == "checkout.session.completed":
         logger.info("Stripe payment webhook succeeded.")
         logger.info(
-            "Details attached to event : \n\n" + "="*30 + f"\n {event}")
+            "Details attached to event : \n\n" + "=" * 30 + f"\n {event}"
+        )
         try:
             donation = make_donation_from_webhook(event)
             donation.save()
         except Exception as error_message:
-            logger.error("="*80 + f"\nError while creating \
-            a new Donation. Details : {error_message}")
+            logger.error(
+                "=" * 80
+                + f"\nError while creating \
+            a new Donation. Details : {error_message}"
+            )
             return HttpResponse(status=500)
         update_user_name(event)
         send_thank_you_email(event)
 
     # Event for subscription payments (initial or recurring)
     # cf https://stripe.com/docs/billing/subscriptions/webhooks#tracking
-    elif event['type'] == 'invoice.payment_succeeded':
+    elif event["type"] == "invoice.payment_succeeded":
         # subscription_cycle is the reason invoked for subscription payments
         # that are not the first one.
-        billing_reason = event['data']['object']['billing_reason']
-        logger.info(f'Billing reason : {billing_reason}')
+        billing_reason = event["data"]["object"]["billing_reason"]
+        logger.info(f"Billing reason : {billing_reason}")
         if event["data"]["object"]["billing_reason"] == "subscription_cycle":
             logger.info("Stripe subscription payment webhook called.")
-            logger.info("Details attached to event : \n\n" + "="*30 +
-                        f"\n {event}")
-            customer_id = event["data"]["object"]['customer']
-            amount = int(event["data"]["object"]['amount_due'])
+            logger.info(
+                "Details attached to event : \n\n" + "=" * 30 + f"\n {event}"
+            )
+            customer_id = event["data"]["object"]["customer"]
+            amount = int(event["data"]["object"]["amount_due"])
             event_id = event["id"]
             try:
-                save_recurring_payment_details(
-                    customer_id, amount, event_id)
+                save_recurring_payment_details(customer_id, amount, event_id)
             except Exception as e:
                 logger.info(f"Recurring payment couldn't be processed : {e}")
 
             return HttpResponse(status=200)
 
-    elif event["type"] == 'checkout.session.expired':
+    elif event["type"] == "checkout.session.expired":
         logger.info("Stripe checkout session expired")
         logger.info(
-            "Details attached to event : \n\n" + "="*30 + f"\n {event}")
+            "Details attached to event : \n\n" + "=" * 30 + f"\n {event}"
+        )
         try:
             donation = make_donation_from_webhook(event)
             donation.amount_centimes_euros = 0
             donation.save()
         except Exception as error_message:
-            logger.error("="*80 + f"\nError while creating \
-            a new Donation. Details : {error_message}")
+            logger.error(
+                "=" * 80
+                + f"\nError while creating \
+            a new Donation. Details : {error_message}"
+            )
             return HttpResponse(status=500)
         update_user_name(event)
 
     else:
         logger.error(f"Unknown event type : {event['type']}")
         logger.error(
-            "Details attached to event : \n\n" + "="*30 + f"\n{event}")
+            "Details attached to event : \n\n" + "=" * 30 + f"\n{event}"
+        )
         return HttpResponse(status=500)
 
     return HttpResponse(status=200)
@@ -369,8 +392,10 @@ def get_random_string(length=20) -> str:
     This random string will be used as username value to
     create a new user in get_user(email) function.
     """
-    random_string = ''.join(random.choice(string.ascii_letters +
-                                          string.digits) for _ in range(length)) # noqa
+    random_string = "".join(
+        random.choice(string.ascii_letters + string.digits)
+        for _ in range(length)
+    )  # noqa
     return random_string
 
 
@@ -462,10 +487,10 @@ def make_donation_from_webhook(event: dict) -> Donation:
         "originating_parameters": metadata["originating_parameters"],
     }
     try:
-        if kwargs.get('user') is None:
+        if kwargs.get("user") is None:
             raise Exception("User not found.")
         logger.info(f"Adding {kwargs['user']} to donors mailing list...")
-        add_user_to_donor_mailing_list(user=kwargs['user'])
+        add_user_to_donor_mailing_list(user=kwargs["user"])
     except Exception as e:
         logger.error(f"Error while adding user to donors' mailing list : {e}")
         # We don't want to stop the process if the mailing list
@@ -474,12 +499,13 @@ def make_donation_from_webhook(event: dict) -> Donation:
     logger.info("Creating donation...")
     try:
         already_exists = Donation.objects.filter(
-            stripe_event_id=event["id"]).exists()
+            stripe_event_id=event["id"]
+        ).exists()
         if already_exists:
             logger.info("Donation already exists.")
             raise Exception(
                 "This event has already been processed. Event : " + event["id"]
-                )
+            )
         else:
             donation = Donation(**kwargs)
             logger.info("Donation entry created.")
@@ -492,23 +518,23 @@ def make_donation_from_webhook(event: dict) -> Donation:
 
 def add_user_to_donor_mailing_list(user: User) -> None:
     this_year = str(datetime.date.today().year)
-    this_year_donors_mailing_list, _ = \
-        MailingList.objects.get_or_create(
-            mailing_list_token="donors-" + this_year,
-            mailing_list_type="DONORS",
-            defaults={
-                "mailing_list_name": this_year + "'s donors list",
-                "mailing_list_token": "donors-" + this_year,
-                "contact_frequency_weeks": 12,
-                "list_active": True,
-                "mailing_list_type": "DONORS",
-            }
-        )
+    this_year_donors_mailing_list, _ = MailingList.objects.get_or_create(
+        mailing_list_token="donors-" + this_year,
+        mailing_list_type="DONORS",
+        defaults={
+            "mailing_list_name": this_year + "'s donors list",
+            "mailing_list_token": "donors-" + this_year,
+            "contact_frequency_weeks": 12,
+            "list_active": True,
+            "mailing_list_type": "DONORS",
+        },
+    )
     subscribe_user_to_list(user, this_year_donors_mailing_list)
 
 
 def save_recurring_payment_details(
-        customer_id: str, amount: int, event_id: str) -> None:
+    customer_id: str, amount: int, event_id: str
+) -> None:
     """
     Save a donation entry for recurring payments.
     We use the data of the last donation associated with the
@@ -522,11 +548,13 @@ def save_recurring_payment_details(
     customer = Donation.objects.filter(
         stripe_customer_id=customer_id,
         # __gte is greater than or equal to
-        periodicity_months__gte=1).last()
+        periodicity_months__gte=1,
+    ).last()
 
     if customer is None:
         logger.info(
-            f"No subscriptions found for this customer_id: ({customer_id})")
+            f"No subscriptions found for this customer_id: ({customer_id})"
+        )
         raise Exception("No subscriptions found for this customer_id.")
 
     last_donation_kwargs = customer.__dict__
@@ -545,14 +573,15 @@ def save_recurring_payment_details(
         "country": last_donation_kwargs["country"],
         "periodicity_months": last_donation_kwargs["periodicity_months"],
         "amount_centimes_euros": amount,
-        "originating_view": '<repeat-subscription>',
+        "originating_view": "<repeat-subscription>",
         "originating_parameters": "",
-        "timestamp": datetime.datetime.now
+        "timestamp": datetime.datetime.now,
     }
 
     try:
         already_exists = Donation.objects.filter(
-            stripe_event_id=event_id).exists()
+            stripe_event_id=event_id
+        ).exists()
 
         if already_exists:
             logger.info("Event already saved : " + event_id)
@@ -566,7 +595,9 @@ def save_recurring_payment_details(
         raise Exception
 
 
-def send_thank_you_email(event: dict, ) -> None:
+def send_thank_you_email(
+    event: dict,
+) -> None:
     """
     Send a thank you email to the donor.
     """
@@ -574,9 +605,9 @@ def send_thank_you_email(event: dict, ) -> None:
     try:
         user = get_user(event["data"]["object"]["customer_email"])
         send_record = SendRecordTransactionalAdHoc.objects.create(
-            recipient=user)
-        custom_email = prepare_email(
-            user.email, send_record=send_record)
+            recipient=user
+        )
+        custom_email = prepare_email(user.email, send_record=send_record)
         logger.info(f"Sending thank you email to {user.email}...")
         custom_email.send()
         logger.info("Thank you email sent.")
@@ -590,8 +621,8 @@ def send_thank_you_email(event: dict, ) -> None:
 
 
 def prepare_email(
-        email: str,
-        send_record: SendRecordTransactionalAdHoc) -> EmailMultiAlternatives:
+    email: str, send_record: SendRecordTransactionalAdHoc
+) -> EmailMultiAlternatives:
     """Create a sendable Email object"""
     template = "stripe_app/thank_you_email.html"
     context = {}
@@ -603,7 +634,8 @@ def prepare_email(
     comments_header = json.dumps(values_to_pass_to_ses)
     headers = {
         "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
-        "Comments": comments_header}
+        "Comments": comments_header,
+    }
     email = EmailMultiAlternatives(
         subject="Merci pour votre don !",
         body=render_to_string(template, context),
@@ -611,7 +643,7 @@ def prepare_email(
         to=[email],
         headers=headers,
     )
-    email.attach_alternative(html_message, 'text/html')
+    email.attach_alternative(html_message, "text/html")
 
     return email
 
@@ -621,6 +653,7 @@ class QuickDonationView(TemplateView):
     Displays a simplified Donation form with a given
     amount in Euros.
     """
+
     template_name = "stripe_app/donation_form.html"
 
     def get_context_data(self, **kwargs):
@@ -628,10 +661,8 @@ class QuickDonationView(TemplateView):
         # The amount is set in the URL.
         # If no amount is set, StripeView is fired instead.
         context["amount_form"] = QuickDonationForm(
-            initial={
-                "amount": self.kwargs["amount"]
-                }
-            )
+            initial={"amount": self.kwargs["amount"]}
+        )
         context["info_form"] = DonationForm()
         context["originating_view"] = "QuickDonationView"
         return context

@@ -6,43 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0007_auto_20210210_0850'),
+        ("mailing_list", "0007_auto_20210210_0850"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='petition',
-            name='meta_description',
+            model_name="petition",
+            name="meta_description",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='og_description',
+            model_name="petition",
+            name="og_description",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='og_image',
+            model_name="petition",
+            name="og_image",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='og_title',
+            model_name="petition",
+            name="og_title",
             field=models.CharField(blank=True, max_length=80),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='twitter_description',
+            model_name="petition",
+            name="twitter_description",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='twitter_image',
+            model_name="petition",
+            name="twitter_image",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='twitter_title',
+            model_name="petition",
+            name="twitter_title",
             field=models.CharField(blank=True, max_length=80),
         ),
     ]

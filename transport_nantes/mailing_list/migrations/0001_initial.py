@@ -16,23 +16,70 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='MailingList',
+            name="MailingList",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mailing_list_name', models.CharField(max_length=80)),
-                ('mailing_list_token', models.CharField(max_length=80, unique=True)),
-                ('contact_frequency_weeks', models.IntegerField(default=0)),
-                ('list_created', models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("mailing_list_name", models.CharField(max_length=80)),
+                (
+                    "mailing_list_token",
+                    models.CharField(max_length=80, unique=True),
+                ),
+                ("contact_frequency_weeks", models.IntegerField(default=0)),
+                (
+                    "list_created",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MailingListEvents',
+            name="MailingListEvents",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('event_timestamp', models.DateTimeField(default=django.utils.timezone.now)),
-                ('event_type', models.CharField(choices=[('sub', 'inscription'), ('unsub', 'désinscription'), ('bounce', 'bounce')], max_length=6)),
-                ('mailing_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mailing_list.MailingList')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "event_timestamp",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "event_type",
+                    models.CharField(
+                        choices=[
+                            ("sub", "inscription"),
+                            ("unsub", "désinscription"),
+                            ("bounce", "bounce"),
+                        ],
+                        max_length=6,
+                    ),
+                ),
+                (
+                    "mailing_list",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="mailing_list.MailingList",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

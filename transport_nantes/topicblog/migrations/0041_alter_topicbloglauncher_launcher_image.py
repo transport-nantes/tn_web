@@ -7,13 +7,18 @@ import topicblog.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0040_auto_20220413_1257'),
+        ("topicblog", "0040_auto_20220413_1257"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicbloglauncher',
-            name='launcher_image',
-            field=models.ImageField(blank=True, help_text='résolution recommandée : 667x667', upload_to='launcher/', validators=[topicblog.models.validate_launcher_image]),
+            model_name="topicbloglauncher",
+            name="launcher_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="résolution recommandée : 667x667",
+                upload_to="launcher/",
+                validators=[topicblog.models.validate_launcher_image],
+            ),
         ),
     ]

@@ -8,28 +8,34 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0012_alter_mailinglist_mailing_list_type'),
+        ("mailing_list", "0012_alter_mailinglist_mailing_list_type"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('topicblog', '0049_sendrecordtransactional_click_time_and_more'),
+        ("topicblog", "0049_sendrecordtransactional_click_time_and_more"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='TopicBlogEmailSendRecord',
-            new_name='SendRecordMarketingEmail',
+            old_name="TopicBlogEmailSendRecord",
+            new_name="SendRecordMarketingEmail",
         ),
         migrations.RenameModel(
-            old_name='TopicBlogPressSendRecord',
-            new_name='SendRecordMarketingPress',
+            old_name="TopicBlogPressSendRecord",
+            new_name="SendRecordMarketingPress",
         ),
         migrations.AlterField(
-            model_name='topicblogemailclicks',
-            name='email',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='topicblog.sendrecordmarketingemail'),
+            model_name="topicblogemailclicks",
+            name="email",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                to="topicblog.sendrecordmarketingemail",
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogpressclicks',
-            name='press',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='topicblog.sendrecordmarketingpress'),
+            model_name="topicblogpressclicks",
+            name="press",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                to="topicblog.sendrecordmarketingpress",
+            ),
         ),
     ]

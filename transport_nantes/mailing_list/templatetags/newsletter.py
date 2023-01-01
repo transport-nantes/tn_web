@@ -2,14 +2,17 @@ from django import template
 from django.urls import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
 
-from mailing_list.forms import (FirstStepQuickMailingListSignupForm,
-                                QuickPetitionSignupForm)
+from mailing_list.forms import (
+    FirstStepQuickMailingListSignupForm,
+    QuickPetitionSignupForm,
+)
 
 register = template.Library()
 
 
-@register.inclusion_tag('mailing_list/panel/mailing_list.html',
-                        takes_context=True)
+@register.inclusion_tag(
+    "mailing_list/panel/mailing_list.html", takes_context=True
+)
 def show_mailing_list(context, **kwargs):
     """Offer to join the mailing list.
 
@@ -19,21 +22,22 @@ def show_mailing_list(context, **kwargs):
     Optionally provide a title.
 
     """
-    if 'title' in kwargs:
-        context['title'] = kwargs.get('title', "")
-    mailinglist = kwargs.get('mailinglist')
+    if "title" in kwargs:
+        context["title"] = kwargs.get("title", "")
+    mailinglist = kwargs.get("mailinglist")
     if mailinglist is None:
-        mailinglist = context.get('mailinglist')
+        mailinglist = context.get("mailinglist")
     form = FirstStepQuickMailingListSignupForm(
         initial={
             "mailinglist": mailinglist,
-            "origin_url": context.get('request').build_absolute_uri()
-        })
-    context['form'] = form
+            "origin_url": context.get("request").build_absolute_uri(),
+        }
+    )
+    context["form"] = form
     return context
 
 
-@register.inclusion_tag('mailing_list/panel/petition.html')
+@register.inclusion_tag("mailing_list/panel/petition.html")
 def show_petition_signup(petition_name):
     """Offer to sign a petition.
 
@@ -43,17 +47,15 @@ def show_petition_signup(petition_name):
     name whereas a mailing list does not.
 
     """
-    form = QuickPetitionSignupForm(
-        initial={'petition_name': petition_name})
-    return {'form': form}
+    form = QuickPetitionSignupForm(initial={"petition_name": petition_name})
+    return {"form": form}
 
 
 @register.simple_tag
 def petition_link(petition, label):
     try:
-        url = reverse('mailing_list:petition', args=[petition])
+        url = reverse("mailing_list:petition", args=[petition])
     except NoReverseMatch:
-        url = '(((pétition pas trouvé : {ps})))'.format(ps=petition)
-    html = """<a href="{url}">{label}</a>""".format(
-        url=url, label=label)
+        url = "(((pétition pas trouvé : {ps})))".format(ps=petition)
+    html = """<a href="{url}">{label}</a>""".format(url=url, label=label)
     return mark_safe(html)

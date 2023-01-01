@@ -27,10 +27,18 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "slug",
-                    models.SlugField(allow_unicode=True, blank=True, max_length=90),
+                    models.SlugField(
+                        allow_unicode=True, blank=True, max_length=90
+                    ),
                 ),
-                ("publication_date", models.DateTimeField(blank=True, null=True)),
-                ("first_publication_date", models.DateTimeField(blank=True, null=True)),
+                (
+                    "publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "first_publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
                 ("date_created", models.DateTimeField(auto_now_add=True)),
                 (
                     "scheduled_for_deletion_date",
@@ -39,8 +47,14 @@ class Migration(migrations.Migration):
                 ("template_name", models.CharField(blank=True, max_length=80)),
                 ("title", models.CharField(blank=True, max_length=80)),
                 ("body_text_1_md", models.TextField(blank=True)),
-                ("body_image_1", models.ImageField(blank=True, upload_to="body/")),
-                ("body_image_1_alt_text", models.CharField(blank=True, max_length=80)),
+                (
+                    "body_image_1",
+                    models.ImageField(blank=True, upload_to="body/"),
+                ),
+                (
+                    "body_image_1_alt_text",
+                    models.CharField(blank=True, max_length=80),
+                ),
                 (
                     "publisher",
                     models.ForeignKey(
@@ -63,10 +77,19 @@ class Migration(migrations.Migration):
             options={
                 "verbose_name_plural": "Panels",
                 "permissions": (
-                    ("tbpanel.may_view", "May view unpublished TopicBlogPanel"),
-                    ("tbpanel.may_edit", "May create and modify TopicBlogPanel"),
+                    (
+                        "tbpanel.may_view",
+                        "May view unpublished TopicBlogPanel",
+                    ),
+                    (
+                        "tbpanel.may_edit",
+                        "May create and modify TopicBlogPanel",
+                    ),
                     ("tbpanel.may_publish", "May publish TopicBlogPanel"),
-                    ("tbpanel.may_publish_self", "May publish own TopicBlogPanel"),
+                    (
+                        "tbpanel.may_publish_self",
+                        "May publish own TopicBlogPanel",
+                    ),
                 ),
             },
         ),

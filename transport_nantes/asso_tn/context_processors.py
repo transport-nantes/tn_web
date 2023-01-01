@@ -11,18 +11,19 @@ configuration of a DjangoTemplates backend and used by RequestContext.
 from django.conf import settings
 from django.template import RequestContext
 
+
 def role(request):
     """
     The settings_local.py should define a role.  Make sure it's
     provided in the context, as well as a boolean for whether or not
     we're running in production.
     """
-    if hasattr(settings, 'ROLE'):
+    if hasattr(settings, "ROLE"):
         role = settings.ROLE
     else:
-        role = 'unknown'
-    if 'production' == role:
+        role = "unknown"
+    if "production" == role:
         is_prod = True
     else:
         is_prod = False
-    return {'role': role, 'is_production': is_prod}
+    return {"role": role, "is_production": is_prod}

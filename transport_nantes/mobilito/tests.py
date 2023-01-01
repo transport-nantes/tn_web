@@ -18,29 +18,31 @@ from .views import TutorialState
 
 
 class TutorialStateTests(TestCase):
-
     def setUp(self):
         self.tutorial_state = TutorialState()
 
     def test_static_state(self):
         self.assertEqual(self.tutorial_state.default_page(), "presentation")
         self.assertEqual(
-            self.tutorial_state.canonical_page("presentation"), "presentation")
+            self.tutorial_state.canonical_page("presentation"), "presentation"
+        )
         self.assertEqual(self.tutorial_state.canonical_page("velos"), "velos")
-        self.assertEqual(self.tutorial_state.canonical_page(
-            "unknown"), "presentation")
+        self.assertEqual(
+            self.tutorial_state.canonical_page("unknown"), "presentation"
+        )
 
 
 class TutorialViewTests(TestCase):
-
     def setUp(self):
         self.tutorial_state = TutorialState()
 
     def test_state_progression(self):
         client = Client()
         response_1 = client.get(
-            reverse("mobilito:tutorial",
-                    kwargs={"tutorial_page": "presentation"}))
+            reverse(
+                "mobilito:tutorial", kwargs={"tutorial_page": "presentation"}
+            )
+        )
         self.assertEqual(response_1.status_code, 200)
         next_page = response_1.context["next_page"]
         # A too-weak constraint.
@@ -48,33 +50,36 @@ class TutorialViewTests(TestCase):
 
 
 class MobilitoSessionViewTests(TestCase):
-
     def setUp(self):
         # Creation of a MobilitoSession object
-        user = User.objects.create(username='foo', password='bar')
+        user = User.objects.create(username="foo", password="bar")
         self.user = MobilitoUser.objects.create(user=user)
         self.mobilito_session = MobilitoSession.objects.create(
             user=self.user,
             start_timestamp=datetime.now(timezone.utc),
-            location="Foo"
+            location="Foo",
         )
         self.mobilito_session_url = reverse_lazy(
-            'mobilito:mobilito_session_summary',
-            args=[self.mobilito_session.session_sha1])
+            "mobilito:mobilito_session_summary",
+            args=[self.mobilito_session.session_sha1],
+        )
         self.flag_session_url = reverse_lazy(
-            'mobilito:flag_session',
-            args=[self.mobilito_session.session_sha1])
+            "mobilito:flag_session", args=[self.mobilito_session.session_sha1]
+        )
         self.update_location_url = reverse_lazy(
-            'mobilito:edit_location',
-            args=[self.mobilito_session.session_sha1])
+            "mobilito:edit_location", args=[self.mobilito_session.session_sha1]
+        )
 
         # User with permission to view unpublished  mobilito sessions
         self.authorised_user = User.objects.create(
-            username='bar', password='foo')
+            username="bar", password="foo"
+        )
         may_view_sessions = Permission.objects.get(
-            codename="mobilito_session.view_session")
+            codename="mobilito_session.view_session"
+        )
         may_edit_sessions = Permission.objects.get(
-            codename="change_mobilitosession")
+            codename="change_mobilitosession"
+        )
         self.authorised_user.user_permissions.add(may_view_sessions)
         self.authorised_user.user_permissions.add(may_edit_sessions)
 
@@ -93,20 +98,38 @@ class MobilitoSessionViewTests(TestCase):
         # standard cases (e.g. the page doesn't require permission to be
         # viewed...)
         self.perm_needed_responses = [
-            {"client": self.author_client, "code": 200,
-             "msg": "MobilitoSession's author is able to see this page"},
-            {"client": self.anonymous_client, "code": 404,
-             "msg": ("Anon users can't have access to this page.")},
-            {"client": self.authorised_user_client, "code": 200,
-             "msg": "The page must return 200 the user has the permission."}
+            {
+                "client": self.author_client,
+                "code": 200,
+                "msg": "MobilitoSession's author is able to see this page",
+            },
+            {
+                "client": self.anonymous_client,
+                "code": 404,
+                "msg": ("Anon users can't have access to this page."),
+            },
+            {
+                "client": self.authorised_user_client,
+                "code": 200,
+                "msg": "The page must return 200 the user has the permission.",
+            },
         ]
         self.no_perm_needed_responses = [
-            {"client": self.author_client, "code": 200,
-             "msg": "The page must return 200, permission is not mandatory."},
-            {"client": self.anonymous_client, "code": 200,
-             "msg": "The page must return 200, permission is not mandatory."},
-            {"client": self.authorised_user_client, "code": 200,
-             "msg": "The page must return 200, permission is not mandatory."}
+            {
+                "client": self.author_client,
+                "code": 200,
+                "msg": "The page must return 200, permission is not mandatory.",
+            },
+            {
+                "client": self.anonymous_client,
+                "code": 200,
+                "msg": "The page must return 200, permission is not mandatory.",
+            },
+            {
+                "client": self.authorised_user_client,
+                "code": 200,
+                "msg": "The page must return 200, permission is not mandatory.",
+            },
         ]
 
     def test_mobilito_session_view(self):
@@ -117,7 +140,8 @@ class MobilitoSessionViewTests(TestCase):
         for client_code in self.no_perm_needed_responses:
             response = client_code["client"].get(self.mobilito_session_url)
             self.assertEqual(
-                response.status_code, client_code["code"], client_code["msg"])
+                response.status_code, client_code["code"], client_code["msg"]
+            )
 
     def test_mobilito_session_view_unpublished(self):
         """Test the ability to see a mobilito_session that is not published."""
@@ -126,7 +150,8 @@ class MobilitoSessionViewTests(TestCase):
         for client_code in self.perm_needed_responses:
             response = client_code["client"].get(self.mobilito_session_url)
             self.assertEqual(
-                response.status_code, client_code["code"], client_code["msg"])
+                response.status_code, client_code["code"], client_code["msg"]
+            )
 
     def test_flag_session(self):
         """Test the ability flag a session."""
@@ -135,7 +160,8 @@ class MobilitoSessionViewTests(TestCase):
         for clients in self.no_perm_needed_responses:
             response = clients["client"].get(self.flag_session_url)
             self.assertEqual(
-                response.status_code, 405, "GET method is not allowed.")
+                response.status_code, 405, "GET method is not allowed."
+            )
 
         # POST method is allowed for authenticated users
         post_data = {
@@ -143,55 +169,92 @@ class MobilitoSessionViewTests(TestCase):
         }
         response = self.anonymous_client.post(self.flag_session_url, post_data)
         self.assertEqual(
-            response.status_code, 200,
-            "POST method is allowed for anonymous users")
-        self.assertEqual(InappropriateFlag.objects.count(),
-                         1, "An InappropriateFlag must be created")
+            response.status_code,
+            200,
+            "POST method is allowed for anonymous users",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            1,
+            "An InappropriateFlag must be created",
+        )
 
         response = self.authorised_user_client.post(
-            self.flag_session_url, post_data)
+            self.flag_session_url, post_data
+        )
         self.assertEqual(
-            response.status_code, 200,
-            "POST method is allowed for authorised users.")
-        self.assertEqual(InappropriateFlag.objects.count(),
-                         2, "An InappropriateFlag must be created.")
+            response.status_code,
+            200,
+            "POST method is allowed for authorised users.",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            2,
+            "An InappropriateFlag must be created.",
+        )
 
         # Trying to flag a session twice doesn't create a new record.
         response = self.authorised_user_client.post(
-            self.flag_session_url, post_data)
+            self.flag_session_url, post_data
+        )
         self.assertEqual(
-            response.status_code, 200,
-            "POST method is allowed for authorised users.")
-        self.assertEqual(InappropriateFlag.objects.count(), 2,
-                         "User may flag only once for a given session")
+            response.status_code,
+            200,
+            "POST method is allowed for authorised users.",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            2,
+            "User may flag only once for a given session",
+        )
 
-        response = self.anonymous_client.post(
-            self.flag_session_url, post_data)
+        response = self.anonymous_client.post(self.flag_session_url, post_data)
         self.assertEqual(
-            response.status_code, 200,
-            "POST method is allowed for anonymous users")
-        self.assertEqual(InappropriateFlag.objects.count(), 2,
-                         "Anonymous users may flag only once for "
-                         "a given mobilito session")
+            response.status_code,
+            200,
+            "POST method is allowed for anonymous users",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            2,
+            "Anonymous users may flag only once for "
+            "a given mobilito session",
+        )
 
         # Trying to flag a session that doesn't exist returns a 404
         response = self.authorised_user_client.post(
-            reverse_lazy('mobilito:flag_session', args=["foo"]), post_data)
+            reverse_lazy("mobilito:flag_session", args=["foo"]), post_data
+        )
         self.assertEqual(
-            response.status_code, 404,
-            "Users can't flag a session that doesn't exist.")
-        self.assertEqual(InappropriateFlag.objects.count(), 2,
-                         ("No new report should be created when there isn't a"
-                         " matching MobilitoSession."))
+            response.status_code,
+            404,
+            "Users can't flag a session that doesn't exist.",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            2,
+            (
+                "No new report should be created when there isn't a"
+                " matching MobilitoSession."
+            ),
+        )
 
         response = self.anonymous_client.post(
-            reverse_lazy('mobilito:flag_session', args=["foo"]), post_data)
+            reverse_lazy("mobilito:flag_session", args=["foo"]), post_data
+        )
         self.assertEqual(
-            response.status_code, 404,
-            "Anonymous users can't flag a Mobilito Session that doesn't exist.")
-        self.assertEqual(InappropriateFlag.objects.count(), 2,
-                         ("No new report should be created when there isn't a"
-                          " matching mobilitoSession."))
+            response.status_code,
+            404,
+            "Anonymous users can't flag a Mobilito Session that doesn't exist.",
+        )
+        self.assertEqual(
+            InappropriateFlag.objects.count(),
+            2,
+            (
+                "No new report should be created when there isn't a"
+                " matching mobilitoSession."
+            ),
+        )
 
     def test_presence_of_edit_button(self):
         """Test the presence of the edit button."""
@@ -220,7 +283,8 @@ class MobilitoSessionViewTests(TestCase):
             "location": "Bar",
         }
         response = self.authorised_user_client.post(
-            self.update_location_url, post_data)
+            self.update_location_url, post_data
+        )
         self.assertRedirects(response, self.mobilito_session_url)
         self.mobilito_session.refresh_from_db()
         self.assertEqual(self.mobilito_session.location, "Bar")
@@ -229,7 +293,8 @@ class MobilitoSessionViewTests(TestCase):
             "location": "Foo",
         }
         response = self.anonymous_client.post(
-            self.update_location_url, post_data)
+            self.update_location_url, post_data
+        )
         self.assertRedirects(response, self.mobilito_session_url)
         self.mobilito_session.refresh_from_db()
         self.assertEqual(self.mobilito_session.location, "Bar")
@@ -240,24 +305,26 @@ class MySessionHistoryViewTests(TestCase):
 
     def setUp(self):
         # Creation of a MobilitoSession object
-        user = User.objects.create(username='foo', password='bar')
+        user = User.objects.create(username="foo", password="bar")
         self.user = MobilitoUser.objects.create(user=user)
         self.mobilito_session = MobilitoSession.objects.create(
             user=self.user,
             start_timestamp=datetime.now(timezone.utc),
-            location="Foo"
+            location="Foo",
         )
         self.second_mobilito_session = MobilitoSession.objects.create(
             user=self.user,
             start_timestamp=datetime.now(timezone.utc),
-            location="Bar"
+            location="Bar",
         )
         self.mobilito_session_url = reverse_lazy(
-            'mobilito:mobilito_session_summary',
-            args=[self.mobilito_session.session_sha1])
+            "mobilito:mobilito_session_summary",
+            args=[self.mobilito_session.session_sha1],
+        )
         self.second_mobilito_session_url = reverse_lazy(
-            'mobilito:mobilito_session_summary',
-            args=[self.second_mobilito_session.session_sha1])
+            "mobilito:mobilito_session_summary",
+            args=[self.second_mobilito_session.session_sha1],
+        )
 
         # Creating 3 clients for each user type :
         # - author_client : Is the MobilitoSession's creator (author)
@@ -269,20 +336,21 @@ class MySessionHistoryViewTests(TestCase):
 
     def test_session_history(self):
         """Test the session history page."""
-        response = self.author_client.get(reverse_lazy('mobilito:my_sessions'))
+        response = self.author_client.get(reverse_lazy("mobilito:my_sessions"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.mobilito_session_url)
         self.assertContains(response, self.second_mobilito_session_url)
 
         response = self.anonymous_client.get(
-            reverse_lazy('mobilito:my_sessions'))
+            reverse_lazy("mobilito:my_sessions")
+        )
         self.assertRedirects(
             response,
             (
                 reverse_lazy("authentication:login")
                 + "?next="
                 + reverse_lazy("mobilito:my_sessions")
-            )
+            ),
         )
 
 
@@ -294,14 +362,14 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
         Event.objects.create(
             mobilito_session=self.mobilito_session,
             timestamp=datetime.now(),
-            event_type="ped"
+            event_type="ped",
         )
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-extensions")
         self.browser = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options)
+            service=Service(ChromeDriverManager().install()), options=options
+        )
 
         self.browser.implicitly_wait(5)
 
@@ -313,12 +381,16 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url + self.mobilito_session_url)
         # Click might fail because the fontAwesome icon is not ready
         # but hitting enter on the dropdown menu will work to open it
-        self.browser.find_element(By.ID, 'dropdownMenuLink').send_keys(Keys.ENTER)
-        self.browser.find_element(By.ID, 'report-abuse').click()
-        self.browser.find_element(By.ID, 'report-abuse-text').send_keys(
-            "This is a test report.")
+        self.browser.find_element(By.ID, "dropdownMenuLink").send_keys(
+            Keys.ENTER
+        )
+        self.browser.find_element(By.ID, "report-abuse").click()
+        self.browser.find_element(By.ID, "report-abuse-text").send_keys(
+            "This is a test report."
+        )
         self.submit_button = self.browser.find_element(
-            By.CSS_SELECTOR, '#report-abuse-form button')
+            By.CSS_SELECTOR, "#report-abuse-form button"
+        )
 
         def click_until_button_is_ready(browser: webdriver.Chrome) -> bool:
             """Click the submit button until it is ready.
@@ -328,7 +400,8 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
             until it is ready.
             """
             callable = EC.invisibility_of_element_located(
-                (By.ID, 'report-abuse-form'))
+                (By.ID, "report-abuse-form")
+            )
             modal_disappeared = callable(browser)
             if not modal_disappeared:
                 self.submit_button.click()
@@ -338,5 +411,7 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
         WebDriverWait(self.browser, 10).until(click_until_button_is_ready)
 
         self.assertEqual(
-            InappropriateFlag.objects.count(), 1,
-            "An InappropriateFlag must be created")
+            InappropriateFlag.objects.count(),
+            1,
+            "An InappropriateFlag must be created",
+        )

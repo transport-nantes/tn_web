@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('press', '0004_alter_pressmention_og_image'),
+        ("press", "0004_alter_pressmention_og_image"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pressmention',
-            name='og_image',
-            field=models.ImageField(blank=True, default='press_mention/open_graph/default_press_mention.jpg', upload_to='press_mention/open_graph/'),
+            model_name="pressmention",
+            name="og_image",
+            field=models.ImageField(
+                blank=True,
+                default="press_mention/open_graph/default_press_mention.jpg",
+                upload_to="press_mention/open_graph/",
+            ),
         ),
     ]

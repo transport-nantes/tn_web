@@ -13,8 +13,13 @@ from django.core import files
 from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 from lxml import html
 
 from .form import PressMentionForm, PressMentionSearch
@@ -29,7 +34,7 @@ class PressMentionListView(ListView):
     model = PressMention
     template_name = "press/press_list_view.html"
     queryset = PressMention.objects.all()
-    context_object_name = 'press_mention_list'
+    context_object_name = "press_mention_list"
     paginate_by = 10
 
 
@@ -39,39 +44,47 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
     model = PressMention
     template_name = "press/press_list.html"
     queryset = PressMention.objects.all()
-    context_object_name = 'press_mention_list'
+    context_object_name = "press_mention_list"
     paginate_by = 20
-    permission_required = 'press.press-editor'
+    permission_required = "press.press-editor"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search_form"] = PressMentionSearch()
-        context["number_pagination_list"] = \
-            context["paginator"].get_elided_page_range(
-            number=context["page_obj"].number,
-            on_each_side=4, on_ends=0)
+        context["number_pagination_list"] = context[
+            "paginator"
+        ].get_elided_page_range(
+            number=context["page_obj"].number, on_each_side=4, on_ends=0
+        )
         if self.request.GET.get("newspaper_name"):
             context["is_not_full"] = True
-            context["search_form"].fields["newspaper_name_search"].initial = \
-                self.request.GET.get("newspaper_name")
+            context["search_form"].fields[
+                "newspaper_name_search"
+            ].initial = self.request.GET.get("newspaper_name")
         if self.request.GET.get("search"):
             context["is_not_full"] = True
-            context["search_form"].fields["newspaper_name_search"].initial = \
-                self.request.GET.get("newspaper_name_search")
-            context["search_form"].fields["article_link"].initial = \
-                self.request.GET.get("article_link")
-            context["search_form"].fields["article_title"].initial = \
-                self.request.GET.get("article_title")
-            context["search_form"].fields["article_summary"].initial = \
-                self.request.GET.get("article_summary")
-            context["search_form"].fields["article_date_start"].initial = \
-                self.request.GET.get("article_date_start")
-            context["search_form"].fields["article_date_end"].initial = \
-                self.request.GET.get("article_date_end")
+            context["search_form"].fields[
+                "newspaper_name_search"
+            ].initial = self.request.GET.get("newspaper_name_search")
+            context["search_form"].fields[
+                "article_link"
+            ].initial = self.request.GET.get("article_link")
+            context["search_form"].fields[
+                "article_title"
+            ].initial = self.request.GET.get("article_title")
+            context["search_form"].fields[
+                "article_summary"
+            ].initial = self.request.GET.get("article_summary")
+            context["search_form"].fields[
+                "article_date_start"
+            ].initial = self.request.GET.get("article_date_start")
+            context["search_form"].fields[
+                "article_date_end"
+            ].initial = self.request.GET.get("article_date_end")
         if self.request.GET.get("press_mention_refresh"):
             update_opengraph_data(
-                pressmention_id=self.request.GET.get(
-                    "press_mention_refresh"))
+                pressmention_id=self.request.GET.get("press_mention_refresh")
+            )
         return context
 
     def get_queryset(self):
@@ -103,13 +116,15 @@ class PressMentionListViewAdmin(PermissionRequiredMixin, ListView):
                 article_link__contains=link,
                 article_title__contains=title,
                 article_summary__contains=summary,
-                article_publication_date__range=(start_date, end_date))
+                article_publication_date__range=(start_date, end_date),
+            )
         return super().get_queryset()
 
 
 @csrf_protect
-def fetch_opengraph_data(request, url=None, is_view=False) \
-        -> Union[tuple, JsonResponse]:
+def fetch_opengraph_data(
+    request, url=None, is_view=False
+) -> Union[tuple, JsonResponse]:
     """Fetch OpenGraph data from a URL.
 
     Keywords arguments:
@@ -132,35 +147,44 @@ def fetch_opengraph_data(request, url=None, is_view=False) \
         # We use a custom one to avoid this
         headers = {
             # My Chrome user agent
-            "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64)"
-                           " AppleWebKit/537.36"
-                           " (KHTML, like Gecko) Chrome/108.0.0.0 "
-                           "Safari/537.36"),
+            "User-Agent": (
+                "Mozilla/5.0 (X11; Linux x86_64)"
+                " AppleWebKit/537.36"
+                " (KHTML, like Gecko) Chrome/108.0.0.0 "
+                "Safari/537.36"
+            ),
         }
         # The url comes from the user, but this form is only accessible to
         # authorized users. We trust it as much as we trust the user.
         response = requests.get(url, headers=headers)
         tree = html.fromstring(response.content.decode("utf-8"))
         title = tree.xpath('//meta[@property="og:title"]/@content')
-        description = tree.xpath(
-            '//meta[@property="og:description"]/@content')
+        description = tree.xpath('//meta[@property="og:description"]/@content')
         image = tree.xpath('//meta[@property="og:image"]/@content')
         newspaper_name = tree.xpath(
-            '//meta[@property="og:site_name"]/@content')
+            '//meta[@property="og:site_name"]/@content'
+        )
         publication_date = tree.xpath(
-            '//meta[@property="og:article:published_time"]/@content')
+            '//meta[@property="og:article:published_time"]/@content'
+        )
 
         if is_view:
             return title, description, image, newspaper_name, publication_date
         else:
-            return JsonResponse({
-                "title": title[0] if title else "",
-                "description": description[0] if description else "",
-                "image": image[0] if image else "",
-                "newspaper_name": newspaper_name[0] if newspaper_name else "",
-                "publication_date": publication_date[0] if publication_date
-                else ""
-            }, json_dumps_params={'ensure_ascii': False})
+            return JsonResponse(
+                {
+                    "title": title[0] if title else "",
+                    "description": description[0] if description else "",
+                    "image": image[0] if image else "",
+                    "newspaper_name": newspaper_name[0]
+                    if newspaper_name
+                    else "",
+                    "publication_date": publication_date[0]
+                    if publication_date
+                    else "",
+                },
+                json_dumps_params={"ensure_ascii": False},
+            )
     except Exception as e:
         logger.error(f"Error during OG data fetch : {e}")
         return None, None, None, None, None
@@ -171,7 +195,7 @@ class PressMentionCreateView(PermissionRequiredMixin, CreateView):
 
     template_name = "press/press_create.html"
     form_class = PressMentionForm
-    permission_required = 'press.press-editor'
+    permission_required = "press.press-editor"
 
     def form_valid(self, form):
         update_opengraph_data(form)
@@ -184,14 +208,16 @@ class PressMentionUpdateView(PermissionRequiredMixin, UpdateView):
     model = PressMention
     template_name = "press/press_update.html"
     form_class = PressMentionForm
-    success_url = reverse_lazy('press:list_items')
-    permission_required = 'press.press-editor'
+    success_url = reverse_lazy("press:list_items")
+    permission_required = "press.press-editor"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["newspaper_name_list"] = PressMention.objects.distinct(
-        ).order_by('newspaper_name').values_list(
-            'newspaper_name', flat=True)
+        context["newspaper_name_list"] = (
+            PressMention.objects.distinct()
+            .order_by("newspaper_name")
+            .values_list("newspaper_name", flat=True)
+        )
         return context
 
     def form_valid(self, form):
@@ -204,8 +230,8 @@ class PressMentionDeleteView(PermissionRequiredMixin, DeleteView):
 
     model = PressMention
     template_name = "press/press_delete.html"
-    success_url = reverse_lazy('press:list_items')
-    permission_required = 'press.press-editor'
+    success_url = reverse_lazy("press:list_items")
+    permission_required = "press.press-editor"
 
 
 class PressMentionDetailView(PermissionRequiredMixin, DetailView):
@@ -213,7 +239,7 @@ class PressMentionDetailView(PermissionRequiredMixin, DetailView):
 
     model = PressMention
     template_name = "press/press_detail.html"
-    permission_required = 'press.press-editor'
+    permission_required = "press.press-editor"
 
 
 def update_opengraph_data(form=None, pressmention_id=None):
@@ -224,13 +250,12 @@ def update_opengraph_data(form=None, pressmention_id=None):
     a form or from the get data of the url and return None.
     """
     if form:
-        url = form.cleaned_data['article_link']
+        url = form.cleaned_data["article_link"]
         # Settings the default data
-        form.instance.og_title = form.cleaned_data['article_title']
-        form.instance.og_description = form.cleaned_data['article_summary']
+        form.instance.og_title = form.cleaned_data["article_title"]
+        form.instance.og_description = form.cleaned_data["article_summary"]
     else:
-        press_mention = PressMention.objects.get(
-            pk=pressmention_id)
+        press_mention = PressMention.objects.get(pk=pressmention_id)
         url = press_mention.article_link
     try:
         page_html = requests.get(url)
@@ -242,7 +267,8 @@ def update_opengraph_data(form=None, pressmention_id=None):
     doc_tree = html.fromstring(page_html.content.decode("utf-8"))
     og_title = doc_tree.xpath('//meta[@property="og:title"]/@content')
     og_description = doc_tree.xpath(
-        '//meta[@property="og:description"]/@content')
+        '//meta[@property="og:description"]/@content'
+    )
     og_image_url = doc_tree.xpath('//meta[@property="og:image"]/@content')
     if not og_title or not og_description:
         logger.info(f"No opengraph data at {url}.")
@@ -263,15 +289,17 @@ def update_opengraph_data(form=None, pressmention_id=None):
         # If the website doesn't give the full path of the url, try to
         # provide a schema to make a fully qualified URL.
         parsed_uri = urlparse(url)
-        protocol_and_domain = f'{parsed_uri.scheme}://{parsed_uri.netloc}/'
+        protocol_and_domain = f"{parsed_uri.scheme}://{parsed_uri.netloc}/"
         try:
             http_response = requests.get(protocol_and_domain + og_image_url[0])
         except Exception as e:
             logger.warning(f"Can't acess to the open graph image {e}.")
             return None
     if http_response.status_code != requests.codes.ok:
-        logger.warning("The link of the open graph "
-                       "image may be dead, or doesn't exist.")
+        logger.warning(
+            "The link of the open graph "
+            "image may be dead, or doesn't exist."
+        )
         return None
 
     def get_image_extension(file_contents):
@@ -285,8 +313,11 @@ def update_opengraph_data(form=None, pressmention_id=None):
             result = tf(file_contents, None)
             if result:
                 return "." + result
-        logger.warning("Failed to determine image type, {bytes} bytes.".format(
-            bytes=len(file_contents)))
+        logger.warning(
+            "Failed to determine image type, {bytes} bytes.".format(
+                bytes=len(file_contents)
+            )
+        )
         return ""
 
     # Init the buffered I/O
@@ -295,10 +326,10 @@ def update_opengraph_data(form=None, pressmention_id=None):
     image_fp.write(http_response.content)
     # Retrieve the file name of the opengraph image
     raw_image_filename = og_image_url[0]
-    base_image_filename = sha3_256(raw_image_filename.encode()
-                               ).hexdigest()
+    base_image_filename = sha3_256(raw_image_filename.encode()).hexdigest()
     image_filename = base_image_filename + get_image_extension(
-        http_response.content)
+        http_response.content
+    )
     if form:
         # Add the image to the PressMention form
         form.instance.og_image.save(image_filename, files.File(image_fp))
@@ -311,7 +342,7 @@ def update_opengraph_data(form=None, pressmention_id=None):
 
 
 @csrf_protect
-@permission_required('press.press-editor')
+@permission_required("press.press-editor")
 def check_for_duplicate(request, *args, **kwargs):
     """Check if the provided URL already exists in PressMention."""
     url = request.GET.get("url")
@@ -327,11 +358,8 @@ def check_for_duplicate(request, *args, **kwargs):
                 {
                     "is_duplicate": True,
                     "edit_url": reverse(
-                        'press:update_item',
-                        kwargs={
-                            'pk': press_mention.pk
-                        }
-                    )
+                        "press:update_item", kwargs={"pk": press_mention.pk}
+                    ),
                 }
             )
     return JsonResponse({"is_duplicate": False})

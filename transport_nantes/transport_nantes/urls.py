@@ -22,42 +22,56 @@ from django.conf.urls.static import static
 from transport_nantes.settings import ROLE
 from django_ses.views import SESEventWebhookView
 
-handler404 = 'asso_tn.views.tn_404_view'
+handler404 = "asso_tn.views.tn_404_view"
 
 urlpatterns = [
-    path('', AssoView.as_view(template_name='asso_tn/index.html',),
-         name='index'),
-    path('index2', AssoView.as_view(template_name='asso_tn/index.html',),
-         name='index2'),
-    path('admin/', admin.site.urls),
-    path('auth/', include('authentication.urls')),
-    path('captcha/', include('captcha.urls')),
+    path(
+        "",
+        AssoView.as_view(
+            template_name="asso_tn/index.html",
+        ),
+        name="index",
+    ),
+    path(
+        "index2",
+        AssoView.as_view(
+            template_name="asso_tn/index.html",
+        ),
+        name="index2",
+    ),
+    path("admin/", admin.site.urls),
+    path("auth/", include("authentication.urls")),
+    path("captcha/", include("captcha.urls")),
     # ClickCollect is obsolete (and we should have used mailing_list,
     # but it maybe didn't exist at the time.  But we should keep it
     # around until we recover the contacts to a periodic annoncement
     # mailing list.
     # path('cc/', include('clickcollect.urls')),
-    path('d/', include('dashboard.urls')),
-    path('l/', include('asso_tn.urls')),
-    path('ml/', include('mailing_list.urls')),
-    path('observatoire/', include('geoplan.urls')),
+    path("d/", include("dashboard.urls")),
+    path("l/", include("asso_tn.urls")),
+    path("ml/", include("mailing_list.urls")),
+    path("observatoire/", include("geoplan.urls")),
     # The OpenGraph app will likely be useful some day for doing
     # dynamic og/tw images.
     # path('og/', include('open_graph.urls')),
-    path('questionnaire/', include('surveys.urls')),
-    path('tb/', include('topicblog.urls', namespace="topicblog")),
+    path("questionnaire/", include("surveys.urls")),
+    path("tb/", include("topicblog.urls", namespace="topicblog")),
     # The misnamed VO app has a few fragments that will be useful for
     # the OGM project.  Cf. also the benjamin-ajax-exercise branch.
     # path('??', include('velopolitain_observatoire.urls')),
-    path("donation/", include('stripe_app.urls')),
-    path("presse/", include('press.urls')),
-    path("photo/", include('photo.urls')),
-    path("mobilito/", include('mobilito.urls')),
-    path('__debug__/', include('debug_toolbar.urls')),
-    path("ses/event-webhook/", SESEventWebhookView.as_view(),
-         name="ses_event_webhook"),
+    path("donation/", include("stripe_app.urls")),
+    path("presse/", include("press.urls")),
+    path("photo/", include("photo.urls")),
+    path("mobilito/", include("mobilito.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
+    path(
+        "ses/event-webhook/",
+        SESEventWebhookView.as_view(),
+        name="ses_event_webhook",
+    ),
 ]
 
-if ROLE != 'production':
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+if ROLE != "production":
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )

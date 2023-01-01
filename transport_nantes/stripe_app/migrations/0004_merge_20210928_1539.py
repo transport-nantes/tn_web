@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stripe_app', '0003_auto_20210923_1039'),
-        ('stripe_app', '0003_trackingprogression_user_agent'),
+        ("stripe_app", "0003_auto_20210923_1039"),
+        ("stripe_app", "0003_trackingprogression_user_agent"),
     ]
 
-    operations = [
-    ]
+    operations = []

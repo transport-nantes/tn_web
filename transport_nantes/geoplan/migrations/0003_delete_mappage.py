@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geoplan', '0002_mapcontent_mapdefinition_maplayer'),
+        ("geoplan", "0002_mapcontent_mapdefinition_maplayer"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='MapPage',
+            name="MapPage",
         ),
     ]

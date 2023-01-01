@@ -6,12 +6,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('press', '0001_initial'),
+        ("press", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='pressmention',
-            options={'ordering': ['-article_publication_date', 'newspaper_name'], 'permissions': (('press-editor', 'May create and see list view Article'),)},
+            name="pressmention",
+            options={
+                "ordering": ["-article_publication_date", "newspaper_name"],
+                "permissions": (
+                    ("press-editor", "May create and see list view Article"),
+                ),
+            },
         ),
     ]

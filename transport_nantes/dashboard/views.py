@@ -15,7 +15,8 @@ class DashboardIndex(StaffRequiredMixin, TemplateView):
     want.
 
     """
-    template_name = 'dashboard/index.html'
+
+    template_name = "dashboard/index.html"
     login_url = reverse_lazy("authentication:login")
 
     def get_context_data(self, **kwargs):
@@ -25,5 +26,6 @@ class DashboardIndex(StaffRequiredMixin, TemplateView):
 
 class SignatureView(LoginRequiredMixin, FormView):
     """Form to generate a mail signature"""
-    template_name = 'dashboard/signature.html'
+
+    template_name = "dashboard/signature.html"
     form_class = SignatureForm

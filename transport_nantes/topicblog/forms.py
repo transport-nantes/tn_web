@@ -1,8 +1,13 @@
 from django import forms
 from django.forms import ModelForm
-from .models import (TopicBlogItem, TopicBlogLauncher,
-                     TopicBlogEmail, TopicBlogMailingListPitch,
-                     TopicBlogPanel, TopicBlogPress)
+from .models import (
+    TopicBlogItem,
+    TopicBlogLauncher,
+    TopicBlogEmail,
+    TopicBlogMailingListPitch,
+    TopicBlogPanel,
+    TopicBlogPress,
+)
 from mailing_list.models import MailingList
 
 
@@ -37,10 +42,10 @@ class ModelFormTemplateList(ModelForm):
 
     def set_initial_template(self):
         template_list = self.get_template_list()
-        self.fields['template_name'] = forms.ChoiceField(
-                choices=template_list,
-                initial=self.default_choice,
-            )
+        self.fields["template_name"] = forms.ChoiceField(
+            choices=template_list,
+            initial=self.default_choice,
+        )
 
 
 class TopicBlogItemForm(ModelFormTemplateList):
@@ -51,9 +56,14 @@ class TopicBlogItemForm(ModelFormTemplateList):
     class Meta:
         model = TopicBlogItem
         # Admins can still edit those values
-        exclude = ('item_sort_key', 'user',
-                   'publication_date', 'first_publication_date', 'publisher',
-                   'scheduled_for_deletion_date')
+        exclude = (
+            "item_sort_key",
+            "user",
+            "publication_date",
+            "first_publication_date",
+            "publisher",
+            "scheduled_for_deletion_date",
+        )
 
 
 class TopicBlogEmailSendForm(forms.Form):
@@ -65,23 +75,25 @@ class TopicBlogEmailSendForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.all_mailing_lists = MailingList.objects.all().values(
-            "mailing_list_name", "mailing_list_token")
-        self.all_mailing_lists = \
-            [(item["mailing_list_token"], item["mailing_list_name"])
-             for item in self.all_mailing_lists]
+            "mailing_list_name", "mailing_list_token"
+        )
+        self.all_mailing_lists = [
+            (item["mailing_list_token"], item["mailing_list_name"])
+            for item in self.all_mailing_lists
+        ]
         # Add a default value
         self.all_mailing_lists.insert(
-            0, (None, "Selectionnez une liste d'envoi ..."))
+            0, (None, "Selectionnez une liste d'envoi ...")
+        )
         self.fields["mailing_list"].choices = self.all_mailing_lists
 
     mailing_list = forms.ChoiceField(
-        choices=[],
-        label="Liste d'envoi",
-        required=True)
+        choices=[], label="Liste d'envoi", required=True
+    )
 
     confirmation_box = forms.BooleanField(
-        label="Confirmer l'envoi",
-        required=True)
+        label="Confirmer l'envoi", required=True
+    )
 
 
 class TopicBlogLauncherForm(ModelFormTemplateList):
@@ -92,12 +104,24 @@ class TopicBlogLauncherForm(ModelFormTemplateList):
     class Meta:
         model = TopicBlogLauncher
         # Admins can still edit those values
-        exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date', 'scheduled_for_deletion_date')
+        exclude = (
+            "first_publication_date",
+            "publisher",
+            "user",
+            "publication_date",
+            "scheduled_for_deletion_date",
+        )
 
-    field_order = ['slug', 'article_slug', 'campaign_name',
-                   'headline', 'template_name', 'launcher_text_md',
-                   'launcher_image', 'launcher_image_alt_text']
+    field_order = [
+        "slug",
+        "article_slug",
+        "campaign_name",
+        "headline",
+        "template_name",
+        "launcher_text_md",
+        "launcher_image",
+        "launcher_image_alt_text",
+    ]
 
 
 class TopicBlogEmailForm(ModelFormTemplateList):
@@ -108,15 +132,36 @@ class TopicBlogEmailForm(ModelFormTemplateList):
     class Meta:
         model = TopicBlogEmail
         # Admins can still edit those values
-        exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date', 'scheduled_for_deletion_date')
-    field_order = ["slug", "subject", "title", "header_title",
-                   "header_description", "header_image", "template_name",
-                   "body_text_1_md", "cta_1_slug", "cta_1_label",
-                   "body_image_1", "body_image_1_alt_text",
-                   "social_description", "twitter_title",
-                   "twitter_description", "twitter_image", "og_title",
-                   "og_description", "og_image", "author_notes"]
+        exclude = (
+            "first_publication_date",
+            "publisher",
+            "user",
+            "publication_date",
+            "scheduled_for_deletion_date",
+        )
+
+    field_order = [
+        "slug",
+        "subject",
+        "title",
+        "header_title",
+        "header_description",
+        "header_image",
+        "template_name",
+        "body_text_1_md",
+        "cta_1_slug",
+        "cta_1_label",
+        "body_image_1",
+        "body_image_1_alt_text",
+        "social_description",
+        "twitter_title",
+        "twitter_description",
+        "twitter_image",
+        "og_title",
+        "og_description",
+        "og_image",
+        "author_notes",
+    ]
 
 
 class TopicBlogPressForm(ModelFormTemplateList):
@@ -127,8 +172,13 @@ class TopicBlogPressForm(ModelFormTemplateList):
     class Meta:
         model = TopicBlogPress
         # Admins can still edit those values
-        exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date', 'scheduled_for_deletion_date')
+        exclude = (
+            "first_publication_date",
+            "publisher",
+            "user",
+            "publication_date",
+            "scheduled_for_deletion_date",
+        )
 
 
 class TopicBlogPanelForm(ModelFormTemplateList):
@@ -137,25 +187,36 @@ class TopicBlogPanelForm(ModelFormTemplateList):
     class Meta:
         model = TopicBlogPanel
         # Admins can still edit those values
-        exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date', 'scheduled_for_deletion_date')
+        exclude = (
+            "first_publication_date",
+            "publisher",
+            "user",
+            "publication_date",
+            "scheduled_for_deletion_date",
+        )
 
 
 class TopicBlogMailingListPitchForm(ModelFormTemplateList):
-    """ Generates a form to create and edit TopicBlogMailingList objects.
-    """
+    """Generates a form to create and edit TopicBlogMailingList objects."""
 
     class Meta:
         model = TopicBlogMailingListPitch
         # Admins can still edit those values
-        exclude = ('first_publication_date', 'publisher', 'user',
-                   'publication_date', 'scheduled_for_deletion_date')
+        exclude = (
+            "first_publication_date",
+            "publisher",
+            "user",
+            "publication_date",
+            "scheduled_for_deletion_date",
+        )
 
 
 class SendToSelfForm(forms.Form):
     """Form to send a TopicBlog object to oneself"""
+
     sent_object_class = forms.CharField(required=True)
     sent_object_id = forms.IntegerField(required=True)
     sent_object_transactional_send_record_class = forms.CharField(
-        required=True)
+        required=True
+    )
     redirect_url = forms.CharField(required=True)

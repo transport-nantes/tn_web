@@ -4,10 +4,12 @@ from django.template import Node
 
 register = template.Library()
 
+
 class RandomNode(Node):
     def render(self, context):
-        context['randomstring'] = get_random_string()
-        return ''
+        context["randomstring"] = get_random_string()
+        return ""
+
 
 @register.tag
 def randomstring(parser, token):

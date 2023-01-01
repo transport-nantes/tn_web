@@ -6,18 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0026_auto_20220117_1409'),
+        ("topicblog", "0026_auto_20220117_1409"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogemail',
-            name='author_notes',
-            field=models.TextField(blank=True, help_text='Notes pour éditeurs : ne seront pas affichées sur le site', null=True, verbose_name='Notes libres pour éditeurs'),
+            model_name="topicblogemail",
+            name="author_notes",
+            field=models.TextField(
+                blank=True,
+                help_text="Notes pour éditeurs : ne seront pas affichées sur le site",
+                null=True,
+                verbose_name="Notes libres pour éditeurs",
+            ),
         ),
         migrations.AddField(
-            model_name='topicblogitem',
-            name='author_notes',
-            field=models.TextField(blank=True, help_text='Notes pour éditeurs : ne seront pas affichées sur le site', null=True, verbose_name='Notes libres pour éditeurs'),
+            model_name="topicblogitem",
+            name="author_notes",
+            field=models.TextField(
+                blank=True,
+                help_text="Notes pour éditeurs : ne seront pas affichées sur le site",
+                null=True,
+                verbose_name="Notes libres pour éditeurs",
+            ),
         ),
     ]

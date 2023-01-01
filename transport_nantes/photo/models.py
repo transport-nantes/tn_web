@@ -15,7 +15,8 @@ def validate_submitted_photo(value):
     longest_side = max(value.width, value.height)
     if longest_side < 1000:
         raise ValidationError(
-            "La plus grande dimension de la photo doit être supérieure " "à 1000px."
+            "La plus grande dimension de la photo doit être supérieure "
+            "à 1000px."
         )
 
 
@@ -53,9 +54,13 @@ class PhotoEntry(models.Model):
             "quartier des Hauts-Pavés ?"
         ),
     )
-    photo_location = models.TextField(blank=True, verbose_name="Lieu de la photo")
+    photo_location = models.TextField(
+        blank=True, verbose_name="Lieu de la photo"
+    )
     photo_kit = models.TextField(blank=True, verbose_name="Appareil photo")
-    technical_notes = models.TextField(blank=True, verbose_name="Notes techniques")
+    technical_notes = models.TextField(
+        blank=True, verbose_name="Notes techniques"
+    )
     photographer_comments = models.TextField(
         blank=True, verbose_name="Vos commentaires sur la photo"
     )
@@ -100,6 +105,7 @@ class PhotoEntry(models.Model):
         This is used to render the pedestrian issues on social medias.
         """
         from topicblog.templatetags.markdown import tn_markdown
+
         rendered_text = tn_markdown({}, self.pedestrian_issues_md)
         return bs(rendered_text, "html.parser").text
 
@@ -124,7 +130,9 @@ class PhotoEntry(models.Model):
         import time
 
         return hashlib.sha1(
-            (str(time.monotonic_ns()) + "|" + str(self.user.id)).encode("utf-8")
+            (str(time.monotonic_ns()) + "|" + str(self.user.id)).encode(
+                "utf-8"
+            )
         ).hexdigest()
 
 
@@ -157,7 +165,9 @@ class Vote(models.Model):
     vote_value = models.BooleanField(null=False, blank=False)
     # If the user is logged in or succeeded in the captcha, we set this to True
     # In case the captcha failed, we set this to False
-    captcha_succeeded = models.BooleanField(null=False, blank=False, default=False)
+    captcha_succeeded = models.BooleanField(
+        null=False, blank=False, default=False
+    )
 
     def __str__(self):
         return (

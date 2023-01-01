@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('utm', '0002_auto_20211213_1355'),
+        ("utm", "0002_auto_20211213_1355"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='utm',
-            old_name='session_cookie',
-            new_name='session_id',
+            model_name="utm",
+            old_name="session_cookie",
+            new_name="session_id",
         ),
     ]

@@ -8,43 +8,147 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0009_alter_mailinglist_options'),
+        ("mailing_list", "0009_alter_mailinglist_options"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('topicblog', '0038_rename_teaser_words_topicbloglauncher_teaser_chars'),
+        (
+            "topicblog",
+            "0038_rename_teaser_words_topicbloglauncher_teaser_chars",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TopicBlogMailingListPitch',
+            name="TopicBlogMailingListPitch",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(allow_unicode=True, blank=True, max_length=90)),
-                ('publication_date', models.DateTimeField(blank=True, null=True)),
-                ('first_publication_date', models.DateTimeField(blank=True, null=True)),
-                ('date_modified', models.DateTimeField(auto_now=True)),
-                ('template_name', models.CharField(blank=True, max_length=80)),
-                ('title', models.CharField(blank=True, max_length=100)),
-                ('header_image', models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='header/')),
-                ('header_title', models.CharField(blank=True, max_length=80)),
-                ('header_description', models.CharField(blank=True, max_length=120)),
-                ('social_description', models.TextField(blank=True, help_text='Notes pour humains des objectifs (marketing) de la page')),
-                ('twitter_title', models.CharField(blank=True, max_length=80)),
-                ('twitter_description', models.TextField(blank=True)),
-                ('twitter_image', models.ImageField(blank=True, help_text='2:1, résolution minimum : 300x157, max 4096x4096', upload_to='twitter/')),
-                ('og_title', models.CharField(blank=True, max_length=80)),
-                ('og_description', models.TextField(blank=True)),
-                ('og_image', models.ImageField(blank=True, help_text='résolution recommandée : 1200x630', upload_to='opengraph/')),
-                ('author_notes', models.TextField(blank=True, help_text='Notes pour éditeurs : ne seront pas affichées sur le site', null=True, verbose_name='Notes libres pour éditeurs')),
-                ('body_text_1_md', models.TextField(blank=True)),
-                ('cta_1_slug', models.SlugField(allow_unicode=True, blank=True, max_length=90)),
-                ('cta_1_label', models.CharField(blank=True, max_length=80)),
-                ('mailing_list', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='mailing_list.mailinglist')),
-                ('publisher', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        allow_unicode=True, blank=True, max_length=90
+                    ),
+                ),
+                (
+                    "publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "first_publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                ("date_modified", models.DateTimeField(auto_now=True)),
+                ("template_name", models.CharField(blank=True, max_length=80)),
+                ("title", models.CharField(blank=True, max_length=100)),
+                (
+                    "header_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1600x500",
+                        upload_to="header/",
+                    ),
+                ),
+                ("header_title", models.CharField(blank=True, max_length=80)),
+                (
+                    "header_description",
+                    models.CharField(blank=True, max_length=120),
+                ),
+                (
+                    "social_description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Notes pour humains des objectifs (marketing) de la page",
+                    ),
+                ),
+                ("twitter_title", models.CharField(blank=True, max_length=80)),
+                ("twitter_description", models.TextField(blank=True)),
+                (
+                    "twitter_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="2:1, résolution minimum : 300x157, max 4096x4096",
+                        upload_to="twitter/",
+                    ),
+                ),
+                ("og_title", models.CharField(blank=True, max_length=80)),
+                ("og_description", models.TextField(blank=True)),
+                (
+                    "og_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1200x630",
+                        upload_to="opengraph/",
+                    ),
+                ),
+                (
+                    "author_notes",
+                    models.TextField(
+                        blank=True,
+                        help_text="Notes pour éditeurs : ne seront pas affichées sur le site",
+                        null=True,
+                        verbose_name="Notes libres pour éditeurs",
+                    ),
+                ),
+                ("body_text_1_md", models.TextField(blank=True)),
+                (
+                    "cta_1_slug",
+                    models.SlugField(
+                        allow_unicode=True, blank=True, max_length=90
+                    ),
+                ),
+                ("cta_1_label", models.CharField(blank=True, max_length=80)),
+                (
+                    "mailing_list",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="mailing_list.mailinglist",
+                    ),
+                ),
+                (
+                    "publisher",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Mailing list pitches',
-                'permissions': (('tbmlp.may_view', 'May view unpublished TopicBlogMailingListPitch'), ('tbmlp.may_edit', 'May create and modify TopicBlogMailingListPitch'), ('tbmlp.may_publish', 'May publish TopicBlogMailingListPitch'), ('tbmlp.may_publish_self', 'May publish own TopicBlogMailingListPitch')),
+                "verbose_name_plural": "Mailing list pitches",
+                "permissions": (
+                    (
+                        "tbmlp.may_view",
+                        "May view unpublished TopicBlogMailingListPitch",
+                    ),
+                    (
+                        "tbmlp.may_edit",
+                        "May create and modify TopicBlogMailingListPitch",
+                    ),
+                    (
+                        "tbmlp.may_publish",
+                        "May publish TopicBlogMailingListPitch",
+                    ),
+                    (
+                        "tbmlp.may_publish_self",
+                        "May publish own TopicBlogMailingListPitch",
+                    ),
+                ),
             },
         ),
     ]

@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0058_alter_topicblogmailinglistpitch_mailing_list'),
+        ("topicblog", "0058_alter_topicblogmailinglistpitch_mailing_list"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogpress',
-            name='mail_only_contact_info',
-            field=models.CharField(blank=True, max_length=200, verbose_name='Informations de contact (affiché dans les mails uniquement)'),
+            model_name="topicblogpress",
+            name="mail_only_contact_info",
+            field=models.CharField(
+                blank=True,
+                max_length=200,
+                verbose_name="Informations de contact (affiché dans les mails uniquement)",
+            ),
         ),
     ]

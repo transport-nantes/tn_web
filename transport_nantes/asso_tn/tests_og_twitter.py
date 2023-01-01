@@ -2,16 +2,20 @@ from django.test import TestCase, Client
 from topicblog.models import TopicBlogItem
 from django.contrib.auth.models import User
 from datetime import datetime, timezone
-from .templatetags.og_twitter import (get_image_url, first_not_empty,
-                                      first_not_empty_image)
+from .templatetags.og_twitter import (
+    get_image_url,
+    first_not_empty,
+    first_not_empty_image,
+)
 from django.templatetags.static import static
 
 
 class Test_Og_Twitter_Dymanic_Page(TestCase):
     def setUp(self):
         # Creates a user for FKs
-        self.user = User.objects.create(username='user-og-twitter',
-                                        password='mdp-og-twitter')
+        self.user = User.objects.create(
+            username="user-og-twitter", password="mdp-og-twitter"
+        )
         # Create a TopicBlog with all og value and empty twitter
         self.full_og = TopicBlogItem.objects.create(
             slug="og",
@@ -25,7 +29,7 @@ class Test_Og_Twitter_Dymanic_Page(TestCase):
             twitter_image="",
             og_title="Og title",
             og_description="Og description",
-            og_image="og_image.png"
+            og_image="og_image.png",
         )
         # Create a TopicBlog with all twitter value and  empty og
         self.full_twitter = TopicBlogItem.objects.create(
@@ -40,7 +44,7 @@ class Test_Og_Twitter_Dymanic_Page(TestCase):
             twitter_image="twitter_image.png",
             og_title="",
             og_description="",
-            og_image=""
+            og_image="",
         )
         # Create a TopicBlog with all twitter and og value
         self.full_both = TopicBlogItem.objects.create(
@@ -55,7 +59,7 @@ class Test_Og_Twitter_Dymanic_Page(TestCase):
             twitter_image="twitter_image.png",
             og_title="Og title",
             og_description="Og description",
-            og_image="og_image.png"
+            og_image="og_image.png",
         )
         # Create a TopicBlog with og and twitter empty value
         self.empty_both = TopicBlogItem.objects.create(
@@ -70,163 +74,245 @@ class Test_Og_Twitter_Dymanic_Page(TestCase):
             twitter_image="",
             og_title="",
             og_description="",
-            og_image=""
+            og_image="",
         )
 
         c = Client()
 
         # create the reponse for each page
-        self.reponse_og = c.get('/tb/t/og/')
-        self.reponse_legales = c.get('/tb/t/twitter/')
-        self.reponse_both = c.get('/tb/t/both/')
-        self.reponse_empty = c.get('/tb/t/empty/')
+        self.reponse_og = c.get("/tb/t/og/")
+        self.reponse_legales = c.get("/tb/t/twitter/")
+        self.reponse_both = c.get("/tb/t/both/")
+        self.reponse_empty = c.get("/tb/t/empty/")
 
     # testing with all og value and empty twitter value
     def testing_og_full(self):
         og_title = "<meta property='og:title' content='Og title' />"
-        self.assertContains(self.reponse_og, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Og description' />")
-        self.assertContains(self.reponse_og, og_description,
-                            status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{self.full_og.og_image.url}' />")
-        self.assertContains(self.reponse_og, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Og title' />")
-        self.assertContains(self.reponse_og, twitter_title,
-                            status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description'"
-                               "content='Og description' />")
         self.assertContains(
-            self.reponse_og, twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image'"
-                         f"content='{self.full_og.og_image.url}' />")
-        self.assertContains(self.reponse_og, twitter_image,
-                            status_code=200, html=True)
+            self.reponse_og, og_title, status_code=200, html=True
+        )
+        og_description = (
+            "<meta property='og:description'" "content='Og description' />"
+        )
+        self.assertContains(
+            self.reponse_og, og_description, status_code=200, html=True
+        )
+        og_image = (
+            "<meta property='og:image'"
+            f"content='{self.full_og.og_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_og, og_image, status_code=200, html=True
+        )
+        twitter_title = "<meta name='twitter:title'" "content='Og title' />"
+        self.assertContains(
+            self.reponse_og, twitter_title, status_code=200, html=True
+        )
+        twitter_description = (
+            "<meta name='twitter:description'" "content='Og description' />"
+        )
+        self.assertContains(
+            self.reponse_og, twitter_description, status_code=200, html=True
+        )
+        twitter_image = (
+            "<meta name='twitter:image'"
+            f"content='{self.full_og.og_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_og, twitter_image, status_code=200, html=True
+        )
 
     # testing with all twitter value and empty og
     def testing_twitter_full(self):
         og_title = "<meta property='og:title' content='Twitter title' />"
-        self.assertContains(self.reponse_legales, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Twitter description' />")
-        self.assertContains(self.reponse_legales,
-                            og_description, status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{self.full_twitter.twitter_image.url}' />")
-        self.assertContains(self.reponse_legales, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Twitter title' />")
-        self.assertContains(self.reponse_legales,
-                            twitter_title, status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description'"
-                               "content='Twitter description' />")
-        self.assertContains(self.reponse_legales,
-                            twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image' "
-                         f"content='{self.full_twitter.twitter_image.url}' />")
-        self.assertContains(self.reponse_legales,
-                            twitter_image, status_code=200, html=True)
+        self.assertContains(
+            self.reponse_legales, og_title, status_code=200, html=True
+        )
+        og_description = (
+            "<meta property='og:description'"
+            "content='Twitter description' />"
+        )
+        self.assertContains(
+            self.reponse_legales, og_description, status_code=200, html=True
+        )
+        og_image = (
+            "<meta property='og:image'"
+            f"content='{self.full_twitter.twitter_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_legales, og_image, status_code=200, html=True
+        )
+        twitter_title = (
+            "<meta name='twitter:title'" "content='Twitter title' />"
+        )
+        self.assertContains(
+            self.reponse_legales, twitter_title, status_code=200, html=True
+        )
+        twitter_description = (
+            "<meta name='twitter:description'"
+            "content='Twitter description' />"
+        )
+        self.assertContains(
+            self.reponse_legales,
+            twitter_description,
+            status_code=200,
+            html=True,
+        )
+        twitter_image = (
+            "<meta name='twitter:image' "
+            f"content='{self.full_twitter.twitter_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_legales, twitter_image, status_code=200, html=True
+        )
 
     # testing with twitter and og full value
     def testing_both_full(self):
         og_title = "<meta property='og:title' content='Og title' />"
-        self.assertContains(self.reponse_both, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Og description' />")
-        self.assertContains(self.reponse_both, og_description,
-                            status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{self.full_both.og_image.url}' />")
-        self.assertContains(self.reponse_both, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Twitter title' />")
-        self.assertContains(self.reponse_both, twitter_title,
-                            status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description'"
-                               "content='Twitter description' />")
-        self.assertContains(self.reponse_both,
-                            twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image'"
-                         f"content='{self.full_both.twitter_image.url}' />")
-        self.assertContains(self.reponse_both, twitter_image,
-                            status_code=200, html=True)
+        self.assertContains(
+            self.reponse_both, og_title, status_code=200, html=True
+        )
+        og_description = (
+            "<meta property='og:description'" "content='Og description' />"
+        )
+        self.assertContains(
+            self.reponse_both, og_description, status_code=200, html=True
+        )
+        og_image = (
+            "<meta property='og:image'"
+            f"content='{self.full_both.og_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_both, og_image, status_code=200, html=True
+        )
+        twitter_title = (
+            "<meta name='twitter:title'" "content='Twitter title' />"
+        )
+        self.assertContains(
+            self.reponse_both, twitter_title, status_code=200, html=True
+        )
+        twitter_description = (
+            "<meta name='twitter:description'"
+            "content='Twitter description' />"
+        )
+        self.assertContains(
+            self.reponse_both, twitter_description, status_code=200, html=True
+        )
+        twitter_image = (
+            "<meta name='twitter:image'"
+            f"content='{self.full_both.twitter_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_both, twitter_image, status_code=200, html=True
+        )
 
     # testing with both empty but with header
     def testing_empty(self):
-        og_title = ("<meta property='og:title'"
-                    "content='Mobilitains - "
-                    "Pour une mobilité multimodale' />")
-        self.assertContains(self.reponse_empty, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Nous agissons pour une mobilité plus "
-                          "fluide, plus sécurisée et plus vertueuse' />")
-        self.assertContains(self.reponse_empty,
-                            og_description, status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{self.empty_both.header_image.url}' />")
-        self.assertContains(self.reponse_empty, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Mobilitains - "
-                         "Pour une mobilité multimodale' />")
-        self.assertContains(self.reponse_empty, twitter_title,
-                            status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description'"
-                               "content='Nous agissons pour une mobilité plus "
-                               "fluide, plus sécurisée et plus vertueuse' />")
-        self.assertContains(self.reponse_empty,
-                            twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image'"
-                         f"content='{self.empty_both.header_image.url}' />")
-        self.assertContains(self.reponse_empty, twitter_image,
-                            status_code=200, html=True)
+        og_title = (
+            "<meta property='og:title'"
+            "content='Mobilitains - "
+            "Pour une mobilité multimodale' />"
+        )
+        self.assertContains(
+            self.reponse_empty, og_title, status_code=200, html=True
+        )
+        og_description = (
+            "<meta property='og:description'"
+            "content='Nous agissons pour une mobilité plus "
+            "fluide, plus sécurisée et plus vertueuse' />"
+        )
+        self.assertContains(
+            self.reponse_empty, og_description, status_code=200, html=True
+        )
+        og_image = (
+            "<meta property='og:image'"
+            f"content='{self.empty_both.header_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_empty, og_image, status_code=200, html=True
+        )
+        twitter_title = (
+            "<meta name='twitter:title'"
+            "content='Mobilitains - "
+            "Pour une mobilité multimodale' />"
+        )
+        self.assertContains(
+            self.reponse_empty, twitter_title, status_code=200, html=True
+        )
+        twitter_description = (
+            "<meta name='twitter:description'"
+            "content='Nous agissons pour une mobilité plus "
+            "fluide, plus sécurisée et plus vertueuse' />"
+        )
+        self.assertContains(
+            self.reponse_empty, twitter_description, status_code=200, html=True
+        )
+        twitter_image = (
+            "<meta name='twitter:image'"
+            f"content='{self.empty_both.header_image.url}' />"
+        )
+        self.assertContains(
+            self.reponse_empty, twitter_image, status_code=200, html=True
+        )
 
 
 class Test_Og_Twitter_Static_Page(TestCase):
     def setUp(self):
         c = Client()
         # create the reponse for each page
-        self.reponse_legales = c.get('/l/mentions-legales')
-        self.reponse_jobs = c.get('/l/jobs')
+        self.reponse_legales = c.get("/l/mentions-legales")
+        self.reponse_jobs = c.get("/l/jobs")
 
     def testing_legales(self):
-        og_title = ("<meta property='og:title'"
-                    "content='Mobilitains - Pour une mobilité multimodale' />")
-        self.assertContains(self.reponse_legales, og_title,
-                            status_code=200, html=True)
-        og_description = ("<meta property='og:description'"
-                          "content='Nous agissons pour une mobilité plus "
-                          "fluide, plus sécurisée et plus vertueuse'/>")
-        self.assertContains(self.reponse_legales,
-                            og_description, status_code=200, html=True)
-        og_image = ("<meta property='og:image'"
-                    f"content='{static('velopolitain/v1.png')}' />")
-        self.assertContains(self.reponse_legales, og_image,
-                            status_code=200, html=True)
-        twitter_title = ("<meta name='twitter:title'"
-                         "content='Mobilitains - "
-                         "Pour une mobilité multimodale'/>")
-        self.assertContains(self.reponse_legales,
-                            twitter_title, status_code=200, html=True)
-        twitter_description = ("<meta name='twitter:description' "
-                               "content='Nous agissons pour une mobilité plus "
-                               "fluide, plus sécurisée et plus vertueuse'/>")
-        self.assertContains(self.reponse_legales,
-                            twitter_description, status_code=200, html=True)
-        twitter_image = ("<meta name='twitter:image' "
-                         f"content='{static('asso_tn/mobilite-pour-tous.jpg')}"
-                         "' />")
-        self.assertContains(self.reponse_legales,
-                            twitter_image, status_code=200, html=True)
+        og_title = (
+            "<meta property='og:title'"
+            "content='Mobilitains - Pour une mobilité multimodale' />"
+        )
+        self.assertContains(
+            self.reponse_legales, og_title, status_code=200, html=True
+        )
+        og_description = (
+            "<meta property='og:description'"
+            "content='Nous agissons pour une mobilité plus "
+            "fluide, plus sécurisée et plus vertueuse'/>"
+        )
+        self.assertContains(
+            self.reponse_legales, og_description, status_code=200, html=True
+        )
+        og_image = (
+            "<meta property='og:image'"
+            f"content='{static('velopolitain/v1.png')}' />"
+        )
+        self.assertContains(
+            self.reponse_legales, og_image, status_code=200, html=True
+        )
+        twitter_title = (
+            "<meta name='twitter:title'"
+            "content='Mobilitains - "
+            "Pour une mobilité multimodale'/>"
+        )
+        self.assertContains(
+            self.reponse_legales, twitter_title, status_code=200, html=True
+        )
+        twitter_description = (
+            "<meta name='twitter:description' "
+            "content='Nous agissons pour une mobilité plus "
+            "fluide, plus sécurisée et plus vertueuse'/>"
+        )
+        self.assertContains(
+            self.reponse_legales,
+            twitter_description,
+            status_code=200,
+            html=True,
+        )
+        twitter_image = (
+            "<meta name='twitter:image' "
+            f"content='{static('asso_tn/mobilite-pour-tous.jpg')}"
+            "' />"
+        )
+        self.assertContains(
+            self.reponse_legales, twitter_image, status_code=200, html=True
+        )
 
     # def testing_jobs(self):
     #     og_title = ("<meta property='og:title'"
@@ -262,8 +348,9 @@ class Test_Og_Twitter_Static_Page(TestCase):
 class Test_template_tags_og_twitter(TestCase):
     def setUp(self):
         # Creates a user for FKs
-        self.user = User.objects.create(username='template-user',
-                                        password='mdp-template')
+        self.user = User.objects.create(
+            username="template-user", password="mdp-template"
+        )
         # Create a TopicBlog with all og value and empty twitter
         self.template_tags = TopicBlogItem.objects.create(
             slug="templatetags",
@@ -277,7 +364,7 @@ class Test_template_tags_og_twitter(TestCase):
             twitter_image="twitter_image.png",
             og_title="",
             og_description="",
-            og_image="og_image.png"
+            og_image="og_image.png",
         )
 
     def testing_get_image_url(self):
@@ -285,13 +372,13 @@ class Test_template_tags_og_twitter(TestCase):
         twitter_image = self.template_tags.twitter_image
         header_image = self.template_tags.header_image
         self.assertEqual(get_image_url("image.png"), f"{static('image.png')}")
-        self.assertEqual(get_image_url("default_image.png"),
-                         f"{static('default_image.png')}")
-        self.assertEqual(get_image_url(twitter_image),
-                         twitter_image.url)
+        self.assertEqual(
+            get_image_url("default_image.png"),
+            f"{static('default_image.png')}",
+        )
+        self.assertEqual(get_image_url(twitter_image), twitter_image.url)
         self.assertEqual(get_image_url(og_image), og_image.url)
-        self.assertEqual(get_image_url(header_image),
-                         header_image.url)
+        self.assertEqual(get_image_url(header_image), header_image.url)
 
     def testing_first_not_empty(self):
         self.assertEqual(first_not_empty("deux", "", 0, "un"), "deux")
@@ -304,13 +391,20 @@ class Test_template_tags_og_twitter(TestCase):
         og_image = self.template_tags.og_image
         twitter_image = self.template_tags.twitter_image
         header_image = self.template_tags.header_image
-        self.assertEqual(first_not_empty_image(
-            "", "", "default.png"), f"{static('default.png')}")
-        self.assertEqual(first_not_empty_image(
-            "", "", header_image, "default"), header_image.url)
-        self.assertEqual(first_not_empty_image(
-            og_image, twitter_image, "", "default"), og_image.url)
-        self.assertEqual(first_not_empty_image(
-            "", twitter_image, header_image, "default"),
-            twitter_image.url)
+        self.assertEqual(
+            first_not_empty_image("", "", "default.png"),
+            f"{static('default.png')}",
+        )
+        self.assertEqual(
+            first_not_empty_image("", "", header_image, "default"),
+            header_image.url,
+        )
+        self.assertEqual(
+            first_not_empty_image(og_image, twitter_image, "", "default"),
+            og_image.url,
+        )
+        self.assertEqual(
+            first_not_empty_image("", twitter_image, header_image, "default"),
+            twitter_image.url,
+        )
         self.assertEqual(first_not_empty_image("", "", "", ""), None)

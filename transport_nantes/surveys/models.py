@@ -2,6 +2,7 @@ from django.db import models
 
 # Cf. https://docs.djangoproject.com/en/3.0/ref/models/fields/
 
+
 class Survey(models.Model):
     """Represent a survey.
 
@@ -9,6 +10,7 @@ class Survey(models.Model):
     anyone's responses.
 
     """
+
     # A human-presentable name of the survey
     name = models.CharField(max_length=200)
     # More information about the survey.  For humans.
@@ -17,8 +19,10 @@ class Survey(models.Model):
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{name} ({slug}) [{active}]'.format(
-            name=self.name, slug=self.slug, active=self.is_active)
+        return "{name} ({slug}) [{active}]".format(
+            name=self.name, slug=self.slug, active=self.is_active
+        )
+
 
 class SurveyQuestion(models.Model):
     """Represent a set of questions (a survey).
@@ -26,6 +30,7 @@ class SurveyQuestion(models.Model):
     This does not represent anyone's responses.
 
     """
+
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     # Question numbers are strings because we might have "3a" and
     # "3b", for example.
@@ -38,9 +43,12 @@ class SurveyQuestion(models.Model):
     question_text = models.TextField()
 
     def __str__(self):
-        return '[{sn}] {qn}: {qt}'.format(sn=self.survey.name,
-                                          qn=self.question_number,
-                                          qt=self.question_title)
+        return "[{sn}] {qn}: {qt}".format(
+            sn=self.survey.name,
+            qn=self.question_number,
+            qt=self.question_title,
+        )
+
 
 class SurveyCommune(models.Model):
     """Represent the commune.
@@ -49,11 +57,13 @@ class SurveyCommune(models.Model):
     number (and thus fix spelling errors without invalidating URLs if
     such should happen.
     """
+
     # Our surveys typically involve political entities.
     commune = models.CharField(max_length=100)
 
     def __str__(self):
         return self.commune
+
 
 class SurveyResponder(models.Model):
 
@@ -64,6 +74,7 @@ class SurveyResponder(models.Model):
     join together and split apart.
 
     """
+
     # People are generally authorised only to respond for one
     # party/list and for one survey.  If they wish to respond to
     # another survey, they'll need to be revalidated (and to have a
@@ -98,21 +109,28 @@ class SurveyResponder(models.Model):
     facebook = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return '[{sn}] {com}: {liste}/{tete}'.format(sn=self.survey.name,
-                                                   com=self.commune,
-                                                   liste=self.liste,
-                                                   tete=self.tete_de_liste)
+        return "[{sn}] {com}: {liste}/{tete}".format(
+            sn=self.survey.name,
+            com=self.commune,
+            liste=self.liste,
+            tete=self.tete_de_liste,
+        )
+
 
 class SurveyResponse(models.Model):
-    """Represent candidate/party responses to survey questions.
-    """
+    """Represent candidate/party responses to survey questions."""
+
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    survey_question = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE)
-    survey_responder = models.ForeignKey(SurveyResponder, on_delete=models.CASCADE)
+    survey_question = models.ForeignKey(
+        SurveyQuestion, on_delete=models.CASCADE
+    )
+    survey_responder = models.ForeignKey(
+        SurveyResponder, on_delete=models.CASCADE
+    )
 
     survey_question_response = models.TextField()
 
     def __str__(self):
-        return '{id}/{qid}/{rid}'.format(id=self.survey,
-                                         qid=self.survey_question,
-                                         rid=self.survey_responder)
+        return "{id}/{qid}/{rid}".format(
+            id=self.survey, qid=self.survey_question, rid=self.survey_responder
+        )

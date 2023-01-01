@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0015_alter_photoentry_pedestrian_issues_md_and_more'),
+        ("photo", "0015_alter_photoentry_pedestrian_issues_md_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='photoentry',
-            name='photographer_identifier',
+            model_name="photoentry",
+            name="photographer_identifier",
             field=models.TextField(blank=True, null=True),
         ),
     ]

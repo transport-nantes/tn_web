@@ -6,63 +6,63 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0017_auto_20211104_0954'),
+        ("topicblog", "0017_auto_20211104_0954"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='body_image',
+            model_name="topicblogtemplate",
+            name="body_image",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='body_text_1_md',
+            model_name="topicblogtemplate",
+            name="body_text_1_md",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='body_text_2_md',
+            model_name="topicblogtemplate",
+            name="body_text_2_md",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='body_text_3_md',
+            model_name="topicblogtemplate",
+            name="body_text_3_md",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='cta_1',
+            model_name="topicblogtemplate",
+            name="cta_1",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='cta_2',
+            model_name="topicblogtemplate",
+            name="cta_2",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='cta_3',
+            model_name="topicblogtemplate",
+            name="cta_3",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='header',
+            model_name="topicblogtemplate",
+            name="header",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='slug',
+            model_name="topicblogtemplate",
+            name="slug",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='social_media',
+            model_name="topicblogtemplate",
+            name="social_media",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='topicblogtemplate',
-            name='title',
+            model_name="topicblogtemplate",
+            name="title",
             field=models.BooleanField(default=False),
         ),
     ]

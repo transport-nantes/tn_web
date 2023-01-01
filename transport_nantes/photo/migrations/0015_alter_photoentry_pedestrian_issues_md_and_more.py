@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0014_alter_photoentry_options'),
+        ("photo", "0014_alter_photoentry_options"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='photoentry',
-            name='pedestrian_issues_md',
-            field=models.TextField(blank=True, null=True, verbose_name='Remarques piétons (markdown)'),
+            model_name="photoentry",
+            name="pedestrian_issues_md",
+            field=models.TextField(
+                blank=True,
+                null=True,
+                verbose_name="Remarques piétons (markdown)",
+            ),
         ),
         migrations.AlterField(
-            model_name='photoentry',
-            name='submitter_info_md',
-            field=models.TextField(blank=True, null=True, verbose_name='Remarques photo (markdown)'),
+            model_name="photoentry",
+            name="submitter_info_md",
+            field=models.TextField(
+                blank=True,
+                null=True,
+                verbose_name="Remarques photo (markdown)",
+            ),
         ),
     ]

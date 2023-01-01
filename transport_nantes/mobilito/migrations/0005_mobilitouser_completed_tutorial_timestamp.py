@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mobilito', '0004_session_user_browser'),
+        ("mobilito", "0004_session_user_browser"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mobilitouser',
-            name='completed_tutorial_timestamp',
+            model_name="mobilitouser",
+            name="completed_tutorial_timestamp",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0006_auto_20210203_2014'),
+        ("mailing_list", "0006_auto_20210203_2014"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='petition',
-            old_name='petition_md',
-            new_name='petition1_md',
+            model_name="petition",
+            old_name="petition_md",
+            new_name="petition1_md",
         ),
         migrations.AddField(
-            model_name='petition',
-            name='petition2_md',
+            model_name="petition",
+            name="petition2_md",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='petition3_md',
+            model_name="petition",
+            name="petition3_md",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='petition',
-            name='petition4_md',
+            model_name="petition",
+            name="petition4_md",
             field=models.TextField(blank=True),
         ),
     ]

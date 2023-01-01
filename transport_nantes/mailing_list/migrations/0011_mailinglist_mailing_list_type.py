@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0010_mailinglist_linked_article'),
+        ("mailing_list", "0010_mailinglist_linked_article"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mailinglist',
-            name='mailing_list_type',
-            field=models.CharField(blank=True, choices=[('NEWSLETTER', 'Newsletter'), ('PETITION', 'Petition'), ('PRESS', 'Press')], max_length=30, null=True),
+            model_name="mailinglist",
+            name="mailing_list_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("NEWSLETTER", "Newsletter"),
+                    ("PETITION", "Petition"),
+                    ("PRESS", "Press"),
+                ],
+                max_length=30,
+                null=True,
+            ),
         ),
     ]

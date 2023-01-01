@@ -7,22 +7,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MapPage',
+            name="MapPage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('city', models.CharField(max_length=50)),
-                ('observatory_name', models.CharField(max_length=50)),
-                ('observatory_type', models.CharField(max_length=50)),
-                ('layer_name', models.CharField(max_length=50)),
-                ('layer_position', models.IntegerField()),
-                ('geojson', models.TextField()),
-                ('timestamp', models.DateTimeField()),
-                ('kilometres', models.FloatField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("city", models.CharField(max_length=50)),
+                ("observatory_name", models.CharField(max_length=50)),
+                ("observatory_type", models.CharField(max_length=50)),
+                ("layer_name", models.CharField(max_length=50)),
+                ("layer_position", models.IntegerField()),
+                ("geojson", models.TextField()),
+                ("timestamp", models.DateTimeField()),
+                ("kilometres", models.FloatField()),
             ],
         ),
     ]

@@ -6,12 +6,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0032_topicblogpress_topicblogpressclicks_topicblogpresssendrecord'),
+        (
+            "topicblog",
+            "0032_topicblogpress_topicblogpressclicks_topicblogpresssendrecord",
+        ),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='topicblogpress',
-            options={'permissions': (('tbp.may_view', 'May view unpublished TopicBlogPress'), ('tbp.may_edit', 'May create and modify TopicBlogPress'), ('tbp.may_publish', 'May publish TopicBlogPress'), ('tbp.may_publish_self', 'May publish own TopicBlogPress'), ('tbp.may_send', 'May send TopicBlogPresss'), ('tbp.may_send_self', 'May send own TopicBlogPress'))},
+            name="topicblogpress",
+            options={
+                "permissions": (
+                    ("tbp.may_view", "May view unpublished TopicBlogPress"),
+                    ("tbp.may_edit", "May create and modify TopicBlogPress"),
+                    ("tbp.may_publish", "May publish TopicBlogPress"),
+                    ("tbp.may_publish_self", "May publish own TopicBlogPress"),
+                    ("tbp.may_send", "May send TopicBlogPresss"),
+                    ("tbp.may_send_self", "May send own TopicBlogPress"),
+                )
+            },
         ),
     ]

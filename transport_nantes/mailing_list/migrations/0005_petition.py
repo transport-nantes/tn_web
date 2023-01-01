@@ -7,17 +7,31 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0004_mailinglist_is_petition'),
+        ("mailing_list", "0004_mailinglist_is_petition"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Petition',
+            name="Petition",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(allow_unicode=True, unique=True)),
-                ('petition_md', models.TextField()),
-                ('mailing_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mailing_list.MailingList')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("slug", models.SlugField(allow_unicode=True, unique=True)),
+                ("petition_md", models.TextField()),
+                (
+                    "mailing_list",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="mailing_list.MailingList",
+                    ),
+                ),
             ],
         ),
     ]

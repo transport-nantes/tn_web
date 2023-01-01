@@ -4,23 +4,23 @@ from django.db import migrations
 
 
 def replace_old_template_names(apps, schema_editor):
-    tbemail_model = apps.get_model('topicblog', 'TopicBlogEmail')
+    tbemail_model = apps.get_model("topicblog", "TopicBlogEmail")
     for tbemail in tbemail_model.objects.all():
-        if tbemail.template_name == 'topicblog/content_email_client.html':
-            tbemail.template_name = 'topicblog/content_email.html'
+        if tbemail.template_name == "topicblog/content_email_client.html":
+            tbemail.template_name = "topicblog/content_email.html"
             tbemail.save()
 
-    tbpress_model = apps.get_model('topicblog', 'TopicBlogPress')
+    tbpress_model = apps.get_model("topicblog", "TopicBlogPress")
     for tbpress in tbpress_model.objects.all():
-        if tbpress.template_name == 'topicblog/content_press_mail_client.html':
-            tbpress.template_name = 'topicblog/content_press.html'
+        if tbpress.template_name == "topicblog/content_press_mail_client.html":
+            tbpress.template_name = "topicblog/content_press.html"
             tbpress.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0059_topicblogpress_mail_only_contact_info'),
+        ("topicblog", "0059_topicblogpress_mail_only_contact_info"),
     ]
 
     operations = [

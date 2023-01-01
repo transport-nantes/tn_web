@@ -5,9 +5,7 @@ register = template.Library()
 
 
 def get_image_url(image):
-    """Return the url of the image
-
-    """
+    """Return the url of the image"""
     if image is None:
         return None
     elif isinstance(image, str):
@@ -17,9 +15,7 @@ def get_image_url(image):
 
 @register.simple_tag
 def first_not_empty(*args):
-    """Return the first not empty argument
-
-    """
+    """Return the first not empty argument"""
     for arg in args:
         if arg:
             return arg
@@ -28,8 +24,6 @@ def first_not_empty(*args):
 
 @register.simple_tag
 def first_not_empty_image(*args):
-    """Return the url of the first not empty image
-
-    """
+    """Return the url of the first not empty image"""
     image = first_not_empty(*args)
     return get_image_url(image)

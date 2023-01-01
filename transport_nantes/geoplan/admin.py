@@ -5,6 +5,7 @@ from .models import MapDefinition, MapLayer, MapContent
 class GeoplanPageAdmin(admin.ModelAdmin):
     pass
 
+
 admin.site.register(MapDefinition, GeoplanPageAdmin)
 admin.site.register(MapLayer, GeoplanPageAdmin)
 admin.site.register(MapContent, GeoplanPageAdmin)

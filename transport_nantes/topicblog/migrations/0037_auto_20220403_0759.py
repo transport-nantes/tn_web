@@ -6,17 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0036_topicbloglauncher_teaser_words'),
+        ("topicblog", "0036_topicbloglauncher_teaser_words"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='topicbloglauncher',
-            options={'permissions': (('tbla.may_view', 'May view unpublished TopicBlogLauncher'), ('tbla.may_edit', 'May create and modify TopicBlogLauncher'), ('tbla.may_publish', 'May publish TopicBlogLauncher'), ('tbla.may_publish_self', 'May publish own TopicBlogLauncher'))},
+            name="topicbloglauncher",
+            options={
+                "permissions": (
+                    (
+                        "tbla.may_view",
+                        "May view unpublished TopicBlogLauncher",
+                    ),
+                    (
+                        "tbla.may_edit",
+                        "May create and modify TopicBlogLauncher",
+                    ),
+                    ("tbla.may_publish", "May publish TopicBlogLauncher"),
+                    (
+                        "tbla.may_publish_self",
+                        "May publish own TopicBlogLauncher",
+                    ),
+                )
+            },
         ),
         migrations.AlterField(
-            model_name='topicbloglauncher',
-            name='teaser_words',
+            model_name="topicbloglauncher",
+            name="teaser_words",
             field=models.IntegerField(default=50),
         ),
     ]

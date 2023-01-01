@@ -6,18 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0016_auto_20211019_0634'),
+        ("topicblog", "0016_auto_20211019_0634"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogitem',
-            name='publication_date',
+            model_name="topicblogitem",
+            name="publication_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='social_description',
-            field=models.TextField(blank=True, help_text='Notes pour humains des objectifs (marketing) de la page'),
+            model_name="topicblogitem",
+            name="social_description",
+            field=models.TextField(
+                blank=True,
+                help_text="Notes pour humains des objectifs (marketing) de la page",
+            ),
         ),
     ]

@@ -6,39 +6,39 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mobilito', '0005_mobilitouser_completed_tutorial_timestamp'),
+        ("mobilito", "0005_mobilitouser_completed_tutorial_timestamp"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='session',
-            name='address',
+            model_name="session",
+            name="address",
         ),
         migrations.RemoveField(
-            model_name='session',
-            name='city',
+            model_name="session",
+            name="city",
         ),
         migrations.RemoveField(
-            model_name='session',
-            name='country',
+            model_name="session",
+            name="country",
         ),
         migrations.RemoveField(
-            model_name='session',
-            name='postcode',
+            model_name="session",
+            name="postcode",
         ),
         migrations.AddField(
-            model_name='session',
-            name='latitude',
+            model_name="session",
+            name="latitude",
             field=models.FloatField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='session',
-            name='location',
+            model_name="session",
+            name="location",
             field=models.CharField(blank=True, max_length=1000, null=True),
         ),
         migrations.AddField(
-            model_name='session',
-            name='longitude',
+            model_name="session",
+            name="longitude",
             field=models.FloatField(blank=True, null=True),
         ),
     ]

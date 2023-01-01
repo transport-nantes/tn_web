@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0005_auto_20210103_1944'),
+        ("topicblog", "0005_auto_20210103_1944"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogpage',
-            name='middle_image_alt',
+            model_name="topicblogpage",
+            name="middle_image_alt",
             field=models.CharField(blank=True, max_length=240),
         ),
     ]

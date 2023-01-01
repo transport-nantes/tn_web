@@ -5,6 +5,7 @@ class SessionCookieMiddleWare:
     """
     Adds the session cookie in each request.
     """
+
     def __init__(self, get_response):
         """One-time configuration and initialization."""
         self.get_response = get_response
@@ -23,7 +24,7 @@ class SessionCookieMiddleWare:
         Adds the session cookie in each request.
         """
         request.session.clear_expired()
-        if not request.session.get('tn_session'):
+        if not request.session.get("tn_session"):
             request.session["tn_session"] = get_random_string(20)
             k_six_months_in_seconds = 15552000
             request.session.set_expiry(k_six_months_in_seconds)
@@ -33,6 +34,6 @@ class SessionCookieMiddleWare:
         """
         Adds the session cookie in each response.
         """
-        if not request.session.get('tn_session'):
-            response.set_cookie('tn_session', request.session)
+        if not request.session.get("tn_session"):
+            response.set_cookie("tn_session", request.session)
         return response

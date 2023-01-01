@@ -9,20 +9,48 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('mobilito', '0012_rename_session_mobilitosession_and_more'),
+        ("mobilito", "0012_rename_session_mobilitosession_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InappropriateFlag',
+            name="InappropriateFlag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('reporter_tn_session_id', models.CharField(max_length=200)),
-                ('reporter_ip_address', models.GenericIPAddressField(blank=True, null=True)),
-                ('report_details', models.TextField(blank=True, null=True)),
-                ('creation_timestamp', models.DateTimeField(auto_now_add=True)),
-                ('reporter_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='mobilito.mobilitosession')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("reporter_tn_session_id", models.CharField(max_length=200)),
+                (
+                    "reporter_ip_address",
+                    models.GenericIPAddressField(blank=True, null=True),
+                ),
+                ("report_details", models.TextField(blank=True, null=True)),
+                (
+                    "creation_timestamp",
+                    models.DateTimeField(auto_now_add=True),
+                ),
+                (
+                    "reporter_user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="mobilito.mobilitosession",
+                    ),
+                ),
             ],
         ),
     ]
