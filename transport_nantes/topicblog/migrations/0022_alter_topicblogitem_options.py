@@ -6,12 +6,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0021_auto_20211211_1655'),
+        ("topicblog", "0021_auto_20211211_1655"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='topicblogitem',
-            options={'permissions': (('tbi_may_view', 'May view unpublished TopicBlogItems'), ('tbi_may_edit', 'May create and modify TopicBlogItems'), ('tbi_may_publish', 'May publish TopicBlogItems'), ('tbi_may_publish_self', 'May publish own TopicBlogItems'), ('tbi_may_retire_self', 'May retire own TopicBlogItems'), ('tbi_may_retire', 'May retire TopicBlogItems'))},
+            name="topicblogitem",
+            options={
+                "permissions": (
+                    ("tbi_may_view", "May view unpublished TopicBlogItems"),
+                    ("tbi_may_edit", "May create and modify TopicBlogItems"),
+                    ("tbi_may_publish", "May publish TopicBlogItems"),
+                    ("tbi_may_publish_self", "May publish own TopicBlogItems"),
+                    ("tbi_may_retire_self", "May retire own TopicBlogItems"),
+                    ("tbi_may_retire", "May retire TopicBlogItems"),
+                )
+            },
         ),
     ]

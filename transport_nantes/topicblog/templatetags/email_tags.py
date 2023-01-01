@@ -2,15 +2,18 @@ from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from .markdown import tn_markdown
+
 register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
 def email_full_width_image(
-        context: dict,
-        filepath: str, alt_text: str,
-        link: str = "https://mobilitains.fr") -> str:
-    request = context['request']
+    context: dict,
+    filepath: str,
+    alt_text: str,
+    link: str = "https://mobilitains.fr",
+) -> str:
+    request = context["request"]
     html_template = """
     <tr>
         <td
@@ -24,7 +27,8 @@ def email_full_width_image(
     """.format(
         filepath=request.build_absolute_uri(filepath),
         alt_text=alt_text,
-        link=link)
+        link=link,
+    )
     return mark_safe(html_template)
 
 
@@ -38,15 +42,16 @@ def email_body_text_md(context, text: str) -> str:
             </p>
         </td>
     </tr>
-    """.format(text=tn_markdown(context, text))
+    """.format(
+        text=tn_markdown(context, text)
+    )
     return mark_safe(html_template)
 
 
 @register.simple_tag(takes_context=True)
 def email_cta_button(context: dict, slug: str, label: str) -> str:
     tbe_path = reverse_lazy(
-        "topicblog:view_item_by_slug",
-        kwargs={"the_slug": slug}
+        "topicblog:view_item_by_slug", kwargs={"the_slug": slug}
     )
     host = context["request"].get_host()
     scheme = context["request"].scheme
@@ -63,8 +68,6 @@ def email_cta_button(context: dict, slug: str, label: str) -> str:
         </td>
     </tr>
     """.format(
-        scheme=scheme,
-        host=host,
-        tbe_path=tbe_path,
-        label=label)
+        scheme=scheme, host=host, tbe_path=tbe_path, label=label
+    )
     return mark_safe(html_template)

@@ -6,33 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0054_topicblogemail_scheduled_for_deletion_date_and_more'),
+        (
+            "topicblog",
+            "0054_topicblogemail_scheduled_for_deletion_date_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogemail',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogemail",
+            name="scheduled_for_deletion_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogitem",
+            name="scheduled_for_deletion_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicbloglauncher',
-            name='scheduled_for_deletion_date',
+            model_name="topicbloglauncher",
+            name="scheduled_for_deletion_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogmailinglistpitch',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogmailinglistpitch",
+            name="scheduled_for_deletion_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogpress',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogpress",
+            name="scheduled_for_deletion_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

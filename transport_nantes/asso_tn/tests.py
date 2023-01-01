@@ -5,7 +5,6 @@ from .utils import make_timed_token, token_valid
 
 
 class TimedTokenTest(TestCase):
-
     def test_expiry(self):
         """Test token expiration.
 
@@ -18,8 +17,9 @@ class TimedTokenTest(TestCase):
         k_expiry_seconds = k_expiry_minutes * 60
         k_now = datetime.datetime.now().timestamp()
         for persisted in [0, 1]:
-            token = make_timed_token(k_email, k_expiry_minutes,
-                                     persisted, k_now)
+            token = make_timed_token(
+                k_email, k_expiry_minutes, persisted, k_now
+            )
             now_response = token_valid(token, k_now)
             self.assertEqual(now_response[0], k_email)
             self.assertEqual(now_response[1], persisted)
@@ -30,8 +30,8 @@ class TimedTokenTest(TestCase):
             self.assertEqual(after_response[0], None)
             self.assertEqual(after_response[1], 0)
 
-class TestIndex(TestCase):
 
+class TestIndex(TestCase):
     def test_index_page(self):
         """Test the new index page.
 

@@ -17,8 +17,12 @@ from django.conf import settings
 from django.urls import reverse
 from django.views.generic.base import TemplateView
 
-from authentication.forms import (EmailLoginForm, PasswordLoginForm,
-                                  UserUpdateForm, ProfileUpdateForm)
+from authentication.forms import (
+    EmailLoginForm,
+    PasswordLoginForm,
+    UserUpdateForm,
+    ProfileUpdateForm,
+)
 from asso_tn.utils import make_timed_token, token_valid
 from topicblog.models import SendRecordTransactionalAdHoc
 
@@ -53,8 +57,8 @@ def redirect_to_password_login(email, remember_me):
     """
     token = make_timed_token(email, 1, remember_me)
     return redirect(
-        reverse('authentication:password_login',
-                kwargs={'token': token}))
+        reverse("authentication:password_login", kwargs={"token": token})
+    )
 
 
 class LoginView(FormView):
@@ -62,7 +66,7 @@ class LoginView(FormView):
     form_class = EmailLoginForm
 
     def form_valid(self, form):
-        logger.info('form_valid')
+        logger.info("form_valid")
         email = form.cleaned_data["email"]
         remember_me = form.cleaned_data["remember_me"]
         logger.info(f"{email} loggin request.")
@@ -83,8 +87,9 @@ class LoginView(FormView):
                 send_activation(self.request, email, remember_me)
             except Exception as e:
                 logger.error(f"Error sending activation email to {email}: {e}")
-            return render(self.request,
-                          'authentication/account_activation_sent.html') # noqa
+            return render(
+                self.request, "authentication/account_activation_sent.html"
+            )  # noqa
         else:
             logger.info("Requesting password.")
             return redirect_to_password_login(email, remember_me)
@@ -95,15 +100,15 @@ class PasswordLoginView(FormView):
     form_class = PasswordLoginForm
 
     def get(self, *args, **kwargs):
-        token = self.kwargs.get('token', '')
+        token = self.kwargs.get("token", "")
         if not token:
             # No replays allowed.
             logger.info("Password login request without token.")
-            return redirect(reverse('authentication:login'))
+            return redirect(reverse("authentication:login"))
         email, remember_me = token_valid(token)
         if email is None:
             logger.info("Invalid password login token.")
-            return redirect(reverse('authentication:login'))
+            return redirect(reverse("authentication:login"))
         self.initial["email"] = email
         self.initial["remember_me"] = bool(remember_me)
         return super().get(*args, **kwargs)
@@ -112,8 +117,10 @@ class PasswordLoginView(FormView):
         email = form.cleaned_data["email"]
         remember_me = form.cleaned_data["remember_me"]
         user_by_email = User.objects.get(email=email)
-        user = auth.authenticate(username=user_by_email.username,
-                                 password=form.cleaned_data["password"])
+        user = auth.authenticate(
+            username=user_by_email.username,
+            password=form.cleaned_data["password"],
+        )
         if user is None:
             # By doing a new redirect, we let the user have more time.
             # Otherwise the token would eventually time out.
@@ -124,7 +131,7 @@ class PasswordLoginView(FormView):
         if not remember_me:
             self.request.session.set_expiry(0)
         else:
-            self.request.session.set_expiry(60*60*24*30)
+            self.request.session.set_expiry(60 * 60 * 24 * 30)
         return redirect("/")
 
 
@@ -160,16 +167,17 @@ def create_send_record(email: str) -> SendRecordTransactionalAdHoc:
         logger.info("No user for email {}".format(email))
         recipient = None
     send_record = SendRecordTransactionalAdHoc.objects.create(
-        recipient=recipient)
+        recipient=recipient
+    )
     return send_record
 
 
-def prepare_email(email: str, request: HttpRequest,
-                  send_record: SendRecordTransactionalAdHoc) \
-        -> EmailMultiAlternatives:
+def prepare_email(
+    email: str, request: HttpRequest, send_record: SendRecordTransactionalAdHoc
+) -> EmailMultiAlternatives:
     """Create a sendable Email object"""
-    template = 'authentication/account_activation_email.html'
-    next_url = request.GET.get('next', str())
+    template = "authentication/account_activation_email.html"
+    next_url = request.GET.get("next", str())
     context = {
         "request": request,
         "token": make_timed_token(email, 20),
@@ -197,7 +205,8 @@ def prepare_email(email: str, request: HttpRequest,
     comments_header = json.dumps(values_to_pass_to_ses)
     headers = {
         "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
-        "Comments": comments_header}
+        "Comments": comments_header,
+    }
     email = EmailMultiAlternatives(
         subject="Votre lien Mobilitains, comme promis",
         body=render_to_string(template, context),
@@ -205,7 +214,7 @@ def prepare_email(email: str, request: HttpRequest,
         to=[email],
         headers=headers,
     )
-    email.attach_alternative(html_message, 'text/html')
+    email.attach_alternative(html_message, "text/html")
 
     return email
 
@@ -216,13 +225,14 @@ class ActivationLoginView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        token = self.kwargs.get('token', '')
+        token = self.kwargs.get("token", "")
         email, remember_me = token_valid(token)
-        self.next_url = self.request.GET.get('next', str())
+        self.next_url = self.request.GET.get("next", str())
         if email is None:
             logger.info(f"Invalid token : {token}")
-            self.template_name = \
-                'authentication/account_activation_invalid.html'
+            self.template_name = (
+                "authentication/account_activation_invalid.html"
+            )
             return context
 
         user = User.objects.filter(email=email).first()
@@ -243,13 +253,13 @@ class ActivationLoginView(TemplateView):
         if remember_me == "False":
             self.request.session.set_expiry(0)
         else:
-            self.request.session.set_expiry(60*60*24*30)
+            self.request.session.set_expiry(60 * 60 * 24 * 30)
 
         return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        if getattr(self, 'next_url', None):
+        if getattr(self, "next_url", None):
             return HttpResponseRedirect(self.next_url)
         return self.render_to_response(context)
 
@@ -258,6 +268,7 @@ class DeauthView(LogoutView):
     """Log out the user.
     Renders the home page
     """
+
     next_page = "/"
 
 
@@ -270,15 +281,17 @@ class ProfileView(TemplateView, LoginRequiredMixin):
 
         context["u_form"] = UserUpdateForm(instance=self.request.user)
         context["p_form"] = ProfileUpdateForm(
-            instance=self.request.user.profile)
+            instance=self.request.user.profile
+        )
 
         return context
 
     def post(self, request, *args, **kwargs):
 
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES,
-                                   instance=request.user.profile)
+        p_form = ProfileUpdateForm(
+            request.POST, request.FILES, instance=request.user.profile
+        )
         success = False
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()

@@ -9,7 +9,7 @@ class PressMention(models.Model):
             # Allow the user to see list view and create article
             ("press-editor", "May create and see list view Article"),
         )
-        ordering = ['-article_publication_date', 'newspaper_name']
+        ordering = ["-article_publication_date", "newspaper_name"]
 
     newspaper_name = models.CharField(max_length=1000)
     article_link = models.URLField(max_length=1000, unique=True)
@@ -21,7 +21,8 @@ class PressMention(models.Model):
     og_title = models.CharField(max_length=1000, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.ImageField(
-        upload_to="press_mention/open_graph/", blank=True, null=True)
+        upload_to="press_mention/open_graph/", blank=True, null=True
+    )
 
     def __str__(self):
         return f"{self.newspaper_name} {self.article_title}"

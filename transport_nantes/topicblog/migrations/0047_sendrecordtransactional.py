@@ -9,20 +9,45 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('topicblog', '0046_auto_20220518_1241'),
+        ("topicblog", "0046_auto_20220518_1241"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SendRecordTransactional',
+            name="SendRecordTransactional",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50)),
-                ('send_time', models.DateTimeField(blank=True, null=True)),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "Pending"),
+                            ("SENT", "Sent"),
+                            ("FAILED", "Failed"),
+                        ],
+                        default="PENDING",
+                        max_length=50,
+                    ),
+                ),
+                ("send_time", models.DateTimeField(blank=True, null=True)),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

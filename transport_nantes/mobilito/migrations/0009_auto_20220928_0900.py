@@ -6,13 +6,13 @@ import time
 
 
 def gen_sha1(apps, schema_editor):
-    Session = apps.get_model('mobilito', 'Session')
+    Session = apps.get_model("mobilito", "Session")
     for session in Session.objects.all():
         if session.session_sha1 is None:
             session_sha1 = hashlib.sha1(
                 (
                     str(time.monotonic_ns()) + "|" + str(session.user.user.id)
-                ).encode('utf-8')
+                ).encode("utf-8")
             ).hexdigest()
             session.session_sha1 = session_sha1
             session.save()
@@ -21,7 +21,7 @@ def gen_sha1(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mobilito', '0008_session_session_sha1'),
+        ("mobilito", "0008_session_session_sha1"),
     ]
 
     operations = [

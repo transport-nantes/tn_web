@@ -24,12 +24,19 @@ https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sig
 from django.urls import path
 from . import views
 
-app_name = 'authentication'
+app_name = "authentication"
 urlpatterns = [
-    path('in', views.LoginView.as_view(), name='login'),
-    path('pass/<str:token>',
-         views.PasswordLoginView.as_view(), name='password_login'),
-    path('out', views.DeauthView.as_view(), name='logout'),
-    path('mod', views.ProfileView.as_view(), name='mod'),
-    path('activate/<str:token>', views.ActivationLoginView.as_view(), name='activate'),
+    path("in", views.LoginView.as_view(), name="login"),
+    path(
+        "pass/<str:token>",
+        views.PasswordLoginView.as_view(),
+        name="password_login",
+    ),
+    path("out", views.DeauthView.as_view(), name="logout"),
+    path("mod", views.ProfileView.as_view(), name="mod"),
+    path(
+        "activate/<str:token>",
+        views.ActivationLoginView.as_view(),
+        name="activate",
+    ),
 ]

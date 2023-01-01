@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0003_alter_photoentry_submitted_photo'),
+        ("photo", "0003_alter_photoentry_submitted_photo"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='photoentry',
-            name='category',
-            field=models.CharField(choices=[('PIETON_URBAIN', 'Piéton urbain'), ('LA_VIE_EN_FAMILLE', 'La vie en famille'), ('L_AMOUR', "L'amour"), ('LE_TRAVAIL', 'Le travail'), ('LE_PHOTOJOURNALISME', 'Le photojournalisme'), ('PHOTOGRAPHE_SENIOR', 'Photographe senior'), ('JEUNE_PHOTOGRAPHE', 'Jeune photographe')], max_length=80, verbose_name='Catégorie'),
+            model_name="photoentry",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("PIETON_URBAIN", "Piéton urbain"),
+                    ("LA_VIE_EN_FAMILLE", "La vie en famille"),
+                    ("L_AMOUR", "L'amour"),
+                    ("LE_TRAVAIL", "Le travail"),
+                    ("LE_PHOTOJOURNALISME", "Le photojournalisme"),
+                    ("PHOTOGRAPHE_SENIOR", "Photographe senior"),
+                    ("JEUNE_PHOTOGRAPHE", "Jeune photographe"),
+                ],
+                max_length=80,
+                verbose_name="Catégorie",
+            ),
         ),
     ]

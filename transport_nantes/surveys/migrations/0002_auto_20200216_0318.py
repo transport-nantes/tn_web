@@ -7,55 +7,67 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('surveys', '0001_initial'),
+        ("surveys", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SurveyCommune',
+            name="SurveyCommune",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('commune', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("commune", models.CharField(max_length=100)),
             ],
         ),
         migrations.RemoveField(
-            model_name='surveyresponder',
-            name='commune',
+            model_name="surveyresponder",
+            name="commune",
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='email_liste',
+            model_name="surveyresponder",
+            name="email_liste",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='email_person',
+            model_name="surveyresponder",
+            name="email_person",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='facebook',
+            model_name="surveyresponder",
+            name="facebook",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='twitter_candidat',
+            model_name="surveyresponder",
+            name="twitter_candidat",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='twitter_liste',
+            model_name="surveyresponder",
+            name="twitter_liste",
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AlterField(
-            model_name='surveyresponder',
-            name='url',
+            model_name="surveyresponder",
+            name="url",
             field=models.URLField(blank=True),
         ),
         migrations.AddField(
-            model_name='surveyresponder',
-            name='commune_id',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='surveys.SurveyCommune'),
+            model_name="surveyresponder",
+            name="commune_id",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="surveys.SurveyCommune",
+            ),
             preserve_default=False,
         ),
     ]

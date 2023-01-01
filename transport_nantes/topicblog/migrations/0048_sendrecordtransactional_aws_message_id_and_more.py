@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0047_sendrecordtransactional'),
+        ("topicblog", "0047_sendrecordtransactional"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sendrecordtransactional',
-            name='aws_message_id',
+            model_name="sendrecordtransactional",
+            name="aws_message_id",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='topicblogemailsendrecord',
-            name='aws_message_id',
+            model_name="topicblogemailsendrecord",
+            name="aws_message_id",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='topicblogpresssendrecord',
-            name='aws_message_id',
+            model_name="topicblogpresssendrecord",
+            name="aws_message_id",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
     ]

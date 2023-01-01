@@ -6,12 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mailing_list', '0008_auto_20210214_0901'),
+        ("mailing_list", "0008_auto_20210214_0901"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mailinglist',
-            options={'permissions': (('may_view_list', 'May see list of mailing lists and their metrics'),)},
+            name="mailinglist",
+            options={
+                "permissions": (
+                    (
+                        "may_view_list",
+                        "May see list of mailing lists and their metrics",
+                    ),
+                )
+            },
         ),
     ]

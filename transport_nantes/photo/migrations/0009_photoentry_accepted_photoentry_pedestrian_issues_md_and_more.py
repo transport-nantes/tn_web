@@ -6,23 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0008_photoentry_timestamp'),
+        ("photo", "0008_photoentry_timestamp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='photoentry',
-            name='accepted',
+            model_name="photoentry",
+            name="accepted",
             field=models.BooleanField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='photoentry',
-            name='pedestrian_issues_md',
-            field=models.TextField(blank=True, null=True, verbose_name='Problèmes rencontrés par les piétons'),
+            model_name="photoentry",
+            name="pedestrian_issues_md",
+            field=models.TextField(
+                blank=True,
+                null=True,
+                verbose_name="Problèmes rencontrés par les piétons",
+            ),
         ),
         migrations.AddField(
-            model_name='photoentry',
-            name='submitter_info_md',
-            field=models.TextField(blank=True, null=True, verbose_name='Informations sur le photographe'),
+            model_name="photoentry",
+            name="submitter_info_md",
+            field=models.TextField(
+                blank=True,
+                null=True,
+                verbose_name="Informations sur le photographe",
+            ),
         ),
     ]

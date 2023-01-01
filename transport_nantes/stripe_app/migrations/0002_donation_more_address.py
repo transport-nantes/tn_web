@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stripe_app', '0001_initial'),
+        ("stripe_app", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='donation',
-            name='more_address',
-            field=models.CharField(blank=True, max_length=200, verbose_name="Complément d'adresse"),
+            model_name="donation",
+            name="more_address",
+            field=models.CharField(
+                blank=True, max_length=200, verbose_name="Complément d'adresse"
+            ),
         ),
     ]

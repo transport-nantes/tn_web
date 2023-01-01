@@ -7,13 +7,18 @@ import photo.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0005_alter_photoentry_photo_location'),
+        ("photo", "0005_alter_photoentry_photo_location"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='photoentry',
-            name='submitted_photo',
-            field=models.ImageField(help_text='Largeur de la photo recommandée : 2000 px', upload_to='photo/', validators=[photo.models.validate_submitted_photo], verbose_name='Photo'),
+            model_name="photoentry",
+            name="submitted_photo",
+            field=models.ImageField(
+                help_text="Largeur de la photo recommandée : 2000 px",
+                upload_to="photo/",
+                validators=[photo.models.validate_submitted_photo],
+                verbose_name="Photo",
+            ),
         ),
     ]

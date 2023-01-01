@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stripe_app', '0008_donation_stripe_event_id'),
+        ("stripe_app", "0008_donation_stripe_event_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='donation',
-            name='donation_source',
-            field=models.CharField(default='stripe', max_length=100),
+            model_name="donation",
+            name="donation_source",
+            field=models.CharField(default="stripe", max_length=100),
         ),
     ]

@@ -8,23 +8,22 @@ from .models import MapContent, MapLayer, MapDefinition
 
 # Create your tests here.
 class GeoplanTest(TestCase):
-
     def setUp(self):
         self.definition = {
-            "city":"testcity",
-            "observatory_name" :"planvelo",
+            "city": "testcity",
+            "observatory_name": "planvelo",
             "observatory_type": "test",
             "longitude": 0.00,
-            "latitude": 0.00
-            }
+            "latitude": 0.00,
+        }
 
         # Assignement because an instance is required in Foreign keys
         map_def = MapDefinition.objects.create(**self.definition)
 
         self.layer = {
-            "map_definition" : map_def,
-             "layer_name":"testlayer",
-             "layer_depth" : 0
+            "map_definition": map_def,
+            "layer_name": "testlayer",
+            "layer_depth": 0,
         }
 
         map_lay = MapLayer.objects.create(**self.layer)
@@ -40,7 +39,7 @@ class GeoplanTest(TestCase):
                         "type": "MultiLineString", "coordinates": [[ -1.710792615591268, 47.210384214678122 ]]}}
                 ]
             }""",
-            "timestamp": now()
+            "timestamp": now(),
         }
 
         self.timestamp_1 = deepcopy(self.content["timestamp"])
@@ -48,9 +47,9 @@ class GeoplanTest(TestCase):
 
         # Creating an updated testlayer for testcity
         self.layer = {
-            "map_definition" : map_def,
-             "layer_name":"testlayer",
-             "layer_depth" : 0
+            "map_definition": map_def,
+            "layer_name": "testlayer",
+            "layer_depth": 0,
         }
 
         map_lay = MapLayer.objects.create(**self.layer)
@@ -67,7 +66,7 @@ class GeoplanTest(TestCase):
                 ]
             }""",
             # This timestamp will be after the first layer
-            "timestamp": now()
+            "timestamp": now(),
         }
 
         MapContent.objects.create(**self.content)
@@ -75,9 +74,9 @@ class GeoplanTest(TestCase):
         # Creates a 2nd layer for testcity
 
         self.layer = {
-            "map_definition" : map_def,
-             "layer_name":"testlayer2",
-             "layer_depth" : 1
+            "map_definition": map_def,
+            "layer_name": "testlayer2",
+            "layer_depth": 1,
         }
 
         map_lay = MapLayer.objects.create(**self.layer)
@@ -93,12 +92,10 @@ class GeoplanTest(TestCase):
                         "type": "MultiLineString", "coordinates": [[ -2, 47 ]]}}
                 ]
             }""",
-            "timestamp": now()
+            "timestamp": now(),
         }
 
         MapContent.objects.create(**self.content)
-
-
 
     def test_observatoire_status_code(self):
         # Proper URL scheme
@@ -116,7 +113,8 @@ class GeoplanTest(TestCase):
     def test_observatoire_layer_download_status_code(self):
         # 404 if layer doesn't exist
         response = self.client.get(
-            "/observatoire/testcity/planvelo/NOTtestlayer")
+            "/observatoire/testcity/planvelo/NOTtestlayer"
+        )
         self.assertEqual(response.status_code, 404)
 
         # 200 if the layer exists.
@@ -127,31 +125,39 @@ class GeoplanTest(TestCase):
         latest_layer = MapContent.objects.filter(
             map_layer__map_definition__city="testcity",
             map_layer__map_definition__observatory_name="planvelo",
-            map_layer__layer_name="testlayer").latest('timestamp')
+            map_layer__layer_name="testlayer",
+        ).latest("timestamp")
 
-        self.assertTrue(latest_layer.timestamp > self.timestamp_1,
-            msg=f'layer ={latest_layer.timestamp} t1 = {self.timestamp_1}')
+        self.assertTrue(
+            latest_layer.timestamp > self.timestamp_1,
+            msg=f"layer ={latest_layer.timestamp} t1 = {self.timestamp_1}",
+        )
 
     def test_number_of_layer(self):
-        layer_number =MapContent.objects.filter(
+        layer_number = MapContent.objects.filter(
             map_layer__map_definition__city="testcity",
-            map_layer__map_definition__observatory_name="planvelo").order_by(
-                "map_layer__layer_depth")
+            map_layer__map_definition__observatory_name="planvelo",
+        ).order_by("map_layer__layer_depth")
 
         unique_layers = layer_number.values_list(
-            'map_layer__layer_name', flat=True).distinct()
+            "map_layer__layer_name", flat=True
+        ).distinct()
 
-        latest_layer = layer_number.values("map_layer__layer_name")\
-            .annotate(latest=Max("timestamp"))
+        latest_layer = layer_number.values("map_layer__layer_name").annotate(
+            latest=Max("timestamp")
+        )
 
         combined_queries = MapContent.objects.none()
         for item in latest_layer:
-            combined_queries = combined_queries | \
-            MapContent.objects.filter(timestamp=item["latest"])
+            combined_queries = combined_queries | MapContent.objects.filter(
+                timestamp=item["latest"]
+            )
 
-        self.assertTrue(len(combined_queries) == len(unique_layers),
+        self.assertTrue(
+            len(combined_queries) == len(unique_layers),
             msg=f"\nlen of filter : {len(layer_number)}\n \
                 layer content : {layer_number}\n \
                 unique_layers : {unique_layers}\n \
                 latest_layers : {latest_layer}\n \
-                filter : {len(combined_queries)}")
+                filter : {len(combined_queries)}",
+        )

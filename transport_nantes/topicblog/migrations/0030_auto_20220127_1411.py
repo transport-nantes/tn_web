@@ -6,72 +6,72 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0029_auto_20220126_1335'),
+        ("topicblog", "0029_auto_20220126_1335"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='topicblogcontenttype',
-            name='content_type',
+            model_name="topicblogcontenttype",
+            name="content_type",
         ),
         migrations.RemoveField(
-            model_name='topicblogitem',
-            name='content_type',
+            model_name="topicblogitem",
+            name="content_type",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='body_image',
+            model_name="topicblogtemplate",
+            name="body_image",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='body_text_1_md',
+            model_name="topicblogtemplate",
+            name="body_text_1_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='body_text_2_md',
+            model_name="topicblogtemplate",
+            name="body_text_2_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='body_text_3_md',
+            model_name="topicblogtemplate",
+            name="body_text_3_md",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='comment',
+            model_name="topicblogtemplate",
+            name="comment",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='content_type',
+            model_name="topicblogtemplate",
+            name="content_type",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='cta_1',
+            model_name="topicblogtemplate",
+            name="cta_1",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='cta_2',
+            model_name="topicblogtemplate",
+            name="cta_2",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='cta_3',
+            model_name="topicblogtemplate",
+            name="cta_3",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='header',
+            model_name="topicblogtemplate",
+            name="header",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='slug',
+            model_name="topicblogtemplate",
+            name="slug",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='social_media',
+            model_name="topicblogtemplate",
+            name="social_media",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='template_name',
+            model_name="topicblogtemplate",
+            name="template_name",
         ),
         migrations.RemoveField(
-            model_name='topicblogtemplate',
-            name='title',
+            model_name="topicblogtemplate",
+            name="title",
         ),
     ]

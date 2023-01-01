@@ -5,27 +5,29 @@ from django.core import mail
 from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 from mailing_list.models import MailingList
-from mailing_list.events import (get_subcribed_users_email_list,
-                                 unsubscribe_user_from_list,
-                                 subscribe_user_to_list)
+from mailing_list.events import (
+    get_subcribed_users_email_list,
+    unsubscribe_user_from_list,
+    subscribe_user_to_list,
+)
 from topicblog.forms import TopicBlogEmailSendForm
 from .models import TopicBlogEmail, TopicBlogItem, TopicBlogPress
 
 
 class Test(TestCase):
-
     def test_main_page_status_code(self):
         response = self.client.get("/")
         # No TB object required
         self.assertEqual(response.status_code, 200)
 
-        self.user = User.objects.create_user(username='test-user',
-                                             password='test-pass')
+        self.user = User.objects.create_user(
+            username="test-user", password="test-pass"
+        )
         self.user.save()
         # Create a base template
         self.template_name = "topicblog/content.html"
         # Create an Item with a slug, ID = 1
-        self.main_page_slug_name = ("index")
+        self.main_page_slug_name = "index"
         self.item_with_slug = TopicBlogItem.objects.create(
             slug=self.main_page_slug_name,
             date_created=datetime.now(timezone.utc) - timedelta(seconds=9),
@@ -33,33 +35,36 @@ class Test(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
 
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
 
 class TBIEditStatusCodeTest(TestCase):
-
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='test-user',
-                                             password='test-pass')
+        self.user = User.objects.create_user(
+            username="test-user", password="test-pass"
+        )
         self.user.save()
         # Create a user with all permission
-        self.user_permited = User.objects.create_user(username='test-staff',
-                                                      password='test-staff')
+        self.user_permited = User.objects.create_user(
+            username="test-staff", password="test-staff"
+        )
         self.user_permited.is_staff = True
         edit_permission = Permission.objects.get(codename="tbi.may_edit")
         view_permission = Permission.objects.get(codename="tbi.may_view")
         publish_permission = Permission.objects.get(codename="tbi.may_publish")
         publish_self_permission = Permission.objects.get(
-            codename="tbi.may_publish_self")
+            codename="tbi.may_publish_self"
+        )
         self.user_permited.user_permissions.add(
             edit_permission,
             view_permission,
             publish_permission,
-            publish_self_permission
+            publish_self_permission,
         )
         self.user_permited.save()
 
@@ -67,10 +72,11 @@ class TBIEditStatusCodeTest(TestCase):
         self.unauth_client = Client()
 
         # login the user
-        self.client.login(username='test-user', password='test-pass')
+        self.client.login(username="test-user", password="test-pass")
         # login the staff
         self.user_permited_client.login(
-            username='test-staff', password='test-staff')
+            username="test-staff", password="test-staff"
+        )
 
         # Create a base template
         self.template_name = "topicblog/content.html"
@@ -85,7 +91,8 @@ class TBIEditStatusCodeTest(TestCase):
             body_text_2_md="body 2",
             body_text_3_md="body 3",
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
 
         # Create an Item with no slug, ID = 2
         self.item_without_slug = TopicBlogItem.objects.create(
@@ -94,7 +101,8 @@ class TBIEditStatusCodeTest(TestCase):
             publication_date=None,
             user=self.user,
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
         # Create an Item with a slug and higher publication date, ID = 3
         self.item_with_higher_date = TopicBlogItem.objects.create(
             slug="test-slug",
@@ -103,7 +111,8 @@ class TBIEditStatusCodeTest(TestCase):
             first_publication_date=datetime.now(timezone.utc),
             user=self.user,
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
         # Create an intem with the body image but no the alt image
         self.item_without_alt = TopicBlogItem.objects.create(
             slug="test-slug-no-alt",
@@ -116,7 +125,8 @@ class TBIEditStatusCodeTest(TestCase):
             body_text_2_md="body 2",
             body_text_3_md="body 3",
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
         # Create an item without publication date and first publication date
         self.item_without_date = TopicBlogItem.objects.create(
             slug="test-slug-no-date",
@@ -126,10 +136,11 @@ class TBIEditStatusCodeTest(TestCase):
             body_text_2_md="body 2",
             body_text_3_md="body 3",
             template_name=self.template_name,
-            title="Test-title")
+            title="Test-title",
+        )
 
     def test_item_with_slug_edit(self):
-        """ Test status codes for the edit page of an item with a slug
+        """Test status codes for the edit page of an item with a slug
         The edition page is accessed through the TopicBlogItemEdit view.
         In this test we will use these items from the setUp:
             - An item with a slug, ID = 1, date_created = 1
@@ -163,162 +174,232 @@ class TBIEditStatusCodeTest(TestCase):
             - message = the error message (varie)
         """
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't access this page."
-                    f"\nitem with slug: {self.item_with_slug}"
-                    f"\nkwargs: {self.item_with_slug.id}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 if not auth"
-                    f"\nitem with slug: {self.item_with_slug}"
-                    f"\nkwargs: {self.item_with_slug.id}"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page should return 404 if we don't provide "
-                    "the slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"
-                    f"\nkwargs: {self.item_with_slug.id}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't access this page."
+                f"\nitem with slug: {self.item_with_slug}"
+                f"\nkwargs: {self.item_with_slug.id}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 if not auth"
+                f"\nitem with slug: {self.item_with_slug}"
+                f"\nkwargs: {self.item_with_slug.id}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page should return 404 if we don't provide "
+                "the slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}"
+                f"\nkwargs: {self.item_with_slug.id}",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item_by_pkid",
-                        kwargs={
-                            "pkid": self.item_with_slug.id
-                        })
+                reverse(
+                    "topicblog:edit_item_by_pkid",
+                    kwargs={"pkid": self.item_with_slug.id},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         users_expected_1 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even if we provide "
-                    "the slug associated with the item but not auth."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even if we provide "
+                "the slug associated with the item but not auth."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item",
-                        kwargs={
-                            "pkid": self.item_with_slug.id,
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:edit_item",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "the_slug": self.item_with_slug.slug,
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         users_expected_2 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even if we provide "
-                    "the slug associated with the item but not auth."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "wrong slug and id associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even if we provide "
+                "the slug associated with the item but not auth."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "wrong slug and id associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_2:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item",
-                        kwargs={
-                            "pkid": 999999999,
-                            "the_slug": "wrong-slug"
-                        })
+                reverse(
+                    "topicblog:edit_item",
+                    kwargs={"pkid": 999999999, "the_slug": "wrong-slug"},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         users_expected_3 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 if we provide the "
-                    "wrong slug and id associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "correct slug but wrong id associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 if we provide the "
+                "wrong slug and id associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "correct slug but wrong id associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_3:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item",
-                        kwargs={
-                            "pkid": 999999999,
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:edit_item",
+                    kwargs={
+                        "pkid": 999999999,
+                        "the_slug": self.item_with_slug.slug,
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         users_expected_4 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page MUST return 302 even if we provide the "
-                    "wrong slug and correct id associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "wrong slug and correct id associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page MUST return 302 even if we provide the "
+                "wrong slug and correct id associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "wrong slug and correct id associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_4:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item",
-                        kwargs={
-                            "pkid": self.item_with_slug.id,
-                            "the_slug": "wrong-slug"
-                        })
+                reverse(
+                    "topicblog:edit_item",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "the_slug": "wrong-slug",
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # Edit with only the correct slug.
         # Checks it loads the greatest modification date.
 
-        latest_date_created = TopicBlogItem.objects.filter(
-            slug=self.item_with_slug.slug
-        ).order_by("date_created").last().date_created
+        latest_date_created = (
+            TopicBlogItem.objects.filter(slug=self.item_with_slug.slug)
+            .order_by("date_created")
+            .last()
+            .date_created
+        )
 
         users_expected_5 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even if we provide "
-                    "the correct slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "correct slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even if we provide "
+                "the correct slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "correct slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_5:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item_by_slug",
-                        kwargs={
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:edit_item_by_slug",
+                    kwargs={"the_slug": self.item_with_slug.slug},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
-        self.assertEqual(latest_date_created,
-                         self.item_with_higher_date.date_created,
-                         msg="The page MUST load the item with the latest "
-                         "date created."
-                         f"\nitem with slug: {self.item_with_slug}"
-                         f"\nHighest date_created: {latest_date_created}")
+        self.assertEqual(
+            latest_date_created,
+            self.item_with_higher_date.date_created,
+            msg="The page MUST load the item with the latest "
+            "date created."
+            f"\nitem with slug: {self.item_with_slug}"
+            f"\nHighest date_created: {latest_date_created}",
+        )
 
     def test_item_without_slug_edit(self):
         """Test status code of edit page of items without slug
@@ -350,46 +431,68 @@ class TBIEditStatusCodeTest(TestCase):
             - message = the error message (varie)
         """
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even if we don't "
-                    "provide a slug and the item does not have one."},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we don't provide "
-                    "a slug and the item does not have one."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even if we don't "
+                "provide a slug and the item does not have one.",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we don't provide "
+                "a slug and the item does not have one.",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item_by_pkid",
-                        kwargs={
-                            "pkid": self.item_without_slug.id
-                        })
+                reverse(
+                    "topicblog:edit_item_by_pkid",
+                    kwargs={"pkid": self.item_without_slug.id},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         users_expected_1 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't edit items."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 if we provide the "
-                    "correct id but the item does not have a slug and"
-                    "we're not auth"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "correct id but the item does not have a slug."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't edit items.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 if we provide the "
+                "correct id but the item does not have a slug and"
+                "we're not auth",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "correct id but the item does not have a slug.",
+            },
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
-                reverse("topicblog:edit_item",
-                        kwargs={
-                            "pkid": self.item_without_slug.id,
-                            "the_slug": "test-slug"
-                        })
+                reverse(
+                    "topicblog:edit_item",
+                    kwargs={
+                        "pkid": self.item_without_slug.id,
+                        "the_slug": "test-slug",
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
     def test_item_creation_status_code(self):
         """
@@ -401,17 +504,27 @@ class TBIEditStatusCodeTest(TestCase):
             - message = the error message (varie)
         """
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't create items"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 if not auth"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we don't provide any arg"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't create items",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 if not auth",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we don't provide any arg",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(reverse("topicblog:new_item"))
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
 
 class TBIViewStatusCodeTests(TestCase):
@@ -462,193 +575,281 @@ class TBIViewStatusCodeTests(TestCase):
 
         # View with correct slug and correct id
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "correct slug and id associated with the item."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "correct slug and id associated with the item.",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid",
-                        kwargs={
-                            "pkid": self.item_with_slug.id,
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "the_slug": self.item_with_slug.slug,
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # View with wrong slug and correct id
         users_expected_1 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "wrong slug and correct id associated with the item."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "wrong slug and correct id associated with the item.",
+            },
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid",
-                        kwargs={
-                            "pkid": self.item_with_slug.id,
-                            "the_slug": "wrong-slug"
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_with_slug.id,
+                        "the_slug": "wrong-slug",
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # View with correct slug and wrong id
         users_expected_2 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "correct slug but wrong id associated with the item."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "correct slug but wrong id associated with the item.",
+            },
         ]
         for user_type in users_expected_2:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid",
-                        kwargs={
-                            "pkid": 999999,
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": 999999,
+                        "the_slug": self.item_with_slug.slug,
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # View with wrong slug and wrong id
         users_expected_3 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "wrong slug and wrong id associated with the item."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "wrong slug and wrong id associated with the item.",
+            },
         ]
         for user_type in users_expected_3:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid",
-                        kwargs={
-                            "pkid": 999999,
-                            "the_slug": "wrong-slug"
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid",
+                    kwargs={"pkid": 999999, "the_slug": "wrong-slug"},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # ###### view_item_by_pkid_only ######
 
         # View with correct id
         users_expected_4 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "correct id associated with the item but the item "
-                    "does have a slug."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "correct id associated with the item but the item "
+                "does have a slug."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_4:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid_only",
-                        kwargs={
-                            "pkid": self.item_with_slug.id
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid_only",
+                    kwargs={"pkid": self.item_with_slug.id},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # View with wrong id
         users_expected_5 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "wrong id associated with the item but the item "
-                    "does have a slug."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "wrong id associated with the item but the item "
+                "does have a slug."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_5:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid_only",
-                        kwargs={
-                            "pkid": 999999
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid_only", kwargs={"pkid": 999999}
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # ##### view_item_by_slug ######
 
         # View with correct slug
         users_expected_6 = [
-            {"client": self.client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "correct slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.unauth_client, "code": 200,
-             "msg": "The page should return 200 if we provide the "
-                    "correct slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "correct slug associated with the item."
-                    f"\nitem with slug: {self.item_with_slug}"},
+            {
+                "client": self.client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "correct slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 200,
+                "msg": "The page should return 200 if we provide the "
+                "correct slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "correct slug associated with the item."
+                f"\nitem with slug: {self.item_with_slug}",
+            },
         ]
         for user_type in users_expected_6:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_slug",
-                        kwargs={
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:view_item_by_slug",
+                    kwargs={"the_slug": self.item_with_slug.slug},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
-        latest_date_created = TopicBlogItem.objects.filter(
-            slug=self.item_with_slug.slug
-        ).order_by("date_created").last()
+        latest_date_created = (
+            TopicBlogItem.objects.filter(slug=self.item_with_slug.slug)
+            .order_by("date_created")
+            .last()
+        )
 
-        self.assertEqual(response.context["page"],
-                         latest_date_created,
-                         msg="The page MUST load the item with the highest "
-                         "date_created."
-                         f"\nitem with slug: {self.item_with_slug}"
-                         f"\nhighest date_created: {latest_date_created}")
+        self.assertEqual(
+            response.context["page"],
+            latest_date_created,
+            msg="The page MUST load the item with the highest "
+            "date_created."
+            f"\nitem with slug: {self.item_with_slug}"
+            f"\nhighest date_created: {latest_date_created}",
+        )
 
         # View with wrong slug
         users_expected_7 = [
-            {"client": self.client, "code": 404,
-             "msg": "The page MUST return 404 if we provide a "
-                    "wrong slug not related to any item."},
-            {"client": self.unauth_client, "code": 404,
-             "msg": "The page should return 404 if we provide a "
-                    "wrong slug not related to any item."},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide a "
-                    "wrong slug not related to any item."},
+            {
+                "client": self.client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide a "
+                "wrong slug not related to any item.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 404,
+                "msg": "The page should return 404 if we provide a "
+                "wrong slug not related to any item.",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide a "
+                "wrong slug not related to any item.",
+            },
         ]
         for user_type in users_expected_7:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_slug",
-                        kwargs={
-                            "the_slug": "wrong-slug"
-                        })
+                reverse(
+                    "topicblog:view_item_by_slug",
+                    kwargs={"the_slug": "wrong-slug"},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
     def test_item_without_slug_view(self):
         """
@@ -679,50 +880,72 @@ class TBIViewStatusCodeTests(TestCase):
 
         # View with correct id but bad slug
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 404,
-             "msg": "The page MUST return 404 if we provide the "
-                    "correct id associated with the item but the item "
-                    "does not have a slug."
-                    f"\nitem without slug: {self.item_without_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 404,
+                "msg": "The page MUST return 404 if we provide the "
+                "correct id associated with the item but the item "
+                "does not have a slug."
+                f"\nitem without slug: {self.item_without_slug}",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid",
-                        kwargs={
-                            "pkid": self.item_without_slug.id,
-                            "the_slug": "a-slug"
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid",
+                    kwargs={
+                        "pkid": self.item_without_slug.id,
+                        "the_slug": "a-slug",
+                    },
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # #### view_item_by_pkid_only ######
 
         # View with correct id
         users_expected_1 = [
-            {"client": self.client, "code": 403,
-             "msg": "The page MUST return 403 to normal users."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "This page redirects to login for unauth users"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide the "
-                    "correct id associated with the item and the item "
-                    "does not have a slug."
-                    f"\nitem without slug: {self.item_without_slug}"},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "The page MUST return 403 to normal users.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "This page redirects to login for unauth users",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide the "
+                "correct id associated with the item and the item "
+                "does not have a slug."
+                f"\nitem without slug: {self.item_without_slug}",
+            },
         ]
         for user_type in users_expected_1:
             response = user_type["client"].get(
-                reverse("topicblog:view_item_by_pkid_only",
-                        kwargs={
-                            "pkid": self.item_without_slug.id
-                        })
+                reverse(
+                    "topicblog:view_item_by_pkid_only",
+                    kwargs={"pkid": self.item_without_slug.id},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
 
 class TBIListStatusCodeTests(TestCase):
@@ -746,31 +969,43 @@ class TBIListStatusCodeTests(TestCase):
             - message = the error message (varie)
         """
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't view the list of items"},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even"
-                    "if we provide no parameters"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide no parameters."},
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't view the list of items",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even"
+                "if we provide no parameters",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide no parameters.",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(reverse("topicblog:list_items"))
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # Checks that the number of items displayed is equal to the
         # number of TBItems with non-empty slugs.  Note that this test
         # will fail the day we implement pagination on the TBItem list
         # page.
         number_of_items = TopicBlogItem.objects.exclude(slug="").count()
-        self.assertEqual(len(response.context["object_list"]),
-                         number_of_items,
-                         msg="The list of items MUST be the same length as "
-                         "the number of items in the database."
-                         f"\nnumber of items: {number_of_items}"
-                         "\nnumber of items in the list: "
-                         f"{len(response.context['object_list'])}")
+        self.assertEqual(
+            len(response.context["object_list"]),
+            number_of_items,
+            msg="The list of items MUST be the same length as "
+            "the number of items in the database."
+            f"\nnumber of items: {number_of_items}"
+            "\nnumber of items in the list: "
+            f"{len(response.context['object_list'])}",
+        )
 
     def test_full_list_display_with_slug(self):
         """
@@ -784,24 +1019,34 @@ class TBIListStatusCodeTests(TestCase):
             - message = the error message (varie)
         """
         users_expected_0 = [
-            {"client": self.client, "code": 403,
-             "msg": "Normal users can't see the list of items."},
-            {"client": self.unauth_client, "code": 302,
-             "msg": "The page should return 302 even if we provide a "
-                    "slug attached to an existing item."},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page MUST return 200 if we provide a "
-                    "slug attached to an existing item."}
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "Normal users can't see the list of items.",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 302,
+                "msg": "The page should return 302 even if we provide a "
+                "slug attached to an existing item.",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page MUST return 200 if we provide a "
+                "slug attached to an existing item.",
+            },
         ]
         for user_type in users_expected_0:
             response = user_type["client"].get(
-                reverse("topicblog:list_items_by_slug",
-                        kwargs={
-                            "the_slug": self.item_with_slug.slug
-                        })
+                reverse(
+                    "topicblog:list_items_by_slug",
+                    kwargs={"the_slug": self.item_with_slug.slug},
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # Checks that the number of items displayed is correct
         # All items with the given slug MUST be in the context
@@ -809,14 +1054,16 @@ class TBIListStatusCodeTests(TestCase):
             slug=self.item_with_slug.slug
         ).count()
 
-        self.assertEqual(len(response.context["object_list"]),
-                         number_of_items,
-                         msg="The list of items MUST be the same length as "
-                         "the number of items with the corresponding slug "
-                         "in the database."
-                         f"\nnumber of items: {number_of_items}"
-                         "\nnumber of items in the list: "
-                         f'{len(response.context["object_list"])}')
+        self.assertEqual(
+            len(response.context["object_list"]),
+            number_of_items,
+            msg="The list of items MUST be the same length as "
+            "the number of items with the corresponding slug "
+            "in the database."
+            f"\nnumber of items: {number_of_items}"
+            "\nnumber of items in the list: "
+            f'{len(response.context["object_list"])}',
+        )
 
 
 class TBIModel(TestCase):
@@ -841,28 +1088,36 @@ class TBIModel(TestCase):
         self.assertFalse(self.item_without_date.get_servable_status())
 
     def test_get_image_fields_function(self):
-        self.assertEqual(self.item_with_slug.get_image_fields(),
-                         ['header_image', 'twitter_image',
-                          'og_image', 'body_image'])
-        self.assertEqual(self.item_without_slug.get_image_fields(),
-                         ['header_image', 'twitter_image',
-                          'og_image', 'body_image'])
+        self.assertEqual(
+            self.item_with_slug.get_image_fields(),
+            ["header_image", "twitter_image", "og_image", "body_image"],
+        )
+        self.assertEqual(
+            self.item_without_slug.get_image_fields(),
+            ["header_image", "twitter_image", "og_image", "body_image"],
+        )
 
     def test_get_absolute_url_function(self):
-        self.assertEqual(self.item_with_slug.get_absolute_url(),
-                         '/tb/admin/t/view/1/test-slug/')
         self.assertEqual(
-            self.item_without_slug.get_absolute_url(), '/tb/admin/t/view/2/')
+            self.item_with_slug.get_absolute_url(),
+            "/tb/admin/t/view/1/test-slug/",
+        )
+        self.assertEqual(
+            self.item_without_slug.get_absolute_url(), "/tb/admin/t/view/2/"
+        )
 
     def test_get_missing_publication_field_names(self):
         self.assertEqual(
-            self.item_with_slug.get_missing_publication_field_names(), set())
+            self.item_with_slug.get_missing_publication_field_names(), set()
+        )
         self.assertEqual(
             self.item_without_slug.get_missing_publication_field_names(),
-            {'body_text_2_md', 'body_text_3_md', 'body_text_1_md', 'slug'})
+            {"body_text_2_md", "body_text_3_md", "body_text_1_md", "slug"},
+        )
         self.assertEqual(
             self.item_without_alt.get_missing_publication_field_names(),
-            {'body_image', 'body_image_alt_text'})
+            {"body_image", "body_image_alt_text"},
+        )
 
 
 class TBIView(TestCase):
@@ -874,41 +1129,59 @@ class TBIView(TestCase):
             - message = the error message (not varie for user)"""
 
         self.users_expected = [
-            {"client": self.client, "code": 403,
-             "msg": "User with no staff status is not permited"},
-            {"client": self.unauth_client, "code": 403,
-             "msg": "Unauth can't have acces to this data"},
-            {"client": self.user_permited_client, "code": 200,
-             "msg": "The page must return 200 the user is staff"}
+            {
+                "client": self.client,
+                "code": 403,
+                "msg": "User with no staff status is not permited",
+            },
+            {
+                "client": self.unauth_client,
+                "code": 403,
+                "msg": "Unauth can't have acces to this data",
+            },
+            {
+                "client": self.user_permited_client,
+                "code": 200,
+                "msg": "The page must return 200 the user is staff",
+            },
         ]
 
     def test_get_slug_dict(self):
         for user_type in self.users_expected:
             response = user_type["client"].get(
-                reverse('topicblog:get_slug_dict',),
-                data={
-                    'model_name': 'TopicBlogItem'
-                }
+                reverse(
+                    "topicblog:get_slug_dict",
+                ),
+                data={"model_name": "TopicBlogItem"},
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
         # test the result of the staff user
-        self.assertJSONEqual(str(response.content, encoding='utf8'),
-                             {"": 1, "test-slug": 2, "test-slug-no-alt": 1,
-                              "test-slug-no-date": 1, })
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"),
+            {
+                "": 1,
+                "test-slug": 2,
+                "test-slug-no-alt": 1,
+                "test-slug-no-date": 1,
+            },
+        )
 
     def test_get_url_list(self):
         for user_type in self.users_expected:
             response = user_type["client"].get(
-                f"{reverse('topicblog:get_url_list')}"
-                "?slug=test-slug-no-alt"
+                f"{reverse('topicblog:get_url_list')}" "?slug=test-slug-no-alt"
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
         # test the result of the staff user
-        self.assertJSONEqual(str(response.content, encoding='utf8'),
-                             {"url": "/tb/admin/t/list/test-slug-no-alt/"})
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"),
+            {"url": "/tb/admin/t/list/test-slug-no-alt/"},
+        )
 
 
 class TopicBlogEmailTest(TransactionTestCase):
@@ -916,7 +1189,8 @@ class TopicBlogEmailTest(TransactionTestCase):
         self.superuser = User.objects.create_superuser(
             username="test_user",
             email="admin@mobilitain.fr",
-            password="test_password")
+            password="test_password",
+        )
         self.email_article = TopicBlogEmail.objects.create(
             subject="Test subject",
             user=self.superuser,
@@ -925,15 +1199,16 @@ class TopicBlogEmailTest(TransactionTestCase):
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             template_name="topicblog/content_email.html",
-            title="Test title")
+            title="Test title",
+        )
         self.mailing_list = MailingList.objects.create(
             mailing_list_name="the_mailing_list_name",
             mailing_list_token="the_mailing_list_token",
             contact_frequency_weeks=12,
-            list_active=True)
+            list_active=True,
+        )
         self.no_permissions_user = User.objects.create_user(
-            username="user_without_permissions",
-            email="test@mobilitain.fr"
+            username="user_without_permissions", email="test@mobilitain.fr"
         )
         subscribe_user_to_list(self.superuser, self.mailing_list)
         subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
@@ -946,43 +1221,67 @@ class TopicBlogEmailTest(TransactionTestCase):
         # land either on 403 Forbidden or 200 OK depending on the
         # user's permissions.
         self.perm_needed_responses = [
-            {"client": self.client, "code": 302,
-             "msg": "Anonymous users are redirected to login."},
-            {"client": self.no_permissions_client, "code": 403,
-             "msg": ("Logged in users without proper permissions can't have "
-                     "access to this page.")},
-            {"client": self.admin_client, "code": 200,
-             "msg": "The page must return 200 the user has the permission."}
+            {
+                "client": self.client,
+                "code": 302,
+                "msg": "Anonymous users are redirected to login.",
+            },
+            {
+                "client": self.no_permissions_client,
+                "code": 403,
+                "msg": (
+                    "Logged in users without proper permissions can't have "
+                    "access to this page."
+                ),
+            },
+            {
+                "client": self.admin_client,
+                "code": 200,
+                "msg": "The page must return 200 the user has the permission.",
+            },
         ]
         self.no_perm_needed_responses = [
-            {"client": self.client, "code": 200,
-             "msg": "The page must return 200 independently of permissions."},
-            {"client": self.no_permissions_client, "code": 200,
-             "msg": "The page must return 200 independently of permissions."},
-            {"client": self.admin_client, "code": 200,
-             "msg": "The page must return 200 independently of permissions."}
+            {
+                "client": self.client,
+                "code": 200,
+                "msg": "The page must return 200 independently of permissions.",
+            },
+            {
+                "client": self.no_permissions_client,
+                "code": 200,
+                "msg": "The page must return 200 independently of permissions.",
+            },
+            {
+                "client": self.admin_client,
+                "code": 200,
+                "msg": "The page must return 200 independently of permissions.",
+            },
         ]
 
     def test_TBE_view_one_status_code(self):
 
         for user_type in self.perm_needed_responses:
             response = user_type["client"].get(
-                reverse('topic_blog:view_email_by_pkid',
-                        args=[self.email_article.pk, self.email_article.slug]
-                        )
+                reverse(
+                    "topic_blog:view_email_by_pkid",
+                    args=[self.email_article.pk, self.email_article.slug],
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
     def test_TBE_view_status_code(self):
         for user_type in self.no_perm_needed_responses:
             response = user_type["client"].get(
-                reverse('topic_blog:view_email_by_slug',
-                        args=[self.email_article.slug]
-                        )
+                reverse(
+                    "topic_blog:view_email_by_slug",
+                    args=[self.email_article.slug],
+                )
             )
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
     def test_get_subcribed_users_email_list(self):
 
@@ -991,18 +1290,22 @@ class TopicBlogEmailTest(TransactionTestCase):
         number_of_subscribed_users = 2
         self.assertEqual(
             len(get_subcribed_users_email_list(self.mailing_list)),
-            number_of_subscribed_users)
+            number_of_subscribed_users,
+        )
 
         # Remove superuser from subbed users of the mailing list
         unsubscribe_user_from_list(self.superuser, self.mailing_list)
         number_of_subscribed_users = 1
         self.assertEqual(
             len(get_subcribed_users_email_list(self.mailing_list)),
-            number_of_subscribed_users)
+            number_of_subscribed_users,
+        )
 
         # The last email is the no_permissions_user
-        self.assertEqual(get_subcribed_users_email_list(self.mailing_list)[0],
-                         self.no_permissions_user.email)
+        self.assertEqual(
+            get_subcribed_users_email_list(self.mailing_list)[0],
+            self.no_permissions_user.email,
+        )
 
     # Selenium / db re-entrancy bug, cf. #560
     # def test_create_send_record(self):
@@ -1017,29 +1320,29 @@ class TopicBlogEmailTest(TransactionTestCase):
     #     self.assertEqual(1, SendRecordMarketingEmail.objects.count())
 
     def test_send_email_status_code(self):
-        url = reverse('topicblog:send_email',
-                      args=[self.email_article.slug])
+        url = reverse("topicblog:send_email", args=[self.email_article.slug])
 
         for user_type in self.perm_needed_responses:
             response = user_type["client"].get(url)
-            self.assertEqual(response.status_code,
-                             user_type["code"], msg=user_type["msg"])
+            self.assertEqual(
+                response.status_code, user_type["code"], msg=user_type["msg"]
+            )
 
     def test_unsubscribe_invalid_token_status_code(self):
-        url = reverse('mailing_list:newsletter_unsubscribe',
-                      args=["invalid_token"])
+        url = reverse(
+            "mailing_list:newsletter_unsubscribe", args=["invalid_token"]
+        )
 
         for user_type in self.no_perm_needed_responses:
             response = user_type["client"].get(url)
             self.assertEqual(response.status_code, 404)
 
     def test_send_email_form(self):
-        url = reverse('topicblog:send_email',
-                      args=[self.email_article.slug])
+        url = reverse("topicblog:send_email", args=[self.email_article.slug])
 
         form_data = {
-            "mailing_list": 'the_mailing_list_token',
-            "confirmation_box": 'on'
+            "mailing_list": "the_mailing_list_token",
+            "confirmation_box": "on",
         }
         response = self.admin_client.post(url, form_data)
         # Redirect to success url
@@ -1051,12 +1354,11 @@ class TopicBlogEmailTest(TransactionTestCase):
         self.assertTrue(form.is_valid())
 
     def test_unique_slug_recipient_constraint(self):
-        url = reverse('topicblog:send_email',
-                      args=[self.email_article.slug])
+        url = reverse("topicblog:send_email", args=[self.email_article.slug])
 
         form_data = {
-            "mailing_list": 'the_mailing_list_token',
-            "confirmation_box": 'on'
+            "mailing_list": "the_mailing_list_token",
+            "confirmation_box": "on",
         }
         response = self.admin_client.post(url, form_data)
         # Redirect to success url
@@ -1079,7 +1381,8 @@ class TopicBlogPressTests(TransactionTestCase):
         self.superuser = User.objects.create_superuser(
             username="test_user",
             email="admin@mobilitain.fr",
-            password="test_password")
+            password="test_password",
+        )
         self.press_release = TopicBlogPress.objects.create(
             subject="Test subject",
             user=self.superuser,
@@ -1088,16 +1391,17 @@ class TopicBlogPressTests(TransactionTestCase):
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             template_name="topicblog/content_press.html",
-            title="Test title")
+            title="Test title",
+        )
         self.mailing_list = MailingList.objects.create(
             mailing_list_name="the_mailing_list_name",
             mailing_list_token="the_mailing_list_token",
             contact_frequency_weeks=12,
             list_active=True,
-            mailing_list_type="PRESS")
+            mailing_list_type="PRESS",
+        )
         self.no_permissions_user = User.objects.create_user(
-            username="user_without_permissions",
-            email="test@mobilitain.fr"
+            username="user_without_permissions", email="test@mobilitain.fr"
         )
         subscribe_user_to_list(self.superuser, self.mailing_list)
         subscribe_user_to_list(self.no_permissions_user, self.mailing_list)
@@ -1107,12 +1411,11 @@ class TopicBlogPressTests(TransactionTestCase):
         self.no_permissions_client.force_login(self.no_permissions_user)
 
     def test_unique_slug_recipient_constraint(self):
-        url = reverse('topicblog:send_press',
-                      args=[self.press_release.slug])
+        url = reverse("topicblog:send_press", args=[self.press_release.slug])
 
         form_data = {
-            "mailing_list": 'the_mailing_list_token',
-            "confirmation_box": 'on'
+            "mailing_list": "the_mailing_list_token",
+            "confirmation_box": "on",
         }
         response = self.admin_client.post(url, form_data)
         # Redirect to success url
@@ -1143,9 +1446,10 @@ class TopicBlogPressTests(TransactionTestCase):
             publication_date=datetime.now(timezone.utc),
             first_publication_date=datetime.now(timezone.utc),
             template_name="topicblog/content_press.html",
-            title="Test title")
+            title="Test title",
+        )
 
-        url = reverse('topicblog:press_releases_index')
+        url = reverse("topicblog:press_releases_index")
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

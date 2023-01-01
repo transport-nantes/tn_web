@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0006_topicblogpage_middle_image_alt'),
+        ("topicblog", "0006_topicblogpage_middle_image_alt"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogpage',
-            name='body1_md',
+            model_name="topicblogpage",
+            name="body1_md",
             field=models.TextField(blank=True),
         ),
     ]

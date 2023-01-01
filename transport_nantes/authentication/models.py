@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Rather than insisting the user invent a unique user name, we
@@ -33,11 +34,15 @@ class Profile(models.Model):
             auth = "authenticates by mail"
         else:
             auth = "authenticates by password"
-        return '{email}/[{uid}] / {conf} / {auth} ({commune}, {cp})'.format(
+        return "{email}/[{uid}] / {conf} / {auth} ({commune}, {cp})".format(
             email=self.user.email,
             uid=self.user.pk,
-            conf=confirmed, auth=auth,
-            commune=self.commune, cp=self.code_postal)
+            conf=confirmed,
+            auth=auth,
+            commune=self.commune,
+            cp=self.code_postal,
+        )
+
 
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):

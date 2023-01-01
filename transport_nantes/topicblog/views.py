@@ -12,14 +12,20 @@ from django.db import IntegrityError
 
 from django.db.models import Count, Max, Subquery, OuterRef, F
 from django.dispatch import receiver
-from django.http import (Http404, HttpResponseBadRequest,
-                         HttpResponseServerError, FileResponse)
+from django.http import (
+    Http404,
+    HttpResponseBadRequest,
+    HttpResponseServerError,
+    FileResponse,
+)
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
 from django.contrib.auth.decorators import permission_required as perm_required
 from django.contrib.auth.models import User
 from django.views.generic.base import TemplateView
@@ -28,24 +34,38 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
-from django_ses.signals import (open_received, click_received,
-                                send_received)
+from django_ses.signals import open_received, click_received, send_received
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
-from mailing_list.events import (get_subcribed_users_email_list,
-                                 user_subscribe_count)
+from mailing_list.events import (
+    get_subcribed_users_email_list,
+    user_subscribe_count,
+)
 from mailing_list.models import MailingList
 
-from .models import (SendRecordTransactionalEmail,
-                     SendRecordTransactionalPress, TopicBlogItem,
-                     TopicBlogEmail, TopicBlogMailingListPitch, TopicBlogPanel,
-                     TopicBlogPress, TopicBlogLauncher,
-                     SendRecordMarketingEmail, SendRecordMarketingPress,
-                     SendRecordTransactional)
-from .forms import (TopicBlogItemForm, TopicBlogEmailSendForm,
-                    TopicBlogLauncherForm, TopicBlogEmailForm,
-                    TopicBlogMailingListPitchForm, TopicBlogPanelForm, TopicBlogPressForm,
-                    SendToSelfForm)
+from .models import (
+    SendRecordTransactionalEmail,
+    SendRecordTransactionalPress,
+    TopicBlogItem,
+    TopicBlogEmail,
+    TopicBlogMailingListPitch,
+    TopicBlogPanel,
+    TopicBlogPress,
+    TopicBlogLauncher,
+    SendRecordMarketingEmail,
+    SendRecordMarketingPress,
+    SendRecordTransactional,
+)
+from .forms import (
+    TopicBlogItemForm,
+    TopicBlogEmailSendForm,
+    TopicBlogLauncherForm,
+    TopicBlogEmailForm,
+    TopicBlogMailingListPitchForm,
+    TopicBlogPanelForm,
+    TopicBlogPressForm,
+    SendToSelfForm,
+)
 
 # Doesn't actually import at runtime, it's for type hinting
 if TYPE_CHECKING:
@@ -68,29 +88,33 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
     The derived view must provide model, template_name, and form_class.
 
     """
+
     login_url = reverse_lazy("authentication:login")
-    template_name = 'topicblog/topicblogbase_edit.html'
+    template_name = "topicblog/topicblogbase_edit.html"
 
     def get_context_data(self, **kwargs):
         # In FormView, we must use the self.kwargs to retrieve the URL
         # parameters. This stems from the View class that transfers
         # the URL parameters to the View instance and assigns kwargs
         # to self.kwargs.
-        pk_id = self.kwargs.get('pkid', -1)
-        slug = self.kwargs.get('the_slug', '')
+        pk_id = self.kwargs.get("pkid", -1)
+        slug = self.kwargs.get("the_slug", "")
         if pk_id > 0:
             tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
         else:
-            tb_object = self.model.objects.filter(
-                slug=slug).order_by('-publication_date').first()
+            tb_object = (
+                self.model.objects.filter(slug=slug)
+                .order_by("-publication_date")
+                .first()
+            )
             if not tb_object:
                 tb_object = self.model()
 
         kwargs["form"] = kwargs.get(
-            "form",
-            self.form_class(instance=tb_object))
+            "form", self.form_class(instance=tb_object)
+        )
         context = super().get_context_data(**kwargs)
-        context['tb_object'] = tb_object
+        context["tb_object"] = tb_object
         context["slug_fields"] = tb_object.get_slug_fields()
         context["model_name"] = self.model.__name__
         context = self.fill_form_tabs(context)
@@ -104,27 +128,55 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
         form = self.form_class()
         possible_forms = {
             "form_admin": [
-                "slug", "subject", "title", "template_name", 'template',
-                "header_title", "header_description", "header_image",
-                "mailing_list", "article_slug", "campaign_name",
+                "slug",
+                "subject",
+                "title",
+                "template_name",
+                "template",
+                "header_title",
+                "header_description",
+                "header_image",
+                "mailing_list",
+                "article_slug",
+                "campaign_name",
             ],
             "form_content_a": [
-                "body_text_1_md", "cta_1_slug", 'body_image',
-                'body_image_alt_text', "cta_1_label", "body_image_1",
-                "body_image_1_alt_text", "headline", "launcher_text_md",
-                "launcher_image", "launcher_image_alt_text", "teaser_chars",
-                "subscription_form_title", "subscription_form_button_label",
-                "body_text_2_md", "cta_2_slug", "cta_2_label",
+                "body_text_1_md",
+                "cta_1_slug",
+                "body_image",
+                "body_image_alt_text",
+                "cta_1_label",
+                "body_image_1",
+                "body_image_1_alt_text",
+                "headline",
+                "launcher_text_md",
+                "launcher_image",
+                "launcher_image_alt_text",
+                "teaser_chars",
+                "subscription_form_title",
+                "subscription_form_button_label",
+                "body_text_2_md",
+                "cta_2_slug",
+                "cta_2_label",
             ],
             "form_content_b": [
-                "body_image_2", "body_image_2_alt_text", 'body_text_3_md',
-                'cta_3_slug', 'cta_3_label',
+                "body_image_2",
+                "body_image_2_alt_text",
+                "body_text_3_md",
+                "cta_3_slug",
+                "cta_3_label",
             ],
-            "form_social": ["social_description", "twitter_title",
-                            "twitter_description", "twitter_image",
-                            "og_title", "og_description", "og_image",
-                            "mail_only_contact_info"],
-            "form_notes": ["author_notes"]
+            "form_social": [
+                "social_description",
+                "twitter_title",
+                "twitter_description",
+                "twitter_image",
+                "og_title",
+                "og_description",
+                "og_image",
+                "mail_only_contact_info",
+            ],
+            "form_notes": ["author_notes"],
         }
         # Other fields is a catch-all that gets every field that should
         # be included but isn't because not sorted in the get_context_data
@@ -152,11 +204,12 @@ class TopicBlogBaseEdit(LoginRequiredMixin, FormView):
         tb_object.user = User.objects.get(username=self.request.user)
 
         # Read-only fields aren't set, so we have to fetch them
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             tb_existing = self.model.objects.get(id=pkid)
-            tb_object.first_publication_date = \
+            tb_object.first_publication_date = (
                 tb_existing.first_publication_date
+            )
         else:
             tb_existing = None
         if hasattr(self, "form_post_process"):
@@ -183,10 +236,13 @@ class TopicBlogBaseView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            tb_object = self.model.objects.filter(
-                slug=kwargs['the_slug'],
-                publication_date__isnull=False
-            ).order_by("publication_date").last()
+            tb_object = (
+                self.model.objects.filter(
+                    slug=kwargs["the_slug"], publication_date__isnull=False
+                )
+                .order_by("publication_date")
+                .last()
+            )
         except ObjectDoesNotExist:
             raise Http404("Page non trouvée")
         if tb_object is None:
@@ -201,7 +257,7 @@ class TopicBlogBaseView(TemplateView):
         # existing template in the app.
         if not self.template_name:
             self.template_name = tb_object.template_name
-        context['page'] = tb_object
+        context["page"] = tb_object
         if hasattr(tb_object, "set_social_context"):
             context = tb_object.set_social_context(context)
 
@@ -226,8 +282,8 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        pk_id = kwargs.get('pkid', -1)
-        slug = kwargs.get('the_slug', '')
+        pk_id = kwargs.get("pkid", -1)
+        slug = kwargs.get("the_slug", "")
         tb_object = get_object_or_404(self.model, id=pk_id, slug=slug)
 
         # We check that the object's template is valid and configured, or
@@ -237,40 +293,50 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
                 self.template_name = tb_object.template_name
             else:
                 logger.error(
-                    f"Current template ({tb_object.template_name}) is not configured.")
-                logger.debug(f"Template config: {tb_object.template_config}"
-                            f"\nTemplate name: {tb_object.template_name}"
-                            f"\nObject ID : {tb_object.id}"
-                            f"\nObject class : {tb_object.__class__.__name__}")
+                    f"Current template ({tb_object.template_name}) is not configured."
+                )
+                logger.debug(
+                    f"Template config: {tb_object.template_config}"
+                    f"\nTemplate name: {tb_object.template_name}"
+                    f"\nObject ID : {tb_object.id}"
+                    f"\nObject class : {tb_object.__class__.__name__}"
+                )
                 raise ImproperlyConfigured(
-                    f"Template {tb_object.template_name} is not configured")
+                    f"Template {tb_object.template_name} is not configured"
+                )
 
-        context['page'] = tb_object
+        context["page"] = tb_object
         if hasattr(tb_object, "set_social_context"):
             context = tb_object.set_social_context(context)
-        context['topicblog_admin'] = True
+        context["topicblog_admin"] = True
         context["base_model"] = self.model.__name__.lower()
 
-        context["served_object"] = self.model.objects.filter(
-            slug=slug,
-            publication_date__isnull=False
-        ).order_by("publication_date").last()
+        context["served_object"] = (
+            self.model.objects.filter(
+                slug=slug, publication_date__isnull=False
+            )
+            .order_by("publication_date")
+            .last()
+        )
 
         if self.transactional_send_record_class:
-            context["transactional_send_record_class"] = \
-                self.transactional_send_record_class.__name__
+            context[
+                "transactional_send_record_class"
+            ] = self.transactional_send_record_class.__name__
         return context
 
     def post(self, request, *args, **kwargs):
-        pk_id = kwargs.get('pkid', -1)
-        the_slug = kwargs.get('the_slug', '')
+        pk_id = kwargs.get("pkid", -1)
+        the_slug = kwargs.get("the_slug", "")
         tb_object = get_object_or_404(self.model, id=pk_id, slug=the_slug)
 
         user = User.objects.get(username=request.user)
         if tb_object.user == user:
-            if not user.has_perm('topicblog.may_publish_self'):
-                raise PermissionDenied("Vous n'avez pas les droits pour "
-                                       "publier vos propres articles")
+            if not user.has_perm("topicblog.may_publish_self"):
+                raise PermissionDenied(
+                    "Vous n'avez pas les droits pour "
+                    "publier vos propres articles"
+                )
         try:
             tb_object.publisher = self.request.user
             if tb_object.publish():
@@ -278,8 +344,9 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
                 return HttpResponseRedirect(tb_object.get_absolute_url())
         except Exception as e:
             logger.error(e)
-            logger.error(f"Failed to publish object {pk_id} with" +
-                         "slug \"{the_slug}\"")
+            logger.error(
+                f"Failed to publish object {pk_id} with" + 'slug "{the_slug}"'
+            )
             return HttpResponseServerError("Failed to publish item")
         # This shouldn't happen.  It's up to us to make sure we've
         # vetted that the user is authorised to publish and that the
@@ -293,18 +360,21 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
     Render a list of TopicBlogObjects.
 
     """
+
     login_url = reverse_lazy("authentication:login")
 
     def get_context_data(self, **kwargs):
         """This is a GET, supply the context."""
         context = super().get_context_data(**kwargs)
-        qs = context['object_list']
-        the_slug = self.kwargs.get('the_slug', None)
+        qs = context["object_list"]
+        the_slug = self.kwargs.get("the_slug", None)
         if the_slug:
-            context['slug'] = the_slug
-            context['servable_object'] = qs.filter(
-                publication_date__lte=datetime.now(timezone.utc)).order_by(
-                    '-publication_date').first()
+            context["slug"] = the_slug
+            context["servable_object"] = (
+                qs.filter(publication_date__lte=datetime.now(timezone.utc))
+                .order_by("-publication_date")
+                .first()
+            )
         context["new_object_url"] = self.model.new_object_url
         context["listone_object_url"] = self.model.listone_object_url
         context["listall_object_url"] = self.model.listall_object_url
@@ -315,30 +385,34 @@ class TopicBlogBaseList(LoginRequiredMixin, ListView):
     def get_queryset(self, *args, **kwargs):
         """Return a queryset of matches for a given the_slug."""
         qs = super(ListView, self).get_queryset(*args, **kwargs)
-        if 'the_slug' in self.kwargs:
+        if "the_slug" in self.kwargs:
             # If we have a slug, show it.
-            the_slug = self.kwargs['the_slug']
+            the_slug = self.kwargs["the_slug"]
 
             # Clean up old objects.  This should perhaps be pushed to
             # celery later.
             mark_moribund_and_delete(qs.filter(slug=the_slug))
 
-            the_qs = qs.filter(slug=the_slug).order_by('-date_created')
+            the_qs = qs.filter(slug=the_slug).order_by("-date_created")
             return the_qs
 
         # If we don't have a slug, list all slugs.
-        return qs.values('slug') \
-                 .annotate(count=Count('slug'),
-                           date_created=Max('date_created'),
-                           publication_date=Max('publication_date')) \
-                 .order_by('-date_created')
+        return (
+            qs.values("slug")
+            .annotate(
+                count=Count("slug"),
+                date_created=Max("date_created"),
+                publication_date=Max("publication_date"),
+            )
+            .order_by("-date_created")
+        )
 
     def get_template_names(self):
         names = super().get_template_names()
-        if 'the_slug' in self.kwargs:
-            return ['topicblog/topicblogbase_list_one.html'] + names
+        if "the_slug" in self.kwargs:
+            return ["topicblog/topicblogbase_list_one.html"] + names
         else:
-            return ['topicblog/topicblogbase_list.html'] + names
+            return ["topicblog/topicblogbase_list.html"] + names
 
 
 # This is the name of the key we put in contexts to communicate
@@ -347,13 +421,13 @@ k_render_as_email = "render_as_email"
 
 
 class SendableObjectMixin:
-    """ Define the sending by email behaviour for TopicBlog Objects """
+    """Define the sending by email behaviour for TopicBlog Objects"""
 
     # Defines the concrete subclass of SendRecordBase that we use to
     # record this sending operation.
     send_record_class = None
     # Defines the concrete subclass of sendable that we are treating.
-    base_model: Type['TopicBlogObjectBase'] = None
+    base_model: Type["TopicBlogObjectBase"] = None
 
     def get_last_published_email(self, tb_slug: str) -> base_model:
         """Fetch the currently published email object.
@@ -363,20 +437,26 @@ class SendableObjectMixin:
 
         """
         tb_objects = self.base_model.objects.filter(
-            slug=tb_slug,
-            publication_date__isnull=False
-        ).order_by('-publication_date')
+            slug=tb_slug, publication_date__isnull=False
+        ).order_by("-publication_date")
         if len(tb_objects) == 0:
-            logger.error("Failed to find requested email object in class "
-                         f"{tb_slug}")
+            logger.error(
+                "Failed to find requested email object in class " f"{tb_slug}"
+            )
             raise ValueError(
                 f"There is no {self.base_model.__name__} with"
-                f" slug {tb_slug} and a not-null publication date")
+                f" slug {tb_slug} and a not-null publication date"
+            )
         return tb_objects[0]
 
-    def prepare_email(self, pkid: int, the_slug: str, recipient: list,
-                      mailing_list: MailingList, send_record) \
-            -> mail.EmailMultiAlternatives:
+    def prepare_email(
+        self,
+        pkid: int,
+        the_slug: str,
+        recipient: list,
+        mailing_list: MailingList,
+        send_record,
+    ) -> mail.EmailMultiAlternatives:
         """
         Creates a sendable email object from a TBobject with a mail
         client-friendly template, given a pkid, a slug and a mail adress.
@@ -396,30 +476,36 @@ class SendableObjectMixin:
             return HttpResponseServerError()
 
         # Preparing the email
-        tb_email: Union[TopicBlogEmail, TopicBlogPress] = (
-            self.base_model.objects.get(pk=pkid, slug=the_slug))
-        self.template_name = (
-            tb_email.template_config[tb_email.template_name]
-            .get('email_template')
-        )
+        tb_email: Union[
+            TopicBlogEmail, TopicBlogPress
+        ] = self.base_model.objects.get(pk=pkid, slug=the_slug)
+        self.template_name = tb_email.template_config[
+            tb_email.template_name
+        ].get("email_template")
 
         context = self._set_email_context(recipient, send_record.id, tb_email)
 
         try:
-            email = self._create_email_object(tb_email, context, recipient,
-                                              send_record)
+            email = self._create_email_object(
+                tb_email, context, recipient, send_record
+            )
         except Exception as e:
-            message = \
+            message = (
                 f"Error while creating EmailMultiAlternatives object: {e}"
+            )
             logger.info(message)
             raise Exception(message)
 
         return email
 
-    def _create_email_object(self, tb_object, context: dict,
-                             recipient_list: list, send_record,
-                             from_email: str = settings.DEFAULT_FROM_EMAIL) \
-            -> mail.EmailMultiAlternatives:
+    def _create_email_object(
+        self,
+        tb_object,
+        context: dict,
+        recipient_list: list,
+        send_record,
+        from_email: str = settings.DEFAULT_FROM_EMAIL,
+    ) -> mail.EmailMultiAlternatives:
         """Create an EmailMultiAlternatives object.
 
         To send emails to multiple persons, django send_mail function
@@ -447,7 +533,8 @@ class SendableObjectMixin:
         """
         # HTML message is the one displayed in mail client
         html_message = render_to_string(
-            self.template_name, context=context, request=self.request)
+            self.template_name, context=context, request=self.request
+        )
         # In cases where the HTML message isn't accepted, a plain text
         # message is displayed in the mail client.
         plain_text_message = strip_tags(html_message)
@@ -472,7 +559,8 @@ class SendableObjectMixin:
         comments_header = json.dumps(values_to_pass_to_ses)
         headers = {
             "X-SES-CONFIGURATION-SET": settings.AWS_CONFIGURATION_SET_NAME,
-            "Comments": comments_header}
+            "Comments": comments_header,
+        }
 
         email = mail.EmailMultiAlternatives(
             subject=tb_object.subject,
@@ -486,8 +574,8 @@ class SendableObjectMixin:
         return email
 
     def _set_email_context(
-            self, recipient: list, send_record_id: int,
-            tb_object) -> dict:
+        self, recipient: list, send_record_id: int, tb_object
+    ) -> dict:
         """
         Return the context for the email to be sent.
 
@@ -508,10 +596,10 @@ class SendableObjectMixin:
 
         # The unsubscribe link is created with the send_record and the
         # user's email hidden in a token.
-        context["token"] = \
-            self.get_unsubscribe_token(recipient[0], send_record_id)
-        context["beacon_token"] = \
-            self.get_beacon_token(send_record_id)
+        context["token"] = self.get_unsubscribe_token(
+            recipient[0], send_record_id
+        )
+        context["beacon_token"] = self.get_beacon_token(send_record_id)
 
         # On May 31th 2022 :
         #
@@ -532,13 +620,16 @@ class SendableObjectMixin:
         # In an attempt to reproduce and understand the error, we log more
         # details about it for the next time it appears
         # See issue https://github.com/transport-nantes/tn_web/issues/777
-        logger.info(f"Token {context['token']} is associated "
-                    f"with Email {recipient[0]} and SR.id {send_record_id}")
+        logger.info(
+            f"Token {context['token']} is associated "
+            f"with Email {recipient[0]} and SR.id {send_record_id}"
+        )
 
         return context
 
-    def create_send_record(self,  slug: str, mailing_list: MailingList,
-                           recipient: str):
+    def create_send_record(
+        self, slug: str, mailing_list: MailingList, recipient: str
+    ):
         """
         Create a new send record object.
 
@@ -565,9 +656,10 @@ class SendableObjectMixin:
         """
         Create a token to unsubscribe the user from the mailing list.
         """
-        k_minutes_in_six_months = 60*24*30*6
+        k_minutes_in_six_months = 60 * 24 * 30 * 6
         token = make_timed_token(
-            email, k_minutes_in_six_months, int_key=send_record_id)
+            email, k_minutes_in_six_months, int_key=send_record_id
+        )
         return token
 
     def get_beacon_token(self, send_record_id: int) -> str:
@@ -584,45 +676,55 @@ class SendableObjectMixin:
         send_record_id attached to the email.
         """
         send_record_class_string = self.send_record_class.__name__
-        k_minutes_in_six_months = 60*24*30*6
+        k_minutes_in_six_months = 60 * 24 * 30 * 6
         token = make_timed_token(
-            send_record_class_string, k_minutes_in_six_months,
-            int_key=send_record_id)
+            send_record_class_string,
+            k_minutes_in_six_months,
+            int_key=send_record_id,
+        )
         return token
 
 
 class TopicBlogBaseSendView(FormView, SendableObjectMixin):
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # The slug is then used to get the TBEmail we want to send.
-        context["tbe_slug"] = self.kwargs['the_slug']
+        context["tbe_slug"] = self.kwargs["the_slug"]
         if not hasattr(self, "base_model"):
-            raise ImproperlyConfigured("base_model must be a class with a "
-                                       "send_object_url attribute")
+            raise ImproperlyConfigured(
+                "base_model must be a class with a "
+                "send_object_url attribute"
+            )
         context["send_to_view"] = self.base_model.send_object_url
         context["base_model"] = self.base_model
-        context["sent_object"] = self.base_model.objects.filter(
-            slug=self.kwargs['the_slug'],
-            publication_date__isnull=False
-            ).order_by("date_created").last()
+        context["sent_object"] = (
+            self.base_model.objects.filter(
+                slug=self.kwargs["the_slug"], publication_date__isnull=False
+            )
+            .order_by("date_created")
+            .last()
+        )
         return context
 
     def form_valid(self, form):
-        tbe_slug = self.kwargs['the_slug']
+        tbe_slug = self.kwargs["the_slug"]
         tbe_object = self.get_last_published_email(tbe_slug)
 
         if tbe_object is None:
-            logger.info(f"No published {self.base_model.send_object_url} "
-                        f"object found for '{tbe_slug}'")
+            logger.info(
+                f"No published {self.base_model.send_object_url} "
+                f"object found for '{tbe_slug}'"
+            )
             raise Http404(
                 f"Pas de '{self.base_model.description_of_object}' publié "
-                f"trouvé pour le slug '{tbe_slug}'")
+                f"trouvé pour le slug '{tbe_slug}'"
+            )
 
-        mailing_list_token = form.cleaned_data['mailing_list']
+        mailing_list_token = form.cleaned_data["mailing_list"]
         # The recipient list is extracted from the selected MailingList.
         mailing_list = MailingList.objects.get(
-            mailing_list_token=mailing_list_token)
+            mailing_list_token=mailing_list_token
+        )
         mailing_list: MailingList
         recipient_list = get_subcribed_users_email_list(mailing_list)
 
@@ -633,17 +735,20 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
                 send_record = self.create_send_record(
                     slug=tbe_slug,
                     mailing_list=mailing_list,
-                    recipient=recipient)
+                    recipient=recipient,
+                )
             except IntegrityError:
-                logger.info(f"{recipient} already received an email for "
-                            f"{tbe_slug}")
+                logger.info(
+                    f"{recipient} already received an email for " f"{tbe_slug}"
+                )
                 continue
             custom_email = self.prepare_email(
                 pkid=tbe_object.id,
                 the_slug=tbe_slug,
                 recipient=[recipient],
                 mailing_list=mailing_list,
-                send_record=send_record)
+                send_record=send_record,
+            )
 
             logger.info(f"Successfully prepared email to {recipient}")
             try:
@@ -659,60 +764,71 @@ class TopicBlogBaseSendView(FormView, SendableObjectMixin):
         return super().form_valid(form)
 
 
-class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
-                            SendableObjectMixin, BaseFormView):
+class TopicBlogSelfSendView(
+    PermissionRequiredMixin,
+    LoginRequiredMixin,
+    SendableObjectMixin,
+    BaseFormView,
+):
     """Allow sending TB objects to oneself by email.
 
     Authorised users can send to themselves sendable objects (eg TBPress and
     TBEmail) by email.
     """
-    permission_required = ('topicblog.tbe.may_send', 'topicblog.tbp.may_send')
+
+    permission_required = ("topicblog.tbe.may_send", "topicblog.tbp.may_send")
     form_class = SendToSelfForm
     send_record_class = None
 
     def form_valid(self, form):
-        sent_object_id = form.cleaned_data['sent_object_id']
-        sent_object_class = form.cleaned_data['sent_object_class']
+        sent_object_id = form.cleaned_data["sent_object_id"]
+        sent_object_class = form.cleaned_data["sent_object_class"]
         sent_object_transactional_send_record_class_name = form.cleaned_data[
-            'sent_object_transactional_send_record_class']
-        self.success_url = \
-            form.cleaned_data['redirect_url'] + "?email_sent=true"
+            "sent_object_transactional_send_record_class"
+        ]
+        self.success_url = (
+            form.cleaned_data["redirect_url"] + "?email_sent=true"
+        )
 
-        logger.info(f"Sending {sent_object_class} {sent_object_id} to "
-                    f"{self.request.user.email}")
+        logger.info(
+            f"Sending {sent_object_class} {sent_object_id} to "
+            f"{self.request.user.email}"
+        )
         self.send_email_to_self(
-            sent_object_id, sent_object_class,
-            sent_object_transactional_send_record_class_name)
+            sent_object_id,
+            sent_object_class,
+            sent_object_transactional_send_record_class_name,
+        )
         return super().form_valid(form)
 
     def send_email_to_self(
-            self, sent_object_id: int,
-            sent_object_class: str,
-            sent_object_transactional_send_record_class_name: str) \
-            -> None:
+        self,
+        sent_object_id: int,
+        sent_object_class: str,
+        sent_object_transactional_send_record_class_name: str,
+    ) -> None:
         """Send an email to the user with the given email address."""
         # Retrieve the object to send.
-        object_class = apps.get_model('topicblog', sent_object_class)
+        object_class = apps.get_model("topicblog", sent_object_class)
         object_to_send = object_class.objects.get(id=sent_object_id)
 
         # Create a send record.
         logger.info("Creating send record...")
         send_record = self.create_send_record(
-            object_to_send,
-            sent_object_transactional_send_record_class_name)
+            object_to_send, sent_object_transactional_send_record_class_name
+        )
         if not send_record:
             logger.info("No send record created, aborting the send.")
             return None
 
         # Prepare the email.
-        self.template_name = (
-            object_to_send.template_config[object_to_send.template_name]
-            .get("email_template")
-        )
+        self.template_name = object_to_send.template_config[
+            object_to_send.template_name
+        ].get("email_template")
         context = self._set_email_context(
             recipient=[self.request.user.email],
             send_record_id=send_record.id,
-            tb_object=object_to_send
+            tb_object=object_to_send,
         )
         custom_email = self._create_email_object(
             tb_object=object_to_send,
@@ -728,15 +844,16 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
             logger.info(f"Sent email to {self.request.user.email}")
         except Exception as e:
             logger.error(
-                f"Failed to send email to {self.request.user.email} : {e}")
+                f"Failed to send email to {self.request.user.email} : {e}"
+            )
             send_record.status = "FAILED"
             send_record.save()
 
     def create_send_record(
         self,
         object_to_send: Union[TopicBlogEmail, TopicBlogPress],
-        sent_object_transactional_send_record_class_name: str) \
-            -> Union[Type[SendRecordTransactional], None]:
+        sent_object_transactional_send_record_class_name: str,
+    ) -> Union[Type[SendRecordTransactional], None]:
         """Return the proper send record for the given class.
 
         Keyword argument:
@@ -751,19 +868,23 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
         # Get the send record class.
         try:
             self.send_record_class = apps.get_model(
-                "topicblog",
-                sent_object_transactional_send_record_class_name)
+                "topicblog", sent_object_transactional_send_record_class_name
+            )
         except LookupError:
-            logger.info(f"{sent_object_transactional_send_record_class_name}"
-                        " does not exist in topicblog.models")
+            logger.info(
+                f"{sent_object_transactional_send_record_class_name}"
+                " does not exist in topicblog.models"
+            )
             return None
 
         # Fill the send record object
         kwargs = {
             "recipient": self.request.user,
             "slug": getattr(
-                object_to_send, "slug",
-                f"{object_to_send.__class__.__name__}-{object_to_send.id}"),
+                object_to_send,
+                "slug",
+                f"{object_to_send.__class__.__name__}-{object_to_send.id}",
+            ),
         }
         send_record = self.send_record_class(**kwargs)
         send_record.save()
@@ -771,9 +892,11 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
         logger.info(
             f"Created send record : Recipient: {self.request.user.email}, "
             f"send record: {self.send_record_class} - "
-            f"{send_record.id}")
+            f"{send_record.id}"
+        )
 
         return send_record
+
 
 ######################################################################
 # TopicBlogItem
@@ -782,12 +905,12 @@ class TopicBlogSelfSendView(PermissionRequiredMixin, LoginRequiredMixin,
 @StaffRequired
 def get_slug_dict(request):
     """Return a list of all existing slugs"""
-    model_name = request.GET.get('model_name', None)
+    model_name = request.GET.get("model_name", None)
     if not model_name:
         return JsonResponse({"error": "model_name is required"})
-    model = apps.get_model('topicblog', model_name)
-    qs = model.objects.order_by('slug').values('slug')
-    dict_of_slugs = Counter([item['slug'] for item in qs])
+    model = apps.get_model("topicblog", model_name)
+    qs = model.objects.order_by("slug").values("slug")
+    dict_of_slugs = Counter([item["slug"] for item in qs])
     return JsonResponse(dict_of_slugs, safe=False)
 
 
@@ -796,9 +919,9 @@ def get_url_list(request):
     """Return an url directing to a list of items
     given a slug.
     """
-    slug = request.GET.get('slug')
+    slug = request.GET.get("slug")
     url = reverse("topicblog:list_items_by_slug", args=[slug])
-    return JsonResponse({'url': url})
+    return JsonResponse({"url": url})
 
 
 class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
@@ -806,9 +929,10 @@ class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     Create or modify a TBItem.
 
     """
+
     model = TopicBlogItem
     form_class = TopicBlogItemForm
-    permission_required = 'topicblog.tbi.may_edit'
+    permission_required = "topicblog.tbi.may_edit"
 
     def form_post_process(self, tb_item, tb_existing, form):
         """
@@ -830,13 +954,15 @@ class TopicBlogItemEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
         #
         # This is largely because we're using FormView instead of
         # CreateView / UpdateView.
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             tb_existing: TopicBlogItem
             image_fields = tb_existing.get_image_fields()
             for field in image_fields:
-                if field in form.cleaned_data and \
-                        form.cleaned_data[field] is None:
+                if (
+                    field in form.cleaned_data
+                    and form.cleaned_data[field] is None
+                ):
                     setattr(tb_item, field, getattr(tb_existing, field))
 
         # template field being set in the ModelForm it needs to be specifically
@@ -851,6 +977,7 @@ class TopicBlogItemView(TopicBlogBaseView):
     Render a TopicBlogItem.
 
     """
+
     model = TopicBlogItem
 
 
@@ -864,25 +991,27 @@ class TopicBlogItemViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.tbi.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.tbi.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.tbi.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.tbi.may_view")
         return super().has_permission()
 
 
-class TopicBlogItemViewOne(TopicBlogItemViewOnePermissions,
-                           TopicBlogBaseViewOne):
+class TopicBlogItemViewOne(
+    TopicBlogItemViewOnePermissions, TopicBlogBaseViewOne
+):
     model = TopicBlogItem
 
 
 class TopicBlogItemList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogItem
-    permission_required = 'topicblog.tbi.may_view'
+    permission_required = "topicblog.tbi.may_view"
 
 
 ######################################################################
 # TopicBlogEmail
+
 
 class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
     """Custom Permission class to require different permissions
@@ -894,17 +1023,16 @@ class TopicBlogEmailViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.tbe.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.tbe.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.tbe.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.tbe.may_view")
         return super().has_permission()
 
 
-class TopicBlogEmailEdit(PermissionRequiredMixin,
-                         TopicBlogBaseEdit):
+class TopicBlogEmailEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     model = TopicBlogEmail
-    permission_required = 'topicblog.tbe.may_edit'
+    permission_required = "topicblog.tbe.may_edit"
     form_class = TopicBlogEmailForm
 
     def form_post_process(self, tb_email, tb_existing, form):
@@ -924,13 +1052,15 @@ class TopicBlogEmailEdit(PermissionRequiredMixin,
         #
         # This is largely because we're using FormView instead of
         # CreateView / UpdateView.
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             tb_existing: TopicBlogEmail
             image_fields = tb_existing.get_image_fields()
             for field in image_fields:
-                if field in form.cleaned_data and \
-                        form.cleaned_data[field] is None:
+                if (
+                    field in form.cleaned_data
+                    and form.cleaned_data[field] is None
+                ):
                     setattr(tb_email, field, getattr(tb_existing, field))
         return tb_email
 
@@ -940,32 +1070,36 @@ class TopicBlogEmailView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tb_object = context['page']
+        tb_object = context["page"]
         user = self.request.user
-        if user.has_perm('topicblog.tbe.may_send_self') or \
-           (user.has_perm('topicblog.tbe.may_send') and
-                tb_object.publisher != user):
-            context['sendable'] = True
+        if user.has_perm("topicblog.tbe.may_send_self") or (
+            user.has_perm("topicblog.tbe.may_send")
+            and tb_object.publisher != user
+        ):
+            context["sendable"] = True
         return context
 
 
-class TopicBlogEmailViewOne(TopicBlogEmailViewOnePermissions,
-                            TopicBlogBaseViewOne):
+class TopicBlogEmailViewOne(
+    TopicBlogEmailViewOnePermissions, TopicBlogBaseViewOne
+):
     model = TopicBlogEmail
     transactional_send_record_class = SendRecordTransactionalEmail
 
 
 class TopicBlogEmailList(PermissionRequiredMixin, TopicBlogBaseList):
     model = TopicBlogEmail
-    permission_required = 'topicblog.tbe.may_view'
+    permission_required = "topicblog.tbe.may_view"
 
 
-class TopicBlogEmailSend(PermissionRequiredMixin, LoginRequiredMixin,
-                         TopicBlogBaseSendView):
-    """ Allow TopicBlogEmails to be sent and tracked through emails. """
-    permission_required = 'topicblog.tbe.may_send'
+class TopicBlogEmailSend(
+    PermissionRequiredMixin, LoginRequiredMixin, TopicBlogBaseSendView
+):
+    """Allow TopicBlogEmails to be sent and tracked through emails."""
+
+    permission_required = "topicblog.tbe.may_send"
     form_class = TopicBlogEmailSendForm
-    template_name = 'topicblog/topicblogbase_send_form.html'
+    template_name = "topicblog/topicblogbase_send_form.html"
     send_record_class = SendRecordMarketingEmail
     base_model = TopicBlogEmail
     # For now, successfully sending an email will redirect to the
@@ -982,8 +1116,9 @@ def get_number_of_recipients(request, *args, **kwargs):
     mailing_list_token = kwargs.get("mailing_list_token", None)
     if not mailing_list_token:
         return HttpResponseBadRequest()
-    mailing_list = get_object_or_404(MailingList,
-                                     mailing_list_token=mailing_list_token)
+    mailing_list = get_object_or_404(
+        MailingList, mailing_list_token=mailing_list_token
+    )
     number_of_recipients = user_subscribe_count(mailing_list)
     return JsonResponse({"count": number_of_recipients})
 
@@ -1002,17 +1137,16 @@ class TopicBlogPressViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.tbp.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.tbp.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.tbp.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.tbp.may_view")
         return super().has_permission()
 
 
-class TopicBlogPressEdit(PermissionRequiredMixin,
-                         TopicBlogBaseEdit):
+class TopicBlogPressEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     model = TopicBlogPress
-    permission_required = 'topicblog.tbp.may_edit'
+    permission_required = "topicblog.tbp.may_edit"
     form_class = TopicBlogPressForm
 
     def form_post_process(self, tb_press, tb_existing, form):
@@ -1032,13 +1166,15 @@ class TopicBlogPressEdit(PermissionRequiredMixin,
         #
         # This is largely because we're using FormView instead of
         # CreateView / UpdateView.
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             tb_existing: TopicBlogLauncher
             image_fields = tb_existing.get_image_fields()
             for field in image_fields:
-                if field in form.cleaned_data and \
-                        form.cleaned_data[field] is None:
+                if (
+                    field in form.cleaned_data
+                    and form.cleaned_data[field] is None
+                ):
                     setattr(tb_press, field, getattr(tb_existing, field))
         return tb_press
 
@@ -1048,36 +1184,38 @@ class TopicBlogPressView(TopicBlogBaseView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        tb_object = context['page']
+        tb_object = context["page"]
         user = self.request.user
-        if user.has_perm('topicblog.tbp.may_send_self') or \
-           (user.has_perm('topicblog.tbp.may_send') and
-                tb_object.publisher != user):
-            context['sendable'] = True
+        if user.has_perm("topicblog.tbp.may_send_self") or (
+            user.has_perm("topicblog.tbp.may_send")
+            and tb_object.publisher != user
+        ):
+            context["sendable"] = True
         return context
 
 
-class TopicBlogPressViewOne(TopicBlogPressViewOnePermissions,
-                            TopicBlogBaseViewOne):
+class TopicBlogPressViewOne(
+    TopicBlogPressViewOnePermissions, TopicBlogBaseViewOne
+):
     model = TopicBlogPress
     transactional_send_record_class = SendRecordTransactionalPress
 
 
-class TopicBlogPressList(PermissionRequiredMixin,
-                         TopicBlogBaseList):
+class TopicBlogPressList(PermissionRequiredMixin, TopicBlogBaseList):
     """List available press releases."""
 
     model = TopicBlogPress
-    permission_required = 'topicblog.tbp.may_view'
+    permission_required = "topicblog.tbp.may_view"
 
 
-class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
-                         TopicBlogBaseSendView):
+class TopicBlogPressSend(
+    PermissionRequiredMixin, LoginRequiredMixin, TopicBlogBaseSendView
+):
     """Email a TBPress."""
 
-    permission_required = 'topicblog.tbp.may_send'
+    permission_required = "topicblog.tbp.may_send"
     form_class = TopicBlogEmailSendForm
-    template_name = 'topicblog/topicblogbase_send_form.html'
+    template_name = "topicblog/topicblogbase_send_form.html"
     send_record_class = SendRecordMarketingPress
     base_model = TopicBlogPress
     # For now, successfully sending an email will redirect to the
@@ -1088,22 +1226,26 @@ class TopicBlogPressSend(PermissionRequiredMixin, LoginRequiredMixin,
 
 class TopicBlogPressIndex(ListView):
     model = TopicBlogPress
-    template_name = 'topicblog/topicblogpress_index.html'
-    context_object_name = 'press_releases_list'
+    template_name = "topicblog/topicblogpress_index.html"
+    context_object_name = "press_releases_list"
     paginate_by = 10
 
     def get_queryset(self) -> list:
 
         # Subquery preparation
         latest_press_release = TopicBlogPress.objects.filter(
-            slug=OuterRef('slug'),
-            publication_date__isnull=False).order_by('-publication_date')
+            slug=OuterRef("slug"), publication_date__isnull=False
+        ).order_by("-publication_date")
 
-        queryset = TopicBlogPress.objects.annotate(
-            latest_press_release=Subquery(latest_press_release.values(
-                'publication_date')[:1])).filter(
-            publication_date=F('latest_press_release')).order_by(
-            '-publication_date')
+        queryset = (
+            TopicBlogPress.objects.annotate(
+                latest_press_release=Subquery(
+                    latest_press_release.values("publication_date")[:1]
+                )
+            )
+            .filter(publication_date=F("latest_press_release"))
+            .order_by("-publication_date")
+        )
 
         return queryset
 
@@ -1122,17 +1264,16 @@ class TopicBlogLauncherViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.tbla.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.tbla.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.tbla.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.tbla.may_view")
         return super().has_permission()
 
 
-class TopicBlogLauncherEdit(PermissionRequiredMixin,
-                            TopicBlogBaseEdit):
+class TopicBlogLauncherEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     model = TopicBlogLauncher
-    permission_required = 'topicblog.tbla.may_edit'
+    permission_required = "topicblog.tbla.may_edit"
     form_class = TopicBlogLauncherForm
 
     def form_post_process(self, tb_launcher, tb_existing, form):
@@ -1152,13 +1293,15 @@ class TopicBlogLauncherEdit(PermissionRequiredMixin,
         #
         # This is largely because we're using FormView instead of
         # CreateView / UpdateView.
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             tb_existing: TopicBlogLauncher
             image_fields = tb_existing.get_image_fields()
             for field in image_fields:
-                if field in form.cleaned_data and \
-                        form.cleaned_data[field] is None:
+                if (
+                    field in form.cleaned_data
+                    and form.cleaned_data[field] is None
+                ):
                     setattr(tb_launcher, field, getattr(tb_existing, field))
         return tb_launcher
 
@@ -1170,11 +1313,13 @@ class TopicBlogLauncherView(TopicBlogBaseView):
     them.  That is this page.
 
     """
+
     model = TopicBlogLauncher
 
 
-class TopicBlogLauncherViewOne(TopicBlogLauncherViewOnePermissions,
-                               TopicBlogBaseViewOne):
+class TopicBlogLauncherViewOne(
+    TopicBlogLauncherViewOnePermissions, TopicBlogBaseViewOne
+):
     """View a TBLauncher by pk id."""
 
     model = TopicBlogLauncher
@@ -1184,7 +1329,7 @@ class TopicBlogLauncherList(PermissionRequiredMixin, TopicBlogBaseList):
     """View a list of TBLaunchers."""
 
     model = TopicBlogLauncher
-    permission_required = 'topicblog.tbla.may_view'
+    permission_required = "topicblog.tbla.may_view"
 
 
 class TopicBlogMailingListPitchView(TopicBlogBaseView):
@@ -1193,21 +1338,23 @@ class TopicBlogMailingListPitchView(TopicBlogBaseView):
     model = TopicBlogMailingListPitch
 
 
-class TopicBlogMailingListPitchEdit(PermissionRequiredMixin,
-                                    TopicBlogBaseEdit):
+class TopicBlogMailingListPitchEdit(
+    PermissionRequiredMixin, TopicBlogBaseEdit
+):
     """Edit a TBMailingList Pitch."""
 
     model = TopicBlogMailingListPitch
-    permission_required = 'topicblog.tbmlp.may_edit'
+    permission_required = "topicblog.tbmlp.may_edit"
     form_class = TopicBlogMailingListPitchForm
 
 
-class TopicBlogMailingListPitchList(PermissionRequiredMixin,
-                                    TopicBlogBaseList):
+class TopicBlogMailingListPitchList(
+    PermissionRequiredMixin, TopicBlogBaseList
+):
     """List available TBMailingListPitches."""
 
     model = TopicBlogMailingListPitch
-    permission_required = 'topicblog.tbmlp.may_view'
+    permission_required = "topicblog.tbmlp.may_view"
 
 
 class TopicBlogMailingListPitchViewOnePermissions(PermissionRequiredMixin):
@@ -1220,16 +1367,16 @@ class TopicBlogMailingListPitchViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.mlp.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.mlp.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.mlp.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.mlp.may_view")
         return super().has_permission()
 
 
 class TopicBlogMailingListPitchViewOne(
-        TopicBlogMailingListPitchViewOnePermissions,
-        TopicBlogBaseViewOne):
+    TopicBlogMailingListPitchViewOnePermissions, TopicBlogBaseViewOne
+):
     """View a TBMailingListPitch by pk id."""
 
     model = TopicBlogMailingListPitch
@@ -1242,6 +1389,7 @@ class TopicBlogPanelView(TopicBlogBaseView):
     them.  That is this page.
 
     """
+
     model = TopicBlogPanel
     template_name = "topicblog/template_tags/panel.html"
 
@@ -1250,7 +1398,7 @@ class TopicBlogPanelEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
     """Edit a TBPanel."""
 
     model = TopicBlogPanel
-    permission_required = 'topicblog.tbpanel.may_edit'
+    permission_required = "topicblog.tbpanel.may_edit"
     form_class = TopicBlogPanelForm
 
     def form_post_process(self, tb_item, tb_existing, form):
@@ -1270,12 +1418,14 @@ class TopicBlogPanelEdit(PermissionRequiredMixin, TopicBlogBaseEdit):
         # won't be copied over -- they aren't included in the rendered
         # form.  Checking the "clear" box in the form will still clear
         # the image fields if needed.
-        pkid = self.kwargs.get('pkid', -1)
+        pkid = self.kwargs.get("pkid", -1)
         if pkid > 0:
             image_fields = tb_existing.get_image_fields()
             for field in image_fields:
-                if field in form.cleaned_data and \
-                        form.cleaned_data[field] is None:
+                if (
+                    field in form.cleaned_data
+                    and form.cleaned_data[field] is None
+                ):
                     setattr(tb_item, field, getattr(tb_existing, field))
 
         # template field being set in the ModelForm it needs to be specifically
@@ -1295,15 +1445,16 @@ class TopicBlogPanelViewOnePermissions(PermissionRequiredMixin):
 
     def has_permission(self) -> bool:
         user = self.request.user
-        if self.request.method == 'POST':
-            return user.has_perm('topicblog.tbpanel.may_publish')
-        elif self.request.method == 'GET':
-            return user.has_perm('topicblog.tbpanel.may_view')
+        if self.request.method == "POST":
+            return user.has_perm("topicblog.tbpanel.may_publish")
+        elif self.request.method == "GET":
+            return user.has_perm("topicblog.tbpanel.may_view")
         return super().has_permission()
 
 
-class TopicBlogPanelViewOne(TopicBlogPanelViewOnePermissions,
-                            TopicBlogBaseViewOne):
+class TopicBlogPanelViewOne(
+    TopicBlogPanelViewOnePermissions, TopicBlogBaseViewOne
+):
     """View a TBPanel by pk id."""
 
     model = TopicBlogPanel
@@ -1314,11 +1465,12 @@ class TopicBlogPanelList(PermissionRequiredMixin, TopicBlogBaseList):
     """List available TBPanels."""
 
     model = TopicBlogPanel
-    permission_required = 'topicblog.tbpanel.may_view'
+    permission_required = "topicblog.tbpanel.may_view"
 
 
 def beacon_view(response, **kwargs):
     """Process received mail beacon."""
+
     def update_send_record_open_time(token: str) -> None:
         """Update the token's associated send record's open time.
 
@@ -1331,14 +1483,16 @@ def beacon_view(response, **kwargs):
         send_record_class_string, send_record_id = token_valid(token)
         if not send_record_id:
             logger.info(
-                    f"The token {token} provided an incorrect "
-                    f"ID : {send_record_id} "
-                    f"(Class string : {send_record_class_string}")
+                f"The token {token} provided an incorrect "
+                f"ID : {send_record_id} "
+                f"(Class string : {send_record_class_string}"
+            )
             return None
 
         try:
-            send_record_class = \
-                apps.get_model("topicblog", send_record_class_string)
+            send_record_class = apps.get_model(
+                "topicblog", send_record_class_string
+            )
             # In case the token is valid, we update the open_time
             send_record = send_record_class.objects.get(pk=send_record_id)
             if not send_record.open_time:
@@ -1346,26 +1500,35 @@ def beacon_view(response, **kwargs):
                 send_record.save()
                 logger.info(
                     f"{send_record.recipient.email} opened email"
-                    f" ({send_record_class_string} SR.id :{send_record.pk})")
+                    f" ({send_record_class_string} SR.id :{send_record.pk})"
+                )
         except ObjectDoesNotExist:
-            logger.info(f"No send record with id {send_record_id} in class"
-                        f" {send_record_class_string}.")
+            logger.info(
+                f"No send record with id {send_record_id} in class"
+                f" {send_record_class_string}."
+            )
             return None
         except LookupError:
             logger.info(
-                f"No send record class with name {send_record_class_string}.")
+                f"No send record class with name {send_record_class_string}."
+            )
             return None
 
     def make_beacon_response() -> FileResponse:
         """Make a response that contains the beacon image."""
-        path_to_beacon = (Path(__file__).parent.parent / "asso_tn" / "static" /
-                          "asso_tn" / "beacon.gif")
+        path_to_beacon = (
+            Path(__file__).parent.parent
+            / "asso_tn"
+            / "static"
+            / "asso_tn"
+            / "beacon.gif"
+        )
         image = open(path_to_beacon, "rb")
         response = FileResponse(image, content_type="image/gif")
         return response
 
     # We remove the ".gif" from the end of the token
-    token = kwargs['token'][:-4]
+    token = kwargs["token"][:-4]
     update_send_record_open_time(token)
     response = make_beacon_response()
     return response
@@ -1388,18 +1551,18 @@ def _extract_data_from_ses_signal(mail_obj: dict) -> Tuple[str, str, str]:
     send_record_id = None
     headers_content = mail_obj.get("headers")
     comments_header = next(
-        (header for header in headers_content
-         if header["name"] == "Comments"), None)
+        (header for header in headers_content if header["name"] == "Comments"),
+        None,
+    )
     if comments_header:
         try:
             comments_values: dict = json.loads(comments_header["value"])
             send_record_class = comments_values.get("send_record class")
-            send_record_class = apps.get_model('topicblog', send_record_class)
+            send_record_class = apps.get_model("topicblog", send_record_class)
             send_record_id = comments_values.get("send_record id")
             send_record_id = int(send_record_id)
         except Exception as e:
-            logger.error(
-                f"Error extracting data from comments header : {e}")
+            logger.error(f"Error extracting data from comments header : {e}")
             send_record_class = None
             send_record_id = None
 
@@ -1416,8 +1579,11 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
     The signal is sent from django_ses' view.
     """
     logger.info("Received send_received.")
-    aws_message_id, send_record_class, send_record_id = \
-        _extract_data_from_ses_signal(mail_obj)
+    (
+        aws_message_id,
+        send_record_class,
+        send_record_id,
+    ) = _extract_data_from_ses_signal(mail_obj)
     logger.info(f"Received send_received for {aws_message_id}")
     logger.info(f"  {send_record_class} ID : {send_record_id}")
     if send_record_class and send_record_id:
@@ -1427,10 +1593,11 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
             send_record.send_time = datetime.now(timezone.utc)
             send_record.aws_message_id = aws_message_id
             send_record.save()
-            logger.info(f"send_received : {send_record_class.__name__} id={send_record.pk}")
+            logger.info(
+                f"send_received : {send_record_class.__name__} id={send_record.pk}"
+            )
         except Exception as e:
-            logger.error(
-                f"Error while updating send_record : {e}")
+            logger.error(f"Error while updating send_record : {e}")
 
 
 @receiver(open_received)
@@ -1449,11 +1616,15 @@ def open_received_handler(sender, mail_obj, open_obj, *args, **kwargs):
     know if we receive them.
     """
     logger.info("open_received received !")
-    aws_message_id, send_record_class, send_record_id = \
-        _extract_data_from_ses_signal(mail_obj)
+    (
+        aws_message_id,
+        send_record_class,
+        send_record_id,
+    ) = _extract_data_from_ses_signal(mail_obj)
     logger.info(
         f"\nopen_received signal received for message {aws_message_id}\n"
-        f"SendRecord class : {send_record_class} ID : {send_record_id}")
+        f"SendRecord class : {send_record_class} ID : {send_record_id}"
+    )
 
 
 @receiver(click_received)
@@ -1473,11 +1644,15 @@ def click_received_handler(sender, mail_obj, click_obj, *args, **kwargs):
     know if we receive them.
     """
     logger.info("click_received received !")
-    aws_message_id, send_record_class, send_record_id = \
-        _extract_data_from_ses_signal(mail_obj)
+    (
+        aws_message_id,
+        send_record_class,
+        send_record_id,
+    ) = _extract_data_from_ses_signal(mail_obj)
     logger.info(
         f"\nclick_received signal received for message {aws_message_id}\n"
-        f"SendRecord class : {send_record_class} ID : {send_record_id}")
+        f"SendRecord class : {send_record_class} ID : {send_record_id}"
+    )
 
 
 def mark_moribund_and_delete(slug_queryset):
@@ -1504,8 +1679,10 @@ def mark_moribund_and_delete(slug_queryset):
         if tb_object.is_deletable():
             logger.info(f"Deleting object {tb_object.id}.")
             tb_object.delete()
-        elif tb_object.is_moribund() and \
-             tb_object.scheduled_for_deletion_date is None:
+        elif (
+            tb_object.is_moribund()
+            and tb_object.scheduled_for_deletion_date is None
+        ):
             logger.info(f"Marking as moribund object {tb_object.id}.")
             tb_object.scheduled_for_deletion_date = datetime.now(timezone.utc)
             tb_object.save()

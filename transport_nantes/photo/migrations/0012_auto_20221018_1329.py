@@ -6,13 +6,13 @@ import time
 
 
 def gen_sha1(apps, schema_editor):
-    PhotoEntry = apps.get_model('photo', 'PhotoEntry')
+    PhotoEntry = apps.get_model("photo", "PhotoEntry")
     for entry in PhotoEntry.objects.all():
         if entry.sha1_name is None:
             sha1_name = hashlib.sha1(
-                (
-                    str(time.monotonic_ns()) + "|" + str(entry.user.id)
-                ).encode('utf-8')
+                (str(time.monotonic_ns()) + "|" + str(entry.user.id)).encode(
+                    "utf-8"
+                )
             ).hexdigest()
             entry.sha1_name = sha1_name
             entry.save()
@@ -21,7 +21,7 @@ def gen_sha1(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0011_photoentry_sha1_name'),
+        ("photo", "0011_photoentry_sha1_name"),
     ]
 
     operations = [

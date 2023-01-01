@@ -6,23 +6,50 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0051_alter_sendrecordmarketingemail_status_and_more'),
+        ("topicblog", "0051_alter_sendrecordmarketingemail_status_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sendrecordmarketingemail',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('RETRY', 'Retry'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50),
+            model_name="sendrecordmarketingemail",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("RETRY", "Retry"),
+                    ("SENT", "Sent"),
+                    ("FAILED", "Failed"),
+                ],
+                default="PENDING",
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='sendrecordmarketingpress',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('RETRY', 'Retry'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50),
+            model_name="sendrecordmarketingpress",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("RETRY", "Retry"),
+                    ("SENT", "Sent"),
+                    ("FAILED", "Failed"),
+                ],
+                default="PENDING",
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='sendrecordtransactional',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('RETRY', 'Retry'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50),
+            model_name="sendrecordtransactional",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("RETRY", "Retry"),
+                    ("SENT", "Sent"),
+                    ("FAILED", "Failed"),
+                ],
+                default="PENDING",
+                max_length=50,
+            ),
         ),
     ]

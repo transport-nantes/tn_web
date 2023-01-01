@@ -133,10 +133,10 @@ class TopicBlogObjectBase(models.Model):
     first_publication_date = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     scheduled_for_deletion_date = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT,
-                             related_name='+')
-    publisher = models.ForeignKey(User, on_delete=models.PROTECT,
-                                  related_name='+', blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    publisher = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="+", blank=True, null=True
+    )
 
     # Presentation ##################################################
     #
@@ -160,10 +160,9 @@ class TopicBlogObjectBase(models.Model):
 
     def __str__(self):
         if self.slug:
-            return f'{str(self.slug)} - ' + \
-                f'ID : {str(self.id)}'
+            return f"{str(self.slug)} - " + f"ID : {str(self.id)}"
         else:
-            return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
+            return f"{str(self.title)} - ID : {str(self.id)} (NO SLUG)"
 
     def get_servable_status(self) -> bool:
         """Return True if page is user visible, False otherwise.
@@ -171,8 +170,10 @@ class TopicBlogObjectBase(models.Model):
         The publication date being set and inferior or equal to same day
         isn't the only constraint to be user visible, it also need to be
         the last one published."""
-        if self.publication_date is None or \
-                datetime.now(timezone.utc) < self.publication_date:
+        if (
+            self.publication_date is None
+            or datetime.now(timezone.utc) < self.publication_date
+        ):
             return False
         return True
 
@@ -249,10 +250,11 @@ class TopicBlogObjectBase(models.Model):
         """
         template = self.template_name
         template_cfg = self.template_config[template]
-        optional_fields = template_cfg['optional_fields_for_publication']
+        optional_fields = template_cfg["optional_fields_for_publication"]
         missing_field_names = set()
-        required_field_names = self.get_participating_field_names().\
-            difference(optional_fields)
+        required_field_names = self.get_participating_field_names().difference(
+            optional_fields
+        )
 
         for field_name in required_field_names:
             if not getattr(self, field_name):
@@ -265,14 +267,15 @@ class TopicBlogObjectBase(models.Model):
         #
         # Of course, for now we aren't even providing feedback, so
         # this comment is ahead of its time.
-        for field_name_set in template_cfg['one_of_fields_for_publication']:
+        for field_name_set in template_cfg["one_of_fields_for_publication"]:
             one_provided = False
             for field_name in field_name_set:
                 if field_name not in missing_field_names:
                     one_provided = True
             if one_provided:
                 missing_field_names = missing_field_names.difference(
-                    field_name_set)
+                    field_name_set
+                )
             else:
                 missing_field_names = missing_field_names.union(field_name_set)
 
@@ -292,7 +295,8 @@ class TopicBlogObjectBase(models.Model):
                     all_provided = False
             if not (all_provided or all_missing):
                 missing_field_names = missing_field_names.union(
-                    dependent_field_name_set)
+                    dependent_field_name_set
+                )
 
         return missing_field_names
 
@@ -310,23 +314,23 @@ class TopicBlogObjectBase(models.Model):
         for field_name, value in template_cfg["fields"].items():
             if value:
                 if field_name == "slug":
-                    fields.add('slug')
+                    fields.add("slug")
                     continue
                 if field_name == "title":
-                    fields.add('title')
+                    fields.add("title")
                     continue
                 if field_name == "header":
-                    fields.add('header_image')
-                    fields.add('header_title')
-                    fields.add('header_description')
+                    fields.add("header_image")
+                    fields.add("header_title")
+                    fields.add("header_description")
                     continue
                 if field_name == "social_media":
-                    fields.add('twitter_title')
-                    fields.add('twitter_description')
-                    fields.add('twitter_image')
-                    fields.add('og_title')
-                    fields.add('og_description')
-                    fields.add('og_image')
+                    fields.add("twitter_title")
+                    fields.add("twitter_description")
+                    fields.add("twitter_image")
+                    fields.add("og_title")
+                    fields.add("og_description")
+                    fields.add("og_image")
                     continue
         return fields
 
@@ -346,9 +350,10 @@ class TopicBlogObjectBase(models.Model):
             # Anyway, object's not published and we have no idea how
             # old it is, so it's moribund.
             return True
-        if self.first_publication_date is None and \
-           ((datetime.now(timezone.utc) - self.date_created).days >=
-                self.K_MORIBUND_DELAY_DAYS):
+        if self.first_publication_date is None and (
+            (datetime.now(timezone.utc) - self.date_created).days
+            >= self.K_MORIBUND_DELAY_DAYS
+        ):
             return True
         return False
 
@@ -362,11 +367,17 @@ class TopicBlogObjectBase(models.Model):
         if self.publication_date is not None:
             # Failsafe.
             return False
-        if self.first_publication_date is None and \
-           self.scheduled_for_deletion_date is not None and \
-           ((datetime.now(timezone.utc) -
-             self.scheduled_for_deletion_date).days >=
-                self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS):
+        if (
+            self.first_publication_date is None
+            and self.scheduled_for_deletion_date is not None
+            and (
+                (
+                    datetime.now(timezone.utc)
+                    - self.scheduled_for_deletion_date
+                ).days
+                >= self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS
+            )
+        ):
             return True
         return False
 
@@ -378,9 +389,9 @@ class TopicBlogObjectBase(models.Model):
 
         """
         if self.scheduled_for_deletion_date is not None:
-            delete_date =  \
-                self.scheduled_for_deletion_date + timedelta(
-                    self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS)
+            delete_date = self.scheduled_for_deletion_date + timedelta(
+                self.K_MORIBUND_CLEARED_FOR_DELETING_DAYS
+            )
             days_remaining = (delete_date - datetime.now(timezone.utc)).days
             if days_remaining > 0:
                 return days_remaining
@@ -406,8 +417,10 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
     # with some overlaying text, that appears at the top of many
     # pages.
     header_image = models.ImageField(
-        upload_to='header/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="header/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
     header_title = models.CharField(max_length=80, blank=True)
     header_description = models.CharField(max_length=120, blank=True)
 
@@ -420,28 +433,35 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
     # Optional editor notes about what this social data is trying to do.
     social_description = models.TextField(
         blank=True,
-        help_text='Notes pour humains des objectifs (marketing) de la page')
+        help_text="Notes pour humains des objectifs (marketing) de la page",
+    )
 
     twitter_title = models.CharField(max_length=80, blank=True)
     twitter_description = models.TextField(blank=True)
     twitter_image = models.ImageField(
-        upload_to='twitter/', blank=True,
-        help_text='2:1, résolution minimum : 300x157, max 4096x4096')
+        upload_to="twitter/",
+        blank=True,
+        help_text="2:1, résolution minimum : 300x157, max 4096x4096",
+    )
     # Cf. https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image # noqa
 
     og_title = models.CharField(max_length=80, blank=True)
     og_description = models.TextField(blank=True)
     og_image = models.ImageField(
-        upload_to='opengraph/', blank=True,
-        help_text='résolution recommandée : 1200x630')
+        upload_to="opengraph/",
+        blank=True,
+        help_text="résolution recommandée : 1200x630",
+    )
     # Cf. https://iamturns.com/open-graph-image-size/
     # Cf. https://developers.facebook.com/docs/sharing/best-practices/
     # Cf. https://www.facebook.com/business/help/469767027114079?id=271710926837064 # noqa
 
     author_notes = models.TextField(
-        help_text='Notes pour éditeurs : ne seront pas affichées sur le site',
+        help_text="Notes pour éditeurs : ne seront pas affichées sur le site",
         verbose_name="Notes libres pour éditeurs",
-        blank=True, null=True)
+        blank=True,
+        null=True,
+    )
 
     def set_social_context(self, context):
         """
@@ -449,23 +469,25 @@ class TopicBlogObjectSocialBase(TopicBlogObjectBase):
         fields to the context["social"] entry of the context dict.
         """
         social = {}
-        social['twitter_title'] = self.twitter_title
-        social['twitter_description'] = self.twitter_description
-        social['twitter_image'] = self.twitter_image
+        social["twitter_title"] = self.twitter_title
+        social["twitter_description"] = self.twitter_description
+        social["twitter_image"] = self.twitter_image
 
-        social['og_title'] = self.og_title
-        social['og_description'] = self.og_description
-        social['og_image'] = self.og_image
+        social["og_title"] = self.og_title
+        social["og_description"] = self.og_description
+        social["og_image"] = self.og_image
 
-        context['social'] = social
+        context["social"] = social
         return context
 
     def __str__(self):
         if self.slug:
-            return f'{str(self.slug)} - {str(self.title)} - ' + \
-                f'ID : {str(self.id)}'
+            return (
+                f"{str(self.slug)} - {str(self.title)} - "
+                + f"ID : {str(self.id)}"
+            )
         else:
-            return f'{str(self.title)} - ID : {str(self.id)} (NO SLUG)'
+            return f"{str(self.title)} - ID : {str(self.id)} (NO SLUG)"
 
 
 class SendRecordBase(models.Model):
@@ -477,22 +499,24 @@ class SendRecordBase(models.Model):
     class StatusChoices(models.TextChoices):
         # Newly created objects derived from SendRecordBase start life
         # as PENDING.
-        PENDING = 'PENDING', "Pending"
+        PENDING = "PENDING", "Pending"
         # If SES indicates a non-permanent failure, the object enters
         # state RETRY.  From this state, it should eventually
         # transition to SENT or FAILED.
-        RETRYING = 'RETRY', 'Retry'
+        RETRYING = "RETRY", "Retry"
         # Objects become SENT when SES accepts them (at handoff).
         # This is an absorbing state.
-        SENT = 'SENT', "Sent"
+        SENT = "SENT", "Sent"
         # If SES indicates a permanent failure, the object transitions
         # to FAILED.  This is an absorbing state.
-        FAILED = 'FAILED', "Failed"
+        FAILED = "FAILED", "Failed"
 
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
     status = models.CharField(
-        max_length=50, choices=StatusChoices.choices,
-        default=StatusChoices.PENDING)
+        max_length=50,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING,
+    )
     # The handoff time is the timestamp at which the function we use
     # to send mail returned without error.
     handoff_time = models.DateTimeField(null=True, blank=True)
@@ -511,12 +535,12 @@ class SendRecordBase(models.Model):
     aws_message_id = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.recipient.email} - {self.status}'
+        return f"{self.recipient.email} - {self.status}"
 
 
 class SendRecordTransactional(SendRecordBase):
-    """Base class for Transactional emails.
-    """
+    """Base class for Transactional emails."""
+
     class Meta:
         abstract = True
 
@@ -528,6 +552,7 @@ class SendRecordTransactionalAdHoc(SendRecordTransactional):
     TopicBlog content.
 
     """
+
     pass
 
 
@@ -576,20 +601,20 @@ class SendRecordMarketing(SendRecordBase):
 ######################################################################
 # TopicBlogItem
 
+
 class TopicBlogItem(TopicBlogObjectSocialBase):
 
     """Represent a web blog page."""
+
     class Meta:
         permissions = (
             # The simpleset permission allows a user to view TBItems
             # that are draft or retired.
             ("tbi.may_view", "May view unpublished TopicBlogItems"),
-
             # Granting edit permission to users does not in itself
             # permit them to publish or retire, so it is reasonably
             # safe.
             ("tbi.may_edit", "May create and modify TopicBlogItems"),
-
             # Finally, we can grant users permission to publish and to
             # self-publish (implies tbi_may_publish)
             ("tbi.may_publish", "May publish TopicBlogItems"),
@@ -606,79 +631,93 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     # Default values for template_config ###########################
     template_config_default = {
         "optional_fields_for_publication": (
-            'header_image', 'header_description',
-            'cta_1_slug', 'cta_1_label',
-            'cta_2_slug', 'cta_2_label',
-            'cta_3_slug', 'cta_3_label',
-            'body_image', 'body_image_alt_text',
-            'twitter_title', 'twitter_description',
-            'twitter_image', 'og_title',
-            'og_description', 'og_image',
+            "header_image",
+            "header_description",
+            "cta_1_slug",
+            "cta_1_label",
+            "cta_2_slug",
+            "cta_2_label",
+            "cta_3_slug",
+            "cta_3_label",
+            "body_image",
+            "body_image_alt_text",
+            "twitter_title",
+            "twitter_description",
+            "twitter_image",
+            "og_title",
+            "og_description",
+            "og_image",
         ),
         # Fields that, if required for publication, the requirement is
         # satisfied by providing any one of them.
         "one_of_fields_for_publication": [
-            ['body_text_1_md', 'body_text_2_md', 'body_text_3_md'],
-            ['header_title', 'header_description'],
+            ["body_text_1_md", "body_text_2_md", "body_text_3_md"],
+            ["header_title", "header_description"],
         ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
         "dependent_field_names": [
-            ['cta_1_slug', 'cta_1_label'],
-            ['cta_2_slug', 'cta_2_label'],
-            ['cta_3_slug', 'cta_3_label'],
-            ['body_image', 'body_image_alt_text'],
-            ['header_image', 'header_title'],
+            ["cta_1_slug", "cta_1_label"],
+            ["cta_2_slug", "cta_2_label"],
+            ["cta_3_slug", "cta_3_label"],
+            ["body_image", "body_image_alt_text"],
+            ["header_image", "header_title"],
         ],
     }
     template_config = {
-        'topicblog/content.html': {
-            'default_choice': True,
-            'user_template_name': 'Article',
-            'active': True,
+        "topicblog/content.html": {
+            "default_choice": True,
+            "user_template_name": "Article",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'header': True,
-                'body_text_1_md': True,
-                'cta_1': True,
-                'body_text_2_md': True,
-                'cta_2': True,
-                'body_image': True,
-                'body_text_3_md': True,
-                'cta_3': True,
-                'social_media': True,
+                "slug": True,
+                "title": True,
+                "header": True,
+                "body_text_1_md": True,
+                "cta_1": True,
+                "body_text_2_md": True,
+                "cta_2": True,
+                "body_image": True,
+                "body_text_3_md": True,
+                "cta_3": True,
+                "social_media": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
-        'topicblog/communique_presse_1.html': {
-            'user_template_name': 'Communiqué de presse',
-            'active': True,
+        "topicblog/communique_presse_1.html": {
+            "user_template_name": "Communiqué de presse",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'header': False,
-                'body_text_1_md': True,
-                'cta_1': True,
-                'body_text_2_md': True,
-                'cta_2': True,
-                'body_image': False,
-                'body_text_3_md': True,
-                'cta_3': True,
-                'social_media': True,
+                "slug": True,
+                "title": True,
+                "header": False,
+                "body_text_1_md": True,
+                "cta_1": True,
+                "body_text_2_md": True,
+                "cta_2": True,
+                "body_image": False,
+                "body_text_3_md": True,
+                "cta_3": True,
+                "social_media": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
-        }
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
+        },
     }
     # Content #######################################################
     #
@@ -695,42 +734,46 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
     cta_2_label = models.CharField(max_length=100, blank=True)
 
     body_image = models.ImageField(
-        upload_to='body/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="body/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
     body_image_alt_text = models.CharField(max_length=100, blank=True)
 
     body_text_3_md = models.TextField(blank=True)
     cta_3_slug = models.SlugField(max_length=90, blank=True)
     cta_3_label = models.CharField(max_length=100, blank=True)
 
-    new_object_url = 'topicblog:new_item'
-    listone_object_url = 'topicblog:list_items_by_slug'
-    listall_object_url = 'topicblog:list_items'
-    viewbyslug_object_url = 'topicblog:view_item_by_slug'
-    viewbypkid_object_url = 'topicblog:view_item_by_pkid'
-    description_of_object = 'Page de blog'
+    new_object_url = "topicblog:new_item"
+    listone_object_url = "topicblog:list_items_by_slug"
+    listall_object_url = "topicblog:list_items"
+    viewbyslug_object_url = "topicblog:view_item_by_slug"
+    viewbypkid_object_url = "topicblog:view_item_by_pkid"
+    description_of_object = "Page de blog"
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_item_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_item_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_item_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_item_by_pkid_only", kwargs={"pkid": self.pk}
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_item_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_item_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_item",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_item",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
 
     def get_participating_field_names(self) -> set:
         """
@@ -744,31 +787,32 @@ class TopicBlogItem(TopicBlogObjectSocialBase):
         template_cfg = self.template_config[template]
         for field_name, value in template_cfg["fields"].items():
             if field_name == "body_text_1_md":
-                fields.add('body_text_1_md')
+                fields.add("body_text_1_md")
                 continue
             if field_name == "body_text_2_md":
-                fields.add('body_text_2_md')
+                fields.add("body_text_2_md")
                 continue
             if field_name == "body_text_3_md":
-                fields.add('body_text_3_md')
+                fields.add("body_text_3_md")
                 continue
             if field_name == "cta_1":
-                fields.add('cta_1_slug')
-                fields.add('cta_1_label')
+                fields.add("cta_1_slug")
+                fields.add("cta_1_label")
                 continue
             if field_name == "cta_2":
-                fields.add('cta_2_slug')
-                fields.add('cta_2_label')
+                fields.add("cta_2_slug")
+                fields.add("cta_2_label")
                 continue
             if field_name == "cta_3":
-                fields.add('cta_3_slug')
-                fields.add('cta_3_label')
+                fields.add("cta_3_slug")
+                fields.add("cta_3_label")
                 continue
             if field_name == "body_image":
-                fields.add('body_image')
-                fields.add('body_image_alt_text')
+                fields.add("body_image")
+                fields.add("body_image_alt_text")
                 continue
         return fields
+
 
 ######################################################################
 # TopicBlogEmail
@@ -791,17 +835,16 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
     what's coming.
 
     """
+
     class Meta:
         permissions = (
             # The simpleset permission allows a user to view TBEmails
             # that are draft or retired.
             ("tbe.may_view", "May view unpublished TopicBlogEmails"),
-
             # Granting edit permission to users does not in itself
             # permit them to publish or retire, so it is reasonably
             # safe.
             ("tbe.may_edit", "May create and modify TopicBlogEmails"),
-
             # Finally, we can grant users permission to publish, to
             # self-publish (implies tbe_may_publish), to self-retire,
             # and to retire (implies self-retire).  Permission to
@@ -811,110 +854,130 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
             ("tbe.may_send", "May send TopicBlogEmails"),
             ("tbe.may_send_self", "May send own TopicBlogEmails"),
         )
+
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
     template_config_default = {
         "optional_fields_for_publication": (
-            'header_title',
-            'header_image', 'header_description',
-            'cta_1_slug', 'cta_1_label',
-            'cta_2_slug', 'cta_2_label',
-            'body_image_1', 'body_image_1_alt_text',
-            'body_image_2', 'body_image_2_alt_text',
-            'twitter_title', 'twitter_description',
-            'twitter_image', 'og_title',
-            'og_description', 'og_image',
+            "header_title",
+            "header_image",
+            "header_description",
+            "cta_1_slug",
+            "cta_1_label",
+            "cta_2_slug",
+            "cta_2_label",
+            "body_image_1",
+            "body_image_1_alt_text",
+            "body_image_2",
+            "body_image_2_alt_text",
+            "twitter_title",
+            "twitter_description",
+            "twitter_image",
+            "og_title",
+            "og_description",
+            "og_image",
         ),
         "one_of_fields_for_publication": [
-            ['header_title', 'header_description'],
+            ["header_title", "header_description"],
         ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
         "dependent_field_names": [
-            ['body_image_1', 'body_image_1_alt_text'],
-            ['body_image_2', 'body_image_2_alt_text'],
-            ['cta_1_slug', 'cta_1_label'],
-            ['cta_2_slug', 'cta_2_label'],
-            ['header_image', 'header_title'],
+            ["body_image_1", "body_image_1_alt_text"],
+            ["body_image_2", "body_image_2_alt_text"],
+            ["cta_1_slug", "cta_1_label"],
+            ["cta_2_slug", "cta_2_label"],
+            ["header_image", "header_title"],
         ],
     }
     template_config = {
         # Web version's template
-        'topicblog/content_email.html': {
-            'email_template': 'topicblog/content_email_client.html',
-            'default_choice': True,
-            'user_template_name': 'Classique',
-            'active': True,
+        "topicblog/content_email.html": {
+            "email_template": "topicblog/content_email_client.html",
+            "default_choice": True,
+            "user_template_name": "Classique",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'subject': True,
-                'body_text_1_md': True,
+                "slug": True,
+                "title": True,
+                "subject": True,
+                "body_text_1_md": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
     }
 
     subject = models.CharField(max_length=80, blank=True)
     header_image = models.ImageField(
-        upload_to='header/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="header/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
 
     # Content #######################################################
     body_text_1_md = models.TextField(blank=True)
     cta_1_slug = models.SlugField(max_length=90, blank=True)
     cta_1_label = models.CharField(max_length=100, blank=True)
     body_image_1 = models.ImageField(
-        upload_to='body/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="body/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
     body_image_1_alt_text = models.CharField(max_length=100, blank=True)
 
     body_text_2_md = models.TextField(blank=True)
     cta_2_slug = models.SlugField(max_length=90, blank=True)
     cta_2_label = models.CharField(max_length=100, blank=True)
     body_image_2 = models.ImageField(
-        upload_to='body/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="body/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
     body_image_2_alt_text = models.CharField(max_length=100, blank=True)
 
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
-    new_object_url = 'topicblog:new_email'
-    listone_object_url = 'topicblog:list_emails_by_slug'
-    listall_object_url = 'topicblog:list_emails'
-    viewbyslug_object_url = 'topicblog:view_email_by_slug'
-    viewbypkid_object_url = 'topicblog:view_email_by_pkid'
-    send_object_url = 'topicblog:send_email'
-    description_of_object = 'Email'
+    new_object_url = "topicblog:new_email"
+    listone_object_url = "topicblog:list_emails_by_slug"
+    listall_object_url = "topicblog:list_emails"
+    viewbyslug_object_url = "topicblog:view_email_by_slug"
+    viewbypkid_object_url = "topicblog:view_email_by_pkid"
+    send_object_url = "topicblog:send_email"
+    description_of_object = "Email"
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_email_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_email_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_email_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_email_by_pkid_only", kwargs={"pkid": self.pk}
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_email_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_email_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_email",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_email",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
 
     def get_participating_field_names(self) -> set:
         """
@@ -928,43 +991,41 @@ class TopicBlogEmail(TopicBlogObjectSocialBase):
         template_cfg = self.template_config[template]
         for field_name, value in template_cfg["fields"].items():
             if field_name == "subject":
-                fields.add('subject')
+                fields.add("subject")
                 continue
             if field_name == "body_text_1_md":
-                fields.add('body_text_1_md')
+                fields.add("body_text_1_md")
                 continue
             if field_name == "body_text_2_md":
-                fields.add('body_text_2_md')
+                fields.add("body_text_2_md")
                 continue
             if field_name == "cta_1":
-                fields.add('cta_1_slug')
-                fields.add('cta_1_label')
+                fields.add("cta_1_slug")
+                fields.add("cta_1_label")
                 continue
             if field_name == "cta_2":
-                fields.add('cta_2_slug')
-                fields.add('cta_2_label')
+                fields.add("cta_2_slug")
+                fields.add("cta_2_label")
                 continue
             if field_name == "body_image_1":
-                fields.add('body_image_1')
-                fields.add('body_image_1_alt_text')
+                fields.add("body_image_1")
+                fields.add("body_image_1_alt_text")
                 continue
             if field_name == "body_image_2":
-                fields.add('body_image_2')
-                fields.add('body_image_2_alt_text')
+                fields.add("body_image_2")
+                fields.add("body_image_2_alt_text")
                 continue
         return fields
 
 
 class SendRecordMarketingEmail(SendRecordMarketing):
-    """Represent the sending of a TBEmail.
-
-    """
+    """Represent the sending of a TBEmail."""
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['recipient', 'slug'],
-                name='TBE_unique_recipient_slug')
+                fields=["recipient", "slug"], name="TBE_unique_recipient_slug"
+            )
         ]
 
 
@@ -976,14 +1037,17 @@ class TopicBlogEmailClicks(models.Model):
     lead.
 
     """
-    email = models.ForeignKey(SendRecordMarketingEmail,
-                              on_delete=models.PROTECT)
+
+    email = models.ForeignKey(
+        SendRecordMarketingEmail, on_delete=models.PROTECT
+    )
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
 
 
 ######################################################################
 # TopicBlogPress
+
 
 class TopicBlogPress(TopicBlogObjectSocialBase):
     """Represent a press release.
@@ -1002,17 +1066,16 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     what's coming.
 
     """
+
     class Meta:
         permissions = (
             # The simpleset permission allows a user to view TBPress
             # that are draft or retired.
             ("tbp.may_view", "May view unpublished TopicBlogPress"),
-
             # Granting edit permission to users does not in itself
             # permit them to publish or retire, so it is reasonably
             # safe.
             ("tbp.may_edit", "May create and modify TopicBlogPress"),
-
             # Finally, we can grant users permission to publish, to
             # self-publish (implies tbp_may_publish), to send, and to
             # self-send.
@@ -1024,94 +1087,112 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
 
     template_config_default = {
         "optional_fields_for_publication": (
-            'header_title',
-            'header_image', 'header_description',
-            'body_image', 'body_image_alt_text',
-            'twitter_title', 'twitter_description',
-            'twitter_image', 'og_title',
-            'og_description', 'og_image'
+            "header_title",
+            "header_image",
+            "header_description",
+            "body_image",
+            "body_image_alt_text",
+            "twitter_title",
+            "twitter_description",
+            "twitter_image",
+            "og_title",
+            "og_description",
+            "og_image",
         ),
         "one_of_fields_for_publication": [
-            ['header_title', 'header_description'],
+            ["header_title", "header_description"],
         ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
         "dependent_field_names": [
-            ['body_image_1', 'body_image_1_alt_text'],
-            ['header_image', 'header_title'],
+            ["body_image_1", "body_image_1_alt_text"],
+            ["header_image", "header_title"],
         ],
     }
     template_config = {
-        'topicblog/content_press.html': {
+        "topicblog/content_press.html": {
             "email_template": "topicblog/content_press_mail_client.html",
-            'default_choice': True,
-            'user_template_name': 'Classique',
-            'active': True,
+            "default_choice": True,
+            "user_template_name": "Classique",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'subject': True,
-                'body_text_1_md': True,
+                "slug": True,
+                "title": True,
+                "subject": True,
+                "body_text_1_md": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
     }
 
     subject = models.CharField(max_length=80, blank=True)
     header_image = models.ImageField(
-        upload_to='header/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="header/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
 
     # Content #######################################################
     body_text_1_md = models.TextField(blank=True)
     body_image_1 = models.ImageField(
-        upload_to='body/', blank=True,
-        help_text='résolution recommandée : 1600x500')
+        upload_to="body/",
+        blank=True,
+        help_text="résolution recommandée : 1600x500",
+    )
     body_image_1_alt_text = models.CharField(max_length=100, blank=True)
     mail_only_contact_info = models.CharField(
-        max_length=200, blank=True,
+        max_length=200,
+        blank=True,
         verbose_name=(
-            'Informations de contact (affiché dans les mails uniquement)')
+            "Informations de contact (affiché dans les mails uniquement)"
+        ),
     )
 
     # Plus slug, template, title, comment, and social media fields,
     # provided through abstract base class.
 
-    new_object_url = 'topicblog:new_press'
-    listone_object_url = 'topicblog:list_press_by_slug'
-    listall_object_url = 'topicblog:list_press'
-    viewbyslug_object_url = 'topicblog:view_press_by_slug'
-    viewbypkid_object_url = 'topicblog:view_press_by_pkid'
-    send_object_url = 'topicblog:send_press'
-    description_of_object = 'Communiqué de presse'
+    new_object_url = "topicblog:new_press"
+    listone_object_url = "topicblog:list_press_by_slug"
+    listall_object_url = "topicblog:list_press"
+    viewbyslug_object_url = "topicblog:view_press_by_slug"
+    viewbypkid_object_url = "topicblog:view_press_by_pkid"
+    send_object_url = "topicblog:send_press"
+    description_of_object = "Communiqué de presse"
 
     # This is the value that defines the length of the first_paragraph property.
     snippet_char_limit = 100
 
     @property
     def first_paragraph(self):
-        """Return the first paragraph of the body text.
-        """
+        """Return the first paragraph of the body text."""
         from topicblog.templatetags.markdown import tn_markdown
+
         rendered_text = tn_markdown({}, self.body_text_1_md)
-        soup = bs(rendered_text, 'html.parser')
+        soup = bs(rendered_text, "html.parser")
         # Finds the first "p" tag inside body_text_1_md.
-        first_paragraph = soup.find('p')
+        first_paragraph = soup.find("p")
         if first_paragraph:
             # passed by reference
             self.truncate_first_pragraph(first_paragraph)
 
-        return str(first_paragraph) or rendered_text[:self.snippet_char_limit] + '…'
+        return (
+            str(first_paragraph)
+            or rendered_text[: self.snippet_char_limit] + "…"
+        )
 
     def truncate_first_pragraph(
-            self,
-            element: Union[bs4.element.NavigableString, bs4.element.Tag],
-            total_length: int = 0):
+        self,
+        element: Union[bs4.element.NavigableString, bs4.element.Tag],
+        total_length: int = 0,
+    ):
         """Trucnate the first paragraph from an element while preserving
         the html tags.
         The output is limited to 100 characters, not including the HTML
@@ -1124,43 +1205,49 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
             if total_length >= self.snippet_char_limit:
                 # When the cumulated length of the text is greater than
                 # self.snippet_char_limit, we remove the remaining text.
-                element.string.replace_with('')
+                element.string.replace_with("")
                 return total_length
             if total_length + len(str(element)) >= self.snippet_char_limit:
                 # When the cumulated length of the text is greater than
                 # self.snippet_char_limit, we truncate the text and add an ellipsis.
                 element.string.replace_with(
-                    str(element)[:self.snippet_char_limit - total_length] + '…')
+                    str(element)[: self.snippet_char_limit - total_length]
+                    + "…"
+                )
             return total_length + len(str(element))
         else:
             # We recursively inspect all children while counting the chars
             # until we run out of children or reach self.snippet_char_limit chars.
             for child in element.children:
-                total_length = self.truncate_first_pragraph(child, total_length)
+                total_length = self.truncate_first_pragraph(
+                    child, total_length
+                )
 
             return total_length
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_press_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_press_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_press_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_press_by_pkid_only", kwargs={"pkid": self.pk}
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_press_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_press_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_press",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_press",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
 
     def get_participating_field_names(self) -> set:
         """
@@ -1174,26 +1261,27 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         template_cfg = self.template_config[template]
         for field_name, value in template_cfg["fields"].items():
             if field_name == "subject":
-                fields.add('subject')
+                fields.add("subject")
                 continue
             if field_name == "body_text_1_md":
-                fields.add('body_text_1_md')
+                fields.add("body_text_1_md")
                 continue
             if field_name == "body_image_1":
-                fields.add('body_image_1')
-                fields.add('body_image_1_alt_text')
+                fields.add("body_image_1")
+                fields.add("body_image_1_alt_text")
                 continue
         return fields
 
 
 class SendRecordMarketingPress(SendRecordMarketing):
     """Represent the sending of a TBPress."""
+
     class Meta:
         constraints = [
-                models.UniqueConstraint(
-                    fields=['recipient', 'slug'],
-                    name='TBP_unique_recipient_slug')
-            ]
+            models.UniqueConstraint(
+                fields=["recipient", "slug"], name="TBP_unique_recipient_slug"
+            )
+        ]
 
 
 class TopicBlogPressClicks(models.Model):
@@ -1205,8 +1293,10 @@ class TopicBlogPressClicks(models.Model):
     lead.
 
     """
-    press = models.ForeignKey(SendRecordMarketingPress,
-                              on_delete=models.PROTECT)
+
+    press = models.ForeignKey(
+        SendRecordMarketingPress, on_delete=models.PROTECT
+    )
     click_time = models.DateTimeField()
     click_url = models.CharField(max_length=1024, blank=False)
 
@@ -1223,7 +1313,8 @@ def validate_launcher_image(value):
     if value.width < SIDE_SIZE_IN_PX or value.height < SIDE_SIZE_IN_PX:
         raise ValidationError(
             "L'image doit avoir une largeur et une hauteur "
-            f"d'au moins {SIDE_SIZE_IN_PX}px")
+            f"d'au moins {SIDE_SIZE_IN_PX}px"
+        )
 
 
 class TopicBlogLauncher(TopicBlogObjectBase):
@@ -1237,23 +1328,23 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     engage more.
 
     """
+
     class Meta:
         permissions = (
             # The simpleset permission allows a user to view TBLauncher
             # that are draft or retired.
             ("tbla.may_view", "May view unpublished TopicBlogLauncher"),
-
             # Granting edit permission to users does not in itself
             # permit them to publish or retire, so it is reasonably
             # safe.
             ("tbla.may_edit", "May create and modify TopicBlogLauncher"),
-
             # Finally, we can grant users permission to publish, to
             # self-publish (implies tbla_may_publish), to send, and to
             # self-send.
             ("tbla.may_publish", "May publish TopicBlogLauncher"),
             ("tbla.may_publish_self", "May publish own TopicBlogLauncher"),
         )
+
     # Content Type ##################################################
     #
     # The content types match existing templates with their content type.
@@ -1272,39 +1363,45 @@ class TopicBlogLauncher(TopicBlogObjectBase):
         "dependent_field_names": [],
     }
     template_config = {
-        'topicblog/content_launcher.html': {
-            'default_choice': True,
-            'user_template_name': 'Classique',
-            'active': True,
+        "topicblog/content_launcher.html": {
+            "default_choice": True,
+            "user_template_name": "Classique",
+            "active": True,
             "fields": {
-                'slug': True,
-                'headline': True,
-                'article_slug:': True,
-                'campaign_name': True,
-                'launcher_text_md:': True,
-                'launcher_image': True,
-                'launcher_image_alt_text': True,
+                "slug": True,
+                "headline": True,
+                "article_slug:": True,
+                "campaign_name": True,
+                "launcher_text_md:": True,
+                "launcher_image": True,
+                "launcher_image_alt_text": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
     }
 
     headline = models.CharField(max_length=80, blank=True)
     launcher_text_md = models.TextField(blank=True)
     launcher_image = models.ImageField(
-        upload_to='launcher/', blank=True,
-        help_text='résolution recommandée : 667x667',
-        validators=[validate_launcher_image])
+        upload_to="launcher/",
+        blank=True,
+        help_text="résolution recommandée : 667x667",
+        validators=[validate_launcher_image],
+    )
     launcher_image_alt_text = models.CharField(max_length=100, blank=True)
 
     # The TBItem to which this slug points.
-    article_slug = models.SlugField(max_length=90, allow_unicode=True,
-                                    blank=True)
+    article_slug = models.SlugField(
+        max_length=90, allow_unicode=True, blank=True
+    )
 
     # Campaign name.  This is free text.  The intent is that two
     # launchers to the same campaign may not be displayed
@@ -1318,34 +1415,37 @@ class TopicBlogLauncher(TopicBlogObjectBase):
     # Plus slug, template, title, and comment fields, provided through
     # abstract base class.
 
-    new_object_url = 'topicblog:new_launcher'
-    listone_object_url = 'topicblog:list_launcher_by_slug'
-    listall_object_url = 'topicblog:list_launcher'
-    viewbyslug_object_url = 'topicblog:view_launcher_by_slug'
-    viewbypkid_object_url = 'topicblog:view_launcher_by_pkid'
-    description_of_object = 'Lanceur'
+    new_object_url = "topicblog:new_launcher"
+    listone_object_url = "topicblog:list_launcher_by_slug"
+    listall_object_url = "topicblog:list_launcher"
+    viewbyslug_object_url = "topicblog:view_launcher_by_slug"
+    viewbypkid_object_url = "topicblog:view_launcher_by_pkid"
+    description_of_object = "Lanceur"
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_launcher_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_launcher_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_launcher_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_launcher_by_pkid_only",
+                kwargs={"pkid": self.pk},
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_launcher_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_launcher_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_launcher",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_launcher",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
 
     def set_social_context(self, context):
         """We don't need this function here, but I don't see (today) an easy
@@ -1367,102 +1467,123 @@ class TopicBlogMailingListPitch(TopicBlogObjectSocialBase):
     display on signup, and the email to send on signup.
 
     """
+
     class Meta:
         verbose_name_plural = "Mailing list pitches"
         permissions = (
-            ("tbmlp.may_view",
-             "May view unpublished TopicBlogMailingListPitch"),
-            ("tbmlp.may_edit",
-             "May create and modify TopicBlogMailingListPitch"),
-            ("tbmlp.may_publish",
-             "May publish TopicBlogMailingListPitch"),
-            ("tbmlp.may_publish_self",
-             "May publish own TopicBlogMailingListPitch"),
+            (
+                "tbmlp.may_view",
+                "May view unpublished TopicBlogMailingListPitch",
+            ),
+            (
+                "tbmlp.may_edit",
+                "May create and modify TopicBlogMailingListPitch",
+            ),
+            ("tbmlp.may_publish", "May publish TopicBlogMailingListPitch"),
+            (
+                "tbmlp.may_publish_self",
+                "May publish own TopicBlogMailingListPitch",
+            ),
         )
 
     body_text_1_md = models.TextField(blank=True)
-    cta_1_slug = models.SlugField(max_length=90, allow_unicode=True,
-                                  blank=True)
+    cta_1_slug = models.SlugField(
+        max_length=90, allow_unicode=True, blank=True
+    )
     cta_1_label = models.CharField(max_length=80, blank=True)
-    mailing_list = models.ForeignKey('mailing_list.MailingList',
-                                     on_delete=models.PROTECT, null=True,
-                                     blank=True)
+    mailing_list = models.ForeignKey(
+        "mailing_list.MailingList",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
     subscription_form_title = models.CharField(max_length=80, blank=True)
-    subscription_form_button_label = models.CharField(max_length=80,
-                                                      blank=True)
+    subscription_form_button_label = models.CharField(
+        max_length=80, blank=True
+    )
 
     template_config_default = {
         "optional_fields_for_publication": (
-            'header_title',
-            'header_image', 'header_description',
-            'cta_1_slug', 'cta_1_label',
-            'twitter_title', 'twitter_description',
-            'twitter_image', 'og_title',
-            'og_description', 'og_image',
+            "header_title",
+            "header_image",
+            "header_description",
+            "cta_1_slug",
+            "cta_1_label",
+            "twitter_title",
+            "twitter_description",
+            "twitter_image",
+            "og_title",
+            "og_description",
+            "og_image",
         ),
         "one_of_fields_for_publication": [
-            ['header_title', 'header_description'],
+            ["header_title", "header_description"],
         ],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
         "dependent_field_names": [
-            ['cta_1_slug', 'cta_1_label'],
-            ['header_image', 'header_title'],
+            ["cta_1_slug", "cta_1_label"],
+            ["header_image", "header_title"],
         ],
     }
     template_config = {
-        'topicblog/content_mlp.html': {
-            'default_choice': True,
-            'user_template_name': 'Classique',
-            'active': True,
+        "topicblog/content_mlp.html": {
+            "default_choice": True,
+            "user_template_name": "Classique",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'header': True,
-                'body_text_1_md': True,
-                'cta_1_slug:': True,
-                'cta_1_label': True,
-                'mailing_list:': True,
-                'social_media': True,
+                "slug": True,
+                "title": True,
+                "header": True,
+                "body_text_1_md": True,
+                "cta_1_slug:": True,
+                "cta_1_label": True,
+                "mailing_list:": True,
+                "social_media": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
     }
 
-    new_object_url = 'topicblog:new_mlp'
-    listone_object_url = 'topicblog:list_mlp_by_slug'
-    listall_object_url = 'topicblog:list_mlp'
-    viewbyslug_object_url = 'topicblog:view_mlp_by_slug'
-    viewbyid_object_url = 'topicblog:view_mlp_by_pkid'
-    viewbypkid_object_url = 'topicblog:view_mlp_by_pkid'
-    description_of_object = 'Pitch de mailing list'
+    new_object_url = "topicblog:new_mlp"
+    listone_object_url = "topicblog:list_mlp_by_slug"
+    listall_object_url = "topicblog:list_mlp"
+    viewbyslug_object_url = "topicblog:view_mlp_by_slug"
+    viewbyid_object_url = "topicblog:view_mlp_by_pkid"
+    viewbypkid_object_url = "topicblog:view_mlp_by_pkid"
+    description_of_object = "Pitch de mailing list"
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_mlp_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_mlp_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_mlp_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_mlp_by_pkid_only", kwargs={"pkid": self.pk}
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_mlp_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_mlp_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_mlp",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_mlp",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
 
 
 class TopicBlogPanel(TopicBlogObjectBase):
@@ -1475,19 +1596,15 @@ class TopicBlogPanel(TopicBlogObjectBase):
     class Meta:
         verbose_name_plural = "Panels"
         permissions = (
-            ("tbpanel.may_view",
-             "May view unpublished TopicBlogPanel"),
-            ("tbpanel.may_edit",
-             "May create and modify TopicBlogPanel"),
-            ("tbpanel.may_publish",
-             "May publish TopicBlogPanel"),
-            ("tbpanel.may_publish_self",
-             "May publish own TopicBlogPanel"),
+            ("tbpanel.may_view", "May view unpublished TopicBlogPanel"),
+            ("tbpanel.may_edit", "May create and modify TopicBlogPanel"),
+            ("tbpanel.may_publish", "May publish TopicBlogPanel"),
+            ("tbpanel.may_publish_self", "May publish own TopicBlogPanel"),
         )
 
     title = models.CharField(max_length=80, blank=True)
     body_text_1_md = models.TextField(blank=True)
-    body_image_1 = models.ImageField(upload_to='body/', blank=True)
+    body_image_1 = models.ImageField(upload_to="body/", blank=True)
     body_image_1_alt_text = models.CharField(max_length=80, blank=True)
 
     new_object_url = "topicblog:new_panel"
@@ -1502,56 +1619,57 @@ class TopicBlogPanel(TopicBlogObjectBase):
     description_of_object = "Panel"
 
     template_config_default = {
-        "optional_fields_for_publication": (
-        ),
-        "one_of_fields_for_publication": [
-        ],
+        "optional_fields_for_publication": (),
+        "one_of_fields_for_publication": [],
         # Dependent fields: if one in a group is provided, the others must
         # be as well before we can publish.
-        "dependent_field_names": [
-           ['body_image_1', 'body_image_1_alt_text']
-        ],
+        "dependent_field_names": [["body_image_1", "body_image_1_alt_text"]],
     }
     template_config = {
-        'topicblog/panel_did_you_know_tip_1.html': {
-            'email_template': 'topicblog/panel_did_you_know_tip_1_mail_client.html',
-            'default_choice': True,
-            'user_template_name': 'Le saviez-vous? 1',
-            'active': True,
+        "topicblog/panel_did_you_know_tip_1.html": {
+            "email_template": "topicblog/panel_did_you_know_tip_1_mail_client.html",
+            "default_choice": True,
+            "user_template_name": "Le saviez-vous? 1",
+            "active": True,
             "fields": {
-                'slug': True,
-                'title': True,
-                'body_text_1_md': True,
-                'body_image_1': True,
-                'body_image_1_alt_text': True,
+                "slug": True,
+                "title": True,
+                "body_text_1_md": True,
+                "body_image_1": True,
+                "body_image_1_alt_text": True,
             },
-            "optional_fields_for_publication":
-                template_config_default['optional_fields_for_publication'],
-            "one_of_fields_for_publication":
-                template_config_default['one_of_fields_for_publication'],
-            "dependent_field_names":
-                template_config_default['dependent_field_names'],
+            "optional_fields_for_publication": template_config_default[
+                "optional_fields_for_publication"
+            ],
+            "one_of_fields_for_publication": template_config_default[
+                "one_of_fields_for_publication"
+            ],
+            "dependent_field_names": template_config_default[
+                "dependent_field_names"
+            ],
         },
     }
 
     def get_absolute_url(self):
-        """Provide a link to view this object (by slug and id).
-        """
+        """Provide a link to view this object (by slug and id)."""
         if self.slug:
-            return reverse("topicblog:view_panel_by_pkid",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:view_panel_by_pkid",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )
         else:
-            return reverse("topicblog:view_panel_by_pkid_only",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:view_panel_by_pkid_only", kwargs={"pkid": self.pk}
+            )
 
     def get_edit_url(self):
-        """Provide a link to edit this object (by slug and id).
-        """
+        """Provide a link to edit this object (by slug and id)."""
         if not self.slug:
-            return reverse("topicblog:edit_panel_by_pkid",
-                           kwargs={"pkid": self.pk})
+            return reverse(
+                "topicblog:edit_panel_by_pkid", kwargs={"pkid": self.pk}
+            )
         else:
-            return reverse("topicblog:edit_panel",
-                           kwargs={"pkid": self.pk,
-                                   "the_slug": self.slug})
+            return reverse(
+                "topicblog:edit_panel",
+                kwargs={"pkid": self.pk, "the_slug": self.slug},
+            )

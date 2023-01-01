@@ -6,38 +6,38 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('surveys', '0002_auto_20200216_0318'),
+        ("surveys", "0002_auto_20200216_0318"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='surveyquestion',
-            old_name='survey_id',
-            new_name='survey',
+            model_name="surveyquestion",
+            old_name="survey_id",
+            new_name="survey",
         ),
         migrations.RenameField(
-            model_name='surveyresponder',
-            old_name='commune_id',
-            new_name='commune',
+            model_name="surveyresponder",
+            old_name="commune_id",
+            new_name="commune",
         ),
         migrations.RenameField(
-            model_name='surveyresponder',
-            old_name='survey_id',
-            new_name='survey',
+            model_name="surveyresponder",
+            old_name="survey_id",
+            new_name="survey",
         ),
         migrations.RenameField(
-            model_name='surveyresponse',
-            old_name='survey_id',
-            new_name='survey',
+            model_name="surveyresponse",
+            old_name="survey_id",
+            new_name="survey",
         ),
         migrations.RenameField(
-            model_name='surveyresponse',
-            old_name='survey_question_id',
-            new_name='survey_question',
+            model_name="surveyresponse",
+            old_name="survey_question_id",
+            new_name="survey_question",
         ),
         migrations.RenameField(
-            model_name='surveyresponse',
-            old_name='survey_responder_id',
-            new_name='survey_responder',
+            model_name="surveyresponse",
+            old_name="survey_responder_id",
+            new_name="survey_responder",
         ),
     ]

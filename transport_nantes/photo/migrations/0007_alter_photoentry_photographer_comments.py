@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0006_alter_photoentry_submitted_photo'),
+        ("photo", "0006_alter_photoentry_submitted_photo"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='photoentry',
-            name='photographer_comments',
-            field=models.TextField(blank=True, verbose_name='Vos commentaires sur la photo'),
+            model_name="photoentry",
+            name="photographer_comments",
+            field=models.TextField(
+                blank=True, verbose_name="Vos commentaires sur la photo"
+            ),
         ),
     ]

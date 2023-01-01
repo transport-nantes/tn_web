@@ -6,33 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0053_sendrecordtransactionaladhoc_and_more'),
+        ("topicblog", "0053_sendrecordtransactionaladhoc_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogemail',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogemail",
+            name="scheduled_for_deletion_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='topicblogitem',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogitem",
+            name="scheduled_for_deletion_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='topicbloglauncher',
-            name='scheduled_for_deletion_date',
+            model_name="topicbloglauncher",
+            name="scheduled_for_deletion_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='topicblogmailinglistpitch',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogmailinglistpitch",
+            name="scheduled_for_deletion_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='topicblogpress',
-            name='scheduled_for_deletion_date',
+            model_name="topicblogpress",
+            name="scheduled_for_deletion_date",
             field=models.DateField(blank=True, null=True),
         ),
     ]

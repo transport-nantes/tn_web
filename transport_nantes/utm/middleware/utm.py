@@ -8,7 +8,6 @@ tracked_params = [
     "utm_medium",
     "utm_source",
     "utm_term",
-
     # Advertisers.
     "aclk",
     "fbclid",
@@ -19,7 +18,6 @@ tracked_params = [
 
 
 class UtmMiddleware:
-
     def __init__(self, get_response):
         """One-time configuration and initialization."""
         self.get_response = get_response
@@ -28,16 +26,19 @@ class UtmMiddleware:
         """Called on each request."""
         # Code to be executed for each request before the view (and
         # later middleware) are called.
-        if not request.path.startswith('/admin/') and \
-           not request.path.startswith('/favicon.ico'):
+        if not request.path.startswith(
+            "/admin/"
+        ) and not request.path.startswith("/favicon.ico"):
             utm = UTM()
-            utm.base_url = request.path.split('&')[0]
-            utm.session_id = request.session.get('tn_session', '-')
+            utm.base_url = request.path.split("&")[0]
+            utm.session_id = request.session.get("tn_session", "-")
 
             # If for some reason we receive no user agent data, the
             # device, os, and browser will be set to "Other" and the
             # booleans will all be false.
-            user_agent = user_agents.parse(request.META.get('HTTP_USER_AGENT', ''))
+            user_agent = user_agents.parse(
+                request.META.get("HTTP_USER_AGENT", "")
+            )
             utm.ua_device = user_agent.get_device()
             utm.ua_os = user_agent.get_os()
             utm.ua_browser = user_agent.get_browser()
@@ -48,19 +49,21 @@ class UtmMiddleware:
             utm.ua_is_bot = user_agent.is_bot
             utm.ua_is_email_client = user_agent.is_email_client
 
-            params = {k: v for k, v in request.GET.items() if k in tracked_params}
+            params = {
+                k: v for k, v in request.GET.items() if k in tracked_params
+            }
 
-            utm.campaign = params.get('utm_campaign', '')
-            utm.content = params.get('utm_content', '')
-            utm.medium = params.get('utm_medium', '')
-            utm.source = params.get('utm_source', '')
-            utm.term = params.get('utm_term', '')
+            utm.campaign = params.get("utm_campaign", "")
+            utm.content = params.get("utm_content", "")
+            utm.medium = params.get("utm_medium", "")
+            utm.source = params.get("utm_source", "")
+            utm.term = params.get("utm_term", "")
 
-            utm.aclk = ('aclk' in params)
-            utm.fbclid = ('fbclid' in params)
-            utm.gclid = ('gclid' in params)
-            utm.msclkid = ('msclkid' in params)
-            utm.twclid = ('twclid' in params)
+            utm.aclk = "aclk" in params
+            utm.fbclid = "fbclid" in params
+            utm.gclid = "gclid" in params
+            utm.msclkid = "msclkid" in params
+            utm.twclid = "twclid" in params
 
             utm.user_is_authenticated = request.user.is_authenticated
 

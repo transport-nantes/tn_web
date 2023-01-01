@@ -22,6 +22,7 @@ class UTM(models.Model):
     better understanding urban/rural divisions.
 
     """
+
     # The URL without ? arguments.
     base_url = models.CharField(max_length=300, blank=False)
     # A cookie that is unique to visitors for a while so that we can

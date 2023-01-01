@@ -6,25 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0023_alter_topicblogitem_options'),
+        ("topicblog", "0023_alter_topicblogitem_options"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='topicblogitem',
-            name='header_slug',
+            model_name="topicblogitem",
+            name="header_slug",
         ),
         migrations.RemoveField(
-            model_name='topicblogitem',
-            name='item_sort_key',
+            model_name="topicblogitem",
+            name="item_sort_key",
         ),
         migrations.RemoveField(
-            model_name='topicblogitem',
-            name='servable',
+            model_name="topicblogitem",
+            name="servable",
         ),
         migrations.AddField(
-            model_name='topicblogitem',
-            name='first_publication_date',
+            model_name="topicblogitem",
+            name="first_publication_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

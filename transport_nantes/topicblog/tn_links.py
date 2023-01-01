@@ -67,11 +67,12 @@ functions in order to permit HTML on the output.
 """
 
 
-def render_inclusion_tag_to_html(context, tag_source, tag_name, *args, **kwargs):
-    """Render an inclusion tag to a string.
-    """
-    context['title'] = kwargs.get('title')
-    context['mailinglist'] = kwargs.get('mailinglist')
+def render_inclusion_tag_to_html(
+    context, tag_source, tag_name, *args, **kwargs
+):
+    """Render an inclusion tag to a string."""
+    context["title"] = kwargs.get("title")
+    context["mailinglist"] = kwargs.get("mailinglist")
     context = Context(context)
     args_list = ""
     if args:
@@ -79,8 +80,7 @@ def render_inclusion_tag_to_html(context, tag_source, tag_name, *args, **kwargs)
             args_list += f"'{arg}' "
 
     template_string = (
-        f"{{% load {tag_source} %}}"
-        f"{{% {tag_name} {args_list} %}}"
+        f"{{% load {tag_source} %}}" f"{{% {tag_name} {args_list} %}}"
     )
     return Template(template_string).render(context)
 
@@ -101,14 +101,13 @@ class State(Enum):
 
 
 class TNLinkParser(object):
-    """
-    """
+    """ """
 
     # Accumulators.
-    out_string = ''
-    bracket_class_string = ''
-    bracket_label_string = ''
-    paren_string = ''
+    out_string = ""
+    bracket_class_string = ""
+    bracket_label_string = ""
+    paren_string = ""
     # Current state.
     state = State.ORDINARY
     verbose = False
@@ -118,12 +117,11 @@ class TNLinkParser(object):
         self.context = context
 
     def clear(self):
-        """Clear state before parsing.
-        """
-        self.out_string = ''
-        self.bracket_class_string = ''
-        self.bracket_label_string = ''
-        self.paren_string = ''
+        """Clear state before parsing."""
+        self.out_string = ""
+        self.bracket_class_string = ""
+        self.bracket_label_string = ""
+        self.paren_string = ""
         self.state = State.ORDINARY
 
     def transform(self, in_text):
@@ -149,38 +147,38 @@ class TNLinkParser(object):
         """Internal function: flush accumulators."""
         if State.ORDINARY == self.state:
             return
-        self.out_string += '['
+        self.out_string += "["
         if State.PARSING_OPEN_BRACKET == self.state:
             return
-        self.out_string += '[' + self.bracket_class_string
+        self.out_string += "[" + self.bracket_class_string
         if State.IN_DOUBLE_BRACKET_CLASS == self.state:
             return
-        self.out_string += ':' + self.bracket_label_string
+        self.out_string += ":" + self.bracket_label_string
         if State.IN_DOUBLE_BRACKET_LABEL == self.state:
             return
-        self.out_string += ']'
+        self.out_string += "]"
         if State.PARSING_CLOSE_BRACKET == self.state:
             return
-        self.out_string += ']'
+        self.out_string += "]"
         if State.EXPECTING_DOUBLE_PAREN == self.state:
             return
-        self.out_string += '('
+        self.out_string += "("
         if State.PARSING_OPEN_PAREN == self.state:
             return
-        self.out_string += '(' + self.paren_string
+        self.out_string += "(" + self.paren_string
         if State.IN_DOUBLE_PAREN == self.state:
             return
-        self.out_string += ')'
+        self.out_string += ")"
         if State.PARSING_CLOSE_PAREN == self.state:
             return
-        self.out_string += ')'
+        self.out_string += ")"
 
     def reset_to_ordinary(self):
         """Reset to ordinary, clear accumulators."""
-        self.log('Reset')
-        self.bracket_class_string = ''
-        self.bracket_label_string = ''
-        self.paren_string = ''
+        self.log("Reset")
+        self.bracket_class_string = ""
+        self.bracket_label_string = ""
+        self.paren_string = ""
         self.state = State.ORDINARY
 
     def flush_and_reset_to_ordinary(self, char):
@@ -190,7 +188,7 @@ class TNLinkParser(object):
         thinking otherwise, so flush state as needed and go back to
         ordinary pass-through.
         """
-        self.log('Flush and reset')
+        self.log("Flush and reset")
         self._flush()
         self.out_string += char
         self.reset_to_ordinary()
@@ -200,16 +198,18 @@ class TNLinkParser(object):
 
         This is where the magic happens.
         """
-        if 'don' == self.bracket_class_string:
-            if '' == self.bracket_label_string:
+        if "don" == self.bracket_class_string:
+            if "" == self.bracket_label_string:
                 self.out_string += don.bouton_don(
-                    self.paren_string, context=self.context)
-            elif 'large' == self.bracket_label_string:
+                    self.paren_string, context=self.context
+                )
+            elif "large" == self.bracket_label_string:
                 self.out_string += don.bouton_don_lg(
-                    self.paren_string, context=self.context)
-            elif 'adhésion' == self.bracket_label_string:
+                    self.paren_string, context=self.context
+                )
+            elif "adhésion" == self.bracket_label_string:
                 self.out_string += don.bouton_join(self.paren_string)
-            elif self.bracket_label_string.startswith('fixed|'):
+            elif self.bracket_label_string.startswith("fixed|"):
                 donation_args = self.bracket_label_string.split("|", 1)
                 # The first element must be "fixed" by construction.
                 # The second should be the donation amount, default=1.
@@ -218,59 +218,72 @@ class TNLinkParser(object):
                 else:
                     donation_amount = 1
                 self.out_string += don.fixed_amount_donation_button(
-                    donation_amount, self.paren_string)
+                    donation_amount, self.paren_string
+                )
             else:
-                self.out_string += self.bracket_class_string + ':' + \
-                    self.bracket_label_string + '(' + self.paren_string + ')'
-        elif 'news' == self.bracket_class_string:
+                self.out_string += (
+                    self.bracket_class_string
+                    + ":"
+                    + self.bracket_label_string
+                    + "("
+                    + self.paren_string
+                    + ")"
+                )
+        elif "news" == self.bracket_class_string:
             mailinglist_name = self.bracket_label_string
             description_text = self.paren_string
             self.out_string += render_inclusion_tag_to_html(
                 self.context,
-                'newsletter',
-                'show_mailing_list',
-                **{"mailinglist": mailinglist_name,
-                   "title": description_text})
-        elif 'panel' == self.bracket_class_string:
+                "newsletter",
+                "show_mailing_list",
+                **{"mailinglist": mailinglist_name, "title": description_text},
+            )
+        elif "panel" == self.bracket_class_string:
             self.out_string += render_inclusion_tag_to_html(
-                self.context,
-                'panels',
-                'panel',
-                self.paren_string)
-        elif ('cta' == self.bracket_class_string
-                or 'action' == self.bracket_class_string):
+                self.context, "panels", "panel", self.paren_string
+            )
+        elif (
+            "cta" == self.bracket_class_string
+            or "action" == self.bracket_class_string
+        ):
             # Deprecated "action:".
             try:
-                url = reverse('topic_blog:view_item_by_slug',
-                              args=[self.paren_string])
+                url = reverse(
+                    "topic_blog:view_item_by_slug", args=[self.paren_string]
+                )
             except NoReverseMatch:
-                url = '(((pas trouvé : {ps})))'.format(ps=self.paren_string)
+                url = "(((pas trouvé : {ps})))".format(ps=self.paren_string)
             self.out_string += don.action_button(
-                url, self.bracket_label_string, context=self.context)
-        elif 'slug' == self.bracket_class_string:
-            self.out_string += slug.tbi_slug(self.context,
-                                             self.bracket_label_string,
-                                             self.paren_string)
-        elif 'contact' == self.bracket_class_string:
+                url, self.bracket_label_string, context=self.context
+            )
+        elif "slug" == self.bracket_class_string:
+            self.out_string += slug.tbi_slug(
+                self.context, self.bracket_label_string, self.paren_string
+            )
+        elif "contact" == self.bracket_class_string:
             self.out_string += don.contact_button(
-                self.bracket_label_string, self.paren_string)
-        elif 'externe' == self.bracket_class_string:
+                self.bracket_label_string, self.paren_string
+            )
+        elif "externe" == self.bracket_class_string:
             url = self.paren_string
             self.out_string += don.external_url(url, self.bracket_label_string)
-        elif 'EXTERNE' == self.bracket_class_string:
+        elif "EXTERNE" == self.bracket_class_string:
             url = self.paren_string
             self.out_string += don.external_url_button(
-                url, self.bracket_label_string, context=self.context)
-        elif 'petition' == self.bracket_class_string:
+                url, self.bracket_label_string, context=self.context
+            )
+        elif "petition" == self.bracket_class_string:
             self.out_string += newsletter.petition_link(
-                self.paren_string, self.bracket_label_string)
+                self.paren_string, self.bracket_label_string
+            )
         else:
             self.out_string += (
                 f"[[{self.bracket_class_string}:{self.bracket_label_string}]]"
                 f"(({self.paren_string}))"
             )
-            self.log('Unexpected transcription case: ' +
-                     self.bracket_class_string)
+            self.log(
+                "Unexpected transcription case: " + self.bracket_class_string
+            )
 
     def consume_ordinary(self, in_text):
         """
@@ -280,14 +293,14 @@ class TNLinkParser(object):
 
         """
         for s in in_text:
-            if '[' == s:
+            if "[" == s:
                 if State.ORDINARY == self.state:
                     self.set_state(State.PARSING_OPEN_BRACKET)
                 elif State.PARSING_OPEN_BRACKET == self.state:
                     self.set_state(State.IN_DOUBLE_BRACKET_CLASS)
                 else:
                     self.flush_and_reset_to_ordinary(s)
-            elif ':' == s:
+            elif ":" == s:
                 if State.IN_DOUBLE_BRACKET_CLASS == self.state:
                     self.set_state(State.IN_DOUBLE_BRACKET_LABEL)
                 elif State.IN_DOUBLE_PAREN == self.state:
@@ -295,21 +308,21 @@ class TNLinkParser(object):
                     self.paren_string += s
                 else:
                     self.flush_and_reset_to_ordinary(s)
-            elif ']' == s:
+            elif "]" == s:
                 if State.IN_DOUBLE_BRACKET_LABEL == self.state:
                     self.set_state(State.PARSING_CLOSE_BRACKET)
                 elif State.PARSING_CLOSE_BRACKET == self.state:
                     self.set_state(State.EXPECTING_DOUBLE_PAREN)
                 else:
                     self.flush_and_reset_to_ordinary(s)
-            elif '(' == s:
+            elif "(" == s:
                 if State.EXPECTING_DOUBLE_PAREN == self.state:
                     self.set_state(State.PARSING_OPEN_PAREN)
                 elif State.PARSING_OPEN_PAREN == self.state:
                     self.set_state(State.IN_DOUBLE_PAREN)
                 else:
                     self.flush_and_reset_to_ordinary(s)
-            elif ')' == s:
+            elif ")" == s:
                 if State.IN_DOUBLE_PAREN == self.state:
                     self.set_state(State.PARSING_CLOSE_PAREN)
                 elif State.PARSING_CLOSE_PAREN == self.state:
@@ -331,6 +344,6 @@ class TNLinkParser(object):
                 else:
                     self.flush_and_reset_to_ordinary(s)
 
-        self.log('At end of consume_ordinary, flushing.')
+        self.log("At end of consume_ordinary, flushing.")
         # At end of string, flush any remaining buffered data.
-        self.flush_and_reset_to_ordinary('')
+        self.flush_and_reset_to_ordinary("")

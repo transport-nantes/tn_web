@@ -6,18 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0045_auto_20220518_1224'),
+        ("topicblog", "0045_auto_20220518_1224"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogemailsendrecord',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50),
+            model_name="topicblogemailsendrecord",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("SENT", "Sent"),
+                    ("FAILED", "Failed"),
+                ],
+                default="PENDING",
+                max_length=50,
+            ),
         ),
         migrations.AddField(
-            model_name='topicblogpresssendrecord',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('SENT', 'Sent'), ('FAILED', 'Failed')], default='PENDING', max_length=50),
+            model_name="topicblogpresssendrecord",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("SENT", "Sent"),
+                    ("FAILED", "Failed"),
+                ],
+                default="PENDING",
+                max_length=50,
+            ),
         ),
     ]

@@ -7,37 +7,73 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('geoplan', '0001_initial'),
+        ("geoplan", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MapDefinition',
+            name="MapDefinition",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('city', models.CharField(max_length=50)),
-                ('observatory_name', models.CharField(max_length=50)),
-                ('observatory_type', models.SlugField(max_length=100)),
-                ('longitude', models.FloatField()),
-                ('latitude', models.FloatField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("city", models.CharField(max_length=50)),
+                ("observatory_name", models.CharField(max_length=50)),
+                ("observatory_type", models.SlugField(max_length=100)),
+                ("longitude", models.FloatField()),
+                ("latitude", models.FloatField()),
             ],
         ),
         migrations.CreateModel(
-            name='MapLayer',
+            name="MapLayer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('layer_name', models.CharField(max_length=100)),
-                ('layer_depth', models.SmallIntegerField()),
-                ('map_definition', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geoplan.MapDefinition')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("layer_name", models.CharField(max_length=100)),
+                ("layer_depth", models.SmallIntegerField()),
+                (
+                    "map_definition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="geoplan.MapDefinition",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MapContent',
+            name="MapContent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('geojson', models.TextField()),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('map_layer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geoplan.MapLayer')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("geojson", models.TextField()),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "map_layer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="geoplan.MapLayer",
+                    ),
+                ),
             ],
         ),
     ]

@@ -9,7 +9,6 @@ from asso_tn.utils import make_timed_token, token_valid
 
 
 class TimedTokenTest(TestCase):
-
     def test_expiry(self):
         """Test token expiration.
 
@@ -35,24 +34,18 @@ class TimedTokenTest(TestCase):
 
 
 class LoginViewTest(TransactionTestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
-            username='joe',
-            password='password',
-            email="joe@potus.com"
+            username="joe", password="password", email="joe@potus.com"
         )
         self.pass_user = User.objects.create_user(
-            username='pass-joe',
-            password='password',
-            email="passjoe@potus.com"
+            username="pass-joe", password="password", email="passjoe@potus.com"
         )
         self.pass_user.profile.authenticates_by_mail = False
         self.pass_user.save()
 
     def test_form_valid(self):
-        """Tests status code of LoginView when form is valid.
-        """
+        """Tests status code of LoginView when form is valid."""
         remember_me = 0
 
         # POST existing user
@@ -63,7 +56,7 @@ class LoginViewTest(TransactionTestCase):
                 "remember_me": remember_me,
                 "captcha_0": "dummy-value",
                 "captcha_1": "PASSED",
-            }
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(mail.outbox), 1)
@@ -77,13 +70,15 @@ class LoginViewTest(TransactionTestCase):
                 "remember_me": remember_me,
                 "captcha_0": "dummy-value",
                 "captcha_1": "PASSED",
-            }
+            },
         )
         # Expected to 200, displays an "Email sent" page.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[1].to, [User.objects.get(
-            email="doesntexist@null.com").email])
+        self.assertEqual(
+            mail.outbox[1].to,
+            [User.objects.get(email="doesntexist@null.com").email],
+        )
 
         # POST existing user with password login
         response = self.client.post(
@@ -93,7 +88,7 @@ class LoginViewTest(TransactionTestCase):
                 "remember_me": remember_me,
                 "captcha_0": "dummy-value",
                 "captcha_1": "PASSED",
-            }
+            },
         )
 
         # User with a password login are redirected to a password page and
@@ -109,7 +104,6 @@ class LoginViewTest(TransactionTestCase):
 
 
 class PasswordLoginViewTest(TestCase):
-
     def setUp(self):
         # Create a token for password login.
         EMAIL = "passjoe@potus.com"
@@ -118,55 +112,56 @@ class PasswordLoginViewTest(TestCase):
         self.token = make_timed_token(EMAIL, EXPIRY_MINUTES, 0, NOW)
 
         self.pass_user = User.objects.create_user(
-            username='pass-joe',
-            password='password',
-            email="passjoe@potus.com"
+            username="pass-joe", password="password", email="passjoe@potus.com"
         )
         self.pass_user.profile.authenticates_by_mail = False
         self.pass_user.save()
 
     def test_password_login_status_code(self):
-        """Tests status code of PasswordLoginView when form is valid.
-        """
+        """Tests status code of PasswordLoginView when form is valid."""
         response = self.client.post(
-            reverse("authentication:password_login",
-                    kwargs={"token": self.token}),
+            reverse(
+                "authentication:password_login", kwargs={"token": self.token}
+            ),
             {
                 "email": self.pass_user.email,
                 "password": "password",
                 "remember_me": 1,
-            }
+            },
         )
         # Redirect to main page if valid login
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/")
 
         response = self.client.post(
-            reverse("authentication:password_login",
-                    kwargs={"token": self.token}),
+            reverse(
+                "authentication:password_login", kwargs={"token": self.token}
+            ),
             {
                 "email": self.pass_user.email,
                 "password": "wrongpassword",
                 "remember_me": 0,
-            }
+            },
         )
         # Redirect to the same page with a different token if invalid login
         self.assertEqual(response.status_code, 302)
 
     def test_password_login_get(self):
-        """Tests status code of PasswordLoginView when form is valid.
-        """
+        """Tests status code of PasswordLoginView when form is valid."""
         # Get with a valid token
         response = self.client.get(
-            reverse("authentication:password_login",
-                    kwargs={"token": self.token})
+            reverse(
+                "authentication:password_login", kwargs={"token": self.token}
+            )
         )
         self.assertEqual(response.status_code, 200)
 
         # Get with an invalid token
         response = self.client.get(
-            reverse("authentication:password_login",
-                    kwargs={"token": "invalid-token"})
+            reverse(
+                "authentication:password_login",
+                kwargs={"token": "invalid-token"},
+            )
         )
         # Redirection to mail login page
         self.assertEqual(response.status_code, 302)
@@ -174,7 +169,6 @@ class PasswordLoginViewTest(TestCase):
 
 
 class ActivationLoginViewTest(TestCase):
-
     def setUp(self):
         # Create a token for password login.
         EMAIL = "passjoe@potus.com"
@@ -183,9 +177,10 @@ class ActivationLoginViewTest(TestCase):
         self.token = make_timed_token(EMAIL, EXPIRY_MINUTES, 0, NOW)
 
         self.pass_user = User.objects.create_user(
-            username='pass-joe',
-            password='password',
-            email=EMAIL,)
+            username="pass-joe",
+            password="password",
+            email=EMAIL,
+        )
         self.pass_user.profile.authenticates_by_mail = False
         self.pass_user.is_active = False
         self.pass_user.save()
@@ -209,8 +204,9 @@ class ActivationLoginViewTest(TestCase):
     def test_activate_invalid_token(self):
         """Tests the activate function when given an invalid token"""
         response = self.client.get(
-            reverse("authentication:activate",
-                    kwargs={"token": "invalid-token"})
+            reverse(
+                "authentication:activate", kwargs={"token": "invalid-token"}
+            )
         )
         self.assertEqual(response.status_code, 200)
 
@@ -225,14 +221,11 @@ class ActivationLoginViewTest(TestCase):
 
 
 class DeauthViewTest(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(
-            username='joe',
-            password='password',
-            email="joe@potus.com"
+            username="joe", password="password", email="joe@potus.com"
         )
-        self.client.login(username='joe', password='password')
+        self.client.login(username="joe", password="password")
 
     def test_deauth_status_code(self):
         """Tests the deauth view status code"""

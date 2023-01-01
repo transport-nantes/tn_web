@@ -6,53 +6,62 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0025_topicblogemail_topicblogemailclicks_topicblogemailsendrecord'),
+        (
+            "topicblog",
+            "0025_topicblogemail_topicblogemailclicks_topicblogemailsendrecord",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogemail',
-            name='cta_1_slug',
+            model_name="topicblogemail",
+            name="cta_1_slug",
             field=models.SlugField(blank=True, max_length=90),
         ),
         migrations.AlterField(
-            model_name='topicblogemail',
-            name='cta_2_slug',
+            model_name="topicblogemail",
+            name="cta_2_slug",
             field=models.SlugField(blank=True, max_length=90),
         ),
         migrations.AlterField(
-            model_name='topicblogemail',
-            name='slug',
-            field=models.SlugField(allow_unicode=True, blank=True, max_length=90),
+            model_name="topicblogemail",
+            name="slug",
+            field=models.SlugField(
+                allow_unicode=True, blank=True, max_length=90
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogemailsendrecord',
-            name='slug',
-            field=models.SlugField(allow_unicode=True, blank=True, max_length=90),
+            model_name="topicblogemailsendrecord",
+            name="slug",
+            field=models.SlugField(
+                allow_unicode=True, blank=True, max_length=90
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='cta_1_slug',
+            model_name="topicblogitem",
+            name="cta_1_slug",
             field=models.SlugField(blank=True, max_length=90),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='cta_2_slug',
+            model_name="topicblogitem",
+            name="cta_2_slug",
             field=models.SlugField(blank=True, max_length=90),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='cta_3_slug',
+            model_name="topicblogitem",
+            name="cta_3_slug",
             field=models.SlugField(blank=True, max_length=90),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='slug',
-            field=models.SlugField(allow_unicode=True, blank=True, max_length=90),
+            model_name="topicblogitem",
+            name="slug",
+            field=models.SlugField(
+                allow_unicode=True, blank=True, max_length=90
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogtemplate',
-            name='slug',
+            model_name="topicblogtemplate",
+            name="slug",
             field=models.BooleanField(default=False, max_length=90),
         ),
     ]

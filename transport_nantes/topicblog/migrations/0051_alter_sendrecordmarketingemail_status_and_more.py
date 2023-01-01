@@ -6,16 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0050_remove_topicblogpresssendrecord_mailinglist_and_more'),
+        (
+            "topicblog",
+            "0050_remove_topicblogpresssendrecord_mailinglist_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='sendrecordmarketingemail',
-            constraint=models.UniqueConstraint(fields=('recipient', 'slug'), name='TBE_unique_recipient_slug'),
+            model_name="sendrecordmarketingemail",
+            constraint=models.UniqueConstraint(
+                fields=("recipient", "slug"), name="TBE_unique_recipient_slug"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='sendrecordmarketingpress',
-            constraint=models.UniqueConstraint(fields=('recipient', 'slug'), name='TBP_unique_recipient_slug'),
+            model_name="sendrecordmarketingpress",
+            constraint=models.UniqueConstraint(
+                fields=("recipient", "slug"), name="TBP_unique_recipient_slug"
+            ),
         ),
     ]

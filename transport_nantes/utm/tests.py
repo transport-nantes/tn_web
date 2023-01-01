@@ -83,7 +83,7 @@ class SimpleTest(TestCase):
         url = (
             "/tb/p/suite-president-republique-rer-dans-dix-villes/"
             "&data=05|01|Magazine44@loire-atlantique.fr"
-            "|a533c2de6dec4fc952e808dad1501b18\ " # noqa
+            "|a533c2de6dec4fc952e808dad1501b18\ "  # noqa
             "|beecb8f7d08247d6bcd90516d6628b41|0|0|638052439229581676|Unknown"
             "|TWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwi"
             "LCJXVCI6Mn0=|1000|||"
@@ -95,5 +95,5 @@ class SimpleTest(TestCase):
         object = objects[0]
         self.assertEqual(
             object.base_url,
-            "/tb/p/suite-president-republique-rer-dans-dix-villes/"
+            "/tb/p/suite-president-republique-rer-dans-dix-villes/",
         )

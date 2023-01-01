@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0034_topicbloglauncher'),
+        ("topicblog", "0034_topicbloglauncher"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogemailsendrecord',
-            name='click_time',
+            model_name="topicblogemailsendrecord",
+            name="click_time",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogemailsendrecord',
-            name='open_time',
+            model_name="topicblogemailsendrecord",
+            name="open_time",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='topicblogemailsendrecord',
-            name='unsubscribe_time',
+            model_name="topicblogemailsendrecord",
+            name="unsubscribe_time",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

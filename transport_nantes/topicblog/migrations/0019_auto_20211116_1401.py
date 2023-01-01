@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0018_auto_20211111_1801'),
+        ("topicblog", "0018_auto_20211111_1801"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='topicblogitem',
-            name='published',
+            model_name="topicblogitem",
+            name="published",
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='servable',
+            model_name="topicblogitem",
+            name="servable",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -7,14 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('photo', '0007_alter_photoentry_photographer_comments'),
+        ("photo", "0007_alter_photoentry_photographer_comments"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='photoentry',
-            name='timestamp',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2022, 7, 1, 0, 0), verbose_name='Date de soumission'),
+            model_name="photoentry",
+            name="timestamp",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2022, 7, 1, 0, 0),
+                verbose_name="Date de soumission",
+            ),
             preserve_default=False,
         ),
     ]

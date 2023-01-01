@@ -9,68 +9,188 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('mailing_list', '0008_auto_20210214_0901'),
-        ('topicblog', '0024_auto_20220115_1149'),
+        ("mailing_list", "0008_auto_20210214_0901"),
+        ("topicblog", "0024_auto_20220115_1149"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TopicBlogEmailSendRecord',
+            name="TopicBlogEmailSendRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(allow_unicode=True, blank=True)),
-                ('send_time', models.DateTimeField(auto_now=True)),
-                ('open_time', models.DateTimeField()),
-                ('click_time', models.DateTimeField()),
-                ('unsubscribe_time', models.DateTimeField()),
-                ('mailinglist', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='mailing_list.mailinglist')),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("slug", models.SlugField(allow_unicode=True, blank=True)),
+                ("send_time", models.DateTimeField(auto_now=True)),
+                ("open_time", models.DateTimeField()),
+                ("click_time", models.DateTimeField()),
+                ("unsubscribe_time", models.DateTimeField()),
+                (
+                    "mailinglist",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="mailing_list.mailinglist",
+                    ),
+                ),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TopicBlogEmailClicks',
+            name="TopicBlogEmailClicks",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('click_time', models.DateTimeField()),
-                ('click_url', models.CharField(max_length=1024)),
-                ('email', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='topicblog.topicblogemailsendrecord')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("click_time", models.DateTimeField()),
+                ("click_url", models.CharField(max_length=1024)),
+                (
+                    "email",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="topicblog.topicblogemailsendrecord",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TopicBlogEmail',
+            name="TopicBlogEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(allow_unicode=True, blank=True)),
-                ('publication_date', models.DateTimeField(blank=True, null=True)),
-                ('first_publication_date', models.DateTimeField(blank=True, null=True)),
-                ('date_modified', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(blank=True, max_length=100)),
-                ('header_title', models.CharField(blank=True, max_length=80)),
-                ('header_description', models.CharField(blank=True, max_length=120)),
-                ('social_description', models.TextField(blank=True, help_text='Notes pour humains des objectifs (marketing) de la page')),
-                ('twitter_title', models.CharField(blank=True, max_length=80)),
-                ('twitter_description', models.TextField(blank=True)),
-                ('twitter_image', models.ImageField(blank=True, help_text='2:1, résolution minimum : 300x157, max 4096x4096', upload_to='twitter/')),
-                ('og_title', models.CharField(blank=True, max_length=80)),
-                ('og_description', models.TextField(blank=True)),
-                ('og_image', models.ImageField(blank=True, help_text='résolution recommandée : 1200x630', upload_to='opengraph/')),
-                ('subject', models.CharField(blank=True, max_length=80)),
-                ('header_image', models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='header/')),
-                ('body_text_1_md', models.TextField(blank=True)),
-                ('cta_1_slug', models.SlugField(blank=True)),
-                ('cta_1_label', models.CharField(blank=True, max_length=100)),
-                ('body_image_1', models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='body/')),
-                ('body_image_1_alt_text', models.CharField(blank=True, max_length=100)),
-                ('body_text_2_md', models.TextField(blank=True)),
-                ('cta_2_slug', models.SlugField(blank=True)),
-                ('cta_2_label', models.CharField(blank=True, max_length=100)),
-                ('body_image_2', models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='body/')),
-                ('body_image_2_alt_text', models.CharField(blank=True, max_length=100)),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='topicblog.topicblogtemplate')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("slug", models.SlugField(allow_unicode=True, blank=True)),
+                (
+                    "publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "first_publication_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                ("date_modified", models.DateTimeField(auto_now=True)),
+                ("title", models.CharField(blank=True, max_length=100)),
+                ("header_title", models.CharField(blank=True, max_length=80)),
+                (
+                    "header_description",
+                    models.CharField(blank=True, max_length=120),
+                ),
+                (
+                    "social_description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Notes pour humains des objectifs (marketing) de la page",
+                    ),
+                ),
+                ("twitter_title", models.CharField(blank=True, max_length=80)),
+                ("twitter_description", models.TextField(blank=True)),
+                (
+                    "twitter_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="2:1, résolution minimum : 300x157, max 4096x4096",
+                        upload_to="twitter/",
+                    ),
+                ),
+                ("og_title", models.CharField(blank=True, max_length=80)),
+                ("og_description", models.TextField(blank=True)),
+                (
+                    "og_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1200x630",
+                        upload_to="opengraph/",
+                    ),
+                ),
+                ("subject", models.CharField(blank=True, max_length=80)),
+                (
+                    "header_image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1600x500",
+                        upload_to="header/",
+                    ),
+                ),
+                ("body_text_1_md", models.TextField(blank=True)),
+                ("cta_1_slug", models.SlugField(blank=True)),
+                ("cta_1_label", models.CharField(blank=True, max_length=100)),
+                (
+                    "body_image_1",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1600x500",
+                        upload_to="body/",
+                    ),
+                ),
+                (
+                    "body_image_1_alt_text",
+                    models.CharField(blank=True, max_length=100),
+                ),
+                ("body_text_2_md", models.TextField(blank=True)),
+                ("cta_2_slug", models.SlugField(blank=True)),
+                ("cta_2_label", models.CharField(blank=True, max_length=100)),
+                (
+                    "body_image_2",
+                    models.ImageField(
+                        blank=True,
+                        help_text="résolution recommandée : 1600x500",
+                        upload_to="body/",
+                    ),
+                ),
+                (
+                    "body_image_2_alt_text",
+                    models.CharField(blank=True, max_length=100),
+                ),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="topicblog.topicblogtemplate",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'permissions': (('tbe.may_view', 'May view unpublished TopicBlogEmails'), ('tbe.may_edit', 'May create and modify TopicBlogEmails'), ('tbe.may_publish', 'May publish TopicBlogEmails'), ('tbe.may_publish_self', 'May publish own TopicBlogEmails'), ('tbe.may_send', 'May send TopicBlogEmails'), ('tbe.may_send_self', 'May send own TopicBlogEmails')),
+                "permissions": (
+                    ("tbe.may_view", "May view unpublished TopicBlogEmails"),
+                    ("tbe.may_edit", "May create and modify TopicBlogEmails"),
+                    ("tbe.may_publish", "May publish TopicBlogEmails"),
+                    (
+                        "tbe.may_publish_self",
+                        "May publish own TopicBlogEmails",
+                    ),
+                    ("tbe.may_send", "May send TopicBlogEmails"),
+                    ("tbe.may_send_self", "May send own TopicBlogEmails"),
+                ),
             },
         ),
     ]

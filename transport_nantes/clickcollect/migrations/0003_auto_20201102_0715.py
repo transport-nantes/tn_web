@@ -9,13 +9,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('clickcollect', '0002_auto_20201102_0713'),
+        ("clickcollect", "0002_auto_20201102_0713"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='clickandcollect',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="clickandcollect",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

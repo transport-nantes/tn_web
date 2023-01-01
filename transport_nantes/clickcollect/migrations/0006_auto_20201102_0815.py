@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('clickcollect', '0005_clickablecollectable_collectable_token'),
+        ("clickcollect", "0005_clickablecollectable_collectable_token"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='clickablecollectable',
-            name='collectable_token',
+            model_name="clickablecollectable",
+            name="collectable_token",
             field=models.CharField(max_length=80, unique=True),
         ),
     ]

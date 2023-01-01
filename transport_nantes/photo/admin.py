@@ -3,7 +3,7 @@ from .models import PhotoEntry, Vote
 
 
 class PhotoEntryAdmin(admin.ModelAdmin):
-    readonly_fields = ('pk', 'sha1_name')
+    readonly_fields = ("pk", "sha1_name")
 
     list_display = ("category", "user", "accepted")
     list_filter = ("category", "accepted")

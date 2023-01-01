@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0039_topicblogmailinglistpitch'),
+        ("topicblog", "0039_topicblogmailinglistpitch"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='topicblogmailinglistpitch',
-            name='subscription_form_button_label',
+            model_name="topicblogmailinglistpitch",
+            name="subscription_form_button_label",
             field=models.CharField(blank=True, max_length=80),
         ),
         migrations.AddField(
-            model_name='topicblogmailinglistpitch',
-            name='subscription_form_title',
+            model_name="topicblogmailinglistpitch",
+            name="subscription_form_title",
             field=models.CharField(blank=True, max_length=80),
         ),
     ]

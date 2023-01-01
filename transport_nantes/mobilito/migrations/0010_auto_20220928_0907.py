@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mobilito', '0009_auto_20220928_0900'),
+        ("mobilito", "0009_auto_20220928_0900"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='session',
-            name='session_sha1',
-            field=models.CharField(max_length=200, unique=True, editable=False),
+            model_name="session",
+            name="session_sha1",
+            field=models.CharField(
+                max_length=200, unique=True, editable=False
+            ),
         ),
     ]

@@ -9,6 +9,7 @@ from django.utils.crypto import get_random_string
 
 from asso_tn.utils import make_timed_token
 from captcha.models import CaptchaStore
+
 # Create your tests here.
 
 # Benja, I've commented this out because I too often didn't understand
@@ -87,7 +88,7 @@ from captcha.models import CaptchaStore
 #         # Test good printing of the page
 #         self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
 #             login_response.content.decode("utf-8"))
-        
+
 #         # Get user and test creation in User table
 #         try:
 #             user = User.objects.get(email="test1@example.com")
@@ -116,14 +117,14 @@ from captcha.models import CaptchaStore
 #                      'captcha_0': captcha.hashkey,
 #                      'captcha_1': captcha.response }
 #         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
-        
+
 #         # Call .views.login()
 #         login_response = views.login(request)
 
 #         # Test good printing of the page
 #         self.assertInHTML("Un mail est un route avec un lien magique qui vous permettra de vous connecter.",
 #             login_response.content.decode("utf-8"))
-        
+
 #     # Minimum of 2 user with the same mail in database and test site page shown
 #     def test_two_users_with_same_mail(self):
 
@@ -147,10 +148,10 @@ from captcha.models import CaptchaStore
 #                      'captcha_0': captcha.hashkey,
 #                      'captcha_1': captcha.response }
 #         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
-        
+
 #         # Call .views.login()
 #         login_response = views.login(request)
-        
+
 #         # Test printed error message
 #         self.assertIn(login_response.content.decode("utf-8"), "Data error: Multiple email addresses found")
 
@@ -213,7 +214,7 @@ from captcha.models import CaptchaStore
 #         # Test good printing of the page
 #         self.assertInHTML("Un mail est un route pour que vous puissiez confirmer la création de votre compte.",
 #             login_response.content.decode("utf-8"))
-        
+
 #         # Get user and test creation in User table
 #         try:
 #             user = User.objects.get(email="test1@example.com")
@@ -245,7 +246,7 @@ from captcha.models import CaptchaStore
 #                      'password1': "secret_password",
 #                      'password2': "secret_password", }
 #         request = self.client.post(reverse("authentication:login"), context)
-        
+
 #         # Test good printing of the page
 #         self.assertEqual(request.url, "/")
 
@@ -307,7 +308,7 @@ from captcha.models import CaptchaStore
 #         # Test good printing of the page
 #         self.assertInHTML("Veuillez entrer à nouveau le mot de passe.",
 #             login_response.content.decode("utf-8"))
-        
+
 #         # Get user and test creation in User table
 #         try:
 #             user = User.objects.get(email="test1@example.com")
@@ -339,7 +340,7 @@ from captcha.models import CaptchaStore
 #                      'password1': "secret_password",
 #                      'password2': "", }
 #         request = self.client.post(reverse("authentication:login"), context)
-        
+
 #         # Test good printing of the page
 #         self.assertEqual(request.url, "/")
 
@@ -394,14 +395,14 @@ from captcha.models import CaptchaStore
 #                      'password1': "secret_password",
 #                      'password2': "password_secret", }
 #         request = RequestFactory().post(reverse("authentication:login"), context, follow=True)
-        
+
 #         # Call .views.login()
 #         login_response = views.login(request)
-        
+
 #         # Test good printing of the page
 #         self.assertInHTML("Les mots de passe ne sont pas identiques.",
 #             login_response.content.decode("utf-8"))
-        
+
 #         # Get user and test creation in User table
 #         try:
 #             user = User.objects.get(email="test1@example.com")
@@ -418,7 +419,7 @@ from captcha.models import CaptchaStore
 #         # create user and get pk
 #         User.objects.create_user(username="test_user", email="test_user@example.com")
 #         user = User.objects.get(username="test_user")
-        
+
 #         # Create token with user.pk
 #         token = make_timed_token(user.pk, 20)
 #         # Test redirection to index
@@ -430,7 +431,7 @@ from captcha.models import CaptchaStore
 #         # create user and get pk
 #         User.objects.create_user(username="test_user", email="test_user@example.com")
 #         user = User.objects.get(username="test_user")
-        
+
 #         # Create token with user.pk
 #         token = make_timed_token(user.pk, 20)
 #         # Test redirection to invalid page
@@ -443,20 +444,20 @@ from captcha.models import CaptchaStore
 #     #     # create user and get pk
 #     #     User.objects.create_user(username="test_user", email="test_user@example.com")
 #     #     user = User.objects.get(username="test_user")
-        
+
 #     #     # Create token with user.pk
 #     #     token = make_timed_token(user.pk, 20)
 #     #     # Test redirection to invalid page
 #     #     response1 = self.client.get("/auth/activate/True/" + token)
 #     #     response2 = self.client.get("/auth/activate/True/" + token)
 #     #     self.assertNotEqual(response2.url, "/")
-    
+
 #     # Test out of time token and redirection to account_activation_invalid.html
 #     def test_mail_with_timed_out_token(self):
 #         # create user and get pk
 #         User.objects.create_user(username="test_user", email="test_user@example.com")
 #         user = User.objects.get(username="test_user")
-        
+
 #         # Create token with user.pk
 #         EXPIRY_MINUTES = 0
 #         EXPIRY_SECONDS = EXPIRY_MINUTES * 60
@@ -470,7 +471,7 @@ from captcha.models import CaptchaStore
 
 # class SessionCookieTest(TestCase):
 #     k_six_months_in_seconds = 60 * 60 * 24 * 30
-    
+
 #     # Test remember me checked
 #     def test_checked_remember_me(self):
 
@@ -478,15 +479,15 @@ from captcha.models import CaptchaStore
 #         email = "test_user@example.com"
 #         User.objects.create_user(username="test_user", email=email)
 #         user = User.objects.get(username="test_user")
-        
+
 #         # Create token with user.pk
 #         token = make_timed_token(email, 20)
-        
+
 #         # Set remember_me to "True" like if checked
 #         remember_me = "True"
 #         # Simulate connexion
 #         response = self.client.get("/auth/activate/" + remember_me + "/" + token)
-        
+
 #         # Get cookies
 #         cookies = response.client.cookies
 #         for k, v in cookies.items():
@@ -503,15 +504,15 @@ from captcha.models import CaptchaStore
 #         email = "test_user@example.com"
 #         User.objects.create_user(username="test_user", email=email)
 #         user = User.objects.get(username="test_user")
-        
+
 #         # Create token with user.pk
 #         token = make_timed_token(email, 20)
-        
+
 #         # Set remember_me to "False" like if checked
 #         remember_me = "False"
 #         # Simulate connexion
 #         response = self.client.get("/auth/activate/" + remember_me + "/" + token)
-        
+
 #         # Get cookies
 #         cookies = response.client.cookies
 #         for k, v in cookies.items():
@@ -546,7 +547,7 @@ from captcha.models import CaptchaStore
 #                      'password2': "",
 #                      'remember_me': False }
 #         response = self.client.post(reverse("authentication:login"), context)
-        
+
 #         # Test good printing of the page
 #         ## No idea what you're trying to do here.
 
@@ -584,7 +585,7 @@ from captcha.models import CaptchaStore
 #                      'password2': "",
 #                      'remember_me': True }
 #         response = self.client.post(reverse("authentication:login"), context)
-        
+
 #         # Test good printing of the page
 #         ## No idea what you're trying to do here.
 

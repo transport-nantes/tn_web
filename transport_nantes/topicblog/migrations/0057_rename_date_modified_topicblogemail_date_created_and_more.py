@@ -6,33 +6,33 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0056_alter_topicblogemail_date_modified_and_more'),
+        ("topicblog", "0056_alter_topicblogemail_date_modified_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='topicblogemail',
-            old_name='date_modified',
-            new_name='date_created',
+            model_name="topicblogemail",
+            old_name="date_modified",
+            new_name="date_created",
         ),
         migrations.RenameField(
-            model_name='topicblogitem',
-            old_name='date_modified',
-            new_name='date_created',
+            model_name="topicblogitem",
+            old_name="date_modified",
+            new_name="date_created",
         ),
         migrations.RenameField(
-            model_name='topicbloglauncher',
-            old_name='date_modified',
-            new_name='date_created',
+            model_name="topicbloglauncher",
+            old_name="date_modified",
+            new_name="date_created",
         ),
         migrations.RenameField(
-            model_name='topicblogmailinglistpitch',
-            old_name='date_modified',
-            new_name='date_created',
+            model_name="topicblogmailinglistpitch",
+            old_name="date_modified",
+            new_name="date_created",
         ),
         migrations.RenameField(
-            model_name='topicblogpress',
-            old_name='date_modified',
-            new_name='date_created',
+            model_name="topicblogpress",
+            old_name="date_modified",
+            new_name="date_created",
         ),
     ]

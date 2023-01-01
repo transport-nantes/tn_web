@@ -39,27 +39,27 @@ def bouton_don(link_text, context={}):
 
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
-        request = context['request']
+        request = context["request"]
         absolute_url = request.build_absolute_uri(page_donation)
         html = (
             f"""<p><a href="{absolute_url}" role="button" target="_blank" """
             f"""style="{class_btn_donation_button}">{link_text}</a></p> """
         )
     else:
-        html = ('<a href="{url}" class="btn donation-button"'
-                'role="button" target="_blank"">{text}</a>').format(
-                url=page_donation,
-                text=link_text)
+        html = (
+            '<a href="{url}" class="btn donation-button"'
+            'role="button" target="_blank"">{text}</a>'
+        ).format(url=page_donation, text=link_text)
     return mark_safe(html)
 
 
 @register.simple_tag
 def bouton_join(link_text):
     return mark_safe(
-        ('<a href="{url}" class="btn donation-button '
-         'btn-sm" role="button" target="_blank">{text}</a>').format(
-            url=page_donation,
-            text=link_text)
+        (
+            '<a href="{url}" class="btn donation-button '
+            'btn-sm" role="button" target="_blank">{text}</a>'
+        ).format(url=page_donation, text=link_text)
     )
 
 
@@ -68,7 +68,7 @@ def bouton_don_lg(link_text, context={}):
 
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
-        request = context['request']
+        request = context["request"]
         absolute_url = request.build_absolute_uri(page_donation)
         html = (
             f"""<p><a href="{absolute_url}" """
@@ -76,9 +76,11 @@ def bouton_don_lg(link_text, context={}):
             f"""target="_blank">{link_text} &rarr;</a></p> """
         )
     else:
-        html = """<p><a href="{link_url}" class="btn """ + \
-            """donation-button btn-lg" target="_blank">{text} """ + \
-            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        html = (
+            """<p><a href="{link_url}" class="btn """
+            + """donation-button btn-lg" target="_blank">{text} """
+            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        )
         html = html.format(link_url=page_donation, text=link_text)
     return mark_safe(html)
 
@@ -87,8 +89,8 @@ def bouton_don_lg(link_text, context={}):
 def lien_don(link_text):
     return mark_safe(
         """<a href="{url}" target="_blank">{text}</a></p>""".format(
-            url=page_donation,
-            text=link_text)
+            url=page_donation, text=link_text
+        )
     )
 
 
@@ -100,7 +102,8 @@ def url_don():
 @register.simple_tag
 def external_url(url, label):
     html = """<a href="{url}" target="_blank">{label}</a>""".format(
-        url=url, label=label)
+        url=url, label=label
+    )
     return mark_safe(html)
 
 
@@ -109,7 +112,7 @@ def external_url_button(url, label, context={}):
 
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
-        request = context['request']
+        request = context["request"]
         url = request.build_absolute_uri(url)
         html = (
             """<p><a href="{url}" target="_blank" """
@@ -117,10 +120,12 @@ def external_url_button(url, label, context={}):
             """{label} &rarr;</a></p>"""
         )
     else:
-        html = """<p> """ + \
-            """<a href="{url}" target="_blank" """ + \
-            """class="btn navigation-button">{label} """ + \
-            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        html = (
+            """<p> """
+            + """<a href="{url}" target="_blank" """
+            + """class="btn navigation-button">{label} """
+            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        )
 
     return mark_safe(html.format(url=url, label=label))
 
@@ -130,7 +135,7 @@ def action_button(link_url, topic_name, context={}):
 
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
-        request = context['request']
+        request = context["request"]
         link_url = request.build_absolute_uri(link_url)
         html = (
             f"""<p><a href="{link_url}" """
@@ -138,10 +143,12 @@ def action_button(link_url, topic_name, context={}):
             f"""{topic_name} &rarr;</a></p> """
         )
     else:
-        html = """<p> """ + \
-            """<a href="{link_url}" class="btn donation-button """ + \
-            """btn-lg" target="_blank">{topic_name} """ + \
-            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        html = (
+            """<p> """
+            + """<a href="{link_url}" class="btn donation-button """
+            + """btn-lg" target="_blank">{topic_name} """
+            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+        )
         html = html.format(link_url=link_url, topic_name=topic_name)
 
     return mark_safe(html)
@@ -151,27 +158,34 @@ def action_button(link_url, topic_name, context={}):
 def contact_button(button_text, email_subject):
     """This might (should) someday become a form."""
     html_template = (
-        '<p>'
+        "<p>"
         '<a href="mailto:jevousaide@transport-nantes.com?subject={subj}&nbsp;!'
         'class="btn donation-button btn-lg">{text}'
-        '<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>')
-    return mark_safe(html_template.format(
-        subj=email_subject, text=button_text))
+        '<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>'
+    )
+    return mark_safe(
+        html_template.format(subj=email_subject, text=button_text)
+    )
 
 
 @register.simple_tag
 def full_width_fixed_amount_donation_button(
-        message=None, amount=1, cta_message="Soutenir"):
+    message=None, amount=1, cta_message="Soutenir"
+):
     """Creates a banner with a message"""
     if message is None:
-        message = "Soutenez les Mobilitains pour une meilleure mobilité." +\
-            " Faites un don !"
-    html_template = """<div id="donation-banner" class="d-flex flex-column justify-content-center background-ad-hoc-blue mb-3">""" + \
-        """<div class="d-flex flex-column justify-content-center m-auto p-2">""" + \
-        f"""<p>{message}</p>""" + \
-        f"""{fixed_amount_donation_button(amount, cta_message)}""" + \
-        """</div>""" + \
-        """</div>"""  # noqa
+        message = (
+            "Soutenez les Mobilitains pour une meilleure mobilité."
+            + " Faites un don !"
+        )
+    html_template = (
+        """<div id="donation-banner" class="d-flex flex-column justify-content-center background-ad-hoc-blue mb-3">"""
+        + """<div class="d-flex flex-column justify-content-center m-auto p-2">"""
+        + f"""<p>{message}</p>"""
+        + f"""{fixed_amount_donation_button(amount, cta_message)}"""
+        + """</div>"""
+        + """</div>"""
+    )  # noqa
     return mark_safe(html_template)
 
 
@@ -188,9 +202,12 @@ def fixed_amount_donation_button(amount=1, cta_message="Soutenir"):
     The cta_message is the button text.
 
     """
-    html_template = """<a href="{url}" class="btn donation-button">""" + \
-        f"""{cta_message}</a>"""
-    return mark_safe(html_template.format(
-        url=reverse("stripe_app:quick_donation", args=[amount])
+    html_template = (
+        """<a href="{url}" class="btn donation-button">"""
+        + f"""{cta_message}</a>"""
+    )
+    return mark_safe(
+        html_template.format(
+            url=reverse("stripe_app:quick_donation", args=[amount])
         )
     )

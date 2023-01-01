@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('press', '0002_alter_pressmention_options'),
+        ("press", "0002_alter_pressmention_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pressmention',
-            name='og_description',
+            model_name="pressmention",
+            name="og_description",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='pressmention',
-            name='og_image',
+            model_name="pressmention",
+            name="og_image",
             field=models.URLField(blank=True, max_length=255),
         ),
         migrations.AddField(
-            model_name='pressmention',
-            name='og_title',
+            model_name="pressmention",
+            name="og_title",
             field=models.CharField(blank=True, max_length=255),
         ),
     ]

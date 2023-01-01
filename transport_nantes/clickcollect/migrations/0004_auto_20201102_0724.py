@@ -7,17 +7,17 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('clickcollect', '0003_auto_20201102_0715'),
+        ("clickcollect", "0003_auto_20201102_0715"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='clickandcollect',
-            name='reserve_date',
+            model_name="clickandcollect",
+            name="reserve_date",
         ),
         migrations.AddField(
-            model_name='clickandcollect',
-            name='reserve_datetime',
+            model_name="clickandcollect",
+            name="reserve_datetime",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

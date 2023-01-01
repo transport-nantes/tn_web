@@ -2,11 +2,13 @@ from django.db import models
 
 # Create your models here.
 
+
 class MapDefinition(models.Model):
     """Primary model to display maps according to the city name.
     city field will get retrieved to create the url leading to the observatory.
     /observatoire/<city>/<observatory_type>
     """
+
     # City name : "Nantes"
     city = models.CharField(max_length=50)
     # Public display of what we're looking at : "planvelo"
@@ -24,35 +26,47 @@ class MapDefinition(models.Model):
     public_description_md = models.TextField(default="")
 
     def __str__(self):
-        return '{city} / {observatory_name}'.format(city=self.city,
-        observatory_name=self.observatory_name)
+        return "{city} / {observatory_name}".format(
+            city=self.city, observatory_name=self.observatory_name
+        )
 
 
 class MapLayer(models.Model):
     """Will set parameters for different layers contained in MapDefinition"""
+
     map_definition = models.ForeignKey(MapDefinition, on_delete=models.CASCADE)
     layer_name = models.CharField(max_length=100)
 
     # Depth = position on the stack
     layer_depth = models.SmallIntegerField()
 
-    layer_choices = [("BASE", "Base"),
-                    ("SATISFAIT", "Satisfait"),
-                    ("NON SATISFAIT", "Non Satisfait")]
+    layer_choices = [
+        ("BASE", "Base"),
+        ("SATISFAIT", "Satisfait"),
+        ("NON SATISFAIT", "Non Satisfait"),
+    ]
 
-    layer_type = models.CharField(max_length=13,
-                                choices=layer_choices,
-                                default="BASE")
+    layer_type = models.CharField(
+        max_length=13, choices=layer_choices, default="BASE"
+    )
 
     def __str__(self):
-        return str(self.layer_name)+ " " \
-            + str(self.map_definition.city) + " " \
-            + str(self.map_definition.observatory_name + " " \
-            + str(self.layer_type))
+        return (
+            str(self.layer_name)
+            + " "
+            + str(self.map_definition.city)
+            + " "
+            + str(
+                self.map_definition.observatory_name
+                + " "
+                + str(self.layer_type)
+            )
+        )
 
 
 class MapContent(models.Model):
     """Actual content of the layer, displayed on the map"""
+
     map_layer = models.ForeignKey(MapLayer, on_delete=models.CASCADE)
 
     # Raw  geojson file

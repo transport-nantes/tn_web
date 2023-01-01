@@ -6,28 +6,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0015_auto_20211019_0620'),
+        ("topicblog", "0015_auto_20211019_0620"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='body_image',
-            field=models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='body/'),
+            model_name="topicblogitem",
+            name="body_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="résolution recommandée : 1600x500",
+                upload_to="body/",
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='header_image',
-            field=models.ImageField(blank=True, help_text='résolution recommandée : 1600x500', upload_to='header/'),
+            model_name="topicblogitem",
+            name="header_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="résolution recommandée : 1600x500",
+                upload_to="header/",
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='og_image',
-            field=models.ImageField(blank=True, help_text='résolution recommandée : 1200x630', upload_to='opengraph/'),
+            model_name="topicblogitem",
+            name="og_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="résolution recommandée : 1200x630",
+                upload_to="opengraph/",
+            ),
         ),
         migrations.AlterField(
-            model_name='topicblogitem',
-            name='twitter_image',
-            field=models.ImageField(blank=True, help_text='2:1, résolution minimum : 300x157, max 4096x4096', upload_to='twitter/'),
+            model_name="topicblogitem",
+            name="twitter_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="2:1, résolution minimum : 300x157, max 4096x4096",
+                upload_to="twitter/",
+            ),
         ),
     ]

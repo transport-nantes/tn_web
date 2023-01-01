@@ -6,48 +6,48 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mobilito', '0002_session_event'),
+        ("mobilito", "0002_session_event"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='session',
-            name='address',
+            model_name="session",
+            name="address",
             field=models.CharField(blank=True, max_length=500, null=True),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='bicycle_count',
+            model_name="session",
+            name="bicycle_count",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='city',
+            model_name="session",
+            name="city",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='country',
+            model_name="session",
+            name="country",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='motor_vehicle_count',
+            model_name="session",
+            name="motor_vehicle_count",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='pedestrian_count',
+            model_name="session",
+            name="pedestrian_count",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='postcode',
+            model_name="session",
+            name="postcode",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='public_transport_count',
+            model_name="session",
+            name="public_transport_count",
             field=models.IntegerField(default=0),
         ),
     ]

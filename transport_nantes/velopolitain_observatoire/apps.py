@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class VelopolitainObservatoireConfig(AppConfig):
-    name = 'velopolitain_observatoire'
+    name = "velopolitain_observatoire"

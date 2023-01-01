@@ -7,14 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('topicblog', '0038_rename_teaser_words_topicbloglauncher_teaser_chars'),
-        ('mailing_list', '0009_alter_mailinglist_options'),
+        (
+            "topicblog",
+            "0038_rename_teaser_words_topicbloglauncher_teaser_chars",
+        ),
+        ("mailing_list", "0009_alter_mailinglist_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mailinglist',
-            name='linked_article',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='topicblog.topicblogitem'),
+            model_name="mailinglist",
+            name="linked_article",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="topicblog.topicblogitem",
+            ),
         ),
     ]

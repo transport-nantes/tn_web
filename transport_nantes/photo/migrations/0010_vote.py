@@ -9,24 +9,56 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('photo', '0009_photoentry_accepted_photoentry_pedestrian_issues_md_and_more'),
+        (
+            "photo",
+            "0009_photoentry_accepted_photoentry_pedestrian_issues_md_and_more",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Vote',
+            name="Vote",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tn_session_id', models.CharField(blank=True, max_length=200, null=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True, verbose_name='Date du vote')),
-                ('vote_value', models.BooleanField()),
-                ('captcha_succeeded', models.BooleanField(default=False)),
-                ('photo_entry', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='photo.photoentry')),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "tn_session_id",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                (
+                    "timestamp",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date du vote"
+                    ),
+                ),
+                ("vote_value", models.BooleanField()),
+                ("captcha_succeeded", models.BooleanField(default=False)),
+                (
+                    "photo_entry",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="photo.photoentry",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Vote',
-                'verbose_name_plural': 'Votes',
+                "verbose_name": "Vote",
+                "verbose_name_plural": "Votes",
             },
         ),
     ]

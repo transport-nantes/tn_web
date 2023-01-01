@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stripe_app', '0006_auto_20211011_1018'),
+        ("stripe_app", "0006_auto_20211011_1018"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='donation',
-            name='stripe_customer_id',
+            model_name="donation",
+            name="stripe_customer_id",
             field=models.CharField(max_length=50, null=True),
         ),
     ]
