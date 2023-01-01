@@ -19,7 +19,9 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install black
+          pip install flake8
       - name: Run linters
         continue-on-error: false
         run: |
           black --check --verbose --line-length 79 .
+          flake8 --tee --output-file flake8.report
