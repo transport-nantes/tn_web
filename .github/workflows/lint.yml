@@ -24,4 +24,4 @@ jobs:
         continue-on-error: false
         run: |
           black --check --verbose --line-length 79 .
-          flake8 --tee --output-file flake8.report
+          flake8 --tee --output-file flake8.report --exclude=__pycache__,migrations
