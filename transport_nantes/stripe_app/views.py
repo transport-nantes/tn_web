@@ -196,7 +196,9 @@ def create_checkout_session(request: dict) -> dict:
                 return JsonResponse({"sessionId": checkout_session["id"]})
         except Exception as error_message:
             logger.error(error_message)
-            return JsonResponse({"error": "Echec de la création de la session"})
+            return JsonResponse(
+                {"error": "Echec de la création de la session"}
+            )
 
 
 def order_amount(items: dict) -> int:
