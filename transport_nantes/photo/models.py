@@ -1,7 +1,6 @@
 """Models for photo competition."""
 import logging
 
-import bs4
 from bs4 import BeautifulSoup as bs
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -161,7 +160,8 @@ class Vote(models.Model):
         verbose_name="Date du vote",
         auto_now_add=True,
     )
-    # A vote in favor of an entry is (True) or against (False) or Pending (None)
+    # A vote in favor of an entry is (True) or against (False) or Pending
+    # (None)
     vote_value = models.BooleanField(null=False, blank=False)
     # If the user is logged in or succeeded in the captcha, we set this to True
     # In case the captcha failed, we set this to False

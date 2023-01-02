@@ -78,8 +78,8 @@ def bouton_don_lg(link_text, context={}):
     else:
         html = (
             """<p><a href="{link_url}" class="btn """
-            + """donation-button btn-lg" target="_blank">{text} """
-            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+            """donation-button btn-lg" target="_blank">{text} """
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
         )
         html = html.format(link_url=page_donation, text=link_text)
     return mark_safe(html)
@@ -122,9 +122,9 @@ def external_url_button(url, label, context={}):
     else:
         html = (
             """<p> """
-            + """<a href="{url}" target="_blank" """
-            + """class="btn navigation-button">{label} """
-            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+            """<a href="{url}" target="_blank" """
+            """class="btn navigation-button">{label} """
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
         )
 
     return mark_safe(html.format(url=url, label=label))
@@ -145,9 +145,9 @@ def action_button(link_url, topic_name, context={}):
     else:
         html = (
             """<p> """
-            + """<a href="{link_url}" class="btn donation-button """
-            + """btn-lg" target="_blank">{topic_name} """
-            + """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
+            """<a href="{link_url}" class="btn donation-button """
+            """btn-lg" target="_blank">{topic_name} """
+            """<i class="fa fa-arrow-right" area-hidden="true"></i></a></p>"""
         )
         html = html.format(link_url=link_url, topic_name=topic_name)
 
@@ -179,8 +179,11 @@ def full_width_fixed_amount_donation_button(
             + " Faites un don !"
         )
     html_template = (
-        """<div id="donation-banner" class="d-flex flex-column justify-content-center background-ad-hoc-blue mb-3">"""
-        + """<div class="d-flex flex-column justify-content-center m-auto p-2">"""
+        """<div id="donation-banner" """
+        """class="d-flex flex-column justify-content-center"""
+        """ background-ad-hoc-blue mb-3">"""
+        """<div class="d-flex flex-column justify-content-center"""
+        """ m-auto p-2">"""
         + f"""<p>{message}</p>"""
         + f"""{fixed_amount_donation_button(amount, cta_message)}"""
         + """</div>"""

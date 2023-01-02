@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import datetime
 from django.utils.timezone import make_aware
 
-from .events import *
+from .events import subscriber_count, user_current_state, user_subscribe_count
 from .models import MailingList, MailingListEvent
 
 

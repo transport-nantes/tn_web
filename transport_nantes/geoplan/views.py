@@ -60,9 +60,20 @@ class MapView(TemplateView):
         # CartoDB is a Black and white map to highlight colors
         folium.TileLayer("cartodb positron", attr="CartoDB").add_to(geomap)
         # CyclOSM displays cyclist oriented information like parking, pathways.
+        tiles = (
+            "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
+        )
+        attr_OSM = (
+            "<a href="
+            '"https://github.com/cyclosm/cyclosm-cartocss-style/releases" '
+            'title="CyclOSM - Open Bicycle render">CyclOSM</a> | '
+            "Map data: &copy; "
+            '<a href="https://www.openstreetmap.org/copyright">'
+            "OpenStreetMap</a> contributors"
+        )
         folium.TileLayer(
-            tiles="https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
-            attr='<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            tiles=tiles,
+            attr=attr_OSM,
             name="CyclOSM",
         ).add_to(geomap)
 
@@ -90,9 +101,11 @@ class MapView(TemplateView):
                     name=layer_name,
                     # This lambda function is mandatory to use the
                     # style_function argument. It passes a dict as argument
-                    # which contains datas about the layer (like the coordinates)
-                    # This dict is stored in the "_" argument, deleting it woult
-                    # result in the first argument being overridden by the dict.
+                    # which contains datas about the layer
+                    # (like the coordinates)
+                    # This dict is stored in the "_" argument, deleting it
+                    # would result in the first argument being overridden by
+                    # the dict.
                     # styles is a list of dict containing args to set various
                     # styles settings such as thickness, opacity, color...
                     style_function=lambda _, ind=index, style=styles: style[
@@ -130,8 +143,8 @@ class MapView(TemplateView):
                 ).add_to(subgroup)
             else:  # Raise 404 if the layer isn't set properly
                 raise Http404(
-                    f"Il y a un problème avec la couche {map_content.map_layer.layer_name}.\
-                            Veuillez contacter l'administreur."
+                    "Il y a un problème avec la couche "
+                    f"{map_content.map_layer.layer_name}."
                 )
 
         # This is the Layer filter to enable / disable datas on map
@@ -143,7 +156,10 @@ class MapView(TemplateView):
         # Hack to prevent Boostrap 3.2 to load, causes style conflict.
         # PR is on the way to update folium as of 29/06/21
         # Deleting the extra bootstrap import solves style conflict.
-        old_bs_link = "https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+        old_bs_link = (
+            "https://maxcdn.bootstrapcdn.com/bootstrap"
+            "/3.2.0/css/bootstrap.min.css"
+        )
         html = html.replace(old_bs_link, "")
         context["html_map"] = html
         context["map_defn"] = map_definition
@@ -186,7 +202,7 @@ class DownloadGeoJSONView(View):
             last_layer = (
                 MapContent.objects.filter(
                     map_layer__map_definition__city=city,
-                    map_layer__map_definition__observatory_name=observatory_name,
+                    map_layer__map_definition__observatory_name=observatory_name,  # noqa
                     map_layer__layer_name=layer_name,
                 )
                 .order_by("map_layer__layer_depth")

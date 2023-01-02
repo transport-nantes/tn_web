@@ -163,7 +163,8 @@ class InappropriateFlag(models.Model):
     reporter_user = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, blank=True
     )
-    # the reporter's note to explain why they think the session is inappropriate
+    # the reporter's note to explain why they think the session is
+    # inappropriate
     report_details = models.TextField(blank=True, null=True)
     # the timestamp of the report creation.
     creation_timestamp = models.DateTimeField(auto_now_add=True)

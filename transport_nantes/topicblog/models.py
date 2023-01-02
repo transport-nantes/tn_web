@@ -1167,7 +1167,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
     send_object_url = "topicblog:send_press"
     description_of_object = "Communiqué de presse"
 
-    # This is the value that defines the length of the first_paragraph property.
+    # This is the value that defines the length of the first_paragraph
+    # property.
     snippet_char_limit = 100
 
     @property
@@ -1201,7 +1202,7 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
         # NavigableString is a string inside a tag, like the text inside
         # <p>text</p>. We can access the string with element.string.
         # and we can replace it with element.string.replace_with().
-        if type(element) == bs4.element.NavigableString:
+        if isinstance(element, bs4.element.NavigableString):
             if total_length >= self.snippet_char_limit:
                 # When the cumulated length of the text is greater than
                 # self.snippet_char_limit, we remove the remaining text.
@@ -1209,7 +1210,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
                 return total_length
             if total_length + len(str(element)) >= self.snippet_char_limit:
                 # When the cumulated length of the text is greater than
-                # self.snippet_char_limit, we truncate the text and add an ellipsis.
+                # self.snippet_char_limit, we truncate the text and add an
+                # ellipsis.
                 element.string.replace_with(
                     str(element)[: self.snippet_char_limit - total_length]
                     + "…"
@@ -1217,7 +1219,8 @@ class TopicBlogPress(TopicBlogObjectSocialBase):
             return total_length + len(str(element))
         else:
             # We recursively inspect all children while counting the chars
-            # until we run out of children or reach self.snippet_char_limit chars.
+            # until we run out of children or reach self.snippet_char_limit
+            # chars.
             for child in element.children:
                 total_length = self.truncate_first_pragraph(
                     child, total_length
@@ -1627,7 +1630,9 @@ class TopicBlogPanel(TopicBlogObjectBase):
     }
     template_config = {
         "topicblog/panel_did_you_know_tip_1.html": {
-            "email_template": "topicblog/panel_did_you_know_tip_1_mail_client.html",
+            "email_template": (
+                "topicblog/panel_did_you_know_tip_1_mail_client.html"
+            ),
             "default_choice": True,
             "user_template_name": "Le saviez-vous? 1",
             "active": True,

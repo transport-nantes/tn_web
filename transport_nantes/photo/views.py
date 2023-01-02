@@ -5,7 +5,7 @@ from asso_tn.utils import make_timed_token, token_valid
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, When, Case, Subquery, Value, QuerySet
+from django.db.models import Q, QuerySet
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -218,7 +218,8 @@ class PhotoView(FormView):
         logged in and / or has already voted on any photo.
 
         Overriding will allow the self.get_form() method to return a different
-        form and thus form.is_valid() will be performed against the proper form.
+        form and thus form.is_valid() will be performed against the proper
+        form.
         """
         user = request.user if request.user.is_authenticated else None
         tn_session_id = request.session.get("tn_session")

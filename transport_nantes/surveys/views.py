@@ -1,6 +1,5 @@
 from django.views.generic.base import TemplateView
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from .models import (
     Survey,
@@ -12,6 +11,8 @@ from .models import (
 
 # This currently does nothing useful, just says it doesn't know.
 # It should show a list of active questionnaires.
+
+
 class MainSurveyView(TemplateView):
     template_name = "surveys/index.html"
 
@@ -40,24 +41,26 @@ class QuestionnaireView(TemplateView):
         context["social"][
             "og_title"
         ] = "Élections présidentielles de printemps 2022"
-        context["social"][
-            "og_description"
-        ] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context["social"]["og_description"] = (
+            "Les Mobilitains interrogent les candidats aux présidentielles "
+            "sur leurs projets de soutien pour de la mobilité régionale"
+        )
         context["social"]["og_image"] = "asso_tn/drapeau.jpg"
         context["social"][
             "twitter_title"
         ] = "Élections présidentielles de printemps 2022"
-        context["social"][
-            "twitter_description"
-        ] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context["social"]["twitter_description"] = (
+            "Les Mobilitains interrogent les candidats aux présidentielles "
+            "sur leurs projets de soutien pour de la mobilité régionale"
+        )
         context["social"]["twitter_image"] = "asso_tn/drapeau.jpg"
 
         return context
 
 
-#### Views for answering questions ####################################
+# Views for answering questions ####################################
 
-#### Decorate for login. ####
+# Decorate for login. ####
 class ResponseView(TemplateView):
     template_name = "surveys/response_1.html"
 
@@ -76,22 +79,24 @@ class ResponseView(TemplateView):
         context["social"][
             "og_title"
         ] = "Élections présidentielles de printemps 2022"
-        context["social"][
-            "og_description"
-        ] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context["social"]["og_description"] = (
+            "Les Mobilitains interrogent les candidats aux présidentielles "
+            "sur leurs projets de soutien pour de la mobilité régionale"
+        )
         context["social"]["og_image"] = "asso_tn/drapeau.jpg"
         context["social"][
             "twitter_title"
         ] = "Élections présidentielles de printemps 2022"
-        context["social"][
-            "twitter_description"
-        ] = "Les Mobilitains interrogent les candidats aux présidentielles sur leurs projets de soutien pour de la mobilité régionale"
+        context["social"]["twitter_description"] = (
+            "Les Mobilitains interrogent les candidats aux présidentielles "
+            "sur leurs projets de soutien pour de la mobilité régionale"
+        )
         context["social"]["twitter_image"] = "asso_tn/drapeau.jpg"
 
         return context
 
 
-#### Views for viewing results ########################################
+# Views for viewing results ########################################
 
 social = {
     "twitter_title": "Élections régionales et départementales 2021",

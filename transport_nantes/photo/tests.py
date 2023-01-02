@@ -331,7 +331,8 @@ class TestPhotoGallery(TestCase):
 
         # Adding a non-accepted image should chane nothing.
         add_image_for_test(self, accepted=False, sha1_name="b")
-        # Previous/Next links should point to the same image if there's only one.
+        # Previous/Next links should point to the same image if there's only
+        # one.
         check_image_and_prev_next(self, "a", "a", "a")
 
     def test_display_several(self):
@@ -454,7 +455,8 @@ class TestVotes(StaticLiveServerTestCase):
         An expectation for checking that an element has a particular css class.
 
         locator - used to find the element
-        does_not_have_class - used to check if the element does not have the css class
+        does_not_have_class - used to check if the element does not have the
+        css class.
         returns the WebElement once it has the particular css class
         """
 
@@ -512,7 +514,8 @@ class TestVotes(StaticLiveServerTestCase):
         self.assertEqual(Vote.objects.first().user, None)
         self.assertEqual(Vote.objects.first().vote_value, True)
 
-        # We now simply click on vote button again, this should produce a new Vote
+        # We now simply click on vote button again, this should produce a new
+        # Vote
         self.anon_browser.find_element(By.ID, "upvote-button").click()
 
         # The POST request can take some time to process, we wait until it's

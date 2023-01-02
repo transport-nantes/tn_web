@@ -109,34 +109,6 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
         # Close the browser
         self.selenium.quit()
 
-    # def testing_quick_form_logged_out(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url,
-    #                                 reverse("topicblog:view_item_by_slug",
-    #                                         kwargs={
-    #                                             "the_slug": self.home.slug
-    #                                         })))
-    #     email_input = self.selenium.find_element_by_id("id_email")
-    #     email_input.send_keys("nomail@nomail.fr")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     # pass the captcha only work on dev mod
-    #     captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-    #     captcha_input.send_keys("PASSED")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     user = User.objects.filter(email="nomail@nomail.fr").first()
-    #     self.assertIsNotNone(
-    #         user,
-    #         msg="The user was not created during mailing list signup")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
-    #     self.assertIsNotNone(mailing_list_event,
-    #                          msg="The mailing event is not created"
-    #                              "on quick sign up")
-
-    #     self.assertEqual(
-    #         mailing_list_event.event_type, "sub",
-    #         msg="The user is not subscribed to the default mailing list")
-
     def testing_quick_form_logged_in(self):
         # Get on mobilitains website
         self.selenium.get(
@@ -186,68 +158,6 @@ class MailingListIntegrationTestCase(LiveServerTestCase):
             "sub",
             msg="The user is not sub on the default mailing list",
         )
-
-    # def testing_quick_form_fail_captcha_logged_out(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url,
-    #                                 reverse("topicblog:view_item_by_slug",
-    #                                         kwargs={
-    #                                             "the_slug": self.home.slug
-    #                                         })))
-    #     email_input = self.selenium.find_element_by_id("id_email")
-    #     email_input.send_keys("nomail@nomail.fr")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     # fail the capcha
-    #     captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-    #     captcha_input.send_keys("Notgood")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     # pass the captcha only work on dev mod
-    #     captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-    #     captcha_input.send_keys("PASSED")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     user = User.objects.filter(email="nomail@nomail.fr").first()
-    #     self.assertIsNotNone(user,
-    #                          msg="The user is not created on quick sign up")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
-    #     self.assertIsNotNone(mailing_list_event,
-    #                          msg="The mailing event is not created"
-    #                              "on quick sign up")
-
-    #     self.assertEqual(mailing_list_event.event_type, "sub",
-    #                      msg="The user is not sub on the default mailing list")
-
-    # def testing_quick_form_fail_captcha_logged_in(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url,
-    #                                 reverse("topicblog:view_item_by_slug",
-    #                                         kwargs={
-    #                                             "the_slug": self.home.slug
-    #                                         })))
-    #     email_input = self.selenium.find_element_by_id("id_email")
-    #     email_input.send_keys("nomail@nomail.fr")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     # fail the capcha
-    #     captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-    #     captcha_input.send_keys("Notgood")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     # pass the captcha only work on dev mod
-    #     captcha_input = self.selenium.find_element_by_id("id_captcha_1")
-    #     captcha_input.send_keys("PASSED")
-    #     self.selenium.find_element_by_css_selector(
-    #         "form button[type=submit]").click()
-    #     user = User.objects.filter(email="nomail@nomail.fr").first()
-    #     self.assertIsNotNone(user,
-    #                          msg="The user is not created on quick sign up")
-    #     mailing_list_event = MailingListEvent.objects.filter(user=user).first()
-    #     self.assertIsNotNone(mailing_list_event,
-    #                          msg="The mailing event is not created"
-    #                              "on quick sign up")
-
-    #     self.assertEqual(mailing_list_event.event_type, "sub",
-    #                      msg="The user is not sub on the default mailing list")
 
     def testing_acces_with_get_to_the_quick_form(self):
         quick_signup_url = reverse("mailing_list:quick_signup")

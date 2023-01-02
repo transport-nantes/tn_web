@@ -22,5 +22,5 @@ def socials_share_buttons(context: dict):
             <i class="fab fa-facebook"></i>
         </a>
     </div>
-    """
+    """  # noqa
     return mark_safe(Template(html_template).render(Context(context)))

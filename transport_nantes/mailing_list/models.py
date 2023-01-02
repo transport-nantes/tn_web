@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
 import django.utils.timezone
 
 
@@ -150,14 +149,17 @@ class MailingListEvent(models.Model):
     event_type = models.CharField(max_length=6, choices=EventType.choices)
 
     def __str__(self):
-        return "U={u_fn} {u_ln} <{u_e}> ({u_commune}), L={mlist}, E={event}, {ts}".format(
-            u_fn=self.user.first_name,
-            u_ln=self.user.last_name,
-            u_e=self.user.email,
-            u_commune=self.user.profile.commune,
-            mlist=self.mailing_list,
-            event=self.event_type,
-            ts=self.event_timestamp,
+        return (
+            "U={u_fn} {u_ln} <{u_e}> ({u_commune}), L={mlist}, "
+            "E={event}, {ts}".format(
+                u_fn=self.user.first_name,
+                u_ln=self.user.last_name,
+                u_e=self.user.email,
+                u_commune=self.user.profile.commune,
+                mlist=self.mailing_list,
+                event=self.event_type,
+                ts=self.event_timestamp,
+            )
         )
 
 
