@@ -38,13 +38,15 @@ Some examples:
     [[don:]]((text))           equivalent to {% bouton_don "text" %}
     [[don:large]]((text))      equivalent to {% bouton_don_lg "text" %}
     [[don:adhésion]]((text))   equivalent to {% bouton_join "text" %}
-    [[don:fixed|1]]((text))    equivalent to {% fixed_amount_donation_button 1 "text" %}
+    [[don:fixed|1]]((text))    equivalent to
+                               {% fixed_amount_donation_button 1 "text" %}
 
     [[news:name]]((text))      equivalent to {% show_mailing_list name %}
     [[panel:]]((slug))         equivalent to {% panel 'slug' %}
-                               The associated test is located in test_templatetags.py
-                               because it requires some setup that induces changes
-                               in how the rendering is done.
+                               The associated test is located in
+                               test_templatetags.py
+                               because it requires some setup that induces
+                               changes in how the rendering is done.
 
     [[slug:text]]((item_slug)) equivalent to [text](/tb/t/item_slug/)
     [[cta:text]]((item_slug))  CTA labeled [text] to (/tb/t/item_slug/)
@@ -54,7 +56,8 @@ Some examples:
     [[externe:label]]((URL))   equivalent to [text](URL) (for external links)
     [[EXTERNE:label]]((URL))   externe but a button with arrow
     [[petition:label]]((petition_slug))
-                               equivalent to [text](/ml/petition/petition_slug/)
+                               equivalent to
+                               [text](/ml/petition/petition_slug/)
 
 Note that we assume that there is no HTML in the incoming text and
 that standard markdown transformations will applied on output.  The

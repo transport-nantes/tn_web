@@ -1,5 +1,3 @@
-from pathlib import Path
-import requests
 from unittest.mock import patch
 from django.test import TestCase, Client
 from .models import PressMention
@@ -99,7 +97,8 @@ class PressMentionTestCase(TestCase):
             )
 
     def test_list_view_press(self):
-        """Only user with press-editor permission should have access to this page
+        """
+        Only user with press-editor permission should have access to this page.
         For this test we use a list of dictionaries, that is composed of:
         - client = the client of user (auth user, unauth and permited user)
         - code = the excepted statut code
@@ -108,7 +107,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -131,7 +132,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -153,7 +156,8 @@ class PressMentionTestCase(TestCase):
             )
 
     def test_create_view_press(self):
-        """Only user with press-editor permission should have access to this page
+        """
+        Only user with press-editor permission should have access to this page.
         For this test we use a list of dictionaries, that is composed of:
         - client = the client of user (auth user, unauth and permited user)
         - code = the excepted statut code
@@ -162,7 +166,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -182,7 +188,8 @@ class PressMentionTestCase(TestCase):
             )
 
     def test_update_view_press(self):
-        """Only user with press-editor permission should have access to this page
+        """
+        Only user with press-editor permission should have access to this page.
         For this test we use a list of dictionaries, that is composed of:
         - client = the client of user (auth user, unauth and permited user)
         - code = the excepted statut code
@@ -191,7 +198,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -218,7 +227,8 @@ class PressMentionTestCase(TestCase):
             )
 
     def test_delete_view_press(self):
-        """Only user with press-editor permission should have access to this page
+        """
+        Only user with press-editor permission should have access to thispage.
         For this test we use a list of dictionaries, that is composed of:
         - client = the client of user (auth user, unauth and permited user)
         - code = the excepted statut code
@@ -227,7 +237,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -292,7 +304,8 @@ class PressMentionTestCase(TestCase):
         # self.assertIn(".jpeg", new_press_mention.og_image.url)
 
     def test_detail_view_press(self):
-        """Only user with press-editor permission should have access to this page
+        """
+        Only user with press-editor permission should have access to this page.
         For this test we use a list of dictionaries, that is composed of:
         - client = the client of user (auth user, unauth and permited user)
         - code = the excepted statut code
@@ -301,7 +314,9 @@ class PressMentionTestCase(TestCase):
             {
                 "client": self.client,
                 "code": 403,
-                "msg": "Auth user without permission can't access to this page",
+                "msg": (
+                    "Auth user without permission can't access to this page"
+                ),
             },
             {
                 "client": self.unauth_client,
@@ -343,7 +358,10 @@ class PressMentionTestCase(TestCase):
         self.assertEqual(
             response.status_code,
             302,
-            msg="Unauth users don't have access to check for duplicates endpoint",
+            msg=(
+                "Unauth users don't have access to check for duplicates"
+                " endpoint"
+            ),
         )
 
         response = self.user_permited_client.get(url, data=data)
@@ -387,7 +405,7 @@ class PressMentionTestCase(TestCase):
                 <head>
                 <meta property="og:title" content="Test title" />
                 <meta property="og:description" content="Test description" />
-                <meta property="og:image" content="https://example.com/test.jpg" />
+            <meta property="og:image" content="https://example.com/test.jpg" />
                 </head>
             </html>
             """.encode(

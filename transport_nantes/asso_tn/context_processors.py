@@ -9,7 +9,6 @@ configuration of a DjangoTemplates backend and used by RequestContext.
 """
 
 from django.conf import settings
-from django.template import RequestContext
 
 
 def role(request):

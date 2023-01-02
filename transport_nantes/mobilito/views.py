@@ -860,7 +860,8 @@ class ReverseGeocodingView(View):
                 return HttpResponse(status=400)
 
         gcp_logger.error(
-            f"{self.request.user} queried reverse geocode but a param is missing"
+            f"{self.request.user} queried reverse geocode but a param is "
+            "missing"
             f" {lat=}, {lng=}"
         )
 

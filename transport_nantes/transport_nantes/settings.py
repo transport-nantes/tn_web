@@ -119,18 +119,21 @@ DATABASES = settings_local.DATABASES
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
+password_validation_path = "django.contrib.auth.password_validation."
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            password_validation_path + "UserAttributeSimilarityValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": password_validation_path + "MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": password_validation_path + "CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": password_validation_path + "NumericPasswordValidator",
     },
 ]
 PASSWORD_RESET_TIMEOUT_DAYS = 1
@@ -165,12 +168,18 @@ LOGGING = {
     "formatters": {
         "django.server": {
             "()": "django.utils.log.ServerFormatter",
-            "format": "[{asctime}] {levelname}[{filename}:{lineno} ({funcName})] {message}",
+            "format": (
+                "[{asctime}] {levelname}[{filename}:{lineno} ({funcName})]"
+                " {message}"
+            ),
             "style": "{",
         },
         "django.ses.extra": {
             "()": "django.utils.log.ServerFormatter",
-            "format": "[{asctime}] {levelname}[{filename}:{lineno} ({funcName})] {message} Notification : {notification}",
+            "format": (
+                "[{asctime}] {levelname}[{filename}:{lineno} ({funcName})]"
+                " {message} Notification : {notification}"
+            ),
             "style": "{",
         },
     },
@@ -283,10 +292,6 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-# CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',)
-## I have a low success rate on the captcha with noise_arcs enabled.
-## (This is the default behaviour.)
-# CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs','captcha.helpers.noise_dots',)
 CAPTCHA_NOISE_FUNCTIONS = ("captcha.helpers.noise_dots",)
 CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.random_char_challenge"
 CAPTCHA_LENGTH = 5

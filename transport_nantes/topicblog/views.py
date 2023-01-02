@@ -293,7 +293,8 @@ class TopicBlogBaseViewOne(LoginRequiredMixin, TemplateView):
                 self.template_name = tb_object.template_name
             else:
                 logger.error(
-                    f"Current template ({tb_object.template_name}) is not configured."
+                    f"Current template ({tb_object.template_name}) "
+                    "is not configured."
                 )
                 logger.debug(
                     f"Template config: {tb_object.template_config}"
@@ -1594,7 +1595,8 @@ def send_received_handler(sender, mail_obj, send_obj, *args, **kwargs):
             send_record.aws_message_id = aws_message_id
             send_record.save()
             logger.info(
-                f"send_received : {send_record_class.__name__} id={send_record.pk}"
+                f"send_received : {send_record_class.__name__} "
+                f"id={send_record.pk}"
             )
         except Exception as e:
             logger.error(f"Error while updating send_record : {e}")

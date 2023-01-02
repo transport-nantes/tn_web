@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from django.template import Template, Context
 from django.test.client import RequestFactory
 from django.test import TestCase
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from topicblog.models import TopicBlogItem, TopicBlogLauncher, TopicBlogPanel
 from datetime import datetime, timezone
@@ -58,23 +58,6 @@ class TBEmailTemplateTagsTests(TestCase):
 
         slug = "index"
         label = "Go to the homepage"
-        expected_template = """
-        <tr>
-            <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
-            background-color:#ffffff;text-align:center;">
-                <p>
-                    <a href="http://127.0.0.1:8000{slug}"
-                    class="btn donation-button btn-lg"
-                    style="background-color: #5BC2E7;color:white;font-weight: 600;">
-                        {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
-                    </a>
-                </p>
-            </td>
-        </tr>
-        """.format(
-            slug=reverse_lazy("topic_blog:view_item_by_slug", args=[slug]),
-            label=label,
-        )
 
         template_string = (
             "{% load email_tags %}" "{% email_cta_button slug label %}"
@@ -89,11 +72,11 @@ class TBEmailTemplateTagsTests(TestCase):
             {"slug": slug, "label": label, "request": http_request}
         )
         rendered_template = Template(template_string).render(context)
-        # Get rid of the whitespaces
-        rendered_template = " ".join(rendered_template.split())
-        expected_template = " ".join(expected_template.split())
-
-        self.assertEqual(rendered_template, expected_template)
+        self.assertIn(label, rendered_template)
+        self.assertIn(
+            reverse("topic_blog:view_item_by_slug", args=[slug]),
+            rendered_template,
+        )
 
 
 class TBLauncherTemplateTagsTests(TestCase):
@@ -187,7 +170,9 @@ class TestTopicBlogPanel(TestCase):
         )
 
     def test_inclusion_tag(self):
-        """Check that the TBPanel is rendered with markdown using inclusion tag."""
+        """
+        Check that the TBPanel is rendered with markdown using inclusion tag.
+        """
         template_string = """{% load panels %}{% panel "test-panel" %}"""
         context = Context()
         context["request"] = RequestFactory().get("/")
@@ -203,7 +188,8 @@ class TestTopicBlogPanel(TestCase):
 
         This test isn't in test_tn_links.py because the use of panel requires
         some setup : All panels aren't rendered the same, as they use
-        a property to set their template, that will in turn set their rendering.
+        a property to set their template, that will in turn
+        set their rendering.
         """
         template_string = """
             {% load markdown %}

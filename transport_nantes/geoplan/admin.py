@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import MapDefinition, MapLayer, MapContent
 
 # Register your models here.
+
+
 class GeoplanPageAdmin(admin.ModelAdmin):
     pass
 

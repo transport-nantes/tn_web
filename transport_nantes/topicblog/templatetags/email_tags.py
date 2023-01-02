@@ -24,7 +24,7 @@ def email_full_width_image(
             </a>
         </td>
     </tr>
-    """.format(
+    """.format(  # noqa: E501
         filepath=request.build_absolute_uri(filepath),
         alt_text=alt_text,
         link=link,
@@ -60,14 +60,14 @@ def email_cta_button(context: dict, slug: str, label: str) -> str:
         <td style="padding-right:30px;padding-left:30px;padding-bottom:15px;
         background-color:#ffffff;text-align:center;">
             <p>
-                <a href="{scheme}://{host}{tbe_path}" class="btn donation-button btn-lg" 
+                <a href="{scheme}://{host}{tbe_path}" class="btn donation-button btn-lg"
                 style="background-color: #5BC2E7;color:white;font-weight: 600;">
                     {label} <i class="fa fa-arrow-right" area-hidden="true"></i>
                 </a>
             </p>
         </td>
     </tr>
-    """.format(
+    """.format(  # noqa: E501
         scheme=scheme, host=host, tbe_path=tbe_path, label=label
     )
     return mark_safe(html_template)

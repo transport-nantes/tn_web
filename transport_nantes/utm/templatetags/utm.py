@@ -1,7 +1,6 @@
 from django import template
 import datetime
 from django.utils.timezone import make_aware
-from django.db.models import Count, Max
 from utm.models import UTM
 
 register = template.Library()

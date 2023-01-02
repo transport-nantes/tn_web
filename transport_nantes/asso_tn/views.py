@@ -2,6 +2,8 @@ from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
 # Create your views here.
+
+
 class MainTransportNantes(TemplateView):
     template_name = "asso_tn/index.html"
     twitter_image = ""

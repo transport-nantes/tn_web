@@ -7,6 +7,8 @@ from django.db.models import Max
 from .models import MapContent, MapLayer, MapDefinition
 
 # Create your tests here.
+
+
 class GeoplanTest(TestCase):
     def setUp(self):
         self.definition = {
@@ -33,10 +35,18 @@ class GeoplanTest(TestCase):
             "geojson": """{
                 "type": "FeatureCollection",
                 "name": "reseau_velo_metropolitain_4326",
-                "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                "crs": {
+                    "type": "name",
+                    "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                 "features": [
-                    {"type": "Feature", "properties": {"id": 1}, "geometry": {
-                        "type": "MultiLineString", "coordinates": [[ -1.710792615591268, 47.210384214678122 ]]}}
+                    {"type": "Feature",
+                    "properties": {"id": 1},
+                    "geometry": {
+                        "type": "MultiLineString",
+                        "coordinates": [
+                            [ -1.710792615591268, 47.210384214678122 ]
+                            ]
+                    }}
                 ]
             }""",
             "timestamp": now(),
@@ -59,10 +69,15 @@ class GeoplanTest(TestCase):
             "geojson": """{
                 "type": "FeatureCollection",
                 "name": "reseau_velo_metropolitain_4326",
-                "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                "crs": {
+                    "type": "name",
+                    "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                 "features": [
-                    {"type": "Feature", "properties": {"id": 1}, "geometry": {
-                        "type": "MultiLineString", "coordinates": [[ -2, 47 ]]}}
+                    {"type": "Feature",
+                    "properties": {"id": 1},
+                    "geometry": {
+                        "type": "MultiLineString",
+                        "coordinates": [[ -2, 47 ]]}}
                 ]
             }""",
             # This timestamp will be after the first layer
@@ -86,10 +101,18 @@ class GeoplanTest(TestCase):
             "geojson": """{
                 "type": "FeatureCollection",
                 "name": "reseau_velo_metropolitain_4326",
-                "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                "crs": {
+                    "type": "name",
+                    "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                 "features": [
-                    {"type": "Feature", "properties": {"id": 1}, "geometry": {
-                        "type": "MultiLineString", "coordinates": [[ -2, 47 ]]}}
+                    {
+                        "type": "Feature",
+                        "properties": {"id": 1},
+                        "geometry": {
+                            "type": "MultiLineString",
+                            "coordinates": [[ -2, 47 ]]
+                        }
+                    }
                 ]
             }""",
             "timestamp": now(),

@@ -1244,17 +1244,23 @@ class TopicBlogEmailTest(TransactionTestCase):
             {
                 "client": self.client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
             {
                 "client": self.no_permissions_client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
             {
                 "client": self.admin_client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
         ]
 

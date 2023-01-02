@@ -1,0 +1,7 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    migrations,
+    settings_local.py
+max-line-length = 79

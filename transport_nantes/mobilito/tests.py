@@ -118,17 +118,23 @@ class MobilitoSessionViewTests(TestCase):
             {
                 "client": self.author_client,
                 "code": 200,
-                "msg": "The page must return 200, permission is not mandatory.",
+                "msg": (
+                    "The page must return 200, permission is not mandatory."
+                ),
             },
             {
                 "client": self.anonymous_client,
                 "code": 200,
-                "msg": "The page must return 200, permission is not mandatory.",
+                "msg": (
+                    "The page must return 200, permission is not mandatory."
+                ),
             },
             {
                 "client": self.authorised_user_client,
                 "code": 200,
-                "msg": "The page must return 200, permission is not mandatory.",
+                "msg": (
+                    "The page must return 200, permission is not mandatory."
+                ),
             },
         ]
 
@@ -245,7 +251,8 @@ class MobilitoSessionViewTests(TestCase):
         self.assertEqual(
             response.status_code,
             404,
-            "Anonymous users can't flag a Mobilito Session that doesn't exist.",
+            "Anonymous users can't flag a Mobilito Session that doesn't "
+            "exist.",
         )
         self.assertEqual(
             InappropriateFlag.objects.count(),

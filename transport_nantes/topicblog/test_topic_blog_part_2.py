@@ -2131,17 +2131,23 @@ class TopicBlogPanelsViewsTests(TestCase):
             {
                 "client": self.client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
             {
                 "client": self.authorized_user_client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
             {
                 "client": self.no_permissions_client,
                 "code": 200,
-                "msg": "The page must return 200 independently of permissions.",
+                "msg": (
+                    "The page must return 200 independently of permissions."
+                ),
             },
         ]
 
@@ -2406,8 +2412,8 @@ class TopicBlogPanelsViewsTests(TestCase):
         self.assertEqual(last_panel.template_name, form_data["template_name"])
         # Because the uploaded image is converted from SimpleUploadedFile
         # to ImageField, the image name is different,
-        # and class is also different. Best we can do to check image persistence
-        # is to check that the image changed, and isn't None.
+        # and class is also different. Best we can do to check image
+        # persistence is to check that the image changed, and isn't None.
         self.assertNotEqual(last_panel.body_image_1, None)
         self.assertNotEqual(last_panel.body_image_1, self.image)
 
