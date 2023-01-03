@@ -51,7 +51,7 @@
 
 {% block app_content %}
 
-    <div class="d-flex col-12 col-md-8 flex-column mx-auto">
+    <div class="d-flex col-12 col-md-8 flex-column mx-auto mt-n4">
         <a class="btn navigation-button mr-auto mb-3" href="{% url 'photo:galerie' %}">
             <i class="fa-solid fa-chevron-left"></i>
             Retour à la galerie
@@ -92,13 +92,15 @@
         {% endif %}
 
 	{% if photo.photographer_identifier %}
-	    <p id="photographer_ident"><i>{{ photo.photographer_identifier }}</i></p>
+	    <p id="photographer_ident" class="mb-0"><i>{{ photo.photographer_identifier }}</i></p>
 	{% endif %}
 	{% if photo.submitter_info_md %}
 	    <div id="submitter_info">{% tn_markdown photo.submitter_info_md|default:"" %}</div>
 	{% endif %}
 	{% if photo.pedestrian_issues_md %}
-	    <p>Remarques des Mobilitains&nbsp;:</p>
+	    <p class="p-1 mr-auto" style="background-color:var(--mobilitains-bleu); color:white; font-weight:bolder; border-radius:3px">
+            Remarques des Mobilitains&nbsp;:
+        </p>
 	    <div id="ped_issues">{% tn_markdown photo.pedestrian_issues_md|default:"" %}</div>
 	{% endif %}
 
