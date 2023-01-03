@@ -1,8 +1,6 @@
 import datetime
 import json
 import logging
-import random
-import string
 
 import stripe
 import user_agents
@@ -13,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.http.response import HttpResponseServerError
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from mailing_list.events import subscribe_user_to_list
@@ -387,19 +386,6 @@ def stripe_webhook(request):
         return HttpResponse(status=500)
 
     return HttpResponse(status=200)
-
-
-def get_random_string(length=20) -> str:
-    """
-    Returns a random string of length "length"
-    This random string will be used as username value to
-    create a new user in get_user(email) function.
-    """
-    random_string = "".join(
-        random.choice(string.ascii_letters + string.digits)
-        for _ in range(length)
-    )  # noqa
-    return random_string
 
 
 def get_user(email: str) -> User:
