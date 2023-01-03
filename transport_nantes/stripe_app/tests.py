@@ -188,7 +188,20 @@ class StripeAppTests(TestCase):
         payload = payload.encode("utf-8")
 
         response = self.post_payload_to_webhook(payload)
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
+
+    def test_unknown_donation_type(self):
+        """Test the unknown donation type handling"""
+        response = self.client.post(
+            reverse("stripe_app:checkout-session"),
+            data={"donation_type": "unknown_donation_type"},
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_checkout_session_GET_status_code(self):
+        """Test that the checkout-session view returns a 405 status code."""
+        response = self.client.get(reverse("stripe_app:checkout-session"))
+        self.assertEqual(response.status_code, 405)
 
 
 class TestStripeAppSelenium(LiveServerTestCase):

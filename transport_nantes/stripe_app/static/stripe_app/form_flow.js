@@ -323,18 +323,21 @@ fetch("/donation/config/")
             headers: myHeaders,
             body: form_data,
             method:"POST"})
-        .then((result) => { return result.json(); })
-        .then((data) => {
-        console.log("Session ID :", data);
-        // Manually trigger before unload event to save success
-        // redirection doesn't seem to trigger it otherwise
-        window.dispatchEvent(new Event("beforeunload"))
-        // Redirect to Stripe Checkout once the checkout session is created
-        return stripe.redirectToCheckout({sessionId: data.sessionId})
+        .then((result) => {
+            if (!result.ok) {
+                // Stops the redirection to Stripe Checkout if the server
+                // is not responding OK
+                throw new Error("Erreur lors de l'initialisation de la session de paiement")
+            }
+            return result.json(); 
         })
-        .then((res) => {
-        console.log(res);
-        });
+        .then((data) => {
+            // Manually trigger before unload event to save success
+            // redirection doesn't trigger it otherwise, the request is interrupted.
+            window.dispatchEvent(new Event("beforeunload"))
+            // Redirect to Stripe Checkout once the checkout session is created
+            return stripe.redirectToCheckout({sessionId: data.sessionId})
+        })
     }
   });
 });
