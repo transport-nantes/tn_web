@@ -7,7 +7,7 @@ class PhotoEntryAdmin(admin.ModelAdmin):
 
     list_display = ("category", "user", "accepted")
     list_filter = ("category", "accepted")
-    search_fields = ("category", "user__email")
+    search_fields = ("category", "user__email", "sha1_name")
 
 
 admin.site.register(PhotoEntry, PhotoEntryAdmin)
