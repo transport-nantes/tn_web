@@ -379,11 +379,10 @@ def stripe_webhook(request):
         update_user_name(event)
 
     else:
-        logger.error(f"Unknown event type : {event['type']}")
-        logger.error(
+        logger.info(f"Unhandled event type : {event['type']}")
+        logger.info(
             "Details attached to event : \n\n" + "=" * 30 + f"\n{event}"
         )
-        return HttpResponse(status=500)
 
     return HttpResponse(status=200)
 
