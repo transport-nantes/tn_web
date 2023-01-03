@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+from typing import Union
 
 import stripe
 import user_agents
@@ -17,6 +18,7 @@ from django.views.generic.base import TemplateView
 from mailing_list.events import subscribe_user_to_list
 from mailing_list.models import MailingList
 from topicblog.models import SendRecordTransactionalAdHoc
+
 from transport_nantes.settings import (
     ROLE,
     STRIPE_ENDPOINT_SECRET,
@@ -119,7 +121,9 @@ def get_public_key(request):
         return JsonResponse(public_key, safe=False)
 
 
-def create_checkout_session(request: dict) -> dict:
+def create_checkout_session(
+    request: dict,
+) -> Union[HttpResponse, JsonResponse]:
     """
     Create new Checkout Session for the order
 
@@ -193,11 +197,25 @@ def create_checkout_session(request: dict) -> dict:
                     metadata=request.POST,
                 )
                 return JsonResponse({"sessionId": checkout_session["id"]})
+
+            elif request.POST["donation_type"] not in [
+                "payment",
+                "subscription",
+            ]:
+                logger.error(
+                    "Donation type is not valid : "
+                    + request.POST["donation_type"]
+                )
+                return HttpResponse(status=400)
+
         except Exception as error_message:
-            logger.error(error_message)
-            return JsonResponse(
-                {"error": "Echec de la création de la session"}
+            logger.error(
+                "Error while creating a checkout session:\n" + error_message
             )
+            return HttpResponse(status=500)
+
+    elif request.method == "GET":
+        return HttpResponse(status=405)
 
 
 def order_amount(items: dict) -> int:
