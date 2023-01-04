@@ -307,7 +307,7 @@ class MobilitoSessionViewTests(TestCase):
         self.assertEqual(self.mobilito_session.location, "Bar")
 
 
-class MySessionHistoryViewTests(TestCase):
+class SessionHistoryViewTests(TestCase):
     """Test the my session history view."""
 
     def setUp(self):
@@ -333,31 +333,57 @@ class MySessionHistoryViewTests(TestCase):
             args=[self.second_mobilito_session.session_sha1],
         )
 
-        # Creating 3 clients for each user type :
-        # - author_client : Is the MobilitoSession's creator (author)
-        # - authorised_client : Is a user with permission to view the session
-        # - Anonymous client : Is a user without permission to view the session
-        self.author_client = Client()
-        self.author_client.force_login(user)
-        self.anonymous_client = Client()
-
     def test_session_history(self):
         """Test the session history page."""
-        response = self.author_client.get(reverse_lazy("mobilito:my_sessions"))
+        # Testing that anon users can access the page.
+        response = self.client.get(
+            reverse_lazy(
+                "mobilito:user_sessions", args=[self.user.user.username]
+            )
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.mobilito_session_url)
         self.assertContains(response, self.second_mobilito_session_url)
 
-        response = self.anonymous_client.get(
-            reverse_lazy("mobilito:my_sessions")
+        response = self.client.get(
+            reverse("mobilito:user_sessions", args=["doesn't exist"])
         )
-        self.assertRedirects(
-            response,
-            (
-                reverse_lazy("authentication:login")
-                + "?next="
-                + reverse_lazy("mobilito:my_sessions")
-            ),
+        self.assertEqual(response.status_code, 404)
+
+    def test_index_display_of_session_history(self):
+        """Test that the last sessions are displayed on mobilito's index."""
+        response = self.client.get(reverse_lazy("mobilito:index"))
+        self.assertContains(response, self.mobilito_session_url)
+        self.assertContains(response, self.second_mobilito_session_url)
+
+        self.mobilito_session.delete()
+        response = self.client.get(reverse_lazy("mobilito:index"))
+        self.assertContains(response, self.second_mobilito_session_url)
+        self.assertNotContains(response, self.mobilito_session_url)
+
+        # Create a new session from another user and check that it is
+        # displayed on the index page.
+        self.user_2 = MobilitoUser.objects.create(
+            user=User.objects.create(username="test-username")
+        )
+        self.mobilito_session_2 = MobilitoSession.objects.create(
+            user=self.user_2,
+            start_timestamp=datetime.now(timezone.utc),
+            location="Foo",
+        )
+        response = self.client.get(reverse_lazy("mobilito:index"))
+        self.assertContains(response, self.second_mobilito_session_url)
+        self.assertContains(
+            response, self.mobilito_session_2.get_absolute_url()
+        )
+        self.assertNotContains(response, self.mobilito_session_url)
+
+        self.user.user.username = "My cool username"
+        self.user.user.save()
+        response = self.client.get(reverse_lazy("mobilito:index"))
+        self.assertContains(response, self.user.user.username)
+        self.assertContains(
+            response, self.mobilito_session_2.get_absolute_url()
         )
 
 

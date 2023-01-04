@@ -198,6 +198,7 @@ class MobilitoView(TemplateView):
                 MobilitoSession.objects.filter(user=mobilito_user).count() > 0
             )
             context["mobilito_user"] = mobilito_user
+        context["latest_sessions"] = self.get_latest_sessions()
         return context
 
     def get(self, request, *args, **kwargs):
@@ -210,6 +211,14 @@ class MobilitoView(TemplateView):
         else:
             context["tutorial_done"] = True
         return self.render_to_response(context)
+
+    def get_latest_sessions(self):
+        """Return the latest pulished sessions"""
+        return (
+            MobilitoSession.objects.filter(published=True)
+            .order_by("-start_timestamp")
+            .all()[:10]
+        )
 
 
 class TutorialView(TemplateView):
