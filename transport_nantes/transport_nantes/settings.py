@@ -29,6 +29,21 @@ ADMIN = [
 ]
 
 ALLOWED_HOSTS = settings_local.ALLOWED_HOSTS
+# This is a list of trusted origins for CSRF protection.
+# https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-trusted-origins
+# It defaults to an empty list, but you may add your own origins in dev
+# using settings_local.py. This allows you to use ngrok or similar.
+# Ngrok allows you to open a tunnel and make accessible your local dev branch
+# through a browser, notably to make sure it displays well and works on
+# your phone before even pushing to beta.
+# It avoids too many pushes to beta that may affect the database and require
+# a restore.
+# see https://ngrok.com/ for usage.
+if DEBUG and ROLE == "dev":
+    CSRF_TRUSTED_ORIGINS = (
+        getattr(settings_local, "CSRF_TRUSTED_ORIGINS", None) or []
+    )
+
 # Requirement for Django-debug-toolbar
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configure-internal-ips
 INTERNAL_IPS = [
