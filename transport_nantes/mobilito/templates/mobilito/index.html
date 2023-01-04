@@ -29,18 +29,18 @@
 		</div>
 	</div>
 	{% if tutorial_done %}{# ################ not newbie ################ #}
-		<div class="d-flex col-12 flex-row flex-nowrap justify-content-around">
-			<a class="btn donation-button mx-2" role="button" 
+		<div class="d-flex col-12 p-0 flex-wrap justify-content-around">
+			<a class="col-12 col-md-3 btn donation-button m-2" role="button" 
 			href="{% url 'mobilito:address_form' %}">
 				Je commence à enregistrer
 			</a>
-			<a class="btn donation-button mx-2" role="button"
+			<a class="col-12 col-md-3 btn donation-button m-2" role="button"
 			href="{% url 'mobilito:tutorial' 'presentation' %}">
 				Je passe vite par le tutoriel
 			</a>
 			{% if has_sessions_history %}
-				<a class="btn donation-button mx-2" role="button" 
-				href="{% url 'mobilito:my_sessions' %}">
+				<a class="col-12 col-md-3 btn donation-button m-2" role="button" 
+				href="{% url 'mobilito:user_sessions' mobilito_user.user.username %}">
 					Voir mon historique
 				</a>
 			{% endif %}
@@ -54,7 +54,7 @@
 		</a>
 		{% if has_sessions_history %}
 			<a class="btn donation-button mx-2" role="button" 
-			href="{% url 'mobilito:my_sessions' %}">
+			href="{% url 'mobilito:user_sessions' mobilito_user.user.username %}">
 				Voir mon historique
 			</a>
 		{% endif %}

@@ -13,17 +13,8 @@
             </a>
         </div>
         <h1 class="font-xl">Mes sessions mobilito</h1>
-        {% for session in mobilito_sessions %}
-            <article>
-                <h2 style="font-size: 1.2em;">
-                    <a href="{{ session.get_absolute_url }}" style="color:inherit;">
-                        <i class="fa-solid fa-crosshairs"></i>
-                        {{ session.location|default:"Pas d'adresse" }}
-                    </a>
-                </h2>
-                <p class="mb-0"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
-            </article>
-            <hr class="w-100" />
+        {% for session_obj in mobilito_sessions %}
+            {% include "mobilito/session_history_line.html" with session=session_obj %}
         {% empty %}
             <p class="text-center">Aucune session enregistrée</p>
         {% endfor %}
