@@ -197,6 +197,7 @@ class MobilitoView(TemplateView):
             context["has_sessions_history"] = (
                 MobilitoSession.objects.filter(user=mobilito_user).count() > 0
             )
+            context["mobilito_user"] = mobilito_user
         return context
 
     def get(self, request, *args, **kwargs):
@@ -970,16 +971,21 @@ def flag_session(request: HttpRequest, **kwargs) -> HttpResponse:
         return HttpResponse(status=405)
 
 
-class MySessionHistoryView(LoginRequiredMixin, ListView):
-    """Display one's own session history."""
+class SessionHistoryView(ListView):
+    """Display one's sessions history."""
 
     model = MobilitoSession
-    template_name = "mobilito/my_session_history.html"
+    template_name = "mobilito/session_history.html"
     context_object_name = "mobilito_sessions"
     paginate_by = 10
 
     def get_queryset(self):
         """Return the user's sessions."""
+        username = self.kwargs.get("username")
+        searched_user = get_object_or_404(
+            MobilitoUser, user__username=username
+        )
+
         return MobilitoSession.objects.filter(
-            user__user=self.request.user
+            user=searched_user, published=True
         ).order_by("-start_timestamp")

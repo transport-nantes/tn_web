@@ -18,9 +18,9 @@ urlpatterns = [
     path("enregistrement/", views.RecordingView.as_view(), name="recording"),
     path("merci/", views.ThankYouView.as_view(), name="thanks"),
     path(
-        "mes-sessions/",
-        views.MySessionHistoryView.as_view(),
-        name="my_sessions",
+        "sessions/u/<str:username>/",
+        views.SessionHistoryView.as_view(),
+        name="user_sessions",
     ),
     path(
         "session/<str:session_sha1>/",

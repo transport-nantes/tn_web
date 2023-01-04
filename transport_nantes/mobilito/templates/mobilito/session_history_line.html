@@ -1,0 +1,23 @@
+{% comment %} 
+Requires a MobilitoSession as 'session'
+
+This is meant to be a reusable component.
+{% endcomment %}
+<article>
+    <h2 style="font-size: 1.2em;">
+        <a href="{{ session.get_absolute_url }}" style="color:inherit;">
+            <i class="fa-solid fa-crosshairs"></i>
+            {{ session.location|default:"Pas d'adresse" }}
+        </a>
+    </h2>
+    <p class="m-0">
+        <i>
+            <a href="{% url 'mobilito:user_sessions' session.user.user.username %}" 
+            style="color:inherit; font-size: 0.9rem">
+                Faite par {{ session.user.user.username }}
+            </a>
+        </i>
+    </p>
+    <p class="mb-0"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
+</article>
+<hr class="w-100" />
