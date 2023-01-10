@@ -983,3 +983,35 @@ class MySessionHistoryView(LoginRequiredMixin, ListView):
         return MobilitoSession.objects.filter(
             user__user=self.request.user
         ).order_by("-start_timestamp")
+
+
+class MobilitoMapView(TemplateView):
+    template_name = "mobilito/mobilito_map.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context[
+            "mobilito_session_locations"
+        ] = self.get_all_mobilito_sessions_locations()
+        return context
+
+    def get_all_mobilito_sessions_locations(self):
+        """Return all Mobilito sessions locations."""
+        qs = MobilitoSession.objects.filter(
+            ~Q(location=""),
+            published=True,
+            location__isnull=False,
+            latitude__isnull=False,
+            longitude__isnull=False,
+        ).values_list("location", "latitude", "longitude")
+
+        # ValuesQuerySet is not JSON serializable
+        serialized_qs = [
+            {
+                "location": location,
+                "latitude": latitude,
+                "longitude": longitude,
+            }
+            for location, latitude, longitude in qs
+        ]
+        return serialized_qs

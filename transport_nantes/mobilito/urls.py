@@ -5,6 +5,7 @@ app_name = "mobilito"
 
 urlpatterns = [
     path("", views.MobilitoView.as_view(), name="index"),
+    path("carte/", views.MobilitoMapView.as_view(), name="map"),
     path(
         "tutoriel/<str:tutorial_page>/",
         views.TutorialView.as_view(),

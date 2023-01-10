@@ -1,0 +1,37 @@
+{% extends 'mobilito/base_mobilito.html' %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+    {# Leaflet JS #}
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    {# Leaflet JS marker cluster #}
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    {{ mobilito_session_locations|json_script:"locations" }}
+    <script src="{% static 'mobilito/js/global_map.js' %}"></script>
+
+{% endblock scripts %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel='stylesheet' type='text/css' href="{% static 'mobilito/css/geolocation_form.css' %}">
+    {# Leaflet JS #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin="" />
+    {# Leaflet JS marker cluster #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+{% endblock styles %}
+
+{% block app_content %}
+
+    <main class="d-flex flex-column col-12 col-md-8 col-lg-6 mx-auto">
+        <div id="map" style="height:60vh;"></div>
+    </main>
+
+{% endblock app_content %}
