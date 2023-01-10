@@ -45,6 +45,10 @@ class ForbiddenException(Exception):
     pass
 
 
+class IndexView(TemplateView):
+    template_name = "photo/index.html"
+
+
 class UploadEntry(LoginRequiredMixin, CreateView):
     """
     Form to collect Photo entries

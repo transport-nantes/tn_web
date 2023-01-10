@@ -1,0 +1,53 @@
+{% extends 'asso_tn/base_mobilitain.html' %} {% block app_content %}
+
+<main class="d-flex flex-column col-12 col-md-7 col-lg-4 mx-auto">
+  <h1 class="text-center">L'Opération Piéton</h1>
+  <div style="line-height: 1.7">
+    <p>
+      Nous sommes tous piétons. Pour certains, la marche à pied est le principal
+      mode de déplacement. Pour d'autres c'est secondaire, peut-être avant ou
+      après un déplacement en voiture. Mais pour tous, le confort et la sécurité
+      lors de nos déplacements à pied sont essentiels.
+    </p>
+    <p>
+      Depuis plus de 70 ans, la France, comme bien d'autres pays, a amélioré
+      l'efficacité et la sécurité des déplacements en voiture sans vraiment
+      tenir compte des autres modes – au point qu’aujourd’hui (presque) tout le
+      monde se sert d'une voiture, même pour des trajets très courts. Cela nous
+      semble malheureusement ordinaire, lorsque nos espaces publics sont
+      difficiles ou dangereux pour la marche à pied, mais c'est une dynamique
+      qui change peu à peu.
+    </p>
+    <p>
+      Nantes Métropole, par exemple, a fait un pas dans la bonne direction avec
+      la publication de son Schéma Stratégique Piéton. Les principes de sécurité
+      qui y sont énoncés s'appliquent aussi bien aux métropoles, qu’aux petits
+      villages et aux aires rurales.
+    </p>
+    <p>
+      Les Mobilitains militent pour une évolution rapide vers une région qui
+      offre un choix réel et crédible à chacun dans ses déplacements.
+    </p>
+    <p>
+      <i>
+        L'Opération Piéton est une compétition photo citoyenne et populaire
+        conçue par les Mobilitains avec le bureau d'initiative du quartier
+        nantais des Hauts-Pavés-Saint-Félix, en collaboration avec le
+        département de Loire-Atlantique. La sollicitation de participation étant
+        en ligne, nous avons eu le plaisir de recevoir une poignée de
+        contributions bien loin de la région nantaise et des Pays de la Loire.
+        Nous sommes heureux de cette petite réussite inattendue et nous
+        remercions tous les participants et tous les acteurs qui se sont
+        impliqués dans cette première édition du projet.
+      </i>
+    </p>
+  </div>
+  <a
+    href="{% url 'photo:galerie' %}"
+    class="btn navigation-button mx-auto mt-3"
+  >
+    Voir les photos <i class="fas fa-arrow-right"></i>
+  </a>
+</main>
+
+{% endblock app_content %}
