@@ -74,9 +74,11 @@
 
 	<section class="mt-5">
 		<h1 style="font-size: 1.4em; text-align: left;">Les dernières contributions</h1>
-		<div class="d-flex flex-column col-12 p-0">
+		<div class="d-flex flex-wrap">
 			{% for session_obj in latest_sessions %}
-				{% include "mobilito/session_history_line.html" with session=session_obj %}
+				<div class="d-flex flex-wrap col-12 col-md-6 col-lg-4 w-100">
+					{% include "mobilito/session_history_line.html" with session=session_obj %}
+				</div>
 			{% empty %}
 				<p>Aucune session enregistrée</p>
 			{% endfor %}
