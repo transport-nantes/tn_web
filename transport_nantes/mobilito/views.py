@@ -343,6 +343,7 @@ class RecordingView(LoginRequiredMixin, TemplateView):
             mobilito_session.public_transport_count = (
                 number_of_public_transports
             )
+            mobilito_session.create_png_from_coordinates()
             mobilito_session.save()
             send_results(request, mobilito_session)
         except MobilitoSession.DoesNotExist as e:

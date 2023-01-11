@@ -1,8 +1,10 @@
-from django.contrib.auth.models import User
-
 import logging
 
-from django.db import models, IntegrityError
+import requests
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+from django.db import IntegrityError, models
 from django.forms import ValidationError
 from django.urls import reverse
 
@@ -48,6 +50,9 @@ class MobilitoSession(models.Model):
     session_sha1 = models.CharField(
         max_length=200, unique=True, editable=False
     )
+    map_image = models.ImageField(
+        upload_to="mobilito/map_images/", null=True, blank=True
+    )
 
     def __str__(self):
         return f"{self.user.user.email} - {self.start_timestamp}"
@@ -64,6 +69,9 @@ class MobilitoSession(models.Model):
     def save(self, *args, **kwargs):
         if not self.session_sha1:
             self.session_sha1 = self.generate_session_sha1()
+
+        if not self.map_image:
+            self.create_png_from_coordinates()
 
         try:
             super().save(*args, **kwargs)
@@ -89,6 +97,48 @@ class MobilitoSession(models.Model):
             "mobilito:mobilito_session_summary",
             kwargs={"session_sha1": self.session_sha1},
         )
+
+    def create_png_from_coordinates(self):
+        """Create a PNG image from the session's coordinates"""
+        if not self.latitude or not self.longitude:
+            logger.info(
+                f"Skipping PNG creation for session {self.session_sha1} "
+                f"because of missing coordinates."
+            )
+            return
+
+        MAPBOX_BASE_URL = "https://api.mapbox.com/styles/v1/"
+        # Default mapbox style is streets-v11
+        MAPBOX_STYLE = "mapbox/streets-v11/static/"
+        # Generated image size
+        HEIGHT_PX = 400
+        WIDTH_PX = 400
+        # Higher = more zoomed in
+        ZOOM = 15
+        MAPBOX_TOKEN = settings.MAP_BOX_ACCESS_TOKEN
+        # Center of the map
+        COORDINATES = f"{self.longitude},{self.latitude}"
+        MARKER = f"pin-s+000({COORDINATES})"
+
+        # https://docs.mapbox.com/api/maps/static-images/#retrieve-a-static-map-from-a-style  # noqa
+        mapbox_url = (
+            f"{MAPBOX_BASE_URL}{MAPBOX_STYLE}{MARKER}/{COORDINATES},{ZOOM}"
+            f"/{WIDTH_PX}x{HEIGHT_PX}?access_token={MAPBOX_TOKEN}"
+        )
+
+        logger.info(f"Requesting {mapbox_url}")
+        response = requests.get(mapbox_url)
+        if response.status_code != 200:
+            logger.error(
+                "Mapbox request failed with status code "
+                f"{response.status_code}"
+            )
+            return
+
+        self.map_image = ContentFile(
+            response.content, f"{self.session_sha1}.png"
+        )
+        logger.info(f"Created map image for session {self.session_sha1}")
 
 
 def event_type_validator(value):
