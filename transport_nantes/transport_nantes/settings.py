@@ -339,3 +339,23 @@ if ROLE in ("beta", "production"):
     rollbar.init(**ROLLBAR)
 
 MAPS_API_KEY = settings_local.MAPS_API_KEY
+
+
+# Mobilito uses Mapbox to produce static images of a map.
+# The Mapbox API is free for up to 50,000 map views per month.
+# Because we save the images locally, we don't use the Mapbox API
+# every time we need to display a map.
+
+# You will need an API key to use Mapbox. You can get one for free
+# at https://account.mapbox.com/auth/signup/ (no payment information)
+
+# Once you created your account, you may retrieve your token on this page:
+# https://account.mapbox.com/access-tokens/
+
+# Copy your "Default public token" and paste it in your settings_local.py
+# under the key MAP_BOX_ACCESS_TOKEN
+# Example:
+# # settings_local.py
+# MAP_BOX_ACCESS_TOKEN = "pk.ey....JEhjQ"
+
+MAP_BOX_ACCESS_TOKEN = settings_local.MAP_BOX_ACCESS_TOKEN
