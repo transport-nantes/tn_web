@@ -1,35 +1,53 @@
-{% comment %} 
+{% comment %}
 Requires a MobilitoSession as 'session'
 
 This is meant to be a reusable component.
 {% endcomment %}
 {% load absolute_url %}
 
-<article>
-    <h2 style="font-size: 1.2em;">
-        <a href="{{ session.get_absolute_url }}" style="color:inherit;">
-            <i class="fa-solid fa-crosshairs"></i>
-            {{ session.location|default:"Pas d'adresse" }}
+<div class="w-100 h-100 py-2" >
+    <article
+      style="
+        border: 1px solid hsla(0, 0%, 0%, 0.5);
+        border-radius: 5px;
+        box-shadow: inset 0 1px 0 hsl(219, 24%, 45%), 0 1px 3px hsla(0, 0%, 0%, 0.2);
+        padding: 1rem;
+      "
+      class="d-flex flex-column h-100"
+    >
+      <h2 style="font-size: 1.2em;">
+        <a href="{{ session.get_absolute_url }}" style="color: inherit">
+          <i class="fa-solid fa-crosshairs"></i>
+          {{ session.location|default:"Pas d'adresse" }}
         </a>
-    </h2>
-    <p class="m-0">
-        <i>
-            <a href="{% url 'mobilito:user_sessions' session.user.user.username %}" 
-            style="color:inherit; font-size: 0.9rem">
-                Faite par <u>{{ session.user.user.username }}</u>
+      </h2>
+      <div class="mt-auto">
+        <p class="m-0">
+          <i>
+            <a
+              href="{% url 'mobilito:user_sessions' session.user.user.username %}"
+              style="color: inherit; font-size: 0.9rem"
+            >
+              Faite par <u>{{ session.user.user.username }}</u>
             </a>
-        </i>
-    </p>
-    <p class="mb-0"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
-    {% if session.map_image %}
-        <div
-          style="height: 200px;max-width:400px"
-          class="p-2 p-sm-0">
-            <img src="{% absolute_url_image session.map_image.url %}"
-            alt="Emplacement de la session"
-            class="w-100"
-            style="object-fit:cover;border-radius:5px;max-width:100%;max-height:100%" />
-        </div>
-    {% endif %}
-</article>
-<hr class="w-100" />
+          </i>
+        </p>
+        <p class="mb-3"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
+        {% if session.map_image %}
+          <div style="height: 200px; max-width: 100%" class="p-2 p-sm-0">
+              <img
+              src="{% absolute_url_image session.map_image.url %}"
+              alt="Emplacement de la session"
+              class="w-100"
+              style="
+                  object-fit: cover;
+                  border-radius: 5px;
+                  max-width: 100%;
+                  max-height: 100%;
+              "
+              />
+          </div>
+        {% endif %}
+      </div>
+    </article>
+</div>
