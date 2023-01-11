@@ -146,12 +146,12 @@
 
         {# Map, if image has been generated #}
         {% if mobilito_session.map_image %}
-                <img
-                  src="{{ mobilito_session.map_image.url }}"
-                  alt="Emplacement de l'observation"
-                  style="object-fit:cover;max-height:23vh;border-radius: 5px;"
-                  class="col-10 col-md-8 col-lg-6 p-0 mx-auto w-100"
-                   />
+            <img
+                src="{{ mobilito_session.map_image.url }}"
+                alt="Emplacement de l'observation"
+                style="object-fit:cover;max-height:23vh;border-radius: 5px;"
+                class="col-10 col-md-8 col-lg-6 p-0 mx-auto w-100"
+                />
         {% endif %}
 
         {# Timeseries #}

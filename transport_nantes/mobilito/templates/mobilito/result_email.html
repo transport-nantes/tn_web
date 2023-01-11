@@ -43,6 +43,15 @@ color:#DDE5ED;background-color:#43526e;">
             {% endwith %}
         </td>
     </tr>
+    {% if mobilito_session.map_image %}
+        <tr>
+            <td>
+                <img src="{% absolute_url_image mobilito_session.map_image.url %}"
+                alt="Graphique temporel de votre session"
+                style="display: block; margin: 20px auto; border-radius:5px;object-fit:cover;max-height:300px">
+            </td>
+        </tr>
+    {% endif %}
     <tr>
         <td>
             <ul>
