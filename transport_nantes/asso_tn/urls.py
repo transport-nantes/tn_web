@@ -1,13 +1,13 @@
 from django.urls import path
 
 # from django.views.generic.base import RedirectView
-from .views import AssoView
+from . import views
 
-app_name = "asso_m"
+app_name = "asso_tn"
 urlpatterns = [
     path(
         "nous-contacter",
-        AssoView.as_view(
+        views.AssoView.as_view(
             title="Nous contacter",
             meta_descr=(
                 """<meta name="description" content="Les Mobilitains """
@@ -28,7 +28,7 @@ urlpatterns = [
     # What's here is a place holder.
     path(
         "mentions-legales",
-        AssoView.as_view(
+        views.AssoView.as_view(
             title="Mentions Légales",
             template_name="asso_tn/mentions_legales.html",
         ),
@@ -37,7 +37,7 @@ urlpatterns = [
     # Copyright page needed.
     path(
         "jobs",
-        AssoView.as_view(
+        views.AssoView.as_view(
             title="Jobs",
             template_name="asso_tn/jobs.html",
             meta_descr=(
@@ -58,7 +58,7 @@ urlpatterns = [
     ),
     path(
         "crowdfunding-2021",
-        AssoView.as_view(
+        views.AssoView.as_view(
             title="Collecte de dons pour la mobilité",
             meta_descr=(
                 """<meta name="description" content="Les Mobilitains font"""
@@ -86,4 +86,15 @@ urlpatterns = [
         ),
         name="crowdfunding-2021",
     ),
+    path(
+        "edit-username/<str:username>",
+        views.EditUsernameView.as_view(),
+        name="edit_username",
+    ),
+    path(
+        "preferences/",
+        views.PreferencesView.as_view(),
+        name="preferences",
+    ),
+
 ]

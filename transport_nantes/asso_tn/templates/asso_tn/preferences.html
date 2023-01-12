@@ -1,0 +1,21 @@
+{% extends 'asso_tn/base_mobilitain.html' %}
+
+{% block app_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="col-8 col-md-6 mx-auto alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    <main class="container">
+        <section class="d-flex flex-wrap col-12">
+            <h1 class="mb-5">Mes préférences</h1>
+            {% include "asso_tn/edit_username.html" %}
+        </section>
+    </main>
+{% endblock app_content %}
+

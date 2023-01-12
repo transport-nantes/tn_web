@@ -999,3 +999,17 @@ class SessionHistoryView(ListView):
         return MobilitoSession.objects.filter(
             user=searched_user, published=True
         ).order_by("-start_timestamp")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        searched_user = get_object_or_404(
+            MobilitoUser, user__username=self.kwargs.get("username")
+        )
+        if (
+            self.request.user.is_authenticated
+            and searched_user.user == self.request.user
+        ):
+            context["is_own_history"] = True
+            context["mobilito_user"] = searched_user
+
+        return context
