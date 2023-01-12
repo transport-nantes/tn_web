@@ -11,6 +11,14 @@
             <a href="{% url 'mobilito:address_form' %}" class="btn navigation-button mb-3 mr-auto" data-toggle="tooltip" data-placement="bottom" title="Faire une nouvelle session">
                 <i class="fas fa-plus"></i>
             </a>
+            {% if is_own_history %}
+                <a
+                href="{% url 'asso_tn:preferences' %}"
+                class="btn navigation-button mb-3 mr-2 col-12 col-md-auto">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Modifier mes préférences
+                </a>
+            {% endif %}
         </div>
         <h1 class="font-xl">Mes sessions mobilito</h1>
         <div class="d-flex flex-wrap">

@@ -1,0 +1,46 @@
+{# Requires a MobilitoUser instance as mobilito_user #}
+{% load static %}
+
+<script src="{% static 'asso_tn/js/edit_username.js' %}" defer></script>
+
+<p id="mobilito-username" class="col-12">
+  <b>Nom d'utilisateur : </b>
+  <span> {{ request.user.username }} </span>
+  <span id="mobilito-username-edit-btn" class="p-1 m-3">
+    <i class="fa-solid fa-pen-to-square"></i>
+  </span>
+</p>
+
+<form
+  id="mobilito-username-edit-form"
+  method="post"
+  action="{% url 'asso_tn:edit_username' request.user.username %}"
+  class="pl-3 d-none justify-content-center flex-wrap col-12 px-0"
+>
+  {% csrf_token %}
+  <div class="d-flex flex-wrap form-group col-12 pl-0">
+    <input
+      type="text"
+      class="d-flex col-12 col-md-8 form-control my-auto"
+      id="mobilito-username-input"
+      name="username"
+      value="{{ request.user.username }}"
+      maxlength="1000"
+    />
+    <div id="button-holder">
+      <button
+        type="submit"
+        class="btn donation-button mr-3 ml-0 ml-lg-3 my-2 my-lg-auto"
+      >
+        Sauvegarder
+      </button>
+      <button
+        type="button"
+        class="btn navigation-button my-2 my-lg-auto"
+        id="mobilito-username-cancel-btn"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+</form>

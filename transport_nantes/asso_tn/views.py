@@ -1,7 +1,18 @@
-from django.views.generic.base import TemplateView
-from django.shortcuts import render
+import logging
 
-# Create your views here.
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import UpdateView
+
+from .forms import UsernameEditForm
+
+logger = logging.getLogger("django")
 
 
 class MainTransportNantes(TemplateView):
@@ -56,3 +67,54 @@ class AssoView(TemplateView):
 def tn_404_view(request, exception):
     """TN custom 404 view."""
     return render(request, "asso_tn/404.html", status=404)
+
+
+class PreferencesView(LoginRequiredMixin, TemplateView):
+    """Display one's preferences."""
+
+    template_name = "asso_tn/preferences.html"
+
+
+class EditUsernameView(LoginRequiredMixin, UpdateView):
+    """Edit one's username."""
+
+    # Criteria to filter the user to edit
+    slug_url_kwarg = "username"
+    slug_field = "username"
+    model = User
+    form_class = UsernameEditForm
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseNotAllowed(["POST"])
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.check_object_permissions()
+        return super().post(request, *args, **kwargs)
+
+    def check_object_permissions(self):
+        """Check that the user is allowed to change this User."""
+        if all(
+            [
+                self.request.user != self.object,
+                not self.request.user.has_perm("auth.change_user"),
+            ]
+        ):
+            logger.warning(
+                f"{self.request.user} tried to edit username of user "
+                f"{self.object.username} but is not allowed to do so"
+            )
+            raise PermissionDenied()
+
+    def form_valid(self, *args, **kwargs):
+        """Log the username edit."""
+        logger.info(f"{self.request.user} edited their username.")
+        self.success_url = reverse("asso_tn:preferences")
+        return super().form_valid(*args, **kwargs)
+
+    def form_invalid(self, form):
+        """Add message to warn the user that the username is not available."""
+        messages.warning(
+            self.request, "Ce nom d'utilisateur n'est pas disponible."
+        )
+        return redirect("asso_tn:preferences")
