@@ -1,4 +1,6 @@
-{% extends 'asso_tn/base_mobilitain.html' %} {% block app_content %}
+{% extends 'asso_tn/base_mobilitain.html' %}
+{% load static %}
+{% block app_content %}
 
 <main class="d-flex flex-column col-12 col-md-7 col-lg-4 mx-auto">
   <h1 class="text-center">L'Opération Piéton</h1>
@@ -48,6 +50,24 @@
   >
     Voir les photos <i class="fas fa-arrow-right"></i>
   </a>
+  <footer class="text-muted" style="font-size:smaller;margin-top:50px;hyphens:auto;">
+    <p>
+        <i>
+            Avec l'aimable soutien du bureau d'initiatives de Quartier Hauts-Pavés
+            - Saint-Félix (Nantes) et du département de Loire-Atlantique
+        </i>
+        <img
+            src="{% static 'asso_tn/logo_bureau_initiatives.jpg' %}"
+            alt="Logo du bureau d'initiatives de Nantes haut pavés saint Félix"
+            style="object-fit:scale-down;max-height:30px;"
+        />
+        <img
+            src="{% static 'asso_tn/logo_departement_loire_atlantique.png' %}"
+            alt="Logo du département Loire Atlantique"
+            style="object-fit:scale-down;max-height:30px;"
+        />
+    </p>
+</footer>
 </main>
 
 {% endblock app_content %}
