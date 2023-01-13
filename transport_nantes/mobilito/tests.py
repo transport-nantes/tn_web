@@ -348,7 +348,8 @@ class SessionHistoryViewTests(TestCase):
         response = self.client.get(
             reverse("mobilito:user_sessions", args=["doesn't exist"])
         )
-        self.assertEqual(response.status_code, 404)
+        # Redirect to login
+        self.assertEqual(response.status_code, 302)
 
     def test_index_display_of_session_history(self):
         """Test that the last sessions are displayed on mobilito's index."""
@@ -447,4 +448,130 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
             InappropriateFlag.objects.count(),
             1,
             "An InappropriateFlag must be created",
+        )
+
+
+class MobilitoEditUsernameSeleniumTests(StaticLiveServerTestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="test-username", password="test-password"
+        )
+        self.mobilito_user = MobilitoUser.objects.create(user=self.user)
+        self.mobilito_session = MobilitoSession.objects.create(
+            user=self.mobilito_user,
+            start_timestamp=datetime.now(timezone.utc),
+            location="Bar",
+        )
+        self.user_2 = User.objects.create_user(
+            username="JohnDoe", password="test-password-2"
+        )
+        self.mobilito_user_2 = MobilitoUser.objects.create(user=self.user_2)
+        self.mobilito_session_2 = MobilitoSession.objects.create(
+            user=self.mobilito_user_2,
+            start_timestamp=datetime.now(timezone.utc),
+            location="Foo",
+        )
+        user_1_client = Client()
+        user_1_client.login(username="test-username", password="test-password")
+        self.user_1_login_cookie = user_1_client.cookies["sessionid"].value
+        user_2_client = Client()
+        user_2_client.login(username="JohnDoe", password="test-password-2")
+        self.user_2_login_cookie = user_2_client.cookies["sessionid"].value
+
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
+        self.browser = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()), options=options
+        )
+        self.browser.implicitly_wait(5)
+
+    def login_as(self, login_cookie: str):
+        """Log in as the user with the given login cookie."""
+        self.browser.get(self.live_server_url + "/")
+        self.browser.add_cookie(
+            {
+                "name": "sessionid",
+                "value": login_cookie,
+                "secure": False,
+                "path": "/",
+            }
+        )
+
+    def test_edit_username_in_place(self):
+        """Test the ability to edit the username in place.
+
+        Users should be able to click the edit icon and change their
+        without changing pages.
+        """
+        self.login_as(self.user_1_login_cookie)
+        self.browser.get(self.live_server_url + reverse("mobilito:index"))
+        self.browser.find_element(
+            By.ID,
+            "mobilito-username-edit-btn_" + self.mobilito_session.session_sha1,
+        ).click()
+        input_field = self.browser.find_element(
+            By.ID,
+            "mobilito-username-input_" + self.mobilito_session.session_sha1,
+        )
+        input_field.clear()
+        input_field.send_keys("MyCoolUsername")
+
+        submit_button = self.browser.find_element(
+            By.ID,
+            "edit-username-submit-btn_" + self.mobilito_session.session_sha1,
+        )
+        submit_button.click()
+        WebDriverWait(self.browser, 5).until(
+            EC.text_to_be_present_in_element(
+                (
+                    By.ID,
+                    "displayed-username_" + self.mobilito_session.session_sha1,
+                ),
+                "MyCoolUsername",
+            )
+        )
+        self.assertEqual(
+            self.browser.find_element(
+                By.ID,
+                "displayed-username_" + self.mobilito_session.session_sha1,
+            ).text,
+            "MyCoolUsername",
+        )
+
+    def test_edit_username_taken(self):
+        """Test that the username cannot be changed to a taken username."""
+        self.login_as(self.user_1_login_cookie)
+        self.browser.get(self.live_server_url + reverse("mobilito:index"))
+        self.browser.find_element(
+            By.ID,
+            "mobilito-username-edit-btn_" + self.mobilito_session.session_sha1,
+        ).click()
+        input_field = self.browser.find_element(
+            By.ID,
+            "mobilito-username-input_" + self.mobilito_session.session_sha1,
+        )
+        input_field.clear()
+        input_field.send_keys("JohnDoe")
+
+        submit_button = self.browser.find_element(
+            By.ID,
+            "edit-username-submit-btn_" + self.mobilito_session.session_sha1,
+        )
+        submit_button.click()
+        WebDriverWait(self.browser, 5).until(
+            EC.text_to_be_present_in_element(
+                (
+                    By.ID,
+                    "displayed-username_" + self.mobilito_session.session_sha1,
+                ),
+                "test-username",
+            )
+        )
+        self.assertEqual(
+            self.browser.find_element(
+                By.ID,
+                "displayed-username_" + self.mobilito_session.session_sha1,
+            ).text,
+            "test-username",
         )

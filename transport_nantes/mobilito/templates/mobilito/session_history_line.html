@@ -1,6 +1,11 @@
 {% comment %}
 Requires a MobilitoSession as 'session'
 
+The parent must load edit_username_in_place.js to have the edit
+username feature to work.
+Importing it there would load the script multiple times, attaching
+multiple event listeners to the same elements.
+
 This is meant to be a reusable component.
 {% endcomment %}
 {% load absolute_url %}
@@ -11,7 +16,7 @@ This is meant to be a reusable component.
         border: 1px solid hsla(0, 0%, 0%, 0.5);
         border-radius: 5px;
         box-shadow: inset 0 1px 0 hsl(219, 24%, 45%), 0 1px 3px hsla(0, 0%, 0%, 0.2);
-        padding: 1rem;
+        padding: 1.25rem;
       "
       class="d-flex flex-column h-100"
     >
@@ -22,15 +27,57 @@ This is meant to be a reusable component.
         </a>
       </h2>
       <div class="mt-auto">
-        <p class="m-0">
+        <p class="m-0" style="word-wrap:anywhere;">
           <i>
             <a
               href="{% url 'mobilito:user_sessions' session.user.user.username %}"
               style="color: inherit; font-size: 0.9rem"
             >
-              Faite par <u>{{ session.user.user.username }}</u>
+              <u id="displayed-username_{{ session.session_sha1 }}">
+                {{ session.user.user.username }}
+              </u>
             </a>
           </i>
+          {% if session.user.user == request.user %}
+            <i id="mobilito-username-edit-btn_{{ session.session_sha1 }}" class="fa-solid fa-pen ml-3 white-hover" style='font-size:smaller;'></i>
+            <form
+              id="mobilito-username-edit-form_{{ session.session_sha1 }}"
+              method="post"
+              action="{% url 'asso_tn:edit_username' request.user.username %}"
+              class="d-none justify-content-center flex-wrap col-12 px-0"
+              data-current-username="{{ request.user.username }}"
+            >
+              {% csrf_token %}
+              <div class="d-flex form-group col-12 pl-0">
+                <input
+                  type="text"
+                  class="d-flex my-auto in-place-edit-input"
+                  id="mobilito-username-input_{{ session.session_sha1 }}"
+                  name="username"
+                  value="{{ request.user.username }}"
+                  maxlength="1000"
+                  size="15"
+                />
+                <div id="button-holder" class="d-flex">
+                  <button
+                    type="submit"
+                    id="edit-username-submit-btn_{{ session.session_sha1 }}"
+                    class="btn donation-button m-2"
+                  >
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn navigation-button my-2 my-lg-auto"
+                    id="mobilito-username-cancel-btn_{{ session.session_sha1 }}"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+
+          {% endif %}
         </p>
         <p class="mb-3"><i>{{ session.start_timestamp|date:"d/m/Y à H:i" }}</i></p>
         {% if session.map_image %}

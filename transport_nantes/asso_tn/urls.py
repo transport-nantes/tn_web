@@ -96,5 +96,4 @@ urlpatterns = [
         views.PreferencesView.as_view(),
         name="preferences",
     ),
-
 ]

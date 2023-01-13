@@ -35,6 +35,11 @@
         </script>
     {% endif %}
 
+    <script
+        src="{% static 'mobilito/js/edit_username_in_place.js' %}"
+        defer>
+    </script>
+
 {% endblock scripts %}
 
 
@@ -88,6 +93,57 @@
                 {% endif %}
             </b>
         </p>
+        <p class="col-12">
+            <i>
+              <a
+                href="{% url 'mobilito:user_sessions' mobilito_session.user.user.username %}"
+                style="color: inherit; font-size: 0.9rem"
+              >
+                <u id="displayed-username_{{ mobilito_session.session_sha1 }}">
+                  {{ mobilito_session.user.user.username }}
+                </u>
+              </a>
+            </i>
+            {% if mobilito_session.user.user == request.user %}
+              <i id="mobilito-username-edit-btn_{{ mobilito_session.session_sha1 }}" class="fa-solid fa-pen" style='font-size:smaller;'></i>
+              <form
+                id="mobilito-username-edit-form_{{ mobilito_session.session_sha1 }}"
+                method="post"
+                action="{% url 'asso_tn:edit_username' request.user.username %}"
+                class="d-none justify-content-center flex-wrap col-12 px-0"
+                data-current-username="{{ request.user.username }}"
+              >
+                {% csrf_token %}
+                <div class="d-flex form-group col-12 pl-0">
+                  <input
+                    type="text"
+                    class="d-flex my-auto in-place-edit-input"
+                    id="mobilito-username-input_{{ mobilito_session.session_sha1 }}"
+                    name="username"
+                    value="{{ request.user.username }}"
+                    maxlength="1000"
+                    size="15"
+                  />
+                  <div id="button-holder" class="d-flex">
+                    <button
+                      type="submit"
+                      class="btn donation-button m-2"
+                    >
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn navigation-button my-2 my-lg-auto"
+                      id="mobilito-username-cancel-btn_{{ mobilito_session.session_sha1 }}"
+                    >
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+  
+            {% endif %}
+          </p>
 
         {% if can_edit %}
             <form id="mobilito-session-edit-form" method="post"
