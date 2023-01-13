@@ -21,3 +21,12 @@ p {
 .modal-content {
     color: var(--body-text);
 }
+.in-place-edit-input {
+    color: var(--mobilitains-gris);
+    background: none;
+    border-width: 0 0 1px 0;
+}
+.white-hover:hover {
+    color: white;
+    cursor: pointer;
+}

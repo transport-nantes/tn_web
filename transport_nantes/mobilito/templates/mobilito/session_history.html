@@ -1,4 +1,9 @@
 {% extends "mobilito/base_mobilito.html" %}
+{% load static %}
+
+{% block localscripts %}
+  <script src="{% static 'mobilito/js/edit_username_in_place.js' %}" defer></script>
+{% endblock localscripts %}
 
 {% block app_content %}
     <main class="d-flex flex-column col-12 col-md-8 mx-auto">

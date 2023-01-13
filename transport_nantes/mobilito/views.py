@@ -1013,3 +1013,21 @@ class SessionHistoryView(ListView):
             context["mobilito_user"] = searched_user
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except Http404:
+            if not self.request.user.is_authenticated:
+                return HttpResponseRedirect(
+                    reverse("authentication:login") + "?next=" + request.path
+                )
+            # If the user doesn't exist, redirect to the user's own history
+            # This is also fired if the user rename themselves
+            mobilito_user = get_MobilitoUser(self.request)
+            return HttpResponseRedirect(
+                reverse(
+                    "mobilito:user_sessions",
+                    args=[mobilito_user.user.username],
+                )
+            )
