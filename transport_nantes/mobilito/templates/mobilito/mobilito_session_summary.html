@@ -53,6 +53,16 @@
         {% endfor %}
     {% endif %}
 <div class="container p-0">
+    <div class="d-flex col-12 px-0">
+        <a href="{% url 'mobilito:index' %}" class="btn navigation-button mb-3 mr-2"
+        >
+            <i class="fa fa-arrow-left"></i>
+            Retour
+        </a>
+        <a href="{% url 'mobilito:address_form' %}" class="btn navigation-button mb-3 mr-auto" data-toggle="tooltip" data-placement="bottom" title="Faire une nouvelle session">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
     <div class="d-flex flex-wrap col-12">
 
         <div id="mobilito-share-buttons" class="d-flex flex-row col-12 mb-2">
