@@ -10,6 +10,14 @@
         <h1 class="mx-auto">L'opération piéton</h1>
     </div>
 
+    <p>
+        Nous sommes tous piétons. Pour certains, la marche à pied est le principal
+        mode de déplacement. Pour d'autres c'est secondaire, peut-être avant ou
+        après un déplacement en voiture. Mais pour tous, le confort et la sécurité
+        lors de nos déplacements à pied sont essentiels...
+        <a href="{% url 'photo:index' %}"><b>En lire plus</b></a>
+    </p>
+
     <div id="entries-container" class="d-flex col-12 justify-content-center flex-wrap">
         {% for photoentry in photoentry_list %}
             <div class="d-flex col-12 col-md-6 col-xl-4 my-3 justify-content-center">
