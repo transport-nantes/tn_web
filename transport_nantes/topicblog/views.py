@@ -34,7 +34,12 @@ from django.views.generic.list import ListView
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
-from django_ses.signals import open_received, click_received, send_received
+from django_ses.signals import (
+    open_received,
+    click_received,
+    send_received,
+    bounce_received,
+)
 
 from asso_tn.utils import StaffRequired, make_timed_token, token_valid
 from mailing_list.events import (
@@ -1655,6 +1660,38 @@ def click_received_handler(sender, mail_obj, click_obj, *args, **kwargs):
         f"\nclick_received signal received for message {aws_message_id}\n"
         f"SendRecord class : {send_record_class} ID : {send_record_id}"
     )
+
+
+@receiver(bounce_received)
+def bounce_received_handler(sender, mail_obj, bounce_obj, *args, **kwargs):
+    """Handle AWS SES bounce_received notifications
+
+    AWS Receiver
+    This function will run when a bounce_received is received from
+    Amazon SES.
+    The signal is sent from django_ses' view.
+    """
+    logger.info("bounce_received received !")
+    (
+        aws_message_id,
+        send_record_class,
+        send_record_id,
+    ) = _extract_data_from_ses_signal(mail_obj)
+    logger.info(
+        f"\nbounce_received signal received for message {aws_message_id}\n"
+        f"SendRecord class : {send_record_class} ID : {send_record_id}"
+    )
+    if send_record_class and send_record_id:
+        try:
+            send_record = send_record_class.objects.get(pk=send_record_id)
+            send_record.status = "FAILED"
+            send_record.save()
+            logger.info(
+                f"bounce_received : {send_record_class.__name__} "
+                f"id={send_record.pk}"
+            )
+        except Exception as e:
+            logger.error(f"Error while updating send_record : {e}")
 
 
 def mark_moribund_and_delete(slug_queryset):
