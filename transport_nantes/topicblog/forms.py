@@ -220,3 +220,13 @@ class SendToSelfForm(forms.Form):
         required=True
     )
     redirect_url = forms.CharField(required=True)
+
+
+class SearchTermForm(forms.Form):
+    """Form to search for either emails or slugs"""
+
+    searched_term = forms.CharField(
+        required=False,
+        label="Rechercher un email ou un slug",
+        min_length=1,
+    )

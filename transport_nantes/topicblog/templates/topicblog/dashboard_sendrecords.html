@@ -1,0 +1,130 @@
+{% extends "asso_tn/base_mobilitain.html" %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}
+
+
+    <div class="table-responsive col-12 col-md-10 col-lg-8 mx-auto">
+        <a href="{% url 'topicblog:email_dashboard_global' %}" class="btn navigation-button mb-3">
+            <i class="fa fa-arrow-left" area-hidden="true"></i>
+            Tableau de bord global 
+        </a>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link {% if view.kwargs.send_record_class == 'email' %}active{% endif %}"
+                href="{% url 'topicblog:email_dashboard' 'email' %}">
+                    Emails
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if view.kwargs.send_record_class == 'presse' %}active{% endif %}"
+                href="{% url 'topicblog:email_dashboard' 'presse' %}">
+                    Presse
+                </a>
+            </li>
+        </ul>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col"># de mails envoyés</th>
+                    <th scope="col">Taux de réception</th>
+                    <th scope="col">Taux d'ouverture</th>
+                    <th scope="col">Taux de clic</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope='row'>{{ total_sent }}</td>
+                    <td>{{ success_rate }}</td>
+                    <td>{{ open_rate }}</td>
+                    <td>{{ click_rate }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table id="email-dashboard" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Slug envoyé</th>
+                    <th scope="col">Destinataire</th>
+                    <th scope="col">Date d'envoi</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Date de réception</th>
+                    <th scope="col">Date d'ouverture</th>
+                    <th scope="col">Date du 1er clic</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sendrecord in send_records %}
+                <tr>
+                    <td scope='row'>
+                        <a href="{% url 'topicblog:email_dashboard_detail' view.kwargs.send_record_class sendrecord.slug %}">
+                            {{ sendrecord.slug }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'topicblog:email_dashboard_detail' view.kwargs.send_record_class sendrecord.recipient.email %}">
+                            {{ sendrecord.recipient.email }}
+                        </a>
+                    </td>
+                    <td>{{ sendrecord.handoff_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.get_status_display }}</td>
+                    <td>{{ sendrecord.send_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.open_time|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ sendrecord.click_time|date:"d/m/Y H:i:s" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">Aucun journal d'envoi trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form method="POST" class="col-12 col-sm-6 col-md-4 col-xl-3">
+            {% csrf_token %}
+            {{ email_form|crispy }}
+            <button type="submit" name="email_form" class="btn donation-button">
+                Rechercher
+            </button>
+        </form>
+    </div>
+    
+    {% block pagination %}
+        <nav aria-label="pagination naviguation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page=1"><i class="fas fa-angle-double-left"></i> Première</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.previous_page_number }}">Précédent</a>
+                    </li>
+                {% endif %}
+                {% for number in number_pagination_list %}
+                    {% if number == page_obj.number %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link active" style="color: inherit; background-color:inherit;" href="#">{{ page_obj.number }}</a>
+                    </li>
+                    {% elif number in paginator.page_range %}
+                    <li class="page-item">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ number }}">{{ number }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ number }}">{{ number }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.next_page_number }}">Suivant</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" style="color: inherit; background-color:inherit;" href="?page={{ page_obj.paginator.num_pages }}">Dernière <i class="fas fa-angle-double-right"></i></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endblock pagination %}
+
+{% endblock app_content %}

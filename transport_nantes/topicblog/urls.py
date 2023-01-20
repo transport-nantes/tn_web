@@ -302,6 +302,23 @@ mail_sending_urls = [
     ),
     path("e/i/<str:token>", views.beacon_view, name="beacon_view"),
 ]
+email_dashboard_urls = [
+    path(
+        "admin/email-dashboard/",
+        views.EmailDashboardGlobalView.as_view(),
+        name="email_dashboard_global",
+    ),
+    path(
+        "admin/email-dashboard/<str:send_record_class>/",
+        views.EmailDashboardView.as_view(),
+        name="email_dashboard",
+    ),
+    path(
+        "admin/email-dashboard/<str:send_record_class>/<str:filter_by>/",
+        views.EmailDashboardViewOneView.as_view(),
+        name="email_dashboard_detail",
+    ),
+]
 
 urlpatterns = []
 urlpatterns += (
@@ -313,6 +330,7 @@ urlpatterns += (
     + topicblogpanel_urls
     + ajax_urls
     + mail_sending_urls
+    + email_dashboard_urls
 )
 
 # Need topic creation.

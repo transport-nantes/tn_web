@@ -3,14 +3,28 @@ from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
-from typing import Tuple, Type, Union, TYPE_CHECKING
+from typing import Tuple, Type, Union, TYPE_CHECKING, List
 from django.apps import apps
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.db import IntegrityError
 
-from django.db.models import Count, Max, Subquery, OuterRef, F
+from django.db.models import (
+    Count,
+    QuerySet,
+    Max,
+    Subquery,
+    OuterRef,
+    F,
+    Q,
+    Value,
+    Min,
+    Case,
+    When,
+    IntegerField,
+    Sum,
+)
 from django.dispatch import receiver
 from django.http import (
     Http404,
@@ -55,8 +69,10 @@ from .models import (
     SendRecordMarketingEmail,
     SendRecordMarketingPress,
     SendRecordTransactional,
+    SendRecordMarketing,
 )
 from .forms import (
+    SearchTermForm,
     TopicBlogItemForm,
     TopicBlogEmailSendForm,
     TopicBlogLauncherForm,
@@ -1467,6 +1483,202 @@ class TopicBlogPanelList(PermissionRequiredMixin, TopicBlogBaseList):
 
     model = TopicBlogPanel
     permission_required = "topicblog.tbpanel.may_view"
+
+
+class EmailDashboardGlobalView(ListView):
+
+    paginate_by = 10
+    template_name = "topicblog/dashboard_global.html"
+    allow_empty = True
+    context_object_name = "send_records"
+
+    def get_queryset(self):
+
+        send_record_classes: List[Tuple[str, Type[SendRecordMarketing]]] = [
+            ("email", SendRecordMarketingEmail),
+            ("presse", SendRecordMarketingPress),
+        ]
+
+        qs_list: Union[List[QuerySet], List[None]] = []
+        for name, model in send_record_classes:
+            qs = (
+                model.objects.filter(
+                    handoff_time__isnull=False,
+                ).values("slug")
+                .annotate(
+                    item_count=Count("slug"),
+                    record_type=Value(name),
+                    handoff_time=Min("handoff_time"),
+                    received_count=Count(
+                        Case(
+                            When(
+                                status="SENT",
+                                then=1,
+                            ),
+                            output_field=IntegerField(),
+                        )
+                    ),
+                    open_count=Count("open_time"),
+                    click_count=Count("click_time"),
+                    sent_count=Count("send_time"),
+                    unsub_count=Count("unsubscribe_time")
+                )
+            )
+
+            qs_list.append(qs)
+
+        self.queryset = (
+            qs_list[0].union(*qs_list[1:]).order_by("-handoff_time")
+        )
+        return super().get_queryset()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.add_statistics(context)
+        return context
+
+    def add_statistics(self, context):
+        """Add some statistics about the slug's send records."""
+
+        # We edit the context in place. The queryset's objects are
+        # dictionaries, so we can add new keys to them.
+        # The query to get them from the start wouldn't work and was
+        # too complicated.
+        for slug_and_stats in self.queryset:
+            number_of_sent_emails = slug_and_stats["item_count"]
+            number_of_received_emails = slug_and_stats["received_count"]
+            number_of_opened_emails = slug_and_stats["open_count"]
+            number_of_clicked_emails = slug_and_stats["click_count"]
+
+            open_rate = (
+                number_of_opened_emails / number_of_received_emails
+                if number_of_received_emails > 0
+                else 0
+            )
+            click_rate = (
+                number_of_clicked_emails / number_of_received_emails
+                if number_of_received_emails > 0
+                else 0
+            )
+            success_rate = (
+                number_of_received_emails / number_of_sent_emails
+                if number_of_sent_emails > 0
+                else 0
+            )
+            extended_stats = {
+                "open_rate": open_rate,
+                "click_rate": click_rate,
+                "success_rate": success_rate,
+            }
+            slug_and_stats.update(extended_stats)
+
+
+# TODO: Add permissions to this view
+class EmailDashboardView(BaseFormView, ListView):
+    """Show the slugs that have been sent for a given SendRecord class."""
+
+    paginate_by = 10
+    template_name = "topicblog/dashboard_sendrecords.html"
+    allow_empty = True
+    context_object_name = "send_records"
+    form_class = SearchTermForm
+
+    def get_queryset(self):
+        """Return the queryset for the view."""
+        model_name = self.get_model_name_from_kwargs()
+        self.send_record_class = apps.get_model(
+            "topicblog", model_name=model_name
+        )
+        self.queryset = self.send_record_class.objects.all().order_by(
+            "-handoff_time"
+        )
+        return super().get_queryset()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context = self.add_statistics(context)
+        context["email_form"] = SearchTermForm()
+        return context
+
+    def form_valid(self, form):
+        self.create_success_url(form)
+        return super().form_valid(form)
+
+    def create_success_url(self, form):
+        """Create the success url for the form."""
+        current_email_type: str = self.request.resolver_match.kwargs.get(
+            "send_record_class"
+        )
+        filter_by_arg = form.cleaned_data["searched_term"]
+        if filter_by_arg:
+            self.success_url = reverse(
+                "topicblog:email_dashboard_detail",
+                kwargs={
+                    "send_record_class": current_email_type,
+                    "filter_by": filter_by_arg,
+                },
+            )
+        else:
+            self.success_url = reverse(
+                "topicblog:email_dashboard",
+                kwargs={"send_record_class": current_email_type},
+            )
+
+    def add_statistics(self, context: dict):
+        """Add some statistics about the send records."""
+        self.total_sent = self.queryset.count()
+        if self.total_sent == 0:
+            context["total_sent"] = self.total_sent
+            context["click_rate"] = "N/A"
+            context["open_rate"] = "N/A"
+            context["success_rate"] = "N/A"
+            return context
+
+        click_rate = (
+            self.queryset.filter(click_time__isnull=False).count()
+            / self.total_sent
+        )
+        self.click_rate = "{:.2%}".format(click_rate)
+        open_rate = (
+            self.queryset.filter(open_time__isnull=False).count()
+            / self.total_sent
+        )
+        self.open_rate = "{:.2%}".format(open_rate)
+        success_rate = (
+            self.queryset.filter(status="SENT").count() / self.total_sent
+        )
+        self.success_rate = "{:.2%}".format(success_rate)
+        context["total_sent"] = self.total_sent
+        context["click_rate"] = self.click_rate
+        context["open_rate"] = self.open_rate
+        context["success_rate"] = self.success_rate
+
+        return context
+
+    def get_model_name_from_kwargs(self) -> str:
+        """Return the model name from the kwargs.
+
+        This simplifies the URL display while hiding the model name.
+        """
+        kwarg_to_model_name = {
+            "email": "SendRecordMarketingEmail",
+            "presse": "SendRecordMarketingPress",
+        }
+        if self.kwargs["send_record_class"] not in kwarg_to_model_name:
+            raise Http404
+
+        return kwarg_to_model_name[self.kwargs["send_record_class"]]
+
+
+class EmailDashboardViewOneView(EmailDashboardView):
+    def get_queryset(self):
+        self.queryset = super().get_queryset()
+        # Filter by slug or recipient email
+        self.queryset = self.queryset.filter(
+            Q(slug=self.kwargs["filter_by"])
+            | Q(recipient__email=self.kwargs["filter_by"])
+        )
+        return self.queryset
 
 
 def beacon_view(response, **kwargs):
