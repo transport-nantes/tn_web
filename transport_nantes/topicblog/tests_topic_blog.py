@@ -11,7 +11,13 @@ from mailing_list.events import (
     subscribe_user_to_list,
 )
 from topicblog.forms import TopicBlogEmailSendForm
-from .models import TopicBlogEmail, TopicBlogItem, TopicBlogPress
+from .models import (
+    TopicBlogEmail,
+    TopicBlogItem,
+    TopicBlogPress,
+    TopicBlogPanel,
+    get_random_panel,
+)
 
 
 class Test(TestCase):
@@ -1471,3 +1477,36 @@ class TopicBlogPressTests(TransactionTestCase):
         self.assertContains(response, "<em>text in italic</em>")
         self.assertContains(response, "<strong>bol…</strong>")
         self.assertNotContains(response, "and some more text")
+
+
+class TestGetRandom(TestCase):
+    def test_get_random(self):
+        user = User.objects.create_user(
+            username="test-user", password="test-pass"
+        )
+        user.save()
+        # Create a base template
+        self.template_name = "topicblog/panel_did_you_know_tip_1.html"
+
+        def make_panel(slug: str, published: bool, when_ago: int):
+            panel_obj = TopicBlogPanel.objects.create(
+                slug=slug,
+                date_created=datetime.now(timezone.utc),
+                user=user,
+                template_name=self.template_name,
+            )
+            if published:
+                panel_obj.publication_date = datetime.now(
+                    timezone.utc
+                ) - timedelta(seconds=when_ago)
+            panel_obj.save()
+            return panel_obj
+
+        make_panel("a", False, 100)  # panel_a1
+        make_panel("a", False, 10)  # panel_a3
+        panel_a2 = make_panel("a", True, 50)
+        make_panel("b", True, 100)  # panel_b1
+        make_panel("b", False, 60)  # panel_b2
+        panel_b3 = make_panel("b", True, 20)
+        for n in range(10):
+            self.assertTrue(get_random_panel() in [panel_a2, panel_b3])
