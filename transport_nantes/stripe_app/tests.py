@@ -208,7 +208,6 @@ class TestStripeAppSelenium(LiveServerTestCase):
     """Regroups all tests done with Selenium"""
 
     def setUp(self):
-
         self.options = Options()
         self.options.add_argument("--headless")
         self.browser = WebDriver(

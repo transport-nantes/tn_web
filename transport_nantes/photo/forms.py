@@ -4,7 +4,6 @@ from .models import PhotoEntry
 
 
 class PhotoEntryForm(forms.ModelForm):
-
     terms_and_condition_checkbox = forms.BooleanField(
         label="Je certifie que :",
         required=True,

@@ -1232,7 +1232,6 @@ class TopicBlogPressIndex(ListView):
     paginate_by = 10
 
     def get_queryset(self) -> list:
-
         # Subquery preparation
         latest_press_release = TopicBlogPress.objects.filter(
             slug=OuterRef("slug"), publication_date__isnull=False

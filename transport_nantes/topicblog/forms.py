@@ -28,7 +28,6 @@ class ModelFormTemplateList(ModelForm):
         self.set_initial_template()
 
     def get_template_list(self) -> list:
-
         templates = self.instance.template_config
         template_list = []
         for template, value in templates.items():

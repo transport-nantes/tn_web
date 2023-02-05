@@ -383,7 +383,6 @@ def check_image_and_prev_next(
 
 class TestVotes(StaticLiveServerTestCase):
     def setUp(self):
-
         self.user = User.objects.create_user(
             username="testuser",
             email="testuser@example.com",

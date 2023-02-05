@@ -166,7 +166,6 @@ class QuickPetitionSignupForm(ModelForm):
 
 
 class MailingListAdminForm(forms.ModelForm):
-
     linked_article = forms.ChoiceField(choices=[], required=False)
 
     def __init__(self, *args, **kwargs):

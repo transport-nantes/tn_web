@@ -220,7 +220,6 @@ def prepare_email(
 
 
 class ActivationLoginView(TemplateView):
-
     template_name = "authentication/mail_confirmed.html"
 
     def get_context_data(self, **kwargs):
@@ -273,7 +272,6 @@ class DeauthView(LogoutView):
 
 
 class ProfileView(TemplateView, LoginRequiredMixin):
-
     template_name = "authentication/profile.html"
 
     def get_context_data(self, **kwargs):
@@ -287,7 +285,6 @@ class ProfileView(TemplateView, LoginRequiredMixin):
         return context
 
     def post(self, request, *args, **kwargs):
-
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(
             request.POST, request.FILES, instance=request.user.profile

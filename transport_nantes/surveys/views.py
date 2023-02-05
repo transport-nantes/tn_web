@@ -60,6 +60,7 @@ class QuestionnaireView(TemplateView):
 
 # Views for answering questions ####################################
 
+
 # Decorate for login. ####
 class ResponseView(TemplateView):
     template_name = "surveys/response_1.html"

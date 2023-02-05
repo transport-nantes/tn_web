@@ -33,7 +33,6 @@ class TBEmailTemplateTagsTests(TestCase):
         self.assertIn("belvederes.jpg", rendered_template)
 
     def test_email_body_text_md(self):
-
         text = "This is a test"
         expected_template = f"""
             <tr>
@@ -55,7 +54,6 @@ class TBEmailTemplateTagsTests(TestCase):
         self.assertEqual(rendered_template, expected_template)
 
     def test_email_cta_button(self):
-
         slug = "index"
         label = "Go to the homepage"
 

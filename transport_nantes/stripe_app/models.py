@@ -104,7 +104,6 @@ class Donation(models.Model):
     )
 
     def __str__(self):
-
         display_name = ""
         amount_given = (
             str(round(float(self.amount_centimes_euros / 100), 2)) + "€"

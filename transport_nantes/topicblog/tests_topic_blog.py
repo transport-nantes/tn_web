@@ -1265,7 +1265,6 @@ class TopicBlogEmailTest(TransactionTestCase):
         ]
 
     def test_TBE_view_one_status_code(self):
-
         for user_type in self.perm_needed_responses:
             response = user_type["client"].get(
                 reverse(
@@ -1290,7 +1289,6 @@ class TopicBlogEmailTest(TransactionTestCase):
             )
 
     def test_get_subcribed_users_email_list(self):
-
         # superuser and no_perm_user are subscribed to the mailing list
         # in the setUp method
         number_of_subscribed_users = 2
@@ -1439,7 +1437,6 @@ class TopicBlogPressTests(TransactionTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     def test_press_release_list_markdown_rendering(self):
-
         TopicBlogPress.snippet_char_limit = 100
         self.markdown_press_release = TopicBlogPress.objects.create(
             subject="Test subject",
