@@ -2,7 +2,7 @@
 {% load absolute_url %}
 {% load tz %}
 {% load static %}
-
+{% load panels %}
 
 {% block background_color %}
 <body style="margin:0;padding:0;word-spacing:normal;background-color:#43526e;">
@@ -56,10 +56,10 @@ color:#DDE5ED;background-color:#43526e;">
         <td>
             <ul>
                 <li> Identifiant de votre session : {{ mobilito_session.session_sha1 }}</li>
-                <li> Nombre de citoyens à pied : {{ nb_pedestrians }}</li>
-                <li> Nombre de voitures, motos, camions : {{ nb_cars }}</li>
-                <li> Nombre de vélos et trotinettes : {{ nb_bicycles }}</li>
-                <li> Nombre de transports en commun : {{ nb_TC }}</li>
+                <li> Nombre de citoyens à pied : {{ mobilito_session.pedestrian_count }}</li>
+                <li> Nombre de voitures, motos, camions : {{ mobilito_session.motor_vehicle_count }}</li>
+                <li> Nombre de vélos et trotinettes : {{ mobilito_session.bicycle_count }}</li>
+                <li> Nombre de transports en commun : {{ mobilito_session.public_transport_count }}</li>
             </ul>
 
             <p>Voici les graphiques de votre session :</p>
@@ -84,6 +84,11 @@ color:#DDE5ED;background-color:#43526e;">
                 </p>
             </p>
         </td>
+    </tr>
+    <tr>
+	<td>{# The tip-of-the-day panel. #}
+	    {% panel panel_slug %}
+	</td>
     </tr>
     <tr> <!-- Footer -->
         <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;font-weight:bold;background-color:#43526e;color:#DDE5ED;">

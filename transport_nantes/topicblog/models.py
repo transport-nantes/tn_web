@@ -1699,11 +1699,14 @@ def get_random_panel():
         .values("slug")
         .annotate(pub_date=Max("publication_date"))
     )
+    logger.info(f"Found {published_panels.count()} published panels.")
     the_panel_values = published_panels[
         randint(0, published_panels.count() - 1)
     ]
+    logger.info(f"Chose f{the_panel_values}.")
     the_panel_obj = TopicBlogPanel.objects.get(
         slug=the_panel_values["slug"],
         publication_date=the_panel_values["pub_date"],
     )
+    logger.info(f"Chose panel {the_panel_obj}.")
     return the_panel_obj

@@ -44,7 +44,8 @@ from mobilito.models import (
     MobilitoSession,
     MobilitoUser,
 )
-from topicblog.models import SendRecordTransactionalAdHoc
+from topicblog.models import SendRecordTransactionalAdHoc, get_random_panel
+from topicblog.views import k_render_as_email
 from user_agents import parse
 
 from transport_nantes.settings import MAPS_API_KEY
@@ -445,13 +446,12 @@ def prepare_email(
     """Compose and return email summary of Mobilito session."""
     logger.info(f"Preparing email for {mobilito_session.user.user.email}")
     template = "mobilito/result_email.html"
+    the_panel_obj = get_random_panel()
     context = {
         "request": request,
+        k_render_as_email: True,
         "mobilito_session": mobilito_session,
-        "nb_pedestrians": mobilito_session.pedestrian_count,
-        "nb_bicycles": mobilito_session.bicycle_count,
-        "nb_cars": mobilito_session.motor_vehicle_count,
-        "nb_TC": mobilito_session.public_transport_count,
+        "panel_slug": the_panel_obj.slug,
     }
 
     html_message = render_to_string(template, context=context, request=request)

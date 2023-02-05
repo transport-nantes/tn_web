@@ -181,7 +181,7 @@ class TestTopicBlogPanel(TestCase):
         self.assertIn("This is a test panel.", rendered)
         self.assertIn("<strong>This is a test panel.</strong>", rendered)
 
-    def test_tn_markdown_synthax(self):
+    def test_tn_markdown_syntax(self):
         """Check that the TBPanel is rendered with markdown using tn_markdown.
 
         This test isn't in test_tn_links.py because the use of panel requires
@@ -191,9 +191,10 @@ class TestTopicBlogPanel(TestCase):
         """
         template_string = """
             {% load markdown %}
+            {% load panels %}
             {% tn_markdown "[[panel:]]((test-panel))" %}
             """
-        context = Context({"panel": self.panel})
+        context = Context({"panel_slug": self.panel.slug})
         rendered = Template(template_string=template_string).render(
             context=context
         )
