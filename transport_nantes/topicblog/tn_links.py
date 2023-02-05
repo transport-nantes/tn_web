@@ -246,8 +246,13 @@ class TNLinkParser(object):
                 **{"mailinglist": mailinglist_name, "title": description_text},
             )
         elif "panel" == self.bracket_class_string:
+            panel_slug = self.paren_string
+            # Ideally, we'd pass the object through to the panel tag,
+            # but render_inclusion_tag_to_html() is a hideous mess
+            # that depends too much on its first client, the mailing
+            # list tag.  So we'll leave that all to another day.
             self.out_string += render_inclusion_tag_to_html(
-                self.context, "panels", "panel", self.paren_string
+                self.context, "panels", "panel", panel_slug
             )
         elif (
             "cta" == self.bracket_class_string
