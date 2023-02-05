@@ -23,7 +23,6 @@ from crispy_forms.layout import (
 
 
 class DonationForm(forms.Form):
-
     first_name = forms.CharField(
         label="Prénom",
         widget=forms.TextInput(attrs={"placeholder": "Prénom*"}),

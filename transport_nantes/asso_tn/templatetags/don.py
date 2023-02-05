@@ -36,7 +36,6 @@ class_btn_lg = (
 
 @register.simple_tag
 def bouton_don(link_text, context={}):
-
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]
@@ -65,7 +64,6 @@ def bouton_join(link_text):
 
 @register.simple_tag
 def bouton_don_lg(link_text, context={}):
-
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]
@@ -109,7 +107,6 @@ def external_url(url, label):
 
 @register.simple_tag
 def external_url_button(url, label, context={}):
-
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]
@@ -132,7 +129,6 @@ def external_url_button(url, label, context={}):
 
 @register.simple_tag
 def action_button(link_url, topic_name, context={}):
-
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]

@@ -665,7 +665,6 @@ class TBETest(TestCase):
 
 class TBPTest(TestCase):
     def setUp(self):
-
         TBETest.setUp(self)
         edit_permission = Permission.objects.get(codename="tbp.may_edit")
         view_permission = Permission.objects.get(codename="tbp.may_view")
@@ -1348,7 +1347,6 @@ class TBPTest(TestCase):
 
 class TBLATest(TestCase):
     def setUp(self):
-
         TBETest.setUp(self)
         edit_permission = Permission.objects.get(codename="tbla.may_edit")
         view_permission = Permission.objects.get(codename="tbla.may_view")

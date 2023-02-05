@@ -191,7 +191,6 @@ class MapView(TemplateView):
 
 class DownloadGeoJSONView(View):
     def get(self, request, **kwargs):
-
         # Retrieved from URL
         city = kwargs["city"]
         observatory_name = kwargs["observatory_name"]
