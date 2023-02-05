@@ -1,9 +1,12 @@
 from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.models import User
+import datetime
 
 from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
+from topicblog.models import TopicBlogPanel
 from .templatetags import slug
 from .tn_links import TNLinkParser, render_inclusion_tag_to_html
 
@@ -94,6 +97,38 @@ class TnLinkParserTest(TestCase):
                 "newsletter",
                 "show_mailing_list",
                 **{"mailinglist": "kangaroo", "title": "aardvark"},
+            ),
+        )
+
+    def test_panel(self):
+        def mock_get_host():
+            return "127.0.0.1:8000"
+
+        http_request = HttpRequest()
+        http_request.get_host = mock_get_host
+        user = User.objects.create_user(
+            username="test-user", password="test-pass"
+        )
+        user.save()
+        tb_panel = TopicBlogPanel()
+        tb_panel.slug = "aardvark"
+        tb_panel.user = user
+        tb_panel.template_name = (
+            "topicblog/panel_did_you_know_tip_1_mail_client.html"
+        )
+        tb_panel.title = "I am the title"
+        tb_panel.body_text_1_md = "# Hello, world!"
+        tb_panel.publication_date = datetime.datetime.now()
+        tb_panel.save()
+        self.parser.context["request"] = http_request
+
+        self.assertEqual(
+            self.parser.transform("[[panel:]]((aardvark))"),
+            render_inclusion_tag_to_html(
+                {"request": http_request},
+                "panels",
+                "panel",
+                "aardvark",
             ),
         )
 

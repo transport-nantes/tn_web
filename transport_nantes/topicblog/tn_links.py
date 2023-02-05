@@ -71,12 +71,16 @@ functions in order to permit HTML on the output.
 
 
 def render_inclusion_tag_to_html(
-    context, tag_source, tag_name, *args, **kwargs
+    context_dict: dict,
+    tag_source: str,
+    tag_name: str,
+    *args: list,
+    **kwargs: dict,
 ):
     """Render an inclusion tag to a string."""
-    context["title"] = kwargs.get("title")
-    context["mailinglist"] = kwargs.get("mailinglist")
-    context = Context(context)
+    context_dict["title"] = kwargs.get("title")
+    context_dict["mailinglist"] = kwargs.get("mailinglist")
+    context = Context(context_dict)
     args_list = ""
     if args:
         for arg in args:
