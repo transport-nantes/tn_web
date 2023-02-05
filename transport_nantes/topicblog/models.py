@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.urls import reverse
 from django.db import models
+from django.db.models import Max
+from random import randint
 
 from mailing_list.models import MailingList
 
@@ -1678,3 +1680,30 @@ class TopicBlogPanel(TopicBlogObjectBase):
                 "topicblog:edit_panel",
                 kwargs={"pkid": self.pk, "the_slug": self.slug},
             )
+
+
+def get_random_panel():
+    """Choose a displayable panel at random."""
+    # Using objects.filter().order_by.distinct.count() would make a
+    # lot of sense, but the django ORM doesn't support distinct() on
+    # sqlite3 (in dev).  So we have to do this a bit differently
+    # unless/until we support an easy postgresql in vagrant solution
+    # for dev.
+    # num_published_panels = (
+    #     TopicBlogPanel.objects.filter(publication_date__isnull=False)
+    #     .annotate(num_published=Count("slug"))
+    #     .count()
+    # )
+    published_panels = (
+        TopicBlogPanel.objects.filter(publication_date__isnull=False)
+        .values("slug")
+        .annotate(pub_date=Max("publication_date"))
+    )
+    the_panel_values = published_panels[
+        randint(0, published_panels.count() - 1)
+    ]
+    the_panel_obj = TopicBlogPanel.objects.get(
+        slug=the_panel_values["slug"],
+        publication_date=the_panel_values["pub_date"],
+    )
+    return the_panel_obj
