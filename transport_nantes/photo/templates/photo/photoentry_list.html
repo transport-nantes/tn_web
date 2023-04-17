@@ -22,7 +22,7 @@
         {% for photoentry in photoentry_list %}
             <div class="d-flex col-12 col-md-6 col-xl-4 my-3 justify-content-center">
                 <a href="{% url 'photo:photo_details' photoentry.sha1_name %}" style="max-height:212px;">
-                    <img src="{{ photoentry.submitted_photo.url }}"
+                    <img src="{{ photoentry.thumbnail_photo.url }}"
                     class="thumbnail"
                     width="100%"
                     height="100%"

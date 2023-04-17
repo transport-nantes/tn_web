@@ -19,8 +19,8 @@
 	    <meta property="twitter:description" content="{{ photo.pedestrian_issues_text }}"/>
         <meta property="og:description" content="{{ photo.pedestrian_issues_text }}"/>
 	{% endif %}
-    <meta property="og:image" content="{% absolute_url_image photo.submitted_photo.url %}"/>
-    <meta property="twitter:image" content="{% absolute_url_image photo.submitted_photo.url %}">
+    <meta property="og:image" content="{% absolute_url_image photo.display_photo.url %}"/>
+    <meta property="twitter:image" content="{% absolute_url_image photo.display_photo.url %}">
 
 {% endblock head %}
 
@@ -57,13 +57,13 @@
             Retour à la galerie
         </a>
         <div class="photo-container">
-            <img src="{{ photo.submitted_photo.url }}"
+            <img src="{{ photo.display_photo.url }}"
             alt="Photo soumise à l'occasion de l'opération piéton"
             class=""
             width="100%"
             height="100%"
             style="filter: drop-shadow(5px 5px 10px #000); object-fit:contain"></img>
-                
+
             {% if photo.accepted == True  %}
                 {# Previous button #}
                 <a href="{% url 'photo:prev_photo_details' photo.sha1_name %}"

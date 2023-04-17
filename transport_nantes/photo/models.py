@@ -76,6 +76,20 @@ class PhotoEntry(models.Model):
         verbose_name="Date de soumission",
         auto_now_add=True,
     )
+    # Cache photos at lower resolution for faster loading.  Somewhat
+    # arbitrarily, we use 1000px as the longest side for display and
+    # 400 for thumbnail.
+    #
+    # We'll also use the display image for opengraph and twittercard.
+    display_photo = models.ImageField(
+        upload_to="photo/",
+        blank=True,
+    )
+    thumbnail_photo = models.ImageField(
+        upload_to="photo/",
+        blank=True,
+    )
+
     # Photo entries are pending (null) until they are accepted (True)
     # or rejected (False) after a jury session.
     accepted = models.BooleanField(null=True, blank=True, default=None)

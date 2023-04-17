@@ -1,6 +1,5 @@
 ## The following requirements were added by pip freeze:
 amqp==5.1.1
-anyjson==0.3.3
 appdirs==1.4.3
 asgiref==3.5.2
 astroid==2.12.4
@@ -95,7 +94,7 @@ pillow-scripts==5.0.0
 pillow-snippet==0.0.4
 platformdirs==2.6.2
 progress==1.5
-prompt-toolkit==3.0.3
+prompt-toolkit==3.0.38
 psycopg2==2.8.4
 ptyprocess==0.6.0
 pure-eval==0.2.2
@@ -122,6 +121,7 @@ rollbar==0.16.3
 rsa==4.7
 s3transfer==0.4.2
 selenium==4.1.0
+setuptools<58.0.0
 six==1.14.0
 sniffio==1.2.0
 sortedcontainers==2.4.0
@@ -132,7 +132,7 @@ stripe==2.55.0
 toml==0.10.2
 tomli==2.0.1
 tomlkit==0.11.4
-traitlets==4.3.3
+traitlets==5.9.0
 trio==0.19.0
 trio-websocket==0.9.2
 typing-extensions==4.5.0

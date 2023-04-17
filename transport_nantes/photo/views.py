@@ -1,5 +1,8 @@
 """Application to manage a photo competition."""
 import logging
+from io import BytesIO
+import PIL
+from PIL import Image
 
 from asso_tn.utils import make_timed_token, token_valid
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -131,15 +134,23 @@ class Confirmation(TemplateView):
 # of the csrf token tag.
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class PhotoView(FormView):
-    """
-    View to display a single photo and up/down vote it
-    """
+    """View to display a single photo and up/down vote it."""
 
     template_name = "photo/single_entry.html"
     form_class = AnonymousVoteForm
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        """Overriding here so we can return HttpResponseForbidden if needed"""
+        """Override here so we can return HttpResponseForbidden if needed.
+
+        The only reason we'd expect to get a ForbiddenException is if
+        the requested photo is not accepted and this is not the user
+        who submitted the photo.  One could argue that we should
+        simply 404, but if the photo had been published and no longer
+        is, the 404 seems a bit confusing (and wrong).  And
+        unpublication seems the only way someone would have the
+        sha1_name of a photo that is not accepted.
+
+        """
         try:
             context_or_response = self.get_context_data()
         except ForbiddenException as exception:
@@ -467,3 +478,94 @@ class PhotoListView(ListView):
     queryset = PhotoEntry.objects.filter(accepted=True).order_by("sha1_name")
     allow_empty = True
     paginate_by = 20
+
+    def get_queryset(self):
+        """Confirm that each object has display_photo and thumbnail_photo.
+
+        This is purely a matter of performance.
+
+        We want to make sure that each PhotoEntry object has both a
+        display_photo and and a thumbnail_photo value in the database.
+        If not, use PIL to compute them from the higher resolution
+        submitted_photo.
+
+        This is a hack.  We should have done this at save time, but at
+        this point, making the system work and perform reasonably is
+        far more important than future use.  There's a real chance
+        that this whole project is throw-away anyway.
+
+        In addition, it would surely break horribly if we ever wanted
+        to use object storage (S3, etc.) for the photos.
+
+        """
+        # Refactor this query to fetch only objects with empty or null
+        # display_photo or empty or null thumbnail_photo.
+        hack_queryset = PhotoEntry.objects.filter(
+            Q(display_photo__isnull=True) | Q(display_photo__exact="")
+        ).filter(
+            Q(thumbnail_photo__isnull=True) | Q(thumbnail_photo__exact="")
+        )
+        for photo in hack_queryset:
+            logger.info(
+                f"Generatiring display and/or thumbnail "
+                f"photos for {photo.sha1_name}",
+            )
+            submitted_photo = Image.open(photo.submitted_photo.path).convert(
+                "CMYK"
+            )
+            (
+                _,  # submitted_photo_upload_path,
+                submitted_photo_name,
+            ) = photo.submitted_photo.name.rsplit("/", 1)
+            if not photo.display_photo:
+                logger.info(
+                    f"  -> Generating display photo for {photo.sha1_name}"
+                )
+                display_photo = submitted_photo.copy()
+                display_photo.thumbnail(
+                    (1000, 1000), PIL.Image.Resampling.LANCZOS
+                )
+                display_path = (
+                    # submitted_photo_upload_path
+                    "display_"
+                    + submitted_photo_name
+                    + ".jpg"
+                )
+                with BytesIO() as fp_display:
+                    try:
+                        display_photo.save(fp_display, format="JPEG")
+                        fp_display.seek(0)
+                        photo.display_photo.save(display_path, fp_display)
+                    except OSError:
+                        logger.error(
+                            f"Error saving display photo for {photo.sha1_name}"
+                        )
+            if not photo.thumbnail_photo:
+                logger.info(
+                    f"  -> Generating thumbnail photo for {photo.sha1_name}"
+                )
+                thumbnail_photo = submitted_photo.copy()
+                thumbnail_photo.thumbnail(
+                    (400, 400), PIL.Image.Resampling.LANCZOS
+                )
+                thumbnail_path = (
+                    # submitted_photo_upload_path
+                    "thumbnail_"
+                    + submitted_photo_name
+                    + ".jpg"
+                )
+                with BytesIO() as fp_thumbnail:
+                    try:
+                        thumbnail_photo.save(fp_thumbnail, format="JPEG")
+                        fp_thumbnail.seek(0)
+                        photo.thumbnail_photo.save(
+                            thumbnail_path, fp_thumbnail
+                        )
+                    except OSError:
+                        logger.error(
+                            "Error saving thumbnail photo for "
+                            f"{photo.sha1_name}"
+                        )
+                photo.save()
+
+        return super().get_queryset()

@@ -20,13 +20,15 @@ from mailing_list.models import MailingList, MailingListEvent
 from .models import PhotoEntry, Vote
 
 
-def add_image_for_test(test_self, accepted=False, sha1_name=None):
+def add_image_for_test(
+    test_self, accepted=False, sha1_name=None, category="LE_TRAVAIL"
+):
     """Add a (fixed) image for a unit test."""
     k_this_dir = Path(__file__).resolve().parent
     k_file_path = k_this_dir / "test_data" / "1920x1080.png"
     test_self.photo_entry = PhotoEntry.objects.create(
         user=test_self.user,
-        category="LE_TRAVAIL",
+        category=category,
         accepted=accepted,
         sha1_name=sha1_name,
     )
@@ -35,6 +37,13 @@ def add_image_for_test(test_self, accepted=False, sha1_name=None):
             fp_img, name="1920x1080.png"
         )
         test_self.photo_entry.save()
+
+    test_self.photo_entry.save()
+
+    # Test hack to correspond to the gallery hack that generates
+    # display and thumbnail images for us.
+    test_self.client.get(reverse("photo:galerie"))
+    test_self.photo_entry.refresh_from_db()
 
 
 class TestUploadEntry(TestCase):
@@ -88,7 +97,7 @@ class TestConfirmation(TestCase):
         self.user = User.objects.create_user(username="testuser")
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
-        add_image_for_test(self)
+        add_image_for_test(self, accepted=False, sha1_name="test_sha1")
 
         self.encoded_object_id = make_timed_token(
             string_key="", int_key=self.photo_entry.id, minutes=60 * 24 * 30
@@ -105,7 +114,7 @@ class TestPhotoView(TestCase):
         self.user = User.objects.create_user(username="testuser")
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
-        add_image_for_test(self)
+        add_image_for_test(self, accepted=False, sha1_name="test_sha1")
 
         self.mailing_list = MailingList.objects.create(
             mailing_list_name="Operation pieton",
@@ -114,20 +123,21 @@ class TestPhotoView(TestCase):
 
     def test_get(self):
         # Anonymous client trying to see an unaccepted photo
+        sha1_name = self.photo_entry.sha1_name
         response = self.client.get(
-            reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
+            reverse("photo:photo_details", args=[sha1_name])
         )
         self.assertEqual(response.status_code, 403)
 
         # Photo entry's owner trying to see their photo
         response = self.auth_client.get(
-            reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
+            reverse("photo:photo_details", args=[sha1_name])
         )
         self.assertEqual(response.status_code, 200)
 
         # Anonymous client trying to see an unexisting photo
         response = self.client.get(
-            reverse("photo:photo_details", args=["unexisting_sha1"])
+            reverse("photo:photo_details", args=["nonexistent_sha1"])
         )
         self.assertEqual(response.status_code, 404)
 
@@ -143,7 +153,7 @@ class TestPhotoView(TestCase):
 
         # Anonymous client trying to see an accepted photo
         response = self.client.get(
-            reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
+            reverse("photo:photo_details", args=[sha1_name])
         )
         self.assertEqual(response.status_code, 200)
         soup = bs.BeautifulSoup(response.content, "html.parser")
@@ -157,7 +167,7 @@ class TestPhotoView(TestCase):
 
         # Photo entry's owner trying to see their photo
         response = self.auth_client.get(
-            reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
+            reverse("photo:photo_details", args=[sha1_name])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -166,6 +176,7 @@ class TestPhotoView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_form_valid(self):
+        """Test the POST request to the photo details view."""
         url = reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
         # Users trying to vote on an unaccepted photo
         post_data = {
@@ -234,6 +245,7 @@ class TestPhotoView(TestCase):
         self.assertEqual(MailingListEvent.objects.count(), 0)
 
     def test_post_form_invalid(self):
+        """Test that the form is invalid when the captcha is not filled."""
         url = reverse("photo:photo_details", args=[self.photo_entry.sha1_name])
         self.photo_entry.accepted = True
         self.photo_entry.save()
@@ -389,32 +401,18 @@ class TestVotes(StaticLiveServerTestCase):
             password="testpassword",
         )
 
-        k_this_dir = Path(__file__).resolve().parent
-        k_file_path = k_this_dir / "test_data" / "1920x1080.png"
-        self.photo_entry = PhotoEntry.objects.create(
-            user=self.user,
-            category="LE_TRAVAIL",
-            accepted=True,
+        add_image_for_test(
+            self, accepted=True, sha1_name="photo_1", category="LE_TRAVAIL"
         )
-        self.photo_entry_2 = PhotoEntry.objects.create(
-            user=self.user,
-            category="L_AMOUR",
-            accepted=True,
+        add_image_for_test(
+            self, accepted=True, sha1_name="photo_2", category="L_AMOUR"
         )
-        self.photo_entry_3 = PhotoEntry.objects.create(
-            user=self.user,
-            category="PIETON_URBAIN",
+        add_image_for_test(
+            self, accepted=True, sha1_name="photo_3", category="PIETON_URBAIN"
         )
-        self.photo_entry_4 = PhotoEntry.objects.create(
-            user=self.user,
-            category="LE_TRAVAIL",
-            accepted=True,
+        add_image_for_test(
+            self, accepted=True, sha1_name="photo_4", category="LE_TRAVAIL"
         )
-        with open(k_file_path, "rb") as f:
-            self.photo_entry.submitted_photo = ImageFile(
-                f, name="1920x1080.png"
-            )
-            self.photo_entry.save()
 
         self.mailing_list = MailingList.objects.create(
             mailing_list_name="Operation pieton",
@@ -424,6 +422,7 @@ class TestVotes(StaticLiveServerTestCase):
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
         self.auth_user_cookie = self.auth_client.cookies["sessionid"].value
+        self.client.get(reverse("photo:galerie"))
 
         options = Options()
         options.add_argument("--headless")
