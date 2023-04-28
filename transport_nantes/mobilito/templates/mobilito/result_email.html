@@ -5,83 +5,122 @@
 {% load panels %}
 
 {% block background_color %}
-<body style="margin:0;padding:0;word-spacing:normal;background-color:#43526e;">
+<body style="margin:0; padding:0; word-spacing:normal; background-color:#ffffff;">
     <div role="article" aria-roledescription="email" lang="fr"
-    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#43526e;">
+	 style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;">
 {% endblock background_color %}
 
 {% block email_content %}
-<table role="presentation"
-style="width:94%;max-width:600px;
-border:none;border-spacing:0;
-text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;
-color:#DDE5ED;background-color:#43526e;">
+	<table role="presentation"
+	       style="width:100%;
+		     max-width:600px;
+		     border:none;
+		     border-spacing:0;
+		     text-align:left;
+		     font-family: Montserrat, Arial, Helvetica, sans-serif;
+		     font-size:16px;
+		     line-height:22px;
+		     color:#43526e;
+		     background-color:#ffffff;">
     <tr>
-        {% comment "Logo" %}This row handles the logo display{% endcomment %}
-        <td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;background-color:#43526e;">
+        <td style="padding:40px 30px 30px 30px;
+		   text-align:center;
+		   font-size:24px;
+		   font-weight:bold;
+		   background-color:#ffffff;">
             <a href="https://www.mobilitains.fr/" style="text-decoration:none;">
-                {% if logo_path %}
-                    <img src="{{ logo_path }}" width="165" alt="Logo Mobilitains"
-                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#DDE5ED;">
-                {% else %}
-                    <img src="{% static 'asso_tn/M-logo_white.png' %}" width="165" alt="Logo Mobilitains"
-                    style="width:165px;max-width:80%;height:auto;border:none;text-decoration:none;color:#DDE5ED;">
-                {% endif %}
+                <img src="{% static 'asso_tn/M-logo_colored-166.png' %}" width="166" alt="Logo Mobilitains"
+                     style="width:165px;
+			  max-width:80%;
+			  height:auto;
+			  border:none;
+			  text-decoration:none;
+			  color:#43526e;">
             </a>
         </td> <!-- End Logo -->
     </tr>
     <tr>
-        <td>Bonjour de la part des Mobilitains.</td>
+        <td><p>Bonjour de la part des Mobilitains.</p></td>
     </tr>
     <tr>
         <td>
-            {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
-                Voici le résumé de votre session du
-                    {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i" }}
-                    (durée : {{start|timesince:end}})
-
+	    {% comment %} I'd like to display the date nicer, but I
+	    run into localisation problems.  And, thinking ahead to
+	    i18n, I don't think the date filter in the template will
+	    work at all.  So put this off to another day. {% endcomment %}
+	    {% with start=mobilito_session.start_timestamp end=mobilito_session.end_timestamp %}
+	    <p>
+		    {{ start|timezone:'Europe/Paris'|date:"l d-m-Y à G:i"|title }}
+		    vous avez participé à une session de comptage de trafic
+		    avec Mobilito, l'outil gratuit de comptage des Mobilitains.
+		    {% comment %}Nous vous en remercions.{% endcomment %}
+		    Bravo&nbsp;!</p>
+	    </p>
+	    <p>
+		C'était {{start|timesince:end}} et voilà
+		{{ mobilito_session.pedestrian_count }} 🚶‍,
+		{{ mobilito_session.bicycle_count }} 🚲,
+		{{ mobilito_session.motor_vehicle_count }} 🚗,
+		et
+		{{ mobilito_session.public_transport_count }} 🚋
+	    </p>
             {% endwith %}
         </td>
     </tr>
     {% if mobilito_session.map_image %}
-        <tr>
-            <td>
-                <img src="{% absolute_url_image mobilito_session.map_image.url %}"
-                alt="Graphique temporel de votre session"
-                style="display: block; margin: 20px auto; border-radius:5px;object-fit:cover;max-height:300px">
-            </td>
-        </tr>
+    <tr>
+        <td>
+            <img src="{% absolute_url_image mobilito_session.map_image.url %}"
+                 alt="Graphique temporel de votre session"
+                 style="display: block;
+		      margin: 20px auto;
+		      border-radius:5px;
+		      object-fit:cover;
+		      max-height:300px">
+        </td>
+    </tr>
     {% endif %}
     <tr>
         <td>
-            <ul>
-                <li> Identifiant de votre session : {{ mobilito_session.session_sha1 }}</li>
-                <li> Nombre de citoyens à pied : {{ mobilito_session.pedestrian_count }}</li>
-                <li> Nombre de voitures, motos, camions : {{ mobilito_session.motor_vehicle_count }}</li>
-                <li> Nombre de vélos et trotinettes : {{ mobilito_session.bicycle_count }}</li>
-                <li> Nombre de transports en commun : {{ mobilito_session.public_transport_count }}</li>
-            </ul>
-
-            <p>Voici les graphiques de votre session :</p>
+	    <p>
             <img src="{% absolute_url 'mobilito:mobilito_session_timeseries_image' mobilito_session.session_sha1 %}"
-            alt="Graphique temporel de votre session"
-            style="display: block; margin: auto; ">
+		 alt="Graphique temporel de votre session"
+		 style="display: block;
+		      width: 100%;
+		      margin: auto; ">
+	    </p>
+	    {% comment %}
             <img src="{% absolute_url 'mobilito:mobilito_session_fraction_image' mobilito_session.session_sha1 %}"
-            alt="Graphique camembert de votre session"
-            style="display: block; margin: auto; ">
-
+		 alt="Graphique camembert de votre session"
+		 style="display: block;
+		      margin: auto; ">
+	    {% endcomment %}
             <p style="margin-bottom:2em;">
-                Vous pouvez retrouver les détails de votre session sur le site Mobilitains à l'addresse suivante :
-                <p>
-                    <a href="{% absolute_url 'mobilito:mobilito_session_summary' mobilito_session.session_sha1 %}">
-                        {% absolute_url 'mobilito:mobilito_session_summary' mobilito_session.session_sha1 %}
-                    </a>
-                </p>
-                <p>
-                    Merci de votre participation, c'est grâce à vous que la voix des citoyens est entendue !
-                    <br/>
-                    A très bientôt.
-                </p>
+		Content de ce comptage ? <!-- Partagez-le avec vos amis&nbsp;! -->
+                <a
+		    target="_blank"
+		    href="{% absolute_url 'mobilito:mobilito_session_summary' mobilito_session.session_sha1 %}"
+		    style="white-space: nowrap;
+			    display: block;
+			    line-height: 48px;
+			    font-size: 16px;
+			    color: #fc6100;
+			    font-weight: bold;
+			    font-family: Reg, Gotham SSm A, Gotham SSm B, Helvetica, Arial, sans-serif;
+			    text-decoration: none;
+			    border: 2px solid #333f48;
+			    padding: 10px 30px;
+			    letter-spacing: 1px;"
+		>
+                    Consultez-le
+                </a>
+            </p>
+            <p>
+                Et un grand merci, car c'est grâce à vous que la voix
+                des citoyens est entendue !
+            </p>
+	    <p>
+                A très bientôt.
             </p>
         </td>
     </tr>
@@ -91,9 +130,17 @@ color:#DDE5ED;background-color:#43526e;">
 	</td>
     </tr>
     <tr> <!-- Footer -->
-        <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;font-weight:bold;background-color:#43526e;color:#DDE5ED;">
-            <p style="margin:0;font-size:14px;line-height:20px;">
-                &reg; Mobilitains 2022<br>
+        <td style="padding-top:20px;
+		   padding:30px;
+		   text-align:center;
+		   font-size:12px;
+		   font-weight:bold;
+		   background-color:#ffffff;
+		   color:#43526e;">
+            <p style="margin:0;
+		      font-size:14px;
+		      line-height:20px;">
+                &reg; Mobilitains {% now "Y" %}.
             </p>
         </td>
     </tr> <!-- End of Footer -->

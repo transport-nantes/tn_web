@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="https://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-microsoft-com:office:office">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,7 +8,7 @@
     <title></title>
     {% comment %}
         Some CSS and PNG sizing resets for Microsoft Outlook on Windows
-        hidden inside conditional comments (the <!--[if mso]> bits)
+        hidden inside conditional comments (the <!--[if mso]> --> bits)
         src : https://webdesign.tutsplus.com/articles/creating-a-simple-responsive-html-email--webdesign-12978
     {% endcomment %}
     <!--[if mso]>
@@ -25,9 +26,9 @@
     </noscript>
     <![endif]-->
     <style>
-        table, td, div, h1, p {
-            font-family: Arial, sans-serif;
-        }
+     table, td, div, h1, p {
+         font-family: Montserrat, Arial, Helvetica, sans-serif;
+     }
         @media screen and (max-width: 530px) {
             .unsub {
                 display: block;
@@ -100,14 +101,20 @@
 {% block background_color %}
 <body style="margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
     <div role="article" aria-roledescription="email" lang="fr"
-    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:white;">
+	 style="text-size-adjust:auto;
+	       -webkit-text-size-adjust:auto;
+	       -ms-text-size-adjust:auto;
+	       background-color:white;">
 {% endblock background_color %} {% comment %} This scaffold is
         necessary so that our email will be centered across all email
         clients.  We create a 100% wide table, and then set the border
         and border-spacing to zero.  Then we create a row and table
         cell with no padding which has align="center" set so that its
         contents will be centered.  {% endcomment %}
-        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+        <table role="presentation"
+	       style="width:100%;
+		     border:none;
+		     border-spacing:0;">
             <tr>
                 <td align="center" style="padding:0;">
                 {% comment %} Before adding our main content
@@ -126,7 +133,7 @@
                         <tr>
                         <td>
                     <![endif]-->
-                        {% block email_content %}{% endblock email_content %}
+                    {% block email_content %}{% endblock email_content %}
                     <!--[if mso]>
                         </td>
                         </tr>
