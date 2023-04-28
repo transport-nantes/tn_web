@@ -282,8 +282,8 @@ class AddressFormView(LoginRequiredMixin, FormView):
         self.request.session["latitude"] = form.cleaned_data["latitude"]
         self.request.session["longitude"] = form.cleaned_data["longitude"]
         logger.info(
-            f"{self.request.user.email} filled address form.\n"
-            f'Address saved: {self.request.session["location"]}'
+            f"{self.request.user.email} filled address form: "
+            f'{self.request.session["location"]}'
         )
         return super().form_valid(form)
 

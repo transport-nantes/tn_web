@@ -90,33 +90,47 @@
             text-decoration: none;
         }
     </style>
-    <script src="https://kit.fontawesome.com/46b82563d9.js" crossorigin="anonymous"></script>
 </head>
-<body style="margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
-    <div role="article" aria-roledescription="email" lang="fr"
-    style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;">
-        {% comment %}
-        This scaffold is necessary so that our email will be centered across all email clients.
-        We create a 100% wide table, and then set the border and border-spacing to zero.
-        Then we create a row and table cell with no padding which has align="center" set so that its contents will be centered.
-        {% endcomment %}
-        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+<body style="margin:0;
+	     padding:0;
+	     word-spacing:normal;
+	     background-color:#ffffff;">
+    <div role="article"
+	 aria-roledescription="email"
+	 lang="fr"
+	 style="text-size-adjust:100%;
+	       -webkit-text-size-adjust:100%;
+	       -ms-text-size-adjust:100%;
+	       background-color:#ffffff;">
+        {% comment %} This scaffold is necessary so that our email
+        will be centered across all email clients.  We create a 100%
+        wide table, and then set the border and border-spacing to
+        zero.  Then we create a row and table cell with no padding
+        which has align="center" set so that its contents will be
+        centered.  {% endcomment %}
+        <table role="presentation"
+	       style="width:100%;
+		     border:none;
+		     border-spacing:0;">
             <tr>
                 <td align="center" style="padding:0;">
-                {% comment %}
-                Before adding our main content container, we need to set up a Ghost Table:
-                a rigid table with a fixed width that only renders in Outlook because it’s hidden
-                inside some special Outlook-only conditional comments. We need to do this because
-                our main container is going to use the CSS max-width property, and not all versions
-                of Outlook for Windows support it. Without max-width support, the main container
-                would explode to full-width when viewed in Outlook for Windows, so we need to contain it.
+                {% comment %} Before adding our main content
+                container, we need to set up a Ghost Table: a rigid
+                table with a fixed width that only renders in Outlook
+                because it’s hidden inside some special Outlook-only
+                conditional comments. We need to do this because our
+                main container is going to use the CSS max-width
+                property, and not all versions of Outlook for Windows
+                support it. Without max-width support, the main
+                container would explode to full-width when viewed in
+                Outlook for Windows, so we need to contain it.
                 {% endcomment %}
                     <!--[if mso]>
                         <table role="presentation" align="center" style="width:600px;">
                         <tr>
                         <td>
                     <![endif]-->
-                        {% block content %}{% endblock content %}
+                    {% block content %}{% endblock content %}
                     <!--[if mso]>
                         </td>
                         </tr>
