@@ -1,3 +1,5 @@
+"""Mobilito view functions."""
+
 import io
 import json
 import logging
@@ -14,7 +16,6 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib.text
 import requests
-from asso_tn.utils import make_timed_token, token_valid
 from authentication.views import create_send_record
 from django.conf import settings
 from django.contrib import messages
@@ -37,6 +38,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView, UpdateView
+from asso_tn.utils import make_timed_token, token_valid
 from mobilito.forms import AddressForm, LocationEditForm
 from mobilito.models import (
     Event,
@@ -419,21 +421,21 @@ def send_results(
     request: HttpRequest, mobilito_session: MobilitoSession
 ) -> None:
     """Send mobilito_session's results by email to user."""
-    logger.info(f"Sending mobilito_session results to {request.user.email}")
+    logger.info("Sending mobilito_session results to %s", request.user.email)
     try:
-        logger.info(f"MobilitoSession id : {mobilito_session.id}")
+        logger.info("MobilitoSession id : %s", mobilito_session.id)
         logger.info("Creating send record ...")
         send_record = create_send_record(request.user.email)
         custom_email = prepare_email(request, mobilito_session, send_record)
-        logger.info(f"Sending email to {request.user.email}")
+        logger.info("Sending email to %s", request.user.email)
         custom_email.send(fail_silently=False)
-        logger.info(f"Email sent to {request.user.email}")
+        logger.info("Email sent to %s", request.user.email)
         send_record.handoff_time = datetime.now(timezone.utc)
         send_record.save()
-    except Exception as e:
+    except Exception as err:
         # We don't really know that this is why we are here.
         # We've caught a generic exception.
-        logger.error(f"Error sending email to {request.user.email} : {e}")
+        logger.error("Error sending email to %s: %s", request.user.email, err)
         send_record.status = "FAILED"
         send_record.save()
 
@@ -444,7 +446,7 @@ def prepare_email(
     send_record: SendRecordTransactionalAdHoc,
 ) -> EmailMultiAlternatives:
     """Compose and return email summary of Mobilito session."""
-    logger.info(f"Preparing email for {mobilito_session.user.user.email}")
+    logger.info("Preparing email for %s", mobilito_session.user.user.email)
     template = "mobilito/result_email.html"
     the_panel_obj = get_random_panel()
     context = {
@@ -500,7 +502,7 @@ def get_MobilitoUser(request) -> Union[MobilitoUser, None]:
         user: MobilitoUser
         created: bool
         if created:
-            logger.info(f"Created MobilitoUser {user}")
+            logger.info("Created MobilitoUser %s", user)
     else:
         user = None
 
