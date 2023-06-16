@@ -9,10 +9,6 @@
 {% comment %} This table is the main container{% endcomment %}
 <table role="presentation"
 style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
-    <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
-        {# links will need to be wrapped into redirect links #}
-        <a href="{% absolute_url 'topicblog:view_email_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:gray;text-decoration:underline;">Voir sur le site web</a>
-    </tr>
     <img src="{% absolute_url 'topicblog:beacon_view' beacon_token %}.gif" alt="&nbsp;" height="1" width="1">
     <tr>
         {% comment "Logo" %}This row handles the logo display{% endcomment %}
@@ -57,18 +53,22 @@ style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;fo
     {% endif %}
 
     {% if email.body_image_1 %}
-        {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
+    {% email_full_width_image email.body_image_1.url email.body_image_1_alt_text %}
     {% endif %}
 
     {% email_body_text_md email.body_text_2_md %}
 
     {% if email.body_image_2 %}
-        {% email_full_width_image email.body_image_2.url email.body_image_2_alt_text %}
+    {% email_full_width_image email.body_image_2.url email.body_image_2_alt_text %}
     {% endif %}
 
     {% if  email.cta_2_slug %}
-        {% email_cta_button email.cta_2_slug email.cta_2_label %}
+    {% email_cta_button email.cta_2_slug email.cta_2_label %}
     {% endif %}
+    <tr style="padding:30px;text-align:center;background-color:#404040;color:#cccccc;">
+        {# links will need to be wrapped into redirect links #}
+        <a href="{% absolute_url 'topicblog:view_email_by_slug' page.slug|default:email.slug %}" style="font-size:0.7em;color:gray;text-decoration:underline;">Voir sur le site web</a>
+    </tr>
     <tr> <!-- Footer -->
         <td style="padding-top:20px;padding:30px;text-align:center;font-size:12px;background-color:#404040;color:#cccccc;">
             <p style="margin:0;font-size:14px;line-height:20px;">
