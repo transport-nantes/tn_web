@@ -41,7 +41,7 @@ dill==0.3.5.1
 distlib==0.3.0
 distro==1.4.0
 dj-stripe==2.5.1
-Django==4.1.7
+Django==4.1.10
 django-amazon-ses==4.0.1
 django-appconf==1.0.5
 django-compressor==4.1
