@@ -33,7 +33,7 @@ contextlib2==0.6.0
 contourpy==1.0.6
 coverage==6.3.1
 crayons==0.4.0
-cryptography==40.0.2
+cryptography==41.0.2
 cycler==0.11.0
 decorator==4.4.1
 Deprecated==1.2.13
