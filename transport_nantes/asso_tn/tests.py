@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
@@ -18,7 +18,7 @@ class TimedTokenTest(TestCase):
         k_email = "joe@example.com"
         k_expiry_minutes = 2
         k_expiry_seconds = k_expiry_minutes * 60
-        k_now = datetime.datetime.now().timestamp()
+        k_now = datetime.now(timezone.utc).timestamp()
         for persisted in [0, 1]:
             token = make_timed_token(
                 k_email, k_expiry_minutes, persisted, k_now

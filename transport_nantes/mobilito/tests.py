@@ -395,7 +395,7 @@ class MobilitoFlagSessionSeleniumTests(StaticLiveServerTestCase):
         MobilitoSessionViewTests.setUp(self)
         Event.objects.create(
             mobilito_session=self.mobilito_session,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             event_type="ped",
         )
         options = Options()

@@ -1,11 +1,10 @@
+from datetime import datetime, timezone
+
+from asso_tn.utils import make_timed_token, token_valid
 from django.contrib.auth.models import User
 from django.core import mail
 from django.test import TestCase, TransactionTestCase
-import datetime
-
 from django.urls.base import reverse
-
-from asso_tn.utils import make_timed_token, token_valid
 
 
 class TimedTokenTest(TestCase):
@@ -19,7 +18,7 @@ class TimedTokenTest(TestCase):
         EMAIL = "joe@example.com"
         EXPIRY_MINUTES = 2
         EXPIRY_SECONDS = EXPIRY_MINUTES * 60
-        NOW = datetime.datetime.now().timestamp()
+        NOW = datetime.now(timezone.utc).timestamp()
         for persisted in [0, 1]:
             token = make_timed_token(EMAIL, EXPIRY_MINUTES, persisted, NOW)
             now_response = token_valid(token, NOW)
@@ -108,7 +107,7 @@ class PasswordLoginViewTest(TestCase):
         # Create a token for password login.
         EMAIL = "passjoe@potus.com"
         EXPIRY_MINUTES = 2
-        NOW = datetime.datetime.now().timestamp()
+        NOW = datetime.now(timezone.utc).timestamp()
         self.token = make_timed_token(EMAIL, EXPIRY_MINUTES, 0, NOW)
 
         self.pass_user = User.objects.create_user(
@@ -173,7 +172,7 @@ class ActivationLoginViewTest(TestCase):
         # Create a token for password login.
         EMAIL = "passjoe@potus.com"
         EXPIRY_MINUTES = 2
-        NOW = datetime.datetime.now().timestamp()
+        NOW = datetime.now(timezone.utc).timestamp()
         self.token = make_timed_token(EMAIL, EXPIRY_MINUTES, 0, NOW)
 
         self.pass_user = User.objects.create_user(

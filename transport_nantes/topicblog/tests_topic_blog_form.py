@@ -1,21 +1,22 @@
 from datetime import datetime, timezone
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-from django.contrib.auth.models import Permission, User
-from django.test import LiveServerTestCase, Client
-from selenium.webdriver.support.ui import Select
-from django.urls import reverse
-from asso_tn.utils import make_timed_token
 
+from asso_tn.utils import make_timed_token
+from django.contrib.auth.models import Permission, User
+from django.test import Client, LiveServerTestCase
+from django.urls import reverse
 from mailing_list.events import (
     get_subcribed_users_email_list,
     subscribe_user_to_list,
 )
 from mailing_list.models import MailingList, MailingListEvent
-from .models import TopicBlogEmail, SendRecordMarketingEmail, TopicBlogItem
+from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from webdriver_manager.chrome import ChromeDriverManager
+
+from .models import SendRecordMarketingEmail, TopicBlogEmail, TopicBlogItem
 
 
 class TestsTopicItemForm(LiveServerTestCase):
@@ -197,7 +198,7 @@ class TestsTopicItemForm(LiveServerTestCase):
             msg="The publication date is not none",
         )
         # Check if the user get the 403 Forbidden
-        body = self.selenium.find_element_by_tag_name("body")
+        body = self.selenium.find_element(By.TAG_NAME, "body")
         body_html = body.get_attribute("innerHTML")
         self.assertHTMLEqual(
             body_html,

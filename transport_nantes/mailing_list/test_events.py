@@ -1,7 +1,7 @@
-from django.test import TestCase
+from datetime import datetime, timedelta, timezone
+
 from django.contrib.auth.models import User
-import datetime
-from django.utils.timezone import make_aware
+from django.test import TestCase
 
 from .events import subscriber_count, user_current_state, user_subscribe_count
 from .models import MailingList, MailingListEvent
@@ -13,7 +13,7 @@ class EventsTest(TestCase):
         User.objects.create(username="Bob")
         MailingList.objects.create(mailing_list_token="dog", list_active=True)
         MailingList.objects.create(mailing_list_token="cat", list_active=True)
-        self.base_time = make_aware(datetime.datetime.now())
+        self.base_time = datetime.now(timezone.utc)
 
     def test_user_current_state(self):
         alice = User.objects.get(username="Alice")
@@ -22,19 +22,19 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=alice,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(1),
+            event_timestamp=self.base_time + timedelta(1),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(3),
+            event_timestamp=self.base_time + timedelta(3),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
             user=alice,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(5),
+            event_timestamp=self.base_time + timedelta(5),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         self.assertEqual(
@@ -49,7 +49,7 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(4),
+            event_timestamp=self.base_time + timedelta(4),
             event_type=MailingListEvent.EventType.UNSUBSCRIBE,
         )
         self.assertEqual(
@@ -75,13 +75,13 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=alice,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(1),
+            event_timestamp=self.base_time + timedelta(1),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(3),
+            event_timestamp=self.base_time + timedelta(3),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
@@ -99,7 +99,7 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=cat_list,
-            event_timestamp=self.base_time + datetime.timedelta(5),
+            event_timestamp=self.base_time + timedelta(5),
             event_type=MailingListEvent.EventType.UNSUBSCRIBE,
         )
         self.assertEqual(user_subscribe_count(dog_list), 2)
@@ -113,19 +113,19 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=alice,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(1),
+            event_timestamp=self.base_time + timedelta(1),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(3),
+            event_timestamp=self.base_time + timedelta(3),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         MailingListEvent.objects.create(
             user=alice,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(5),
+            event_timestamp=self.base_time + timedelta(5),
             event_type=MailingListEvent.EventType.SUBSCRIBE,
         )
         self.assertEqual(subscriber_count(dog_list), 2)
@@ -135,7 +135,7 @@ class EventsTest(TestCase):
         MailingListEvent.objects.create(
             user=bob,
             mailing_list=dog_list,
-            event_timestamp=self.base_time + datetime.timedelta(4),
+            event_timestamp=self.base_time + timedelta(4),
             event_type=MailingListEvent.EventType.UNSUBSCRIBE,
         )
         self.assertEqual(subscriber_count(dog_list), 2)

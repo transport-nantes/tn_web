@@ -1,12 +1,14 @@
 from pathlib import Path
 
 import bs4 as bs
+from asso_tn.utils import make_timed_token
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
+from mailing_list.models import MailingList, MailingListEvent
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -14,8 +16,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from asso_tn.utils import make_timed_token
-from mailing_list.models import MailingList, MailingListEvent
 
 from .models import PhotoEntry, Vote
 

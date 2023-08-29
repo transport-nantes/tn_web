@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/jammy64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -81,11 +81,12 @@ Vagrant.configure("2") do |config|
     sudo apt-get upgrade -y
     sudo apt-get dist-upgrade -y
     sudo apt-get install -y  emacs-nox python3 python3-virtualenv python3-pip
-    sudo apt-get install -y  libpq-dev gcc libpython3.8-dev
+    sudo apt-get install -y  libpq-dev gcc libpython3-dev
     cd /vagrant
     rm -rf venv.vagrant
     virtualenv --python=python3 venv.vagrant
     . venv.vagrant/bin/activate
+    pip install -U pip
     pip install -r requirements.txt
     sudo mkdir /tmp/django-tn-log/
     sudo touch /tmp/django-tn-log/tn_web.log
