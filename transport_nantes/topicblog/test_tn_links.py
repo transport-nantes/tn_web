@@ -1,12 +1,14 @@
+from datetime import datetime, timezone
+
+from asso_tn.templatetags import don
+from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
-import datetime
-
-from asso_tn.templatetags import don
 from mailing_list.templatetags import newsletter
+
 from topicblog.models import TopicBlogPanel
+
 from .templatetags import slug
 from .tn_links import TNLinkParser, render_inclusion_tag_to_html
 
@@ -118,7 +120,7 @@ class TnLinkParserTest(TestCase):
         )
         tb_panel.title = "I am the title"
         tb_panel.body_text_1_md = "# Hello, world!"
-        tb_panel.publication_date = datetime.datetime.now()
+        tb_panel.publication_date = datetime.now(timezone.utc)
         tb_panel.save()
         self.parser.context["request"] = http_request
 

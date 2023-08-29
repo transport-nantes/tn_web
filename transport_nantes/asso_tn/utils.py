@@ -1,17 +1,19 @@
-import datetime
-from functools import wraps
 import logging
-
-from django.conf import settings
-from django.http.response import HttpResponseForbidden
-from django.urls import reverse_lazy
-from django.utils.crypto import salted_hmac
-from django.utils.crypto import secrets
-from django.utils.http import base36_to_int, int_to_base36
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from datetime import datetime, timezone
+from functools import wraps
 from hashlib import sha1, sha256
 
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http.response import HttpResponseForbidden
+from django.urls import reverse_lazy
+from django.utils.crypto import salted_hmac, secrets
+from django.utils.http import (
+    base36_to_int,
+    int_to_base36,
+    urlsafe_base64_decode,
+    urlsafe_base64_encode,
+)
 
 logger = logging.getLogger("django")
 
@@ -65,7 +67,7 @@ def make_timed_token(string_key, minutes, int_key=0, test_value_now=None):
     if test_value_now is not None:
         now = test_value_now
     else:
-        now = datetime.datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
     soon_seconds = int_to_base36(int(now + 60 * minutes))
     int_key_str = int_to_base36(int(int_key))
     hmac = salted_hmac(
@@ -145,7 +147,7 @@ def token_valid(encoded_timed_token, test_value_now=None):
     if test_value_now is not None:
         now = test_value_now
     else:
-        now = datetime.datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
     if now > base36_to_int(the_soon):
         return (None, 0)
     return (

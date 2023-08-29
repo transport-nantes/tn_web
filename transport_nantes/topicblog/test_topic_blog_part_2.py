@@ -1296,7 +1296,7 @@ class TBPTest(TestCase):
             )
 
     def test_press_release_index(self):
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         published_press_release = TopicBlogPress.objects.create(
             title="Published Press Release",
             slug="published-press-release",

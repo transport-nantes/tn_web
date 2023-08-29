@@ -11,7 +11,7 @@ from typing import Union
 
 import matplotlib
 import matplotlib.dates as mdates
-import matplotlib.font_manager as font_manager
+from matplotlib import font_manager
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib.text

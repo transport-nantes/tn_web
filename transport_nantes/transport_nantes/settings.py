@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-from django.urls import reverse_lazy
-from . import settings_local
-import sys
 import os
+import sys
+
+from django.urls import reverse_lazy
+
+from . import settings_local
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -77,6 +79,7 @@ INSTALLED_APPS = [
     "geoplan",
     "stripe_app",
     "crispy_forms",
+    "crispy_bootstrap4",
     "django_countries",
     "press",
     "debug_toolbar",
