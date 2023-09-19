@@ -1,12 +1,20 @@
 from django import template
-from django.utils.safestring import mark_safe
 from django.urls import reverse, reverse_lazy
-
+from django.utils.safestring import mark_safe
 from topicblog.views import k_render_as_email
 
 register = template.Library()
 
 page_donation = reverse_lazy("stripe_app:stripe")
+
+
+def stripe_donations_active():
+    """Deactivate all donation buttons.
+
+    Return True to deactivate, False to activate.
+    """
+    return True
+
 
 # Because emails don't handle classes in most cases,
 # we hardcode the styles here instead of using a CSS file.
@@ -36,6 +44,8 @@ class_btn_lg = (
 
 @register.simple_tag
 def bouton_don(link_text, context={}):
+    if stripe_donations_active():
+        return ""
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]
@@ -54,6 +64,8 @@ def bouton_don(link_text, context={}):
 
 @register.simple_tag
 def bouton_join(link_text):
+    if stripe_donations_active():
+        return ""
     return mark_safe(
         (
             '<a href="{url}" class="btn donation-button '
@@ -64,6 +76,8 @@ def bouton_join(link_text):
 
 @register.simple_tag
 def bouton_don_lg(link_text, context={}):
+    if stripe_donations_active():
+        return ""
     if k_render_as_email in context:
         # Rendering to email, so need absolute URL.
         request = context["request"]
@@ -85,6 +99,8 @@ def bouton_don_lg(link_text, context={}):
 
 @register.simple_tag
 def lien_don(link_text):
+    if stripe_donations_active():
+        return ""
     return mark_safe(
         """<a href="{url}" target="_blank">{text}</a></p>""".format(
             url=page_donation, text=link_text
@@ -94,6 +110,8 @@ def lien_don(link_text):
 
 @register.simple_tag
 def url_don():
+    if stripe_donations_active():
+        return ""
     return mark_safe(page_donation)
 
 

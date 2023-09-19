@@ -273,53 +273,14 @@
 				</div>
 
 				<div class="container-fluid py-5 px-0">
-					{% block app_content %}
+				    {% block app_content %}
 
-					{% endblock app_content%}
+				    {% endblock app_content%}
 				</div>
-			{% endblock content %}
+				{% endblock content %}
 
-			{% block bottom_appeal %}
-				{% comment %}
-				Support The Guardian
-				Our model is different
-
-				Your support means the Guardian remains open to all. With a digital
-				subscription you can also enjoy our reporting without ads, at the pace
-				that suits the moments of your day.
-				{% endcomment %}
-
-				<div id="notre-approche" class="w-100 bg-gray">
-					<div class="col-12 col-md-7 p-4 mx-auto ">
-						<div>
-							<p class="text-center" style="font-size: x-large">
-								<strong>Nous avons choisi une approche différente.
-								Voulez-vous nous soutenir ?</strong>
-							</p>
-							<p>
-								À la différence de beaucoup d'associations
-								militantes, nous avons volontairement choisi
-								de ne pas fixer d'adhésion minimum. La
-								transition écologique est au cœur des enjeux
-								et les mobilités actives et douces font partie
-								de la solution. Aidez-nous à faire en sorte
-								que les promesses, les engagements se
-								transforment en action. Toutes les
-								contributions sont importantes, nous ne
-								pouvons pas agir seuls. Soutenez-nous dès
-								maintenant et faites avancer la mobilité.
-							</p>
-						</div>
-						<span class="center py-3">{% bouton_don "Je fais un don ♥" %}</span>
-						<p class="center pt-1">
-							<i>
-								Votre adhésion ou don donne droit
-								à une réduction d'impôt de <b class="bg-blue-light text-white p-1">66 %</b> selon votre situation fiscale.
-							</i>
-						</p>
-					</div>
-				</div>
-			{% endblock bottom_appeal %}
+				{% block bottom_appeal %}
+				{% endblock bottom_appeal %}
 
 			{% block footer %}
 			<footer class="text-center text-lg-start my-5">
