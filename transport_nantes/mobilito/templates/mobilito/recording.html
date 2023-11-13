@@ -11,11 +11,13 @@
     {{ block.super }}
     {% compress js %}
         <script src="{% static 'mobilito/js/plus_minus_buttons.js' %}" defer></script>
+        <script src="{% static 'mobilito/js/chronometer.js' %}" defer></script>
     {% endcompress %}
 {% endblock scripts %}
 
 {% block content %}
-<form class=" d-flex flex-column flex-grow-1 justify-content-center align-items-end mx-auto"
+
+<form class=" d-flex flex-column flex-grow-1 justify-content-center mx-auto"
 method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
 
     {# End Record button #}
@@ -24,6 +26,15 @@ method="post" action="{% url 'mobilito:recording' %}"> {% csrf_token %}
             <i class="fa-solid fa-stop align-self-center mr-1"></i>
             <span>Terminer l'enregistrement<span>
         </button>
+    </div>
+
+    <div id="chrono" class="d-flex m-auto h1" style="font-feature-settings:'tnum';">
+        00:00:00
+    </div>
+
+    <b class="mx-auto"><span id="cheer-text"></span></b>
+    <div class="progress w-75 mx-auto">
+        <div id="bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
     </div>
 
     {# Recording area #}
