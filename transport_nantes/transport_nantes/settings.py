@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-from django.urls import reverse_lazy
-from . import settings_local
-import sys
 import os
+import sys
+
+from django.urls import reverse_lazy
+
+from . import settings_local
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -359,3 +361,6 @@ MAPS_API_KEY = settings_local.MAPS_API_KEY
 # MAP_BOX_ACCESS_TOKEN = "pk.ey....JEhjQ"
 
 MAP_BOX_ACCESS_TOKEN = settings_local.MAP_BOX_ACCESS_TOKEN
+
+if "test" in sys.argv:
+    MIGRATION_MODULES = {"asso_tn": "asso_tn.test_unique_mixin"}
