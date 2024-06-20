@@ -1,7 +1,6 @@
-## The following requirements were added by pip freeze:
 amqp==5.1.1
 appdirs==1.4.3
-asgiref==3.5.2
+asgiref==3.8.1
 astroid==2.12.4
 asttokens==2.2.1
 async-generator==1.10
@@ -41,7 +40,7 @@ dill==0.3.5.1
 distlib==0.3.0
 distro==1.4.0
 dj-stripe==2.5.1
-Django==4.1.7
+Django==4.2.13
 django-amazon-ses==4.0.1
 django-appconf==1.0.5
 django-compressor==4.1
@@ -108,7 +107,9 @@ pylint-django==2.4.4
 pylint-plugin-utils==0.6
 pyOpenSSL==23.1.1
 pyparsing==2.4.6
+PySocks==1.7.1
 python-dateutil==2.8.1
+python-dotenv==1.0.1
 python-http-client==3.2.7
 pytoml==0.1.21
 pytz==2022.1
@@ -120,8 +121,7 @@ rjsmin==1.2.0
 rollbar==0.16.3
 rsa==4.7
 s3transfer==0.4.2
-selenium==4.1.0
-setuptools<58.0.0
+selenium==4.21.0
 six==1.14.0
 sniffio==1.2.0
 sortedcontainers==2.4.0
@@ -135,13 +135,13 @@ tomlkit==0.11.4
 traitlets==5.9.0
 trio==0.19.0
 trio-websocket==0.9.2
-typing-extensions==4.5.0
+typing-extensions==4.12.2
 ua-parser==0.10.0
 urllib3==1.26.5
 user-agents==2.2.0
 vine==5.0.0
 wcwidth==0.1.8
-webdriver-manager==3.5.2
+webdriver-manager==4.0.1
 webencodings==0.5.1
 wrapt==1.12.1
 wsproto==1.0.0
