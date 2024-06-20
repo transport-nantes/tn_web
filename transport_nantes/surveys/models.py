@@ -6,8 +6,8 @@ from django.db import models
 class Survey(models.Model):
     """Represent a survey.
 
-    This does not represent the questions (SurveyQuestions) or
-    anyone's responses.
+    Represents a survey that we're conducting.  This is a container
+    that permits us to group questions and their responses together.
 
     """
 
@@ -25,11 +25,7 @@ class Survey(models.Model):
 
 
 class SurveyQuestion(models.Model):
-    """Represent a set of questions (a survey).
-
-    This does not represent anyone's responses.
-
-    """
+    """Represent a question in a survey."""
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     # Question numbers are strings because we might have "3a" and
@@ -66,7 +62,6 @@ class SurveyCommune(models.Model):
 
 
 class SurveyResponder(models.Model):
-
     """Represent someone or something that might respond to a survey.
 
     We use this for tracking people and parties who might respond to
@@ -118,7 +113,12 @@ class SurveyResponder(models.Model):
 
 
 class SurveyResponse(models.Model):
-    """Represent candidate/party responses to survey questions."""
+    """Represent a response to a survey question.
+
+    A candidate, list or party responds to a survey.  This represents
+    that response and links it to the survey and the question.
+
+    """
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     survey_question = models.ForeignKey(
