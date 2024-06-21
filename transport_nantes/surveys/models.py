@@ -60,12 +60,7 @@ class SurveyQuestion(UniqueIdentifierMixin, models.Model):
 
 
 class SurveyCommune(UniqueIdentifierMixin, models.Model):
-    """Represent the commune.
-
-    This is a separate model solely that we can refer to communes by
-    number (and thus fix spelling errors without invalidating URLs if
-    such should happen.
-    """
+    """Represent the commune."""
 
     identifier = models.CharField(
         max_length=UniqueIdentifierMixin.identifier_field_length,
@@ -75,6 +70,11 @@ class SurveyCommune(UniqueIdentifierMixin, models.Model):
 
     # Our surveys typically involve political entities.
     commune = models.CharField(max_length=100)
+    # It happens that we set up a commune for which no one responds to
+    # our survey.
+    survey = models.ForeignKey(
+        Survey, on_delete=models.CASCADE, blank=True, null=True
+    )
 
     def __str__(self):
         return self.commune
