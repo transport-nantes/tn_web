@@ -1,15 +1,22 @@
+from asso_tn.model_mixins import UniqueIdentifierMixin
 from django.db import models
 
 # Cf. https://docs.djangoproject.com/en/3.0/ref/models/fields/
 
 
-class Survey(models.Model):
+class Survey(UniqueIdentifierMixin, models.Model):
     """Represent a survey.
 
     Represents a survey that we're conducting.  This is a container
     that permits us to group questions and their responses together.
 
     """
+
+    identifier_field_length = 10
+
+    identifier = models.CharField(
+        max_length=identifier_field_length, unique=True, blank=True
+    )
 
     # A human-presentable name of the survey
     name = models.CharField(max_length=200)
@@ -24,8 +31,14 @@ class Survey(models.Model):
         )
 
 
-class SurveyQuestion(models.Model):
+class SurveyQuestion(UniqueIdentifierMixin, models.Model):
     """Represent a question in a survey."""
+
+    identifier = models.CharField(
+        max_length=UniqueIdentifierMixin.identifier_field_length,
+        unique=True,
+        blank=True,
+    )
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     # Question numbers are strings because we might have "3a" and
@@ -46,13 +59,19 @@ class SurveyQuestion(models.Model):
         )
 
 
-class SurveyCommune(models.Model):
+class SurveyCommune(UniqueIdentifierMixin, models.Model):
     """Represent the commune.
 
     This is a separate model solely that we can refer to communes by
     number (and thus fix spelling errors without invalidating URLs if
     such should happen.
     """
+
+    identifier = models.CharField(
+        max_length=UniqueIdentifierMixin.identifier_field_length,
+        unique=True,
+        blank=True,
+    )
 
     # Our surveys typically involve political entities.
     commune = models.CharField(max_length=100)
@@ -61,7 +80,7 @@ class SurveyCommune(models.Model):
         return self.commune
 
 
-class SurveyResponder(models.Model):
+class SurveyResponder(UniqueIdentifierMixin, models.Model):
     """Represent someone or something that might respond to a survey.
 
     We use this for tracking people and parties who might respond to
@@ -69,6 +88,12 @@ class SurveyResponder(models.Model):
     join together and split apart.
 
     """
+
+    identifier = models.CharField(
+        max_length=UniqueIdentifierMixin.identifier_field_length,
+        unique=True,
+        blank=True,
+    )
 
     # People are generally authorised only to respond for one
     # party/list and for one survey.  If they wish to respond to
@@ -112,13 +137,19 @@ class SurveyResponder(models.Model):
         )
 
 
-class SurveyResponse(models.Model):
+class SurveyResponse(UniqueIdentifierMixin, models.Model):
     """Represent a response to a survey question.
 
     A candidate, list or party responds to a survey.  This represents
     that response and links it to the survey and the question.
 
     """
+
+    identifier = models.CharField(
+        max_length=UniqueIdentifierMixin.identifier_field_length,
+        unique=True,
+        blank=True,
+    )
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     survey_question = models.ForeignKey(
