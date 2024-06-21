@@ -198,8 +198,8 @@ class ResponseDisplaySurveyView(TemplateView):
             )
         except SurveyResponse.DoesNotExist:
             this_response = SurveyResponse()
-            this_response.survey_question = context["this_question"]
-            this_response.survey_responder = context["this_liste"]
+            this_response.survey_question = this_question
+            this_response.survey_responder = this_responder
             this_response.survey_question_response = (
                 "La liste n'a pas répondu à cette question."
             )
