@@ -190,6 +190,7 @@ class ResponseDisplaySurveyView(TemplateView):
         this_question = SurveyQuestion.objects.get(
             identifier=question_identifier
         )
+        this_question.text_paragraphs = this_question.question_text.split("\n")
         this_commune = this_responder.commune
         try:
             this_response = SurveyResponse.objects.get(
