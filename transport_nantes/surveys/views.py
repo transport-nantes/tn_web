@@ -101,13 +101,8 @@ class CommuneChooserSurveyView(TemplateView):
         context = super().get_context_data(**kwargs)
         survey_identifier = kwargs["survey_identifier"]
         survey = Survey.objects.get(identifier=survey_identifier)
-        responders = SurveyResponder.objects.filter(
-            survey__identifier=survey_identifier
-        )
+        context["communes"] = SurveyCommune.objects.filter(survey=survey)
         context["survey"] = survey
-        context["communes"] = set(
-            [responder.commune for responder in responders]
-        )
         context["listes"] = None
         context["questions"] = None
         hack_augment_social(context)
@@ -124,8 +119,8 @@ class ListeChooserSurveyView(TemplateView):
         responders = SurveyResponder.objects.filter(commune=this_commune)
         context["survey"] = this_commune.survey
         context["this_commune"] = this_commune
-        context["communes"] = set(
-            [responder.commune for responder in responders]
+        context["communes"] = SurveyCommune.objects.filter(
+            survey=this_commune.survey
         )
         context["listes"] = responders
         hack_augment_social(context)
@@ -151,9 +146,7 @@ class QuestionChooserSurveyView(TemplateView):
         responders = SurveyResponder.objects.filter(commune=this_commune)
 
         context["survey"] = this_survey
-        context["communes"] = set(
-            [responder.commune for responder in responders]
-        )
+        context["communes"] = SurveyCommune.objects.filter(survey=this_survey)
         context["listes"] = responders
         context["this_liste"] = this_liste
         context["questions"] = questions
@@ -213,9 +206,7 @@ class ResponseDisplaySurveyView(TemplateView):
 
         context["survey"] = this_survey
         context["this_commune"] = this_commune
-        context["communes"] = set(
-            [responder.commune for responder in responders]
-        )
+        context["communes"] = SurveyCommune.objects.filter(survey=this_survey)
         context["listes"] = responders
         context["this_liste"] = this_liste
         context["this_question"] = this_question
