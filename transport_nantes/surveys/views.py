@@ -1,16 +1,46 @@
-from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.views.generic.base import TemplateView
+
 from .models import (
     Survey,
-    SurveyQuestion,
     SurveyCommune,
+    SurveyQuestion,
     SurveyResponder,
     SurveyResponse,
 )
 
 # This currently does nothing useful, just says it doesn't know.
 # It should show a list of active questionnaires.
+
+
+def hack_augment_social(context, candidate_name=""):
+    """Augment context with social media data.
+
+    This should be dynamic, but it's not.  Next election, if we still
+    do this.
+
+    """
+    if candidate_name:
+        title = f"{candidate_name} : pouvoir d’achat et sécurité en mobilité"
+    else:
+        title = "Pouvoir d’achat et sécurité en mobilité"
+    description = (
+        "Les déplacements compte parmi les points budgétaires les"
+        " plus importants pour les français, avec le logement et la nourriture."
+        "  Comment répondent les candidats ?"
+    )
+    image = "surveys/delacroix-mobilite-2024-wide-1_banner.jpg"
+    social = {
+        "twitter_title": title,
+        "twitter_descr": description,
+        "twitter_image": image,
+        "og_title": title,
+        "og_description": description,
+        "og_image": image,
+    }
+    context["social"] = social
+    context["is_static"] = True
 
 
 class MainSurveyView(TemplateView):
@@ -34,27 +64,7 @@ class QuestionnaireView(TemplateView):
             survey=survey
         ).order_by("sort_index")
         context["next_page"] = reverse("surveys:response_1", args=[slug])
-
-        # Hack, hard code for today.
-        context["is_static"] = True
-        context["social"] = {}
-        context["social"][
-            "og_title"
-        ] = "Élections présidentielles de printemps 2022"
-        context["social"]["og_description"] = (
-            "Les Mobilitains interrogent les candidats aux présidentielles "
-            "sur leurs projets de soutien pour de la mobilité régionale"
-        )
-        context["social"]["og_image"] = "asso_tn/drapeau.jpg"
-        context["social"][
-            "twitter_title"
-        ] = "Élections présidentielles de printemps 2022"
-        context["social"]["twitter_description"] = (
-            "Les Mobilitains interrogent les candidats aux présidentielles "
-            "sur leurs projets de soutien pour de la mobilité régionale"
-        )
-        context["social"]["twitter_image"] = "asso_tn/drapeau.jpg"
-
+        hack_augment_social(context)
         return context
 
 
@@ -73,40 +83,11 @@ class ResponseView(TemplateView):
         context["questions"] = SurveyQuestion.objects.filter(
             survey=survey
         ).order_by("sort_index")
-
-        # Hack, hard code for today.
-        context["is_static"] = True
-        context["social"] = {}
-        context["social"][
-            "og_title"
-        ] = "Élections présidentielles de printemps 2022"
-        context["social"]["og_description"] = (
-            "Les Mobilitains interrogent les candidats aux présidentielles "
-            "sur leurs projets de soutien pour de la mobilité régionale"
-        )
-        context["social"]["og_image"] = "asso_tn/drapeau.jpg"
-        context["social"][
-            "twitter_title"
-        ] = "Élections présidentielles de printemps 2022"
-        context["social"]["twitter_description"] = (
-            "Les Mobilitains interrogent les candidats aux présidentielles "
-            "sur leurs projets de soutien pour de la mobilité régionale"
-        )
-        context["social"]["twitter_image"] = "asso_tn/drapeau.jpg"
-
+        hack_augment_social(context)
         return context
 
 
 # Views for viewing results ########################################
-
-social = {
-    "twitter_title": "Élections régionales et départementales 2021",
-    "twitter_descr": "Vos déplacements vous sont importants.  Nous agissons.",
-    "twitter_image": "asso_tn/trolley-sunset-1500w.jpg",
-    "og_title": "Élections régionales et départementales 2021",
-    "og_description": "Vos déplacements vous sont importants.  Nous agissons.",
-    "og_image": "asso_tn/trolley-sunset-1500w.jpg",
-}
 
 
 class CommuneChooserSurveyView(TemplateView):
@@ -122,7 +103,7 @@ class CommuneChooserSurveyView(TemplateView):
         )
         context["listes"] = None
         context["questions"] = None
-        context["social"] = social
+        hack_augment_social(context)
         return context
 
 
@@ -136,7 +117,7 @@ class ListeChooserSurveyView(CommuneChooserSurveyView):
             survey_id=kwargs["survey_id"], commune=kwargs["commune_id"]
         )
         context["listes"] = responders
-        context["social"] = social
+        hack_augment_social(context)
         return context
 
 
@@ -159,17 +140,19 @@ class QuestionChooserSurveyView(ListeChooserSurveyView):
                 "\n"
             )
             context["this_question"] = this_question
-        context["social"] = social
+        hack_augment_social(context)
         return context
 
 
 class ResponseDisplaySurveyView(QuestionChooserSurveyView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        survey_responder_id = kwargs["responder_id"]
+        survey_responder = SurveyResponder.objects.get(id=survey_responder_id)
         this_response_as_list = SurveyResponse.objects.filter(
             survey=kwargs["survey_id"],
             survey_question=kwargs["question_id"],
-            survey_responder=kwargs["responder_id"],
+            survey_responder=survey_responder_id,
         )
         if this_response_as_list:
             this_response = this_response_as_list[0]
@@ -181,7 +164,7 @@ class ResponseDisplaySurveyView(QuestionChooserSurveyView):
                 "La liste n'a pas répondu à cette question."
             )
         context["this_response"] = this_response
-        context["social"] = social
+        hack_augment_social(context, survey_responder.tete_de_liste)
         return context
 
 

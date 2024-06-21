@@ -17,7 +17,7 @@
         <a class="btn dropdown-toggle mr-1 mb-1" href="#" role="button" id="dropdownMenuLinkCommune"
            data-toggle="dropdown" area-haspopup="true" area-expanded="false">
             {% if this_commune is none %}
-            Choissisez un territoire
+            Choisissez un territoire
             {% else %}
             {{ this_commune.commune }}
             {% endif %}
@@ -34,7 +34,7 @@
         <a class="btn dropdown-toggle mr-1 mb-1" href="#" role="button" id="dropdownMenuLinkListe"
            data-toggle="dropdown" area-haspopup="true" area-expanded="false">
             {% if this_liste is none %}
-            Choisissez une liste
+            Choisissez un candidat / une liste
             {% else %}
             {{ this_liste.liste }} (<i>{{ this_liste.tete_de_liste }}</i>)
             {% endif %}
@@ -70,19 +70,21 @@
     {% if this_response is not none %}
     <div class="row">
         <div class="col-lg-12">
-            <h2 style="background-color: var(--mobilitains-gris);">Question : {{ this_question.question_title }}</h2>
+            <h2 class="p-3" style="background-color: var(--mobilitains-gris);">Question : {{ this_question.question_title }}</h2>
 
-            <h3>La réponse de {{ this_liste.tete_de_liste|default:'' }} ({{ this_liste.liste|default:'' }}) :</h3>
-            {% if this_response is not none %}
-            <div>
-                {% tn_markdown this_response.survey_question_response %}
-            </div>
-            {% else %}
-            <p>La liste {{ liste }} n'a pas répondu à cette question.</p>
-            {% endif %}
+            <h3 class="p-3">La réponse de {{ this_liste.tete_de_liste|default:'' }} ({{ this_liste.liste|default:'' }}) :</h3>
+	    <div class="p-3">
+		{% if this_response is not none %}
+		<div>
+                    {% tn_markdown this_response.survey_question_response %}
+		</div>
+		{% else %}
+		<p>La liste {{ liste }} n'a pas répondu à cette question.</p>
+		{% endif %}
+	    </div>
 
-            <h3>La question</h3>
-            <div>
+            <h3 class="p-3">La question</h3>
+            <div class="p-3">
                 {% for paragraph in this_question.text_paragraphs %}
                 <p style="color: var(--body-text-muted);">{{ paragraph }}</p>
                 {% endfor %}
@@ -100,9 +102,9 @@
             <p style="{color: var(--body-text-muted);" class="small">
                 <b>Si vous êtes élu, candidat, membre d'une liste ou d'un
                     parti politique,</b> nous vous invitons à télécharger notre
-                liste de dix questions et de nous envoyer vos
+                liste de questions et de nous envoyer vos
                 réponses en cliquant
-                <a href={% url 'surveys:choose_commune' survey_id %}>ici</a>.
+                <a href={% url 'surveys:response_1' survey_id %}>ici</a>.
             </p>
             <hr>
 
