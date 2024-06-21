@@ -21,22 +21,26 @@ urlpatterns = [
     ),
     # For viewing results.
     path(
-        "commune/<int:survey_id>",
+        # "commune/<int:survey_id>",
+        "commune/<str:survey_identifier>",
         views.CommuneChooserSurveyView.as_view(),
         name="choose_commune",
     ),
     path(
-        "liste/<int:survey_id>/<int:commune_id>",
+        # "liste/<int:survey_id>/<int:commune_ide>",
+        "liste/<str:commune_identifier>",
         views.ListeChooserSurveyView.as_view(),
         name="choose_liste",
     ),
     path(
-        "question/<int:survey_id>/<int:commune_id>/<int:responder_id>",
+        # "question/<int:survey_id>/<int:commune_id>/<int:responder_id>",
+        "question/<str:responder_identifier>",
         views.QuestionChooserSurveyView.as_view(),
         name="choose_question",
     ),
     path(
-        "response/<int:survey_id>/<int:commune_id>/<int:responder_id>/<int:question_id>",  # noqa
+        # "response/<int:survey_id>/<int:commune_id>/<int:responder_id>/<int:question_id>",  # noqa
+        "response/<str:responder_identifier>/<str:question_identifier>",
         views.ResponseDisplaySurveyView.as_view(),
         name="choose_response",
     ),

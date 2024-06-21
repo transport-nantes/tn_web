@@ -13,6 +13,10 @@ from .models import (
 # This currently does nothing useful, just says it doesn't know.
 # It should show a list of active questionnaires.
 
+# Note that there is general confusion between liste and responder.  I
+# should go through these views and the survey.html template and make
+# them all say this_responder instead.
+
 
 def hack_augment_social(context, candidate_name=""):
     """Augment context with social media data.
@@ -95,9 +99,12 @@ class CommuneChooserSurveyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        survey_identifier = kwargs["survey_identifier"]
+        survey = Survey.objects.get(identifier=survey_identifier)
         responders = SurveyResponder.objects.filter(
-            survey_id=kwargs["survey_id"]
+            survey__identifier=survey_identifier
         )
+        context["survey"] = survey
         context["communes"] = set(
             [responder.commune for responder in responders]
         )
@@ -107,64 +114,113 @@ class CommuneChooserSurveyView(TemplateView):
         return context
 
 
-class ListeChooserSurveyView(CommuneChooserSurveyView):
+class ListeChooserSurveyView(TemplateView):
+    template_name = "surveys/survey.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["this_commune"] = SurveyCommune.objects.filter(
-            id=kwargs["commune_id"]
-        )[0]
-        responders = SurveyResponder.objects.filter(
-            survey_id=kwargs["survey_id"], commune=kwargs["commune_id"]
+        commune_identifier = kwargs["commune_identifier"]
+        this_commune = SurveyCommune.objects.get(identifier=commune_identifier)
+        responders = SurveyResponder.objects.filter(commune=this_commune)
+        context["survey"] = this_commune.survey
+        context["this_commune"] = this_commune
+        context["communes"] = set(
+            [responder.commune for responder in responders]
         )
         context["listes"] = responders
         hack_augment_social(context)
         return context
 
 
-class QuestionChooserSurveyView(ListeChooserSurveyView):
+class QuestionChooserSurveyView(TemplateView):
+    template_name = "surveys/survey.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["this_liste"] = SurveyResponder.objects.filter(
-            survey_id=kwargs["survey_id"],
-            commune=kwargs["commune_id"],
-            id=kwargs["responder_id"],
-        )[0]
-        context["questions"] = SurveyQuestion.objects.filter(
-            survey=kwargs["survey_id"]
-        ).order_by("sort_index")
-        if "question_id" in kwargs:
-            this_question = SurveyQuestion.objects.filter(
-                id=kwargs["question_id"]
-            )[0]
-            this_question.text_paragraphs = this_question.question_text.split(
-                "\n"
-            )
-            context["this_question"] = this_question
+        responder_identifier = kwargs["responder_identifier"]
+        this_liste = SurveyResponder.objects.get(
+            identifier=responder_identifier
+        )
+        this_commune = this_liste.commune
+        this_survey = Survey.objects.get(
+            identifier=this_liste.survey.identifier
+        )
+        questions = SurveyQuestion.objects.filter(survey=this_survey).order_by(
+            "sort_index"
+        )
+        responders = SurveyResponder.objects.filter(commune=this_commune)
+
+        context["survey"] = this_survey
+        context["communes"] = set(
+            [responder.commune for responder in responders]
+        )
+        context["listes"] = responders
+        context["this_liste"] = this_liste
+        context["questions"] = questions
+        # # Once upon a time, I could hold onto questions if the only
+        # # change were the responder.  I dropped that with the change
+        # # to identifier codes.  I'll leave this here to remind me in
+        # # case I reactivate this code in a more planned way later.
+        #
+        # if "question_id" in kwargs:
+        #     this_question = SurveyQuestion.objects.filter(
+        #         id=kwargs["question_id"]
+        #     )[0]
+        #     this_question.text_paragraphs = this_question.question_text.split(
+        #         "\n"
+        #     )
+        #     context["this_question"] = this_question
         hack_augment_social(context)
         return context
 
 
-class ResponseDisplaySurveyView(QuestionChooserSurveyView):
+class ResponseDisplaySurveyView(TemplateView):
+    template_name = "surveys/survey.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        survey_responder_id = kwargs["responder_id"]
-        survey_responder = SurveyResponder.objects.get(id=survey_responder_id)
-        this_response_as_list = SurveyResponse.objects.filter(
-            survey=kwargs["survey_id"],
-            survey_question=kwargs["question_id"],
-            survey_responder=survey_responder_id,
+        responder_identifier = kwargs["responder_identifier"]
+        question_identifier = kwargs["question_identifier"]
+        # There may be no response to this question, so make sure we
+        # have the responder object from which we can extract the
+        # commune, the survey, and so forth.
+        this_responder = SurveyResponder.objects.get(
+            identifier=responder_identifier
         )
-        if this_response_as_list:
-            this_response = this_response_as_list[0]
-        else:
+        this_question = SurveyQuestion.objects.get(
+            identifier=question_identifier
+        )
+        this_commune = this_responder.commune
+        try:
+            this_response = SurveyResponse.objects.get(
+                survey_responder__identifier=responder_identifier,
+                survey_question__identifier=question_identifier,
+            )
+        except SurveyResponse.DoesNotExist:
             this_response = SurveyResponse()
             this_response.survey_question = context["this_question"]
             this_response.survey_responder = context["this_liste"]
             this_response.survey_question_response = (
                 "La liste n'a pas répondu à cette question."
             )
+        responders = SurveyResponder.objects.filter(commune=this_commune)
+        this_survey = this_responder.survey
+        questions = SurveyQuestion.objects.filter(survey=this_survey).order_by(
+            "sort_index"
+        )
+        this_liste = this_responder  # Confusing naming.
+
+        context["survey"] = this_survey
+        context["this_commune"] = this_commune
+        context["communes"] = set(
+            [responder.commune for responder in responders]
+        )
+        context["listes"] = responders
+        context["this_liste"] = this_liste
+        context["this_question"] = this_question
+        context["questions"] = questions
         context["this_response"] = this_response
-        hack_augment_social(context, survey_responder.tete_de_liste)
+        hack_augment_social(context, this_responder.tete_de_liste)
         return context
 
 
