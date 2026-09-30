@@ -9,7 +9,7 @@ https://developers.google.com/maps/documentation/geocoding/requests-reverse-geoc
 
 // Initializing the map
 var map = L.map('map').setView([47.218371, -1.553621], 8);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
